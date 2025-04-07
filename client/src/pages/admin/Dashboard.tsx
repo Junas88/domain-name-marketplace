@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { useLocation } from "wouter";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -11,6 +12,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/use-auth";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { z } from "zod";
 import { BarChart, Bar, XAxis, YAxis, Tooltip as RechartsTooltip, ResponsiveContainer } from "recharts";
@@ -24,6 +26,7 @@ import {
 } from "@/components/ui/table";
 import {
   Check,
+  LogOut,
   PenIcon,
   PlusIcon,
   RefreshCw,
@@ -49,6 +52,8 @@ export default function AdminDashboard() {
   const [showAddDomainDialog, setShowAddDomainDialog] = useState(false);
   const [editingDomain, setEditingDomain] = useState<null | any>(null);
   const { toast } = useToast();
+  const { logoutMutation } = useAuth();
+  const [, navigate] = useLocation();
 
   // Fetch all domains
   const { data: domains = [], isLoading: isLoadingDomains, refetch: refetchDomains } = useQuery<Domain[]>({
@@ -211,9 +216,25 @@ export default function AdminDashboard() {
 
   return (
     <div className="container mx-auto p-4 md:p-6">
-      <header className="mb-6">
-        <h1 className="text-3xl font-bold text-black">Admin Dashboard</h1>
-        <p className="text-gray-600">Manage your domain listings, track offers, and monitor website stats</p>
+      <header className="mb-6 flex flex-col md:flex-row md:items-center md:justify-between">
+        <div>
+          <h1 className="text-3xl font-bold text-black">Admin Dashboard</h1>
+          <p className="text-gray-600">Manage your domain listings, track offers, and monitor website stats</p>
+        </div>
+        <Button 
+          variant="outline" 
+          className="mt-4 md:mt-0 border-black" 
+          onClick={() => {
+            logoutMutation.mutate(undefined, {
+              onSuccess: () => {
+                navigate('/admin/login');
+              }
+            });
+          }}
+        >
+          <LogOut className="h-4 w-4 mr-2" />
+          Logout
+        </Button>
       </header>
 
       <Tabs defaultValue="domains" value={activeTab} onValueChange={setActiveTab}>

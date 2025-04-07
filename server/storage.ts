@@ -4,11 +4,18 @@ import {
   offers, type Offer, type InsertOffer,
   consultations, type Consultation, type InsertConsultation
 } from "@shared/schema";
+import session from "express-session";
+import createMemoryStore from "memorystore";
+
+const MemoryStore = createMemoryStore(session);
 
 // modify the interface with any CRUD methods
 // you might need
 
 export interface IStorage {
+  // Session store
+  sessionStore: session.Store;
+  
   // User methods (from the original template)
   getUser(id: number): Promise<User | undefined>;
   getUserByUsername(username: string): Promise<User | undefined>;
@@ -50,6 +57,8 @@ export class MemStorage implements IStorage {
   private offers: Map<number, Offer>;
   private consultations: Map<number, Consultation>;
   
+  public sessionStore: session.Store;
+  
   private userIdCounter: number;
   private domainIdCounter: number;
   private offerIdCounter: number;
@@ -60,6 +69,10 @@ export class MemStorage implements IStorage {
     this.domains = new Map();
     this.offers = new Map();
     this.consultations = new Map();
+    
+    this.sessionStore = new MemoryStore({
+      checkPeriod: 86400000 // prune expired entries every 24h
+    });
     
     this.userIdCounter = 1;
     this.domainIdCounter = 1;
@@ -140,7 +153,12 @@ export class MemStorage implements IStorage {
 
   async createUser(insertUser: InsertUser): Promise<User> {
     const id = this.userIdCounter++;
-    const user: User = { ...insertUser, id };
+    const user: User = { 
+      ...insertUser, 
+      id,
+      isAdmin: insertUser.isAdmin || false,
+      createdAt: new Date()
+    };
     this.users.set(id, user);
     return user;
   }

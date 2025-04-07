@@ -8,19 +8,26 @@ async function throwIfResNotOk(res: Response) {
 }
 
 export async function apiRequest(
-  url: string,
+  endpoint: string,
   options?: RequestInit,
 ): Promise<Response> {
-  const res = await fetch(url, {
-    ...options,
+  const defaultOptions: RequestInit = {
+    method: "GET",
     headers: {
-      ...options?.headers,
       "Content-Type": "application/json",
     },
     credentials: "include",
-  });
-
-  await throwIfResNotOk(res);
+  };
+  
+  const mergedOptions = { ...defaultOptions, ...options };
+  
+  const res = await fetch(endpoint, mergedOptions);
+  
+  // Don't throw for 401 - caller will handle
+  if (res.status !== 401) {
+    await throwIfResNotOk(res);
+  }
+  
   return res;
 }
 
