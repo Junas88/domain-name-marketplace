@@ -1,12 +1,31 @@
 import { useState } from "react";
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
 import { Menu, X } from "lucide-react";
 
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [location] = useLocation();
 
   const toggleMobileMenu = () => {
     setMobileMenuOpen(!mobileMenuOpen);
+  };
+
+  // Function to handle smooth scrolling to sections
+  const scrollToSection = (sectionId: string) => {
+    // Close mobile menu
+    setMobileMenuOpen(false);
+    
+    // If we're not on the home page, navigate there first
+    if (location !== "/") {
+      window.location.href = `/${sectionId}`;
+      return;
+    }
+    
+    // Otherwise scroll to the section
+    const element = document.getElementById(sectionId);
+    if (element) {
+      element.scrollIntoView({ behavior: "smooth" });
+    }
   };
 
   return (
@@ -25,12 +44,26 @@ export default function Header() {
             <Link href="/" className="text-neutral-800 hover:text-black font-medium">
               Home
             </Link>
-            <Link href="#domain-finder" className="text-neutral-800 hover:text-black font-medium">
+            <a 
+              href="#domain-finder" 
+              className="text-neutral-800 hover:text-black font-medium cursor-pointer"
+              onClick={(e) => {
+                e.preventDefault();
+                scrollToSection("domain-finder");
+              }}
+            >
               Domain Finder
-            </Link>
-            <Link href="#domains" className="text-neutral-800 hover:text-black font-medium">
+            </a>
+            <a 
+              href="#domains" 
+              className="text-neutral-800 hover:text-black font-medium cursor-pointer"
+              onClick={(e) => {
+                e.preventDefault();
+                scrollToSection("domains");
+              }}
+            >
               Browse Domains
-            </Link>
+            </a>
             <Link href="/contact" className="text-neutral-800 hover:text-black font-medium">
               Contact
             </Link>
@@ -42,6 +75,7 @@ export default function Header() {
               type="button" 
               className="text-neutral-800" 
               onClick={toggleMobileMenu}
+              aria-label="Toggle menu"
             >
               {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
             </button>
@@ -59,20 +93,26 @@ export default function Header() {
               >
                 Home
               </Link>
-              <Link 
+              <a 
                 href="#domain-finder" 
-                className="block px-3 py-2 text-neutral-800 hover:bg-neutral-100 rounded-md"
-                onClick={() => setMobileMenuOpen(false)}
+                className="block px-3 py-2 text-neutral-800 hover:bg-neutral-100 rounded-md cursor-pointer"
+                onClick={(e) => {
+                  e.preventDefault();
+                  scrollToSection("domain-finder");
+                }}
               >
                 Domain Finder
-              </Link>
-              <Link 
+              </a>
+              <a 
                 href="#domains" 
-                className="block px-3 py-2 text-neutral-800 hover:bg-neutral-100 rounded-md"
-                onClick={() => setMobileMenuOpen(false)}
+                className="block px-3 py-2 text-neutral-800 hover:bg-neutral-100 rounded-md cursor-pointer"
+                onClick={(e) => {
+                  e.preventDefault();
+                  scrollToSection("domains");
+                }}
               >
                 Browse Domains
-              </Link>
+              </a>
               <Link 
                 href="/contact" 
                 className="block px-3 py-2 text-neutral-800 hover:bg-neutral-100 rounded-md"
