@@ -25,7 +25,7 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Company Info */}
           <div>
-            <h3 className="text-xl font-bold mb-4">DomainHub</h3>
+            <h3 className="text-xl font-bold mb-4">TakeMyDomain</h3>
             <p className="text-white mb-4">Your trusted marketplace for premium domain names.</p>
             <div className="flex space-x-4">
               <a href="#" className="text-white hover:text-gray-300 transition-colors" aria-label="Facebook">
@@ -106,7 +106,7 @@ export default function Footer() {
             <ul className="space-y-2">
               <li className="flex items-start">
                 <Mail className="text-white mt-1 mr-3 shrink-0" size={18} />
-                <a href="mailto:support@domainhub.com" className="text-white hover:text-gray-300 transition-colors">support@domainhub.com</a>
+                <a href="mailto:support@takemydomain.com" className="text-white hover:text-gray-300 transition-colors">support@takemydomain.com</a>
               </li>
               <li className="flex items-start">
                 <Phone className="text-white mt-1 mr-3 shrink-0" size={18} />
@@ -121,7 +121,7 @@ export default function Footer() {
         </div>
         
         <div className="border-t border-white/20 mt-8 pt-8 text-center text-white">
-          <p>&copy; {new Date().getFullYear()} DomainHub. All rights reserved.</p>
+          <p>&copy; {new Date().getFullYear()} TakeMyDomain.com. All rights reserved.</p>
           <div className="mt-2">
             <Link href="/admin" className="text-gray-400 hover:text-white text-sm">Admin Dashboard</Link>
           </div>
