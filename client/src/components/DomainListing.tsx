@@ -113,14 +113,16 @@ export default function DomainListing({ onMakeOffer }: DomainListingProps) {
   }, [filters, searchQuery]);
 
   const handleBuyNow = (domain: Domain) => {
-    // In a real implementation, this would redirect to GoDaddy
+    // Directly redirect to the domain
+    const domainUrl = `https://${domain.name}`;
+    
     toast({
-      title: "Redirecting to GoDaddy",
-      description: `You're being redirected to purchase ${domain.name}`,
+      title: "Redirecting to domain",
+      description: `You're being redirected to ${domain.name}`,
     });
     
-    // Simulate redirect with a new window
-    window.open("https://www.godaddy.com", "_blank");
+    // Open the domain in a new window
+    window.open(domainUrl, "_blank");
   };
 
   const applyFilters = () => {
