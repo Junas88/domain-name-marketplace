@@ -76,28 +76,18 @@ export default function DomainFinder() {
   };
 
   return (
-    <section id="domain-finder" className="py-16 bg-white">
+    <section id="domain-finder" className="py-16 bg-white border-t border-black">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="max-w-6xl mx-auto">
           <div className="flex flex-col md:flex-row gap-12">
-            {/* Left column: Illustration/Image */}
-            <div className="md:w-1/2">
-              <img 
-                src="https://images.unsplash.com/photo-1603201667141-5a2d4c673378?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1000&q=80" 
-                alt="Domain Consultation Service" 
-                className="rounded-lg shadow-lg w-full h-auto object-cover"
-                style={{ maxHeight: "450px" }}
-              />
-            </div>
-            
-            {/* Right column: Consultation Form */}
-            <div className="md:w-1/2">
+            {/* Domain Finder content - removed image as requested */}
+            <div className="w-full">
               <h2 className="text-3xl font-bold mb-6">Domain Name Finder Service</h2>
               <p className="text-neutral-700 mb-6">
                 Not sure which domain is right for your business? Our domain experts can help you find the perfect domain name that fits your brand and business goals.
               </p>
               
-              <Card className="bg-neutral-100">
+              <Card className="bg-white border border-black">
                 <CardContent className="p-6">
                   <h3 className="text-xl font-semibold mb-4">Book a Consultation</h3>
                   

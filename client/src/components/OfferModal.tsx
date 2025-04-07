@@ -92,14 +92,14 @@ export default function OfferModal({ isOpen, onClose, domain }: OfferModalProps)
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="sm:max-w-md">
-        <DialogHeader className="bg-primary text-white p-4 -mx-4 -mt-4 rounded-t-lg">
+      <DialogContent className="sm:max-w-md border border-black">
+        <DialogHeader className="bg-black text-white p-4 -mx-4 -mt-4 rounded-t-lg">
           <div className="flex justify-between items-center">
             <DialogTitle>Make an Offer</DialogTitle>
             <Button 
               variant="ghost" 
               onClick={onClose}
-              className="text-white hover:bg-primary/20 h-8 w-8 p-0"
+              className="text-white hover:bg-black/20 h-8 w-8 p-0"
             >
               <X size={18} />
             </Button>
@@ -178,12 +178,14 @@ export default function OfferModal({ isOpen, onClose, domain }: OfferModalProps)
                   type="button"
                   variant="outline"
                   onClick={onClose}
+                  className="border-black text-black hover:bg-neutral-100"
                 >
                   Cancel
                 </Button>
                 <Button 
                   type="submit"
                   disabled={isPending}
+                  className="bg-black text-white hover:bg-neutral-800"
                 >
                   {isPending ? "Submitting..." : "Submit Offer"}
                 </Button>

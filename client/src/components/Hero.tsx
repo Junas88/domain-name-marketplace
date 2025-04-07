@@ -32,7 +32,7 @@ export default function Hero() {
   };
 
   return (
-    <section className="bg-primary text-white py-16">
+    <section className="bg-white text-black py-16">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto text-center">
           <h1 className="text-4xl md:text-5xl font-bold mb-6">Find Your Perfect Domain Name</h1>
@@ -40,7 +40,7 @@ export default function Hero() {
           
           {/* Search Bar */}
           <form onSubmit={handleSearch} className="max-w-3xl mx-auto">
-            <div className="bg-white rounded-full overflow-hidden shadow-lg flex">
+            <div className="bg-white rounded-full overflow-hidden shadow-lg flex border border-black">
               <input 
                 type="text" 
                 placeholder="Search for domains..." 
@@ -50,7 +50,7 @@ export default function Hero() {
               />
               <button 
                 type="submit"
-                className="bg-[#ff9900] text-white px-8 py-4 font-semibold hover:bg-amber-600 transition-colors"
+                className="bg-black text-white px-8 py-4 font-semibold hover:bg-neutral-800 transition-colors"
               >
                 <Search className="mr-2 inline-block" size={18} /> Search
               </button>

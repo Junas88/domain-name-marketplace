@@ -191,13 +191,13 @@ export default function DomainListing({ onMakeOffer }: DomainListingProps) {
   };
 
   return (
-    <section id="domains" className="py-12 bg-neutral-100">
+    <section id="domains" className="py-12 bg-white border-t border-black">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <h2 className="text-3xl font-bold mb-2">Featured Domains</h2>
         <p className="text-neutral-800 mb-8">Browse our collection of premium domain names</p>
         
         {/* Filters */}
-        <Card className="mb-8">
+        <Card className="mb-8 border border-black">
           <CardContent className="p-4">
             <div className="flex flex-wrap items-center gap-4">
               <div className="w-full md:w-auto">
@@ -206,7 +206,7 @@ export default function DomainListing({ onMakeOffer }: DomainListingProps) {
                   value={filters.priceRange} 
                   onValueChange={(value) => setFilters({...filters, priceRange: value})}
                 >
-                  <SelectTrigger className="w-full md:w-48">
+                  <SelectTrigger className="w-full md:w-48 border-black">
                     <SelectValue placeholder="Any Price" />
                   </SelectTrigger>
                   <SelectContent>
@@ -225,7 +225,7 @@ export default function DomainListing({ onMakeOffer }: DomainListingProps) {
                   value={filters.category} 
                   onValueChange={(value) => setFilters({...filters, category: value})}
                 >
-                  <SelectTrigger className="w-full md:w-48">
+                  <SelectTrigger className="w-full md:w-48 border-black">
                     <SelectValue placeholder="All Categories" />
                   </SelectTrigger>
                   <SelectContent>
@@ -246,7 +246,7 @@ export default function DomainListing({ onMakeOffer }: DomainListingProps) {
                   value={filters.length} 
                   onValueChange={(value) => setFilters({...filters, length: value})}
                 >
-                  <SelectTrigger className="w-full md:w-48">
+                  <SelectTrigger className="w-full md:w-48 border-black">
                     <SelectValue placeholder="Any Length" />
                   </SelectTrigger>
                   <SelectContent>
@@ -259,7 +259,7 @@ export default function DomainListing({ onMakeOffer }: DomainListingProps) {
               </div>
               
               <div className="w-full md:w-auto md:ml-auto mt-4 md:mt-0">
-                <Button onClick={applyFilters}>
+                <Button onClick={applyFilters} className="bg-black text-white hover:bg-neutral-800">
                   Apply Filters
                 </Button>
               </div>
@@ -314,27 +314,29 @@ export default function DomainListing({ onMakeOffer }: DomainListingProps) {
             {currentDomains.map((domain) => (
               <Card 
                 key={domain.id} 
-                className="overflow-hidden transition-transform hover:shadow-md hover:-translate-y-1"
+                className="overflow-hidden transition-transform hover:shadow-md hover:-translate-y-1 border border-black"
               >
                 <CardContent className="p-6">
                   <div className="flex justify-between items-start mb-4">
                     <h3 className="text-xl font-semibold text-neutral-900">{domain.name}</h3>
-                    <span className="bg-neutral-100 text-neutral-800 px-2 py-1 rounded text-sm">
+                    <span className="bg-white border border-black text-black px-2 py-1 rounded-sm text-sm">
                       {domain.category}
                     </span>
                   </div>
                   <p className="text-neutral-700 mb-4">{domain.description}</p>
                   <div className="flex justify-between items-center">
-                    <div className="text-xl font-bold text-primary">${domain.price.toLocaleString()}</div>
+                    <div className="text-xl font-bold text-black">${domain.price.toLocaleString()}</div>
                     <div className="flex space-x-2">
                       <Button 
                         onClick={() => handleBuyNow(domain)}
+                        className="bg-black text-white hover:bg-neutral-800"
                       >
                         Buy Now
                       </Button>
                       <Button 
                         variant="outline"
                         onClick={() => onMakeOffer(domain)}
+                        className="border-black text-black hover:bg-neutral-100"
                       >
                         Make Offer
                       </Button>
