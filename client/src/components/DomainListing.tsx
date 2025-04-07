@@ -191,22 +191,28 @@ export default function DomainListing({ onMakeOffer }: DomainListingProps) {
   };
 
   return (
-    <section id="domains" className="py-12 bg-white border-t border-black">
+    <section id="domains" className="py-12 bg-white border-t border-black" aria-labelledby="domains-heading">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <h2 className="text-3xl font-bold mb-2">Featured Domains</h2>
-        <p className="text-neutral-800 mb-8">Browse our collection of premium domain names</p>
+        <h2 id="domains-heading" className="text-3xl font-bold mb-2">Premium Domains for Sale</h2>
+        <p className="text-neutral-800 mb-8">Browse our collection of premium domain names for businesses, startups, and brands</p>
+        
+        {/* Hidden keywords for SEO */}
+        <div className="sr-only">
+          Buy domains, domain marketplace, premium domains, domain names for sale, domain broker, domain auction, domain negotiation
+        </div>
         
         {/* Filters */}
         <Card className="mb-8 border border-black">
           <CardContent className="p-4">
-            <div className="flex flex-wrap items-center gap-4">
+            <div className="flex flex-wrap items-center gap-4" role="search" aria-label="Domain filter options">
               <div className="w-full md:w-auto">
-                <label className="block text-sm font-medium text-neutral-800 mb-1">Price Range</label>
+                <label htmlFor="price-range-select" className="block text-sm font-medium text-neutral-800 mb-1">Price Range</label>
                 <Select 
                   value={filters.priceRange} 
                   onValueChange={(value) => setFilters({...filters, priceRange: value})}
+                  name="price-range"
                 >
-                  <SelectTrigger className="w-full md:w-48 border-black">
+                  <SelectTrigger id="price-range-select" className="w-full md:w-48 border-black">
                     <SelectValue placeholder="Any Price" />
                   </SelectTrigger>
                   <SelectContent>
@@ -220,12 +226,13 @@ export default function DomainListing({ onMakeOffer }: DomainListingProps) {
               </div>
               
               <div className="w-full md:w-auto">
-                <label className="block text-sm font-medium text-neutral-800 mb-1">Category</label>
+                <label htmlFor="category-select" className="block text-sm font-medium text-neutral-800 mb-1">Category</label>
                 <Select 
                   value={filters.category} 
                   onValueChange={(value) => setFilters({...filters, category: value})}
+                  name="category"
                 >
-                  <SelectTrigger className="w-full md:w-48 border-black">
+                  <SelectTrigger id="category-select" className="w-full md:w-48 border-black">
                     <SelectValue placeholder="All Categories" />
                   </SelectTrigger>
                   <SelectContent>
@@ -241,12 +248,13 @@ export default function DomainListing({ onMakeOffer }: DomainListingProps) {
               </div>
               
               <div className="w-full md:w-auto">
-                <label className="block text-sm font-medium text-neutral-800 mb-1">Length</label>
+                <label htmlFor="length-select" className="block text-sm font-medium text-neutral-800 mb-1">Length</label>
                 <Select 
                   value={filters.length} 
                   onValueChange={(value) => setFilters({...filters, length: value})}
+                  name="length"
                 >
-                  <SelectTrigger className="w-full md:w-48 border-black">
+                  <SelectTrigger id="length-select" className="w-full md:w-48 border-black">
                     <SelectValue placeholder="Any Length" />
                   </SelectTrigger>
                   <SelectContent>
@@ -259,7 +267,11 @@ export default function DomainListing({ onMakeOffer }: DomainListingProps) {
               </div>
               
               <div className="w-full md:w-auto md:ml-auto mt-4 md:mt-0">
-                <Button onClick={applyFilters} className="bg-black text-white hover:bg-neutral-800">
+                <Button 
+                  onClick={applyFilters} 
+                  className="bg-black text-white hover:bg-neutral-800"
+                  aria-label="Apply domain filters"
+                >
                   Apply Filters
                 </Button>
               </div>
@@ -270,7 +282,7 @@ export default function DomainListing({ onMakeOffer }: DomainListingProps) {
         {/* Domain Grid */}
         {isLoading ? (
           // Loading skeleton
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" aria-label="Loading domains">
             {Array.from({ length: 6 }).map((_, index) => (
               <Card key={index} className="overflow-hidden">
                 <CardContent className="p-6">
@@ -292,12 +304,12 @@ export default function DomainListing({ onMakeOffer }: DomainListingProps) {
             ))}
           </div>
         ) : isError ? (
-          <div className="text-center py-10">
+          <div className="text-center py-10" role="alert" aria-live="assertive">
             <p className="text-red-500 mb-4">Error loading domains</p>
             <Button onClick={() => window.location.reload()}>Retry</Button>
           </div>
         ) : currentDomains.length === 0 ? (
-          <div className="text-center py-10">
+          <div className="text-center py-10" role="alert" aria-live="polite">
             <p className="text-lg mb-4">No domains found matching your criteria</p>
             <Button 
               onClick={() => setFilters({
@@ -305,12 +317,17 @@ export default function DomainListing({ onMakeOffer }: DomainListingProps) {
                 priceRange: "Any Price",
                 length: "Any Length",
               })}
+              aria-label="Clear all domain filters"
             >
               Clear Filters
             </Button>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div 
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" 
+            role="region" 
+            aria-label="Available domains"
+          >
             {currentDomains.map((domain) => (
               <Card 
                 key={domain.id} 
@@ -318,18 +335,24 @@ export default function DomainListing({ onMakeOffer }: DomainListingProps) {
               >
                 <CardContent className="p-6">
                   <div className="flex justify-between items-start mb-4">
-                    <h3 className="text-xl font-semibold text-neutral-900">{domain.name}</h3>
-                    <span className="bg-white border border-black text-black px-2 py-1 rounded-sm text-sm">
+                    <h3 className="text-xl font-semibold text-neutral-900">
+                      <span itemProp="name">{domain.name}</span>
+                    </h3>
+                    <span 
+                      className="bg-white border border-black text-black px-2 py-1 rounded-sm text-sm"
+                      itemProp="category"
+                    >
                       {domain.category}
                     </span>
                   </div>
-                  <p className="text-neutral-700 mb-4">{domain.description}</p>
+                  <p className="text-neutral-700 mb-4" itemProp="description">{domain.description}</p>
                   <div className="flex justify-between items-center">
-                    <div className="text-xl font-bold text-black">${domain.price.toLocaleString()}</div>
+                    <div className="text-xl font-bold text-black" itemProp="price">${domain.price.toLocaleString()}</div>
                     <div className="flex space-x-2">
                       <Button 
                         onClick={() => handleBuyNow(domain)}
                         className="bg-black text-white hover:bg-neutral-800"
+                        aria-label={`Buy ${domain.name} now for $${domain.price.toLocaleString()}`}
                       >
                         Buy Now
                       </Button>
@@ -337,6 +360,7 @@ export default function DomainListing({ onMakeOffer }: DomainListingProps) {
                         variant="outline"
                         onClick={() => onMakeOffer(domain)}
                         className="border-black text-black hover:bg-neutral-100"
+                        aria-label={`Make offer for ${domain.name}`}
                       >
                         Make Offer
                       </Button>

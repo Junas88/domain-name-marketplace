@@ -79,31 +79,36 @@ export default function DomainFinder() {
   };
 
   return (
-    <section id="domain-finder" className="py-16 bg-white border-t border-black">
+    <section id="domain-finder" className="py-16 bg-white border-t border-black" aria-labelledby="domain-finder-heading">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="max-w-6xl mx-auto">
           <div className="flex flex-col md:flex-row gap-12">
-            {/* Domain Finder content - removed image as requested */}
+            {/* Domain Finder content */}
             <div className="w-full">
-              <h2 className="text-3xl font-bold mb-6">Domain Name Finder Service</h2>
+              <h2 id="domain-finder-heading" className="text-3xl font-bold mb-6">Domain Name Finder Service for Startups and Businesses</h2>
               <p className="text-neutral-700 mb-6">
-                Not sure which domain is right for your business? Our domain experts can help you find the perfect domain name that fits your brand and business goals.
+                Not sure which domain is right for your business? Our domain experts can help you find the perfect domain name that fits your brand and business goals. We specialize in premium domain acquisition, brand-matching domains, and industry-specific domain consultations.
               </p>
+              
+              {/* Hidden SEO keywords */}
+              <div className="sr-only">
+                Domain consultation, domain finder, domain broker, premium domain acquisition, business domain names, startup domain names, domain name ideas, domain name service, domain expert, brand domains
+              </div>
               
               <Card className="bg-white border border-black">
                 <CardContent className="p-6">
-                  <h3 className="text-xl font-semibold mb-4">Book a Consultation</h3>
+                  <h3 className="text-xl font-semibold mb-4">Book a Free Domain Consultation</h3>
                   
                   <Form {...form}>
-                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4" aria-label="Domain consultation booking form">
                       <FormField
                         control={form.control}
                         name="name"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Your Name</FormLabel>
+                            <FormLabel htmlFor="name">Your Name</FormLabel>
                             <FormControl>
-                              <Input {...field} />
+                              <Input id="name" placeholder="Enter your full name" aria-required="true" {...field} />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -115,9 +120,9 @@ export default function DomainFinder() {
                         name="email"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Email Address</FormLabel>
+                            <FormLabel htmlFor="email">Email Address</FormLabel>
                             <FormControl>
-                              <Input type="email" {...field} />
+                              <Input id="email" type="email" placeholder="you@example.com" aria-required="true" {...field} />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -129,13 +134,14 @@ export default function DomainFinder() {
                         name="industry"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Your Industry</FormLabel>
+                            <FormLabel htmlFor="industry">Your Industry</FormLabel>
                             <Select 
                               onValueChange={field.onChange} 
                               defaultValue={field.value}
+                              name="industry"
                             >
                               <FormControl>
-                                <SelectTrigger>
+                                <SelectTrigger id="industry" aria-required="true">
                                   <SelectValue placeholder="Select your industry" />
                                 </SelectTrigger>
                               </FormControl>
@@ -158,9 +164,15 @@ export default function DomainFinder() {
                         name="message"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Tell us about your business</FormLabel>
+                            <FormLabel htmlFor="message">Tell us about your business</FormLabel>
                             <FormControl>
-                              <Textarea rows={4} {...field} />
+                              <Textarea 
+                                id="message" 
+                                rows={4} 
+                                placeholder="Describe your business, target audience, and what kind of domain you're looking for" 
+                                aria-required="true"
+                                {...field} 
+                              />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -172,13 +184,14 @@ export default function DomainFinder() {
                         name="budget"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Budget Range</FormLabel>
+                            <FormLabel htmlFor="budget">Budget Range</FormLabel>
                             <Select 
                               onValueChange={field.onChange} 
                               defaultValue={field.value}
+                              name="budget"
                             >
                               <FormControl>
-                                <SelectTrigger>
+                                <SelectTrigger id="budget" aria-required="true">
                                   <SelectValue placeholder="Select your budget" />
                                 </SelectTrigger>
                               </FormControl>
@@ -196,10 +209,11 @@ export default function DomainFinder() {
                       
                       <Button 
                         type="submit" 
-                        className="w-full" 
+                        className="w-full bg-black text-white hover:bg-neutral-800" 
                         disabled={isPending}
+                        aria-label="Submit consultation request"
                       >
-                        {isPending ? "Booking..." : "Book Your Consultation"}
+                        {isPending ? "Booking..." : "Book Your Free Consultation"}
                       </Button>
                     </form>
                   </Form>

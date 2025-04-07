@@ -32,25 +32,38 @@ export default function Hero() {
   };
 
   return (
-    <section className="bg-white text-black py-16">
+    <section className="bg-white text-black py-16" aria-labelledby="hero-heading">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto text-center">
-          <h1 className="text-4xl md:text-5xl font-bold mb-6">Find Your Perfect Domain Name</h1>
-          <p className="text-xl mb-8">Premium domains for your business, brand, or project.</p>
+          <h1 id="hero-heading" className="text-4xl md:text-5xl font-bold mb-6">
+            Find Your Perfect Domain Name for Your Business
+          </h1>
+          <p className="text-xl mb-8">
+            Premium domains with instant Buy-It-Now prices or make an offer. Secure the ideal domain for your startup, business, brand, or project.
+          </p>
+          
+          {/* SEO Keywords in hidden span for search engines */}
+          <span className="sr-only">
+            Domain marketplace, premium domains, buy domains, sell domains, domain broker, domain consultation, business domains, tech domains
+          </span>
           
           {/* Search Bar */}
-          <form onSubmit={handleSearch} className="max-w-3xl mx-auto">
+          <form onSubmit={handleSearch} className="max-w-3xl mx-auto" role="search" aria-label="Search domains">
             <div className="bg-white rounded-full overflow-hidden shadow-lg flex border border-black">
+              <label htmlFor="domain-search" className="sr-only">Search for domains</label>
               <input 
+                id="domain-search"
                 type="text" 
                 placeholder="Search for domains..." 
                 className="flex-grow px-6 py-4 border-none focus:outline-none text-neutral-800"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
+                aria-label="Domain search input"
               />
               <button 
                 type="submit"
                 className="bg-black text-white px-8 py-4 font-semibold hover:bg-neutral-800 transition-colors"
+                aria-label="Search domains"
               >
                 <Search className="mr-2 inline-block" size={18} /> Search
               </button>
