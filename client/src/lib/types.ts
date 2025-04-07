@@ -1,0 +1,50 @@
+export interface Domain {
+  id: number;
+  name: string;
+  description: string;
+  price: number;
+  category: string;
+  length: number;
+}
+
+export interface Offer {
+  id: number;
+  domainId: number;
+  amount: number;
+  name: string;
+  email: string;
+  message?: string;
+  createdAt: Date;
+}
+
+export interface Consultation {
+  id: number;
+  name: string;
+  email: string;
+  industry: string;
+  message: string;
+  budget: string;
+  createdAt: Date;
+}
+
+export interface DomainFilters {
+  category?: string;
+  priceRange?: string;
+  length?: string;
+}
+
+export interface OfferFormData {
+  domainId: number;
+  amount: number;
+  name: string;
+  email: string;
+  message?: string;
+}
+
+export interface ConsultationFormData {
+  name: string;
+  email: string;
+  industry: string;
+  message: string;
+  budget: string;
+}
