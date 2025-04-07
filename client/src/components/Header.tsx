@@ -31,7 +31,7 @@ export default function Header() {
             <Link href="#domains" className="text-neutral-800 hover:text-black font-medium">
               Browse Domains
             </Link>
-            <Link href="#" className="text-neutral-800 hover:text-black font-medium">
+            <Link href="/contact" className="text-neutral-800 hover:text-black font-medium">
               Contact
             </Link>
           </nav>
@@ -74,7 +74,7 @@ export default function Header() {
                 Browse Domains
               </Link>
               <Link 
-                href="#" 
+                href="/contact" 
                 className="block px-3 py-2 text-neutral-800 hover:bg-neutral-100 rounded-md"
                 onClick={() => setMobileMenuOpen(false)}
               >
