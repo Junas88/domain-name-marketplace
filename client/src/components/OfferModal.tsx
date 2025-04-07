@@ -66,7 +66,10 @@ export default function OfferModal({ isOpen, onClose, domain }: OfferModalProps)
         domainId: domain.id,
       };
       
-      const response = await apiRequest("POST", "/api/offers", offerData);
+      const response = await apiRequest("/api/offers", {
+        method: "POST",
+        body: JSON.stringify(offerData)
+      });
       return response.json();
     },
     onSuccess: () => {

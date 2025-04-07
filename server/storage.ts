@@ -23,6 +23,17 @@ export interface IStorage {
     priceRange?: string;
     length?: string;
   }): Promise<Domain[]>;
+  createDomain(domain: InsertDomain): Promise<Domain>;
+  updateDomain(id: number, domain: Partial<Domain>): Promise<Domain | undefined>;
+  deleteDomain(id: number): Promise<boolean>;
+  markDomainAsSold(id: number): Promise<Domain | undefined>;
+  incrementViewCount(id: number): Promise<Domain | undefined>;
+  getDomainStats(): Promise<{
+    totalDomains: number;
+    soldDomains: number;
+    totalViews: number;
+    domainsByCategory: Record<string, number>;
+  }>;
   
   // Offer methods
   createOffer(offer: InsertOffer): Promise<Offer>;
@@ -30,6 +41,7 @@ export interface IStorage {
   
   // Consultation methods
   createConsultation(consultation: InsertConsultation): Promise<Consultation>;
+  getAllConsultations(): Promise<Consultation[]>;
 }
 
 export class MemStorage implements IStorage {
@@ -66,6 +78,7 @@ export class MemStorage implements IStorage {
         price: 12500,
         category: "Technology",
         length: 15,
+        isSold: false,
       },
       {
         name: "healthwise.com",
@@ -73,6 +86,7 @@ export class MemStorage implements IStorage {
         price: 8900,
         category: "Health",
         length: 12,
+        isSold: false,
       },
       {
         name: "learnfast.com",
@@ -80,6 +94,7 @@ export class MemStorage implements IStorage {
         price: 5750,
         category: "Education",
         length: 10,
+        isSold: false,
       },
       {
         name: "bizgrowth.com",
@@ -87,6 +102,7 @@ export class MemStorage implements IStorage {
         price: 7200,
         category: "Business",
         length: 11,
+        isSold: false,
       },
       {
         name: "streamhub.com",
@@ -94,6 +110,7 @@ export class MemStorage implements IStorage {
         price: 14800,
         category: "Entertainment",
         length: 10,
+        isSold: false,
       },
       {
         name: "cryptoinvest.com",
@@ -101,6 +118,7 @@ export class MemStorage implements IStorage {
         price: 17500,
         category: "Finance",
         length: 13,
+        isSold: false,
       },
     ];
     
@@ -192,11 +210,64 @@ export class MemStorage implements IStorage {
     return domains;
   }
   
-  private createDomain(insertDomain: InsertDomain): Domain {
+  async createDomain(insertDomain: InsertDomain): Promise<Domain> {
     const id = this.domainIdCounter++;
-    const domain: Domain = { ...insertDomain, id };
+    const domain: Domain = { 
+      ...insertDomain, 
+      id,
+      viewCount: 0,
+      createdAt: new Date(),
+      isSold: insertDomain.isSold || false 
+    };
     this.domains.set(id, domain);
     return domain;
+  }
+  
+  async updateDomain(id: number, updates: Partial<Domain>): Promise<Domain | undefined> {
+    const domain = this.domains.get(id);
+    if (!domain) return undefined;
+    
+    const updatedDomain = { ...domain, ...updates };
+    this.domains.set(id, updatedDomain);
+    return updatedDomain;
+  }
+  
+  async deleteDomain(id: number): Promise<boolean> {
+    return this.domains.delete(id);
+  }
+  
+  async markDomainAsSold(id: number): Promise<Domain | undefined> {
+    return this.updateDomain(id, { isSold: true });
+  }
+  
+  async incrementViewCount(id: number): Promise<Domain | undefined> {
+    const domain = this.domains.get(id);
+    if (!domain) return undefined;
+    
+    return this.updateDomain(id, { viewCount: (domain.viewCount || 0) + 1 });
+  }
+  
+  async getDomainStats(): Promise<{
+    totalDomains: number;
+    soldDomains: number;
+    totalViews: number;
+    domainsByCategory: Record<string, number>;
+  }> {
+    const domains = Array.from(this.domains.values());
+    const soldDomains = domains.filter(domain => domain.isSold).length;
+    const totalViews = domains.reduce((sum, domain) => sum + (domain.viewCount || 0), 0);
+    
+    const domainsByCategory: Record<string, number> = {};
+    domains.forEach(domain => {
+      domainsByCategory[domain.category] = (domainsByCategory[domain.category] || 0) + 1;
+    });
+    
+    return {
+      totalDomains: domains.length,
+      soldDomains,
+      totalViews,
+      domainsByCategory
+    };
   }
   
   // Offer methods
@@ -205,6 +276,7 @@ export class MemStorage implements IStorage {
     const offer: Offer = {
       ...insertOffer,
       id,
+      message: insertOffer.message || null,
       createdAt: new Date(),
     };
     this.offers.set(id, offer);
@@ -227,6 +299,10 @@ export class MemStorage implements IStorage {
     };
     this.consultations.set(id, consultation);
     return consultation;
+  }
+  
+  async getAllConsultations(): Promise<Consultation[]> {
+    return Array.from(this.consultations.values());
   }
 }
 

@@ -52,7 +52,10 @@ export default function DomainFinder() {
 
   const { mutate, isPending } = useMutation({
     mutationFn: async (data: ConsultationFormValues) => {
-      const response = await apiRequest("POST", "/api/consultations", data);
+      const response = await apiRequest("/api/consultations", {
+        method: "POST",
+        body: JSON.stringify(data)
+      });
       return response.json();
     },
     onSuccess: () => {

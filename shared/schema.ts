@@ -25,6 +25,9 @@ export const domains = pgTable("domains", {
   price: integer("price").notNull(),
   category: text("category").notNull(),
   length: integer("length").notNull(),
+  isSold: boolean("is_sold").default(false).notNull(),
+  viewCount: integer("view_count").default(0).notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
 export const insertDomainSchema = createInsertSchema(domains).pick({
@@ -33,6 +36,7 @@ export const insertDomainSchema = createInsertSchema(domains).pick({
   price: true,
   category: true,
   length: true,
+  isSold: true,
 });
 
 export type InsertDomain = z.infer<typeof insertDomainSchema>;
