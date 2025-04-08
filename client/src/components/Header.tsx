@@ -64,6 +64,9 @@ export default function Header() {
             >
               Browse Domains
             </a>
+            <Link href="/guide" className="text-neutral-800 hover:text-black font-medium">
+              Investment Guide
+            </Link>
             <Link href="/contact" className="text-neutral-800 hover:text-black font-medium">
               Contact
             </Link>
@@ -113,6 +116,13 @@ export default function Header() {
               >
                 Browse Domains
               </a>
+              <Link 
+                href="/guide" 
+                className="block px-3 py-2 text-neutral-800 hover:bg-neutral-100 rounded-md"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Investment Guide
+              </Link>
               <Link 
                 href="/contact" 
                 className="block px-3 py-2 text-neutral-800 hover:bg-neutral-100 rounded-md"
