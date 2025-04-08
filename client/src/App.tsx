@@ -12,6 +12,7 @@ import FAQs from "@/pages/FAQs";
 import HowItWorks from "@/pages/HowItWorks";
 import DomainValuation from "@/pages/DomainValuation";
 import SellingStrategy from "@/pages/SellingStrategy";
+import BuyerProtection from "@/pages/BuyerProtection";
 import AdminDashboard from "@/pages/admin/Dashboard";
 import AdminLogin from "@/pages/admin/Login";
 
@@ -25,6 +26,7 @@ function Router() {
       <Route path="/how-it-works" component={HowItWorks} />
       <Route path="/domain-valuation" component={DomainValuation} />
       <Route path="/selling-strategy" component={SellingStrategy} />
+      <Route path="/buyer-protection" component={BuyerProtection} />
       <Route path="/admin/login" component={AdminLogin} />
       <ProtectedRoute path="/admin" component={AdminDashboard} />
       <Route component={NotFound} />

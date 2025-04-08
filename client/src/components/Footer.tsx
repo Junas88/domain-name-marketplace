@@ -97,7 +97,7 @@ export default function Footer() {
               <li><Link href="/domain-valuation" className="text-white hover:text-gray-300 transition-colors">Domain Valuation</Link></li>
               <li><Link href="/guide" className="text-white hover:text-gray-300 transition-colors">Domain Name Guide</Link></li>
               <li><Link href="/selling-strategy" className="text-white hover:text-gray-300 transition-colors">Selling Strategy</Link></li>
-              <li><Link href="/guide#protection" className="text-white hover:text-gray-300 transition-colors">Buyer Protection</Link></li>
+              <li><Link href="/buyer-protection" className="text-white hover:text-gray-300 transition-colors">Buyer Protection</Link></li>
               <li><Link href="/faqs" className="text-white hover:text-gray-300 transition-colors">FAQs</Link></li>
             </ul>
           </div>
