@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 import { useLocation } from "wouter";
 import { Domain, DomainFilters } from "@/lib/types";
-import { apiRequest } from "@/lib/queryClient";
+import { apiRequest, queryClient } from "@/lib/queryClient";
 import { 
   Card, 
   CardContent 
@@ -134,17 +134,33 @@ export default function DomainListing({ onMakeOffer }: DomainListingProps) {
     setCurrentPage(1);
   }, [filters, searchQuery]);
 
-  const handleBuyNow = (domain: Domain) => {
-    // Directly redirect to the domain
-    const domainUrl = `https://${domain.name}`;
-    
-    toast({
-      title: "Redirecting to domain",
-      description: `You're being redirected to ${domain.name}`,
-    });
-    
-    // Open the domain in a new window
-    window.open(domainUrl, "_blank");
+  const handleBuyNow = async (domain: Domain) => {
+    try {
+      // Mark domain as sold in the database
+      await apiRequest(`/api/admin/domains/${domain.id}/mark-sold`, {
+        method: "PATCH"
+      });
+      
+      // Invalidate the domains cache to reflect changes
+      queryClient.invalidateQueries({ queryKey: ['/api/domains'] });
+      
+      toast({
+        title: "Domain purchased!",
+        description: `You've successfully purchased ${domain.name}`,
+      });
+      
+      // Directly redirect to the domain
+      const domainUrl = `https://${domain.name}`;
+      
+      // Open the domain in a new window
+      window.open(domainUrl, "_blank");
+    } catch (error) {
+      toast({
+        title: "Purchase failed",
+        description: "There was an error processing your purchase. Please try again.",
+        variant: "destructive"
+      });
+    }
   };
 
   const applyFilters = () => {
@@ -363,33 +379,46 @@ export default function DomainListing({ onMakeOffer }: DomainListingProps) {
                     <h3 className="text-xl font-semibold text-neutral-900">
                       <span itemProp="name">{domain.name}</span>
                     </h3>
-                    <span 
-                      className={`px-2 py-1 rounded-sm text-sm font-medium ${getCategoryColor(domain.category)}`}
-                      itemProp="category"
-                    >
-                      {domain.category}
-                    </span>
+                    <div className="flex gap-2">
+                      {domain.isSold && (
+                        <span className="px-2 py-1 rounded-sm text-sm font-medium bg-red-100 text-red-800 border border-red-300">
+                          Sold
+                        </span>
+                      )}
+                      <span 
+                        className={`px-2 py-1 rounded-sm text-sm font-medium ${getCategoryColor(domain.category)}`}
+                        itemProp="category"
+                      >
+                        {domain.category}
+                      </span>
+                    </div>
                   </div>
                   <p className="text-neutral-700 mb-4" itemProp="description">{domain.description}</p>
                   <div className="flex justify-between items-center">
                     <div className="text-xl font-bold text-black" itemProp="price">${domain.price.toLocaleString()}</div>
-                    <div className="flex space-x-2">
-                      <Button 
-                        onClick={() => handleBuyNow(domain)}
-                        className="bg-black text-white hover:bg-neutral-800"
-                        aria-label={`Buy ${domain.name} now for $${domain.price.toLocaleString()}`}
-                      >
-                        Buy Now
-                      </Button>
-                      <Button 
-                        variant="outline"
-                        onClick={() => onMakeOffer(domain)}
-                        className="border-black text-black hover:bg-neutral-100"
-                        aria-label={`Make offer for ${domain.name}`}
-                      >
-                        Make Offer
-                      </Button>
-                    </div>
+                    {domain.isSold ? (
+                      <div className="text-sm text-gray-500 italic">
+                        This domain has been sold
+                      </div>
+                    ) : (
+                      <div className="flex space-x-2">
+                        <Button 
+                          onClick={() => handleBuyNow(domain)}
+                          className="bg-black text-white hover:bg-neutral-800"
+                          aria-label={`Buy ${domain.name} now for $${domain.price.toLocaleString()}`}
+                        >
+                          Buy Now
+                        </Button>
+                        <Button 
+                          variant="outline"
+                          onClick={() => onMakeOffer(domain)}
+                          className="border-black text-black hover:bg-neutral-100"
+                          aria-label={`Make offer for ${domain.name}`}
+                        >
+                          Make Offer
+                        </Button>
+                      </div>
+                    )}
                   </div>
                 </CardContent>
               </Card>

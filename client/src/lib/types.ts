@@ -5,6 +5,8 @@ export interface Domain {
   price: number;
   category: string;
   length: number;
+  isSold?: boolean;
+  viewCount?: number;
 }
 
 export interface Offer {
