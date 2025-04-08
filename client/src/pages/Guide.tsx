@@ -684,7 +684,7 @@ export default function Guide() {
               
               {/* Right Column: Ebook Mockup */}
               <div className="relative hidden lg:block">
-                <div className="absolute -top-6 -right-6 bg-green-500 text-black py-2 px-4 font-bold rounded-md transform rotate-12 z-10">
+                <div className="absolute -top-4 right-0 bg-green-500 text-black py-2 px-6 font-bold rounded-md z-10">
                   LIMITED TIME OFFER!
                 </div>
                 
@@ -692,8 +692,8 @@ export default function Guide() {
                   <div className="absolute inset-0 bg-white/5 rounded-lg backdrop-blur-sm"></div>
                   
                   <div className="relative">
-                    <div className="bg-gradient-to-br from-black to-black/70 border border-white/20 p-6 rounded-lg shadow-2xl transform -rotate-3">
-                      <div className="transform rotate-3">
+                    <div className="bg-black border border-gray-800 p-6 rounded-lg shadow-2xl">
+                      <div>
                         <div className="relative border-l-4 border-green-500 pl-6 mb-8">
                           <div className="absolute top-0 left-0 w-2 h-full bg-green-500"></div>
                           <h3 className="text-xl font-bold text-white mb-1">THE COMPLETE</h3>
