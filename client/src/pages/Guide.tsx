@@ -692,30 +692,27 @@ export default function Guide() {
                   <div className="absolute inset-0 bg-white/5 rounded-lg backdrop-blur-sm"></div>
                   
                   <div className="relative">
-                    <div className="bg-black border-4 border-white p-6 rounded-lg shadow-2xl transform -rotate-3">
+                    <div className="bg-gradient-to-br from-black to-black/70 border border-white/20 p-6 rounded-lg shadow-2xl transform -rotate-3">
                       <div className="transform rotate-3">
-                        <div className="bg-white text-black p-6 rounded-md mb-4">
-                          <h3 className="text-xl font-bold mb-2">THE COMPLETE</h3>
-                          <h2 className="text-4xl font-extrabold mb-4">DOMAIN INVESTING</h2>
-                          <h3 className="text-xl font-bold mb-4">PLAYBOOK</h3>
-                          <p className="opacity-80 text-sm border-t border-black/30 pt-2 mt-2">By TakeMyName.com Experts</p>
+                        <div className="relative border-l-4 border-green-500 pl-6 mb-8">
+                          <div className="absolute top-0 left-0 w-2 h-full bg-green-500"></div>
+                          <h3 className="text-xl font-bold text-white mb-1">THE COMPLETE</h3>
+                          <h2 className="text-4xl font-extrabold text-white mb-2">DOMAIN INVESTING</h2>
+                          <h3 className="text-xl font-bold text-green-500 mb-4">PLAYBOOK</h3>
+                          <p className="text-gray-400 text-sm">By TakeMyName.com Experts</p>
                         </div>
                         
-                        <div className="space-y-3 mb-4">
-                          <div className="flex gap-3 items-center">
-                            <div className="w-8 h-8 rounded-full bg-green-500 text-black flex items-center justify-center font-bold">1</div>
+                        <div className="space-y-4 mb-6">
+                          <div className="flex items-center gap-3 pl-2 border-l-2 border-green-500 py-1">
                             <p className="text-white">Domain Valuation Mastery</p>
                           </div>
-                          <div className="flex gap-3 items-center">
-                            <div className="w-8 h-8 rounded-full bg-green-500 text-black flex items-center justify-center font-bold">2</div>
+                          <div className="flex items-center gap-3 pl-2 border-l-2 border-green-500 py-1">
                             <p className="text-white">Acquisition Strategies</p>
                           </div>
-                          <div className="flex gap-3 items-center">
-                            <div className="w-8 h-8 rounded-full bg-green-500 text-black flex items-center justify-center font-bold">3</div>
+                          <div className="flex items-center gap-3 pl-2 border-l-2 border-green-500 py-1">
                             <p className="text-white">Portfolio Management</p>
                           </div>
-                          <div className="flex gap-3 items-center">
-                            <div className="w-8 h-8 rounded-full bg-green-500 text-black flex items-center justify-center font-bold">4</div>
+                          <div className="flex items-center gap-3 pl-2 border-l-2 border-green-500 py-1">
                             <p className="text-white">Exit & Maximizing Profits</p>
                           </div>
                         </div>
