@@ -665,11 +665,13 @@ export default function Guide() {
                         <span className="text-3xl font-bold">$29.99</span>
                         <span className="text-gray-400 line-through">$99.99</span>
                       </div>
-                      <span className="bg-red-600 text-white text-sm font-bold px-3 py-1 rounded">70% OFF</span>
+                      <span className="bg-white text-black text-sm font-bold px-3 py-1 rounded border border-gray-300">70% OFF</span>
                     </div>
                     
                     <div className="flex justify-center">
-                      <EbookPurchaseButton price={29.99} onSuccess={() => {}} />
+                      <button className="w-full bg-green-500 hover:bg-green-600 text-black font-bold py-3 px-6 rounded transition-colors">
+                        GET INSTANT ACCESS
+                      </button>
                     </div>
                     
                     <p className="text-sm text-gray-400 mt-2">
@@ -681,7 +683,7 @@ export default function Guide() {
               
               {/* Right Column: Ebook Mockup */}
               <div className="relative hidden lg:block">
-                <div className="absolute -top-4 right-0 bg-green-500 text-black py-2 px-6 font-bold rounded-lg z-10">
+                <div className="absolute -top-4 right-0 bg-white text-black py-2 px-6 font-bold rounded-lg z-10 border border-gray-300">
                   LIMITED TIME OFFER!
                 </div>
                 
@@ -689,29 +691,29 @@ export default function Guide() {
                   <div className="relative">
                     <div className="bg-black border border-gray-800 p-6 rounded-lg shadow-xl">
                       <div>
-                        <div className="border-l-4 border-green-500 pl-6 mb-8">
+                        <div className="border-l-4 border-white pl-6 mb-8">
                           <h3 className="text-xl font-bold text-white mb-1">THE COMPLETE</h3>
                           <h2 className="text-4xl font-extrabold text-white mb-2">DOMAIN INVESTING</h2>
-                          <h3 className="text-xl font-bold text-green-500 mb-4">PLAYBOOK</h3>
+                          <h3 className="text-xl font-bold text-white mb-4">PLAYBOOK</h3>
                           <p className="text-gray-400 text-sm">By TakeMyName.com Experts</p>
                         </div>
                         
                         <div className="space-y-4 mb-6">
-                          <div className="flex items-center gap-3 border-l-2 border-green-500 pl-4">
+                          <div className="flex items-center gap-3 border-l-2 border-white pl-4">
                             <p className="text-gray-300">Domain Valuation Mastery</p>
                           </div>
-                          <div className="flex items-center gap-3 border-l-2 border-green-500 pl-4">
+                          <div className="flex items-center gap-3 border-l-2 border-white pl-4">
                             <p className="text-gray-300">Acquisition Strategies</p>
                           </div>
-                          <div className="flex items-center gap-3 border-l-2 border-green-500 pl-4">
+                          <div className="flex items-center gap-3 border-l-2 border-white pl-4">
                             <p className="text-gray-300">Portfolio Management</p>
                           </div>
-                          <div className="flex items-center gap-3 border-l-2 border-green-500 pl-4">
+                          <div className="flex items-center gap-3 border-l-2 border-white pl-4">
                             <p className="text-gray-300">Exit & Maximizing Profits</p>
                           </div>
                         </div>
                         
-                        <div className="bg-green-500 text-black p-3 rounded text-center font-bold">
+                        <div className="bg-white text-black p-3 rounded text-center font-bold">
                           200+ PAGES OF EXPERT INSIGHTS
                         </div>
                       </div>
