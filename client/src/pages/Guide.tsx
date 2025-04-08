@@ -716,84 +716,181 @@ export default function Guide() {
         </section>
 
         {/* Ebook Section */}
-        <section className="py-16 bg-gradient-to-r from-gray-900 to-gray-800 text-white">
+        <section className="py-16 bg-gradient-to-br from-blue-50 via-white to-blue-50 text-gray-800">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
-              <div className="order-2 md:order-1">
-                <h2 className="text-3xl md:text-4xl font-bold mb-4">
-                  Unlock Domain Investing Secrets
-                </h2>
-                <h3 className="text-xl md:text-2xl text-gray-300 mb-6">
-                  The Ultimate Guide to Domain Name Investing & Flipping
-                </h3>
-                <div className="space-y-4 mb-8">
-                  <div className="flex items-start">
-                    <div className="flex-shrink-0 h-6 w-6 text-green-400 mt-0.5">
-                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                      </svg>
+            <div className="text-center mb-12">
+              <span className="bg-blue-100 text-blue-800 text-sm font-medium px-4 py-1.5 rounded-full">BESTSELLER</span>
+              <h2 className="text-3xl md:text-4xl font-bold mt-4 mb-3 bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-700">
+                The Domain Investor's Blueprint
+              </h2>
+              <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+                Unlock the exact strategies used by elite domain investors to find, buy, and sell profitable domains
+              </p>
+            </div>
+            
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
+              {/* Left column with mockup image and features */}
+              <div className="lg:col-span-7 order-2 lg:order-1">
+                <div className="lg:pr-8">
+                  <div className="flex items-center mb-8">
+                    <div className="flex -space-x-2 mr-4">
+                      {Array.from({length: 5}).map((_, i) => (
+                        <div key={i} className="inline-block h-10 w-10 rounded-full ring-2 ring-white bg-blue-500 text-white flex items-center justify-center text-sm font-medium">
+                          {['M', 'S', 'A', 'J', 'R'][i]}
+                        </div>
+                      ))}
                     </div>
-                    <div className="ml-3">
-                      <h4 className="text-lg font-medium">Expert Strategies</h4>
-                      <p className="text-gray-300">Learn the proven methods used by six-figure domain investors</p>
-                    </div>
-                  </div>
-                  <div className="flex items-start">
-                    <div className="flex-shrink-0 h-6 w-6 text-green-400 mt-0.5">
-                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                      </svg>
-                    </div>
-                    <div className="ml-3">
-                      <h4 className="text-lg font-medium">Valuation Techniques</h4>
-                      <p className="text-gray-300">Discover how to accurately assess domain value and potential</p>
-                    </div>
-                  </div>
-                  <div className="flex items-start">
-                    <div className="flex-shrink-0 h-6 w-6 text-green-400 mt-0.5">
-                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                      </svg>
-                    </div>
-                    <div className="ml-3">
-                      <h4 className="text-lg font-medium">Market Trends</h4>
-                      <p className="text-gray-300">Stay ahead with insights on emerging niches and technologies</p>
+                    <div>
+                      <div className="flex items-center">
+                        {Array.from({length: 5}).map((_, i) => (
+                          <svg key={i} className="h-5 w-5 text-yellow-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118l-2.8-2.034c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                          </svg>
+                        ))}
+                      </div>
+                      <p className="text-sm text-gray-600">from <span className="font-semibold">237</span> satisfied investors</p>
                     </div>
                   </div>
-                </div>
-                <div className="flex items-center space-x-4 mb-6">
-                  <p className="text-3xl font-bold">$47</p>
-                  <div className="text-sm text-gray-400 line-through">$97</div>
-                  <div className="bg-green-600 text-white text-xs font-bold px-2 py-1 rounded-sm">
-                    SAVE 52%
+                
+                  <div className="space-y-6 mb-8">
+                    <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-6 transition-transform hover:translate-y-[-5px]">
+                      <div className="flex">
+                        <div className="flex-shrink-0 h-12 w-12 bg-blue-100 rounded-full flex items-center justify-center text-blue-600">
+                          <Search className="h-6 w-6" />
+                        </div>
+                        <div className="ml-4">
+                          <h4 className="text-lg font-bold mb-1">Domain Finding Formula</h4>
+                          <p className="text-gray-600">Our proven 3-step process to discover undervalued domains with high profit potential before anyone else</p>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-6 transition-transform hover:translate-y-[-5px]">
+                      <div className="flex">
+                        <div className="flex-shrink-0 h-12 w-12 bg-green-100 rounded-full flex items-center justify-center text-green-600">
+                          <BarChart3 className="h-6 w-6" />
+                        </div>
+                        <div className="ml-4">
+                          <h4 className="text-lg font-bold mb-1">Professional Valuation Framework</h4>
+                          <p className="text-gray-600">Learn to accurately value any domain in 5 minutes using our PCMV framework (Price, Comparables, Market, Value)</p>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-6 transition-transform hover:translate-y-[-5px]">
+                      <div className="flex">
+                        <div className="flex-shrink-0 h-12 w-12 bg-indigo-100 rounded-full flex items-center justify-center text-indigo-600">
+                          <DollarSign className="h-6 w-6" />
+                        </div>
+                        <div className="ml-4">
+                          <h4 className="text-lg font-bold mb-1">6-Figure Selling System</h4>
+                          <p className="text-gray-600">The exact outreach templates and negotiation scripts that have generated over $3.2M in domain sales</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="bg-blue-50 border border-blue-100 rounded-lg p-4 mb-8">
+                    <div className="flex">
+                      <div className="flex-shrink-0">
+                        <svg className="h-5 w-5 text-blue-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                          <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                        </svg>
+                      </div>
+                      <div className="ml-3">
+                        <p className="text-sm text-blue-700">
+                          <span className="font-medium">Results vary</span> - Our average student adds $2,500-$8,000/month to their income after 90 days of implementing these strategies
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-center space-x-3 mb-2">
+                    <CheckSquare className="h-5 w-5 text-green-500" />
+                    <span className="text-gray-700">145+ Page Comprehensive Guide</span>
+                  </div>
+                  <div className="flex items-center space-x-3 mb-2">
+                    <CheckSquare className="h-5 w-5 text-green-500" />
+                    <span className="text-gray-700">Instant Digital Delivery</span>
+                  </div>
+                  <div className="flex items-center space-x-3 mb-2">
+                    <CheckSquare className="h-5 w-5 text-green-500" />
+                    <span className="text-gray-700">Free Lifetime Updates</span>
                   </div>
                 </div>
               </div>
-              <div className="order-1 md:order-2 bg-gray-900 p-8 rounded-lg border border-gray-700 shadow-xl">
-                <div className="text-center mb-6">
-                  <div className="inline-block p-4 bg-gradient-to-r from-purple-600 to-blue-500 rounded-full mb-4">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-                    </svg>
+              
+              {/* Right column with pricing and purchase */}
+              <div className="lg:col-span-5 order-1 lg:order-2">
+                <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100">
+                  <div className="bg-gradient-to-r from-blue-600 to-indigo-700 p-6 text-white text-center">
+                    <h3 className="text-2xl font-bold mb-1">Domain Investor's Blueprint</h3>
+                    <p className="text-blue-100 mb-4">Complete Digital Package</p>
+                    <div className="flex justify-center items-center">
+                      <span className="text-lg line-through text-blue-200 mr-2">$97</span>
+                      <span className="text-4xl font-bold">$47</span>
+                    </div>
+                    <p className="text-blue-200 text-sm mt-1">One-time payment, no subscription</p>
                   </div>
-                  <h3 className="text-xl font-bold mb-2">Digital Ebook</h3>
-                  <p className="text-gray-400 mb-6">Instant Download After Purchase</p>
+                  
+                  <div className="p-6">
+                    <div className="bg-green-50 border border-green-100 rounded-lg p-4 mb-6">
+                      <div className="flex">
+                        <div className="flex-shrink-0">
+                          <svg className="h-5 w-5 text-green-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                          </svg>
+                        </div>
+                        <div className="ml-3">
+                          <p className="text-sm text-green-700">
+                            <span className="font-bold">50% OFF Launch Special</span> - Price increases to $97 on April 15th
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div className="flex justify-between mb-2 text-sm border-b border-gray-100 pb-2">
+                      <span className="text-gray-600">Format:</span>
+                      <span className="font-medium">PDF (Digital)</span>
+                    </div>
+                    <div className="flex justify-between mb-2 text-sm border-b border-gray-100 pb-2">
+                      <span className="text-gray-600">Pages:</span>
+                      <span className="font-medium">145+</span>
+                    </div>
+                    <div className="flex justify-between mb-6 text-sm border-b border-gray-100 pb-2">
+                      <span className="text-gray-600">Updates:</span>
+                      <span className="font-medium">Free Lifetime</span>
+                    </div>
+                    
+                    <EbookPurchaseButton />
+                    
+                    <div className="mt-4 text-center text-xs text-gray-500 flex items-center justify-center">
+                      <svg className="h-4 w-4 mr-1" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                        <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
+                      </svg>
+                      Secure Payment
+                    </div>
+                  </div>
                 </div>
-                <div className="bg-gray-800 p-4 rounded mb-6">
-                  <div className="flex justify-between mb-2">
-                    <span>Format:</span>
-                    <span className="font-medium">PDF (Digital)</span>
-                  </div>
-                  <div className="flex justify-between mb-2">
-                    <span>Pages:</span>
-                    <span className="font-medium">145+</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Updates:</span>
-                    <span className="font-medium">Free Lifetime</span>
+                
+                <div className="mt-6 bg-white p-4 rounded-lg border border-gray-100 shadow-sm">
+                  <div className="flex">
+                    <img className="h-12 w-12 rounded-full mr-4" src="data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2248%22%20height%3D%2248%22%20viewBox%3D%220%200%2048%2048%22%3E%3Cpath%20fill%3D%22%23E0E0E0%22%20d%3D%22M24%204C12.95%204%204%2012.95%204%2024s8.95%2020%2020%2020%2020-8.95%2020-20S35.05%204%2024%204zm0%2036c-8.84%200-16-7.16-16-16S15.16%208%2024%208s16%207.16%2016%2016-7.16%2016-16%2016z%22%2F%3E%3Cpath%20fill%3D%22%23E0E0E0%22%20d%3D%22M24%2020c-2.21%200-4%201.79-4%204s1.79%204%204%204%204-1.79%204-4-1.79-4-4-4zm0-6c-5.52%200-10%204.48-10%2010s4.48%2010%2010%2010%2010-4.48%2010-10-4.48-10-10-10zm0%2018c-4.42%200-8-3.58-8-8s3.58-8%208-8%208%203.58%208%208-3.58%208-8%208z%22%2F%3E%3C%2Fsvg%3E" alt="Customer" />
+                    <div>
+                      <p className="text-sm text-gray-700">
+                        "I bought this guide last month, and I've already made two domain sales for $5,800 combined using just the outreach templates. Best investment I've made in my domain business."
+                      </p>
+                      <p className="mt-2 text-sm font-medium">— Michael T., Professional Domain Investor</p>
+                      <div className="flex mt-1">
+                        {Array.from({length: 5}).map((_, i) => (
+                          <svg key={i} className="h-4 w-4 text-yellow-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118l-2.8-2.034c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                          </svg>
+                        ))}
+                      </div>
+                    </div>
                   </div>
                 </div>
-                <EbookPurchaseButton />
               </div>
             </div>
           </div>
