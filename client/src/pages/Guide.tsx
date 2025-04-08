@@ -681,34 +681,33 @@ export default function Guide() {
               
               {/* Right Column: Ebook Mockup */}
               <div className="relative hidden lg:block">
-                <div className="absolute -top-4 right-0 bg-green-500 text-black py-2 px-6 font-bold rounded-md z-10">
+                <div className="absolute -top-4 right-0 bg-green-500 text-black py-2 px-6 font-bold rounded-lg z-10">
                   LIMITED TIME OFFER!
                 </div>
                 
                 <div className="p-8">
                   <div className="relative">
-                    <div className="bg-white border border-gray-200 p-6 rounded-lg shadow-xl">
+                    <div className="bg-black border border-gray-800 p-6 rounded-lg shadow-xl">
                       <div>
-                        <div className="relative border-l-4 border-green-500 pl-6 mb-8">
-                          <div className="absolute top-0 left-0 w-2 h-full bg-green-500"></div>
-                          <h3 className="text-xl font-bold text-gray-800 mb-1">THE COMPLETE</h3>
-                          <h2 className="text-4xl font-extrabold text-black mb-2">DOMAIN INVESTING</h2>
+                        <div className="border-l-4 border-green-500 pl-6 mb-8">
+                          <h3 className="text-xl font-bold text-white mb-1">THE COMPLETE</h3>
+                          <h2 className="text-4xl font-extrabold text-white mb-2">DOMAIN INVESTING</h2>
                           <h3 className="text-xl font-bold text-green-500 mb-4">PLAYBOOK</h3>
-                          <p className="text-gray-500 text-sm">By TakeMyName.com Experts</p>
+                          <p className="text-gray-400 text-sm">By TakeMyName.com Experts</p>
                         </div>
                         
                         <div className="space-y-4 mb-6">
-                          <div className="flex items-center gap-3 pl-2 border-l-2 border-green-500 py-1">
-                            <p className="text-gray-700">Domain Valuation Mastery</p>
+                          <div className="flex items-center gap-3 border-l-2 border-green-500 pl-4">
+                            <p className="text-gray-300">Domain Valuation Mastery</p>
                           </div>
-                          <div className="flex items-center gap-3 pl-2 border-l-2 border-green-500 py-1">
-                            <p className="text-gray-700">Acquisition Strategies</p>
+                          <div className="flex items-center gap-3 border-l-2 border-green-500 pl-4">
+                            <p className="text-gray-300">Acquisition Strategies</p>
                           </div>
-                          <div className="flex items-center gap-3 pl-2 border-l-2 border-green-500 py-1">
-                            <p className="text-gray-700">Portfolio Management</p>
+                          <div className="flex items-center gap-3 border-l-2 border-green-500 pl-4">
+                            <p className="text-gray-300">Portfolio Management</p>
                           </div>
-                          <div className="flex items-center gap-3 pl-2 border-l-2 border-green-500 py-1">
-                            <p className="text-gray-700">Exit & Maximizing Profits</p>
+                          <div className="flex items-center gap-3 border-l-2 border-green-500 pl-4">
+                            <p className="text-gray-300">Exit & Maximizing Profits</p>
                           </div>
                         </div>
                         
