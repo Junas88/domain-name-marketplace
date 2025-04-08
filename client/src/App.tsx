@@ -8,6 +8,10 @@ import NotFound from "@/pages/not-found";
 import Home from "@/pages/Home";
 import Contact from "@/pages/Contact";
 import Guide from "@/pages/Guide";
+import FAQs from "@/pages/FAQs";
+import HowItWorks from "@/pages/HowItWorks";
+import DomainValuation from "@/pages/DomainValuation";
+import SellingStrategy from "@/pages/SellingStrategy";
 import AdminDashboard from "@/pages/admin/Dashboard";
 import AdminLogin from "@/pages/admin/Login";
 
@@ -17,6 +21,10 @@ function Router() {
       <Route path="/" component={Home} />
       <Route path="/guide" component={Guide} />
       <Route path="/contact" component={Contact} />
+      <Route path="/faqs" component={FAQs} />
+      <Route path="/how-it-works" component={HowItWorks} />
+      <Route path="/domain-valuation" component={DomainValuation} />
+      <Route path="/selling-strategy" component={SellingStrategy} />
       <Route path="/admin/login" component={AdminLogin} />
       <ProtectedRoute path="/admin" component={AdminDashboard} />
       <Route component={NotFound} />

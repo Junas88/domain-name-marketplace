@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, Shield, Check } from "lucide-react";
 
 // Helper function to get colors for different categories
 const getCategoryColor = (category: string): string => {
@@ -146,7 +146,7 @@ export default function DomainListing({ onMakeOffer }: DomainListingProps) {
       
       toast({
         title: "Domain purchased!",
-        description: `You've successfully purchased ${domain.name}`,
+        description: `You've successfully purchased ${domain.name}. The transaction is securely processed through GoDaddy.`,
       });
       
       // Directly redirect to the domain
@@ -426,6 +426,37 @@ export default function DomainListing({ onMakeOffer }: DomainListingProps) {
           </div>
         )}
         
+        {/* Buyer Protection */}
+        <div className="mt-12 bg-neutral-50 border border-neutral-200 rounded-lg p-6">
+          <div className="flex items-center gap-3 mb-4">
+            <Shield className="h-6 w-6 text-green-600" />
+            <h3 className="text-xl font-semibold">Buyer Protection Guarantee</h3>
+          </div>
+          <p className="text-neutral-700 mb-4">
+            All domain purchases on TakeMyName.com are securely processed through GoDaddy, 
+            the world's largest domain registrar. This ensures your transaction is protected 
+            and the domain transfer is handled professionally.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 text-sm">
+            <div className="flex items-center gap-2">
+              <Check className="h-5 w-5 text-green-600" />
+              <span>Secure payments</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Check className="h-5 w-5 text-green-600" />
+              <span>Escrow service</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Check className="h-5 w-5 text-green-600" />
+              <span>Guaranteed transfers</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Check className="h-5 w-5 text-green-600" />
+              <span>Fraud prevention</span>
+            </div>
+          </div>
+        </div>
+
         {/* Pagination */}
         {renderPagination()}
       </div>
