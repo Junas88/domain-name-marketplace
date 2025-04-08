@@ -4,6 +4,7 @@ import Hero from "@/components/Hero";
 import DomainListing from "@/components/DomainListing";
 import DomainFinder from "@/components/DomainFinder";
 import Features from "@/components/Features";
+import Reviews from "@/components/Reviews";
 import Footer from "@/components/Footer";
 import OfferModal from "@/components/OfferModal";
 import { Domain } from "@/lib/types";
@@ -29,6 +30,7 @@ export default function Home() {
       <DomainListing onMakeOffer={handleMakeOffer} />
       <DomainFinder />
       <Features />
+      <Reviews />
       <Footer />
       <OfferModal 
         isOpen={isOfferModalOpen}
