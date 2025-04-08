@@ -40,10 +40,20 @@ export default function Header() {
           </div>
 
           {/* Navigation - Desktop */}
-          <nav className="hidden md:flex space-x-6">
+          <nav className="hidden md:flex space-x-8">
             <Link href="/" className="text-neutral-800 hover:text-black font-medium">
               Home
             </Link>
+            <a 
+              href="#domain-finder" 
+              className="text-neutral-800 hover:text-black font-medium cursor-pointer"
+              onClick={(e) => {
+                e.preventDefault();
+                scrollToSection("domain-finder");
+              }}
+            >
+              Domain Finder
+            </a>
             <a 
               href="#domains" 
               className="text-neutral-800 hover:text-black font-medium cursor-pointer"
@@ -54,17 +64,8 @@ export default function Header() {
             >
               Browse Domains
             </a>
-            <Link href="/how-it-works" className="text-neutral-800 hover:text-black font-medium">
-              How It Works
-            </Link>
-            <Link href="/domain-valuation" className="text-neutral-800 hover:text-black font-medium">
-              Domain Valuation
-            </Link>
-            <Link href="/selling-strategy" className="text-neutral-800 hover:text-black font-medium">
-              Selling
-            </Link>
-            <Link href="/faqs" className="text-neutral-800 hover:text-black font-medium">
-              FAQs
+            <Link href="/guide" className="text-neutral-800 hover:text-black font-medium">
+              Domain Guide
             </Link>
             <Link href="/contact" className="text-neutral-800 hover:text-black font-medium">
               Contact
@@ -96,6 +97,16 @@ export default function Header() {
                 Home
               </Link>
               <a 
+                href="#domain-finder" 
+                className="block px-3 py-2 text-neutral-800 hover:bg-neutral-100 rounded-md cursor-pointer"
+                onClick={(e) => {
+                  e.preventDefault();
+                  scrollToSection("domain-finder");
+                }}
+              >
+                Domain Finder
+              </a>
+              <a 
                 href="#domains" 
                 className="block px-3 py-2 text-neutral-800 hover:bg-neutral-100 rounded-md cursor-pointer"
                 onClick={(e) => {
@@ -106,32 +117,11 @@ export default function Header() {
                 Browse Domains
               </a>
               <Link 
-                href="/how-it-works" 
+                href="/guide" 
                 className="block px-3 py-2 text-neutral-800 hover:bg-neutral-100 rounded-md"
                 onClick={() => setMobileMenuOpen(false)}
               >
-                How It Works
-              </Link>
-              <Link 
-                href="/domain-valuation" 
-                className="block px-3 py-2 text-neutral-800 hover:bg-neutral-100 rounded-md"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                Domain Valuation
-              </Link>
-              <Link 
-                href="/selling-strategy" 
-                className="block px-3 py-2 text-neutral-800 hover:bg-neutral-100 rounded-md"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                Selling
-              </Link>
-              <Link 
-                href="/faqs" 
-                className="block px-3 py-2 text-neutral-800 hover:bg-neutral-100 rounded-md"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                FAQs
+                Domain Guide
               </Link>
               <Link 
                 href="/contact" 
