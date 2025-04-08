@@ -35,7 +35,7 @@ export default function Header() {
           <div className="flex items-center">
             {/* Logo */}
             <Link href="/" className="flex items-center">
-              <span className="text-black font-bold text-2xl">TakeMyDomain</span>
+              <span className="text-black font-bold text-2xl">TakeMyName</span>
             </Link>
           </div>
 

@@ -193,8 +193,8 @@ export default function Contact() {
                       <Mail className="text-black mt-1 mr-4 shrink-0" size={20} />
                       <div>
                         <h3 className="text-lg font-medium">Email Us</h3>
-                        <p className="text-neutral-700">support@domainhub.com</p>
-                        <p className="text-neutral-700">sales@domainhub.com</p>
+                        <p className="text-neutral-700">support@takemyname.com</p>
+                        <p className="text-neutral-700">sales@takemyname.com</p>
                       </div>
                     </div>
                     
