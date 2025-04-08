@@ -716,11 +716,11 @@ export default function Guide() {
         </section>
 
         {/* Ebook Section */}
-        <section className="py-16 bg-gradient-to-br from-blue-50 via-white to-blue-50 text-gray-800">
+        <section className="py-16 bg-gradient-to-br from-gray-50 via-white to-gray-50 text-gray-800">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-12">
-              <span className="bg-blue-100 text-blue-800 text-sm font-medium px-4 py-1.5 rounded-full">BESTSELLER</span>
-              <h2 className="text-3xl md:text-4xl font-bold mt-4 mb-3 bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-700">
+              <span className="bg-black text-white text-sm font-medium px-4 py-1.5 rounded-full">BESTSELLER</span>
+              <h2 className="text-3xl md:text-4xl font-bold mt-4 mb-3 text-black">
                 The Domain Investor's Blueprint
               </h2>
               <p className="text-xl text-gray-600 max-w-3xl mx-auto">
@@ -735,7 +735,7 @@ export default function Guide() {
                   <div className="flex items-center mb-8">
                     <div className="flex -space-x-2 mr-4">
                       {Array.from({length: 5}).map((_, i) => (
-                        <div key={i} className="inline-block h-10 w-10 rounded-full ring-2 ring-white bg-blue-500 text-white flex items-center justify-center text-sm font-medium">
+                        <div key={i} className="inline-block h-10 w-10 rounded-full ring-2 ring-white bg-black text-white flex items-center justify-center text-sm font-medium">
                           {['M', 'S', 'A', 'J', 'R'][i]}
                         </div>
                       ))}
@@ -755,7 +755,7 @@ export default function Guide() {
                   <div className="space-y-6 mb-8">
                     <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-6 transition-transform hover:translate-y-[-5px]">
                       <div className="flex">
-                        <div className="flex-shrink-0 h-12 w-12 bg-blue-100 rounded-full flex items-center justify-center text-blue-600">
+                        <div className="flex-shrink-0 h-12 w-12 bg-gray-100 rounded-full flex items-center justify-center text-black">
                           <Search className="h-6 w-6" />
                         </div>
                         <div className="ml-4">
@@ -779,7 +779,7 @@ export default function Guide() {
                     
                     <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-6 transition-transform hover:translate-y-[-5px]">
                       <div className="flex">
-                        <div className="flex-shrink-0 h-12 w-12 bg-indigo-100 rounded-full flex items-center justify-center text-indigo-600">
+                        <div className="flex-shrink-0 h-12 w-12 bg-gray-100 rounded-full flex items-center justify-center text-black">
                           <DollarSign className="h-6 w-6" />
                         </div>
                         <div className="ml-4">
@@ -790,15 +790,15 @@ export default function Guide() {
                     </div>
                   </div>
                   
-                  <div className="bg-blue-50 border border-blue-100 rounded-lg p-4 mb-8">
+                  <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-8">
                     <div className="flex">
                       <div className="flex-shrink-0">
-                        <svg className="h-5 w-5 text-blue-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                        <svg className="h-5 w-5 text-gray-700" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                           <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
                         </svg>
                       </div>
                       <div className="ml-3">
-                        <p className="text-sm text-blue-700">
+                        <p className="text-sm text-gray-700">
                           <span className="font-medium">Results vary</span> - Our average student adds $2,500-$8,000/month to their income after 90 days of implementing these strategies
                         </p>
                       </div>
@@ -823,14 +823,14 @@ export default function Guide() {
               {/* Right column with pricing and purchase */}
               <div className="lg:col-span-5 order-1 lg:order-2">
                 <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100">
-                  <div className="bg-gradient-to-r from-blue-600 to-indigo-700 p-6 text-white text-center">
+                  <div className="bg-black p-6 text-white text-center">
                     <h3 className="text-2xl font-bold mb-1">Domain Investor's Blueprint</h3>
-                    <p className="text-blue-100 mb-4">Complete Digital Package</p>
+                    <p className="text-gray-300 mb-4">Complete Digital Package</p>
                     <div className="flex justify-center items-center">
-                      <span className="text-lg line-through text-blue-200 mr-2">$97</span>
+                      <span className="text-lg line-through text-gray-400 mr-2">$97</span>
                       <span className="text-4xl font-bold">$47</span>
                     </div>
-                    <p className="text-blue-200 text-sm mt-1">One-time payment, no subscription</p>
+                    <p className="text-gray-400 text-sm mt-1">One-time payment, no subscription</p>
                   </div>
                   
                   <div className="p-6">
