@@ -593,7 +593,7 @@ export default function Guide() {
         </div>
       </section>
       {/* High-Converting Ebook CTA Section */}
-      <section className="py-16 bg-black text-white">
+      <section className="py-16 bg-white text-gray-800">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-7xl mx-auto">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
@@ -602,7 +602,7 @@ export default function Guide() {
                 <div>
                   <span className="bg-green-500 text-black font-bold py-1 px-3 rounded-full text-sm mb-4 inline-block">EXCLUSIVE OFFER</span>
                   <h2 className="text-4xl md:text-5xl font-bold leading-tight mt-2">Unlock Domain Investment Secrets</h2>
-                  <p className="text-xl mt-4 text-gray-300">Turn your domain knowledge into profitable investments with our complete expert guide</p>
+                  <p className="text-xl mt-4 text-gray-600">Turn your domain knowledge into profitable investments with our complete expert guide</p>
                 </div>
                 
                 <div className="space-y-5">
@@ -610,25 +610,25 @@ export default function Guide() {
                     <div className="bg-green-500 rounded-full p-1 flex-shrink-0">
                       <CheckSquare className="h-4 w-4 text-black" />
                     </div>
-                    <span className="text-lg">200+ pages of expert domain investment strategies</span>
+                    <span className="text-lg text-gray-700">200+ pages of expert domain investment strategies</span>
                   </div>
                   <div className="flex items-center gap-3">
                     <div className="bg-green-500 rounded-full p-1 flex-shrink-0">
                       <CheckSquare className="h-4 w-4 text-black" />
                     </div>
-                    <span className="text-lg">25 real-world case studies with 6-figure returns</span>
+                    <span className="text-lg text-gray-700">25 real-world case studies with 6-figure returns</span>
                   </div>
                   <div className="flex items-center gap-3">
                     <div className="bg-green-500 rounded-full p-1 flex-shrink-0">
                       <CheckSquare className="h-4 w-4 text-black" />
                     </div>
-                    <span className="text-lg">Step-by-step domain valuation worksheets</span>
+                    <span className="text-lg text-gray-700">Step-by-step domain valuation worksheets</span>
                   </div>
                   <div className="flex items-center gap-3">
                     <div className="bg-green-500 rounded-full p-1 flex-shrink-0">
                       <CheckSquare className="h-4 w-4 text-black" />
                     </div>
-                    <span className="text-lg">Exclusive access to our private investor community</span>
+                    <span className="text-lg text-gray-700">Exclusive access to our private investor community</span>
                   </div>
                 </div>
                 
@@ -644,17 +644,17 @@ export default function Guide() {
                     <span className="text-lg font-medium">4.9/5 stars from 250+ readers</span>
                   </div>
                   
-                  <div className="bg-white/10 p-5 rounded-lg border border-white/20">
-                    <p className="italic text-gray-200">
+                  <div className="bg-gray-50 p-5 rounded-lg border border-gray-200">
+                    <p className="italic text-gray-700">
                       "The strategies in this guide helped me acquire and flip a premium domain for a $37,500 profit in just 90 days. The ROI calculator alone is worth 10x the price."
                     </p>
                     <div className="mt-4 flex items-center">
-                      <div className="h-10 w-10 rounded-full bg-gray-600 flex items-center justify-center text-white font-bold">
+                      <div className="h-10 w-10 rounded-full bg-green-500 flex items-center justify-center text-white font-bold">
                         MT
                       </div>
                       <div className="ml-3">
-                        <p className="font-medium">Michael T.</p>
-                        <p className="text-sm text-gray-400">Domain Investor, New York</p>
+                        <p className="font-medium text-gray-800">Michael T.</p>
+                        <p className="text-sm text-gray-500">Domain Investor, New York</p>
                       </div>
                     </div>
                   </div>
@@ -668,11 +668,8 @@ export default function Guide() {
                       <span className="bg-red-600 text-white text-sm font-bold px-3 py-1 rounded">70% OFF</span>
                     </div>
                     
-                    <div className="flex flex-col sm:flex-row gap-4">
+                    <div className="flex justify-center">
                       <EbookPurchaseButton price={29.99} onSuccess={() => {}} />
-                      <button className="text-white border border-white/30 hover:bg-white/10 px-6 py-3 rounded-md transition duration-200 font-medium text-center">
-                        Learn More
-                      </button>
                     </div>
                     
                     <p className="text-sm text-gray-400 mt-2">
@@ -688,32 +685,30 @@ export default function Guide() {
                   LIMITED TIME OFFER!
                 </div>
                 
-                <div className="relative bg-gradient-to-br from-white/5 to-white/10 p-8 rounded-lg border border-white/20 shadow-xl">
-                  <div className="absolute inset-0 bg-white/5 rounded-lg backdrop-blur-sm"></div>
-                  
+                <div className="p-8">
                   <div className="relative">
-                    <div className="bg-black border border-gray-800 p-6 rounded-lg shadow-2xl">
+                    <div className="bg-white border border-gray-200 p-6 rounded-lg shadow-xl">
                       <div>
                         <div className="relative border-l-4 border-green-500 pl-6 mb-8">
                           <div className="absolute top-0 left-0 w-2 h-full bg-green-500"></div>
-                          <h3 className="text-xl font-bold text-white mb-1">THE COMPLETE</h3>
-                          <h2 className="text-4xl font-extrabold text-white mb-2">DOMAIN INVESTING</h2>
+                          <h3 className="text-xl font-bold text-gray-800 mb-1">THE COMPLETE</h3>
+                          <h2 className="text-4xl font-extrabold text-black mb-2">DOMAIN INVESTING</h2>
                           <h3 className="text-xl font-bold text-green-500 mb-4">PLAYBOOK</h3>
-                          <p className="text-gray-400 text-sm">By TakeMyName.com Experts</p>
+                          <p className="text-gray-500 text-sm">By TakeMyName.com Experts</p>
                         </div>
                         
                         <div className="space-y-4 mb-6">
                           <div className="flex items-center gap-3 pl-2 border-l-2 border-green-500 py-1">
-                            <p className="text-white">Domain Valuation Mastery</p>
+                            <p className="text-gray-700">Domain Valuation Mastery</p>
                           </div>
                           <div className="flex items-center gap-3 pl-2 border-l-2 border-green-500 py-1">
-                            <p className="text-white">Acquisition Strategies</p>
+                            <p className="text-gray-700">Acquisition Strategies</p>
                           </div>
                           <div className="flex items-center gap-3 pl-2 border-l-2 border-green-500 py-1">
-                            <p className="text-white">Portfolio Management</p>
+                            <p className="text-gray-700">Portfolio Management</p>
                           </div>
                           <div className="flex items-center gap-3 pl-2 border-l-2 border-green-500 py-1">
-                            <p className="text-white">Exit & Maximizing Profits</p>
+                            <p className="text-gray-700">Exit & Maximizing Profits</p>
                           </div>
                         </div>
                         
@@ -722,9 +717,7 @@ export default function Guide() {
                         </div>
                       </div>
                     </div>
-                    
-                    <div className="absolute -bottom-4 -right-4 bg-white/20 h-full w-full rounded-lg -z-10"></div>
-                    <div className="absolute -bottom-8 -right-8 bg-white/10 h-full w-full rounded-lg -z-20"></div>
+
                   </div>
                 </div>
               </div>
