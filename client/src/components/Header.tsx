@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation } from "wouter";
-import { Menu, X, Book, Shield, Info, HelpCircle, BarChart3, Phone } from "lucide-react";
+import { Menu, X } from "lucide-react";
 
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -41,51 +41,43 @@ export default function Header() {
 
           {/* Navigation - Desktop */}
           <nav className="hidden md:flex space-x-6">
-            <Link href="/" className="text-neutral-800 hover:text-black font-medium flex items-center gap-1">
-              <Info className="h-4 w-4" />
-              <span>Home</span>
+            <Link href="/" className="text-neutral-800 hover:text-black font-medium">
+              Home
             </Link>
             <a 
               href="#domain-finder" 
-              className="text-neutral-800 hover:text-black font-medium cursor-pointer flex items-center gap-1"
+              className="text-neutral-800 hover:text-black font-medium cursor-pointer"
               onClick={(e) => {
                 e.preventDefault();
                 scrollToSection("domain-finder");
               }}
             >
-              <BarChart3 className="h-4 w-4" />
-              <span>Domain Finder</span>
+              Domain Finder
             </a>
             <a 
               href="#domains" 
-              className="text-neutral-800 hover:text-black font-medium cursor-pointer flex items-center gap-1"
+              className="text-neutral-800 hover:text-black font-medium cursor-pointer"
               onClick={(e) => {
                 e.preventDefault();
                 scrollToSection("domains");
               }}
             >
-              <BarChart3 className="h-4 w-4" />
-              <span>Browse Domains</span>
+              Browse Domains
             </a>
-            <Link href="/how-it-works" className="text-neutral-800 hover:text-black font-medium flex items-center gap-1">
-              <Info className="h-4 w-4" />
-              <span>How It Works</span>
+            <Link href="/how-it-works" className="text-neutral-800 hover:text-black font-medium">
+              How It Works
             </Link>
-            <Link href="/guide" className="text-neutral-800 hover:text-black font-medium flex items-center gap-1">
-              <Book className="h-4 w-4" />
-              <span>Domain Guide</span>
+            <Link href="/guide" className="text-neutral-800 hover:text-black font-medium">
+              Domain Guide
             </Link>
-            <Link href="/buyer-protection" className="text-neutral-800 hover:text-black font-medium flex items-center gap-1">
-              <Shield className="h-4 w-4" />
-              <span>Buyer Protection</span>
+            <Link href="/buyer-protection" className="text-neutral-800 hover:text-black font-medium">
+              Buyer Protection
             </Link>
-            <Link href="/faqs" className="text-neutral-800 hover:text-black font-medium flex items-center gap-1">
-              <HelpCircle className="h-4 w-4" />
-              <span>FAQs</span>
+            <Link href="/faqs" className="text-neutral-800 hover:text-black font-medium">
+              FAQs
             </Link>
-            <Link href="/contact" className="text-neutral-800 hover:text-black font-medium flex items-center gap-1">
-              <Phone className="h-4 w-4" />
-              <span>Contact</span>
+            <Link href="/contact" className="text-neutral-800 hover:text-black font-medium">
+              Contact
             </Link>
           </nav>
 
@@ -108,73 +100,65 @@ export default function Header() {
             <div className="py-3 space-y-2">
               <Link 
                 href="/" 
-                className="flex items-center gap-2 px-3 py-2 text-neutral-800 hover:bg-neutral-100 rounded-md"
+                className="block px-3 py-2 text-neutral-800 hover:bg-neutral-100 rounded-md"
                 onClick={() => setMobileMenuOpen(false)}
               >
-                <Info className="h-4 w-4" />
-                <span>Home</span>
+                Home
               </Link>
               <a 
                 href="#domain-finder" 
-                className="flex items-center gap-2 px-3 py-2 text-neutral-800 hover:bg-neutral-100 rounded-md cursor-pointer"
+                className="block px-3 py-2 text-neutral-800 hover:bg-neutral-100 rounded-md cursor-pointer"
                 onClick={(e) => {
                   e.preventDefault();
                   scrollToSection("domain-finder");
                 }}
               >
-                <BarChart3 className="h-4 w-4" />
-                <span>Domain Finder</span>
+                Domain Finder
               </a>
               <a 
                 href="#domains" 
-                className="flex items-center gap-2 px-3 py-2 text-neutral-800 hover:bg-neutral-100 rounded-md cursor-pointer"
+                className="block px-3 py-2 text-neutral-800 hover:bg-neutral-100 rounded-md cursor-pointer"
                 onClick={(e) => {
                   e.preventDefault();
                   scrollToSection("domains");
                 }}
               >
-                <BarChart3 className="h-4 w-4" />
-                <span>Browse Domains</span>
+                Browse Domains
               </a>
               <Link 
                 href="/how-it-works" 
-                className="flex items-center gap-2 px-3 py-2 text-neutral-800 hover:bg-neutral-100 rounded-md"
+                className="block px-3 py-2 text-neutral-800 hover:bg-neutral-100 rounded-md"
                 onClick={() => setMobileMenuOpen(false)}
               >
-                <Info className="h-4 w-4" />
-                <span>How It Works</span>
+                How It Works
               </Link>
               <Link 
                 href="/guide" 
-                className="flex items-center gap-2 px-3 py-2 text-neutral-800 hover:bg-neutral-100 rounded-md"
+                className="block px-3 py-2 text-neutral-800 hover:bg-neutral-100 rounded-md"
                 onClick={() => setMobileMenuOpen(false)}
               >
-                <Book className="h-4 w-4" />
-                <span>Domain Guide</span>
+                Domain Guide
               </Link>
               <Link 
                 href="/buyer-protection" 
-                className="flex items-center gap-2 px-3 py-2 text-neutral-800 hover:bg-neutral-100 rounded-md"
+                className="block px-3 py-2 text-neutral-800 hover:bg-neutral-100 rounded-md"
                 onClick={() => setMobileMenuOpen(false)}
               >
-                <Shield className="h-4 w-4" />
-                <span>Buyer Protection</span>
+                Buyer Protection
               </Link>
               <Link 
                 href="/faqs" 
-                className="flex items-center gap-2 px-3 py-2 text-neutral-800 hover:bg-neutral-100 rounded-md"
+                className="block px-3 py-2 text-neutral-800 hover:bg-neutral-100 rounded-md"
                 onClick={() => setMobileMenuOpen(false)}
               >
-                <HelpCircle className="h-4 w-4" />
-                <span>FAQs</span>
+                FAQs
               </Link>
               <Link 
                 href="/contact" 
-                className="flex items-center gap-2 px-3 py-2 text-neutral-800 hover:bg-neutral-100 rounded-md"
+                className="block px-3 py-2 text-neutral-800 hover:bg-neutral-100 rounded-md"
                 onClick={() => setMobileMenuOpen(false)}
               >
-                <Phone className="h-4 w-4" />
-                <span>Contact</span>
+                Contact
               </Link>
             </div>
           </div>
