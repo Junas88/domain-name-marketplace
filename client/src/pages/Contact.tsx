@@ -5,8 +5,7 @@ import { z } from "zod";
 import { useMutation } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
+import Layout from "@/components/Layout";
 
 import {
   Form,
@@ -79,15 +78,27 @@ export default function Contact() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col">
-      <Header />
+    <Layout>
+      <div className="bg-white">
+        {/* Hero Section */}
+        <section className="py-12 md:py-16 lg:py-20 bg-black text-white">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="max-w-4xl mx-auto text-center">
+              <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 flex items-center justify-center">
+                <Mail className="mr-3 h-10 w-10 text-green-500" />
+                Contact Us
+              </h1>
+              <p className="text-lg md:text-xl opacity-90 mb-8">
+                Get in touch with our team for any questions or inquiries
+              </p>
+            </div>
+          </div>
+        </section>
       
-      <main className="flex-grow">
-        <section className="py-16 bg-white">
+        {/* Contact Form and Info */}
+        <section className="py-16">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="max-w-6xl mx-auto">
-              <h1 className="text-4xl font-bold mb-8">Contact Us</h1>
-              
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
                 {/* Contact Form */}
                 <div>
@@ -251,9 +262,7 @@ export default function Contact() {
             </div>
           </div>
         </section>
-      </main>
-      
-      <Footer />
-    </div>
+      </div>
+    </Layout>
   );
 }

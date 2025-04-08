@@ -7,6 +7,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
 import Layout from "@/components/Layout";
+import { HelpCircle } from "lucide-react";
 
 export default function FAQs() {
   const faqs = [
@@ -56,12 +57,17 @@ export default function FAQs() {
     <Layout>
       <div className="bg-white">
         {/* Hero Section */}
-        <section className="py-16 bg-neutral-50 border-b border-neutral-200">
+        <section className="py-12 md:py-16 lg:py-20 bg-black text-white">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-            <h1 className="text-4xl md:text-5xl font-bold text-center mb-6">Frequently Asked Questions</h1>
-            <p className="text-lg text-center text-neutral-600 max-w-3xl mx-auto">
-              Find answers to the most common questions about domain purchasing, selling, and transferring on TakeMyName.com.
-            </p>
+            <div className="max-w-4xl mx-auto text-center">
+              <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 flex items-center justify-center">
+                <HelpCircle className="mr-3 h-10 w-10 text-green-500" />
+                Frequently Asked Questions
+              </h1>
+              <p className="text-lg md:text-xl opacity-90 mb-8">
+                Find answers to the most common questions about domain purchasing, selling, and transferring on TakeMyName.com
+              </p>
+            </div>
           </div>
         </section>
         
