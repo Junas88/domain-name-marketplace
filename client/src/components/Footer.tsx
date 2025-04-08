@@ -84,7 +84,7 @@ export default function Footer() {
                   Domain Finder
                 </a>
               </li>
-              <li><Link href="/guide" className="text-white hover:text-gray-300 transition-colors">Investment Guide</Link></li>
+              <li><Link href="/guide" className="text-white hover:text-gray-300 transition-colors">Domain Guide</Link></li>
               <li><Link href="/contact" className="text-white hover:text-gray-300 transition-colors">Contact Us</Link></li>
               <li><Link href="#" className="text-white hover:text-gray-300 transition-colors">How It Works</Link></li>
             </ul>
@@ -95,7 +95,7 @@ export default function Footer() {
             <h3 className="text-lg font-semibold mb-4">Resources</h3>
             <ul className="space-y-2">
               <li><Link href="#" className="text-white hover:text-gray-300 transition-colors">Domain Valuation</Link></li>
-              <li><Link href="/guide" className="text-white hover:text-gray-300 transition-colors">Domain Investment Guide</Link></li>
+              <li><Link href="/guide" className="text-white hover:text-gray-300 transition-colors">Domain Name Guide</Link></li>
               <li><Link href="/guide#selling" className="text-white hover:text-gray-300 transition-colors">Selling Strategy</Link></li>
               <li><Link href="#" className="text-white hover:text-gray-300 transition-colors">Buyer Protection</Link></li>
               <li><Link href="#" className="text-white hover:text-gray-300 transition-colors">FAQs</Link></li>

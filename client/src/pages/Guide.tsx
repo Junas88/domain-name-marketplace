@@ -27,10 +27,10 @@ export default function Guide() {
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="max-w-4xl mx-auto text-center">
               <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4">
-                Domain Name Investment Guide
+                Domain Name Guide
               </h1>
               <p className="text-lg md:text-xl opacity-90 mb-8">
-                Expert insights and strategies for investing in valuable domain names
+                Expert insights and strategies for buying, valuing, and selling domain names
               </p>
             </div>
           </div>
@@ -44,7 +44,7 @@ export default function Guide() {
                 <TabsTrigger value="buying">Buying Guide</TabsTrigger>
                 <TabsTrigger value="value">Value Factors</TabsTrigger>
                 <TabsTrigger value="trends">Market Trends</TabsTrigger>
-                <TabsTrigger value="investment">Investment Tips</TabsTrigger>
+                <TabsTrigger value="investment">Domain Tips</TabsTrigger>
                 <TabsTrigger value="selling">Selling Strategy</TabsTrigger>
               </TabsList>
 
@@ -392,13 +392,13 @@ export default function Guide() {
                 <div className="border border-black p-6 rounded-sm">
                   <h2 className="text-2xl font-bold mb-6 flex items-center">
                     <Briefcase className="mr-2 h-6 w-6" />
-                    Domain Investment Strategy
+                    Domain Management Tips
                   </h2>
                   
                   <div className="space-y-8">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div className="border border-gray-200 p-5 rounded-sm">
-                        <h3 className="text-lg font-semibold mb-3">Portfolio Diversification</h3>
+                        <h3 className="text-lg font-semibold mb-3">Domain Diversification</h3>
                         <ul className="space-y-2 text-gray-700">
                           <li className="flex items-start">
                             <Award className="mr-2 h-4 w-4 text-purple-600 mt-1" />
@@ -420,7 +420,7 @@ export default function Guide() {
                       </div>
 
                       <div className="border border-gray-200 p-5 rounded-sm">
-                        <h3 className="text-lg font-semibold mb-3">Investment Timeframes</h3>
+                        <h3 className="text-lg font-semibold mb-3">Domain Timeframes</h3>
                         <ul className="space-y-2 text-gray-700">
                           <li className="flex items-start">
                             <Clock className="mr-2 h-4 w-4 text-blue-600 mt-1" />
@@ -443,7 +443,7 @@ export default function Guide() {
                     </div>
 
                     <div className="border border-gray-200 p-5 rounded-sm">
-                      <h3 className="text-lg font-semibold mb-4">Risk Management For Domain Investors</h3>
+                      <h3 className="text-lg font-semibold mb-4">Risk Management For Domain Owners</h3>
                       
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
@@ -500,9 +500,9 @@ export default function Guide() {
                     </div>
 
                     <div className="bg-gray-50 p-5 border border-gray-200 rounded-sm">
-                      <h3 className="text-lg font-semibold mb-4">Expert Investment Framework</h3>
+                      <h3 className="text-lg font-semibold mb-4">Expert Domain Framework</h3>
                       <p className="text-gray-700 mb-4">
-                        Successful domain investors follow the ACQUIRE method for consistent returns:
+                        Successful domain owners follow the ACQUIRE method for optimal domain management:
                       </p>
                       <ul className="space-y-3">
                         <li className="flex">
@@ -717,7 +717,7 @@ export default function Guide() {
         {/* Call to action */}
         <section className="py-12 bg-black text-white">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <h2 className="text-2xl font-bold mb-4">Ready to Start Your Domain Investment Journey?</h2>
+            <h2 className="text-2xl font-bold mb-4">Ready to Find Your Perfect Domain Name?</h2>
             <p className="max-w-2xl mx-auto mb-8">
               Browse our premium domain portfolio or get personalized assistance from our domain experts.
             </p>
