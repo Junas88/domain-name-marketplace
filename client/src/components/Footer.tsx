@@ -25,8 +25,8 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Company Info */}
           <div>
-            <h3 className="text-xl font-bold mb-4">TakeMyName</h3>
-            <p className="text-white mb-4">Your trusted marketplace for premium domain names.</p>
+            <h3 className="text-xl font-bold mb-4">DomainnameGuide.com</h3>
+            <p className="text-white mb-4">Your trusted resource for premium domain names.</p>
             <div className="flex space-x-4">
               <a href="#" className="text-white hover:text-gray-300 transition-colors" aria-label="Facebook">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
@@ -108,7 +108,7 @@ export default function Footer() {
             <ul className="space-y-2">
               <li className="flex items-start">
                 <Mail className="text-white mt-1 mr-3 shrink-0" size={18} />
-                <a href="mailto:support@takemyname.com" className="text-white hover:text-gray-300 transition-colors">support@takemyname.com</a>
+                <a href="mailto:support@domainnameguide.com" className="text-white hover:text-gray-300 transition-colors">support@domainnameguide.com</a>
               </li>
               <li className="flex items-start">
                 <Phone className="text-white mt-1 mr-3 shrink-0" size={18} />
@@ -123,7 +123,7 @@ export default function Footer() {
         </div>
         
         <div className="border-t border-white/20 mt-8 pt-8 text-center text-white">
-          <p>&copy; {new Date().getFullYear()} TakeMyName.com. All rights reserved.</p>
+          <p>&copy; {new Date().getFullYear()} DomainnameGuide.com. All rights reserved.</p>
           <div className="mt-2">
             <Link href="/admin" className="text-gray-400 hover:text-white text-sm">Admin Dashboard</Link>
           </div>

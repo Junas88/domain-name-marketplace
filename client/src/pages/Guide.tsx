@@ -614,7 +614,7 @@ export default function Guide() {
                     <h3 className="text-xl font-bold text-black mb-1">THE COMPLETE</h3>
                     <h2 className="text-4xl font-extrabold text-black mb-2">DOMAIN INVESTING</h2>
                     <h3 className="text-xl font-bold text-black mb-4">PLAYBOOK</h3>
-                    <p className="text-gray-600 text-sm">By TakeMyName.com Experts</p>
+                    <p className="text-gray-600 text-sm">By DomainnameGuide.com Experts</p>
                   </div>
                   
                   <div className="space-y-4 mb-6">

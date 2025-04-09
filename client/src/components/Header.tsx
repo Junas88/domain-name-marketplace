@@ -16,7 +16,7 @@ export default function Header() {
           <div className="flex items-center">
             {/* Logo */}
             <Link href="/" className="flex items-center">
-              <span className="text-black font-bold text-2xl">TakeMyName</span>
+              <span className="text-black font-bold text-2xl">DomainnameGuide.com</span>
             </Link>
           </div>
 
