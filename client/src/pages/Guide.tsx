@@ -37,12 +37,12 @@ export default function Guide() {
       <section className="py-12 bg-white">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <Tabs defaultValue="buying" className="max-w-5xl mx-auto">
-            <TabsList className="grid w-full grid-cols-1 md:grid-cols-5">
-              <TabsTrigger value="buying">Buying Guide</TabsTrigger>
-              <TabsTrigger value="value">Value Factors</TabsTrigger>
-              <TabsTrigger value="trends">Market Trends</TabsTrigger>
-              <TabsTrigger value="investment">Domain Tips</TabsTrigger>
-              <TabsTrigger value="selling">Selling Strategy</TabsTrigger>
+            <TabsList className="flex w-full overflow-x-auto md:grid md:grid-cols-5">
+              <TabsTrigger value="buying" className="min-w-[120px] whitespace-nowrap px-4">Buying Guide</TabsTrigger>
+              <TabsTrigger value="value" className="min-w-[120px] whitespace-nowrap px-4">Value Factors</TabsTrigger>
+              <TabsTrigger value="trends" className="min-w-[120px] whitespace-nowrap px-4">Market Trends</TabsTrigger>
+              <TabsTrigger value="investment" className="min-w-[120px] whitespace-nowrap px-4">Domain Tips</TabsTrigger>
+              <TabsTrigger value="selling" className="min-w-[120px] whitespace-nowrap px-4">Selling Strategy</TabsTrigger>
             </TabsList>
 
             {/* Buying Guide Tab */}
