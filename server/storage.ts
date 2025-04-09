@@ -190,7 +190,11 @@ export class MemStorage implements IStorage {
         title: 'E-Book Section',
         content: '<h2>The Ultimate Domain Investment Guide</h2><p>Our comprehensive e-book provides everything you need to know about investing in domain names. From valuation techniques to portfolio management strategies, this guide covers it all.</p><h3>What\'s Inside:</h3><ul><li>Domain valuation methods and tools</li><li>Market timing strategies</li><li>Portfolio diversification techniques</li><li>Case studies of successful domain investments</li><li>Tax considerations for domain investors</li><li>Legal protections for your domain portfolio</li></ul><p>Regular price: $49.95</p><p>Special offer: $29.95</p>',
         metaTitle: 'Ultimate Domain Investment Guide | Domain Name Guide',
-        metaDescription: 'Download our comprehensive domain investment e-book. Learn valuation techniques, market timing strategies, and portfolio management from domain experts.'
+        metaDescription: 'Download our comprehensive domain investment e-book. Learn valuation techniques, market timing strategies, and portfolio management from domain experts.',
+        fileName: 'ultimate-domain-investment-guide.pdf',
+        fileType: 'application/pdf',
+        isPurchaseRequired: true,
+        price: 2995
       },
       {
         pageKey: 'domain-guide-settings',
@@ -207,8 +211,14 @@ export class MemStorage implements IStorage {
         pageKey: page.pageKey,
         title: page.title,
         content: page.content,
-        metaTitle: page.metaTitle,
-        metaDescription: page.metaDescription,
+        metaTitle: page.metaTitle || null,
+        metaDescription: page.metaDescription || null,
+        filePath: page.filePath || null,
+        fileName: page.fileName || null,
+        fileType: page.fileType || null,
+        fileSize: page.fileSize || null,
+        isPurchaseRequired: page.isPurchaseRequired || false,
+        price: page.price || null,
         createdAt: new Date(),
         updatedAt: new Date()
       };
@@ -1056,6 +1066,15 @@ export class MemStorage implements IStorage {
       pageKey: pageContent.pageKey,
       title: pageContent.title,
       content: pageContent.content,
+      metaTitle: pageContent.metaTitle || null,
+      metaDescription: pageContent.metaDescription || null,
+      price: null,
+      isPurchaseRequired: false,
+      filePath: null,
+      fileName: null,
+      fileType: null,
+      fileSize: null,
+      createdAt: new Date(),
       updatedAt: new Date()
     };
     
@@ -1074,6 +1093,15 @@ export class MemStorage implements IStorage {
       ...existingContent,
       title: updates.title ?? existingContent.title,
       content: updates.content ?? existingContent.content,
+      metaTitle: updates.metaTitle ?? existingContent.metaTitle,
+      metaDescription: updates.metaDescription ?? existingContent.metaDescription,
+      // Add support for file uploads and price updates
+      filePath: updates.filePath !== undefined ? updates.filePath : existingContent.filePath,
+      fileName: updates.fileName !== undefined ? updates.fileName : existingContent.fileName,
+      fileType: updates.fileType !== undefined ? updates.fileType : existingContent.fileType,
+      fileSize: updates.fileSize !== undefined ? updates.fileSize : existingContent.fileSize,
+      price: updates.price !== undefined ? updates.price : existingContent.price,
+      isPurchaseRequired: updates.isPurchaseRequired !== undefined ? updates.isPurchaseRequired : (existingContent.isPurchaseRequired || false),
       updatedAt: new Date()
     };
     

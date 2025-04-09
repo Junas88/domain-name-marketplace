@@ -27,6 +27,7 @@ import {
 import {
   Check,
   EyeIcon,
+  FileUp,
   LogOut,
   PenIcon,
   PlusIcon,
@@ -34,6 +35,7 @@ import {
   TagIcon,
   TrashIcon
 } from "lucide-react";
+import FileUploader from "@/components/admin/FileUploader";
 import { Domain, Offer, Consultation, PageContent } from "@/lib/types";
 import { formatDistanceToNow } from "date-fns";
 
@@ -950,9 +952,46 @@ export default function AdminDashboard() {
                                     <div className="text-sm bg-gray-100 p-2 rounded">{pageContent.metaTitle || 'None'}</div>
                                     <div className="text-sm font-medium">Meta Description:</div>
                                     <div className="text-sm bg-gray-100 p-2 rounded">{pageContent.metaDescription || 'None'}</div>
+                                    
+                                    {pageContent.filePath && (
+                                      <>
+                                        <div className="text-sm font-medium mt-4">Attached File:</div>
+                                        <div className="text-sm bg-gray-100 p-2 rounded">
+                                          {pageContent.fileName} ({pageContent.fileType})
+                                          {pageContent.fileSize && <span className="ml-2">({(pageContent.fileSize / 1024 / 1024).toFixed(2)} MB)</span>}
+                                        </div>
+                                      </>
+                                    )}
                                   </div>
                                 </DialogContent>
                               </Dialog>
+                              
+                              {pageContent.pageKey === 'ebook-section' && (
+                                <Dialog>
+                                  <DialogTrigger asChild>
+                                    <Button
+                                      variant="outline"
+                                      size="icon"
+                                      className="border-purple-200 text-purple-500 hover:bg-purple-50"
+                                      title="Upload E-book File"
+                                    >
+                                      <FileUp className="h-4 w-4" />
+                                    </Button>
+                                  </DialogTrigger>
+                                  <DialogContent className="max-w-md">
+                                    <DialogHeader>
+                                      <DialogTitle>Upload E-book File</DialogTitle>
+                                      <DialogDescription>
+                                        Upload a PDF file for the e-book that users can download after purchase.
+                                      </DialogDescription>
+                                    </DialogHeader>
+                                    <FileUploader 
+                                      pageKey={pageContent.pageKey} 
+                                      onSuccess={() => queryClient.invalidateQueries({ queryKey: ['/api/admin/page-contents'] })}
+                                    />
+                                  </DialogContent>
+                                </Dialog>
+                              )}
                               <Button
                                 variant="outline"
                                 size="icon"

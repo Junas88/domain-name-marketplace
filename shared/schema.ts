@@ -94,7 +94,16 @@ export const pageContents = pgTable("page_contents", {
   id: serial("id").primaryKey(),
   pageKey: text("page_key").notNull().unique(),
   title: text("title").notNull(),
-  content: json("content").notNull(),
+  content: text("content").notNull(),
+  metaTitle: text("meta_title"),
+  metaDescription: text("meta_description"),
+  filePath: text("file_path"),
+  fileName: text("file_name"),
+  fileType: text("file_type"),
+  fileSize: integer("file_size"),
+  isPurchaseRequired: boolean("is_purchase_required").default(false),
+  price: integer("price"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 
@@ -102,6 +111,14 @@ export const insertPageContentSchema = createInsertSchema(pageContents).pick({
   pageKey: true,
   title: true,
   content: true,
+  metaTitle: true,
+  metaDescription: true,
+  filePath: true,
+  fileName: true,
+  fileType: true,
+  fileSize: true,
+  isPurchaseRequired: true,
+  price: true,
 });
 
 export type InsertPageContent = z.infer<typeof insertPageContentSchema>;

@@ -56,8 +56,14 @@ export interface PageContent {
   pageKey: string;
   title: string;
   content: string;
-  metaTitle?: string;
-  metaDescription?: string;
+  metaTitle?: string | null;
+  metaDescription?: string | null;
+  price?: number | null;
+  isPurchaseRequired?: boolean | null;
+  filePath?: string | null;
+  fileName?: string | null;
+  fileType?: string | null;
+  fileSize?: number | null;
   createdAt: Date;
   updatedAt: Date;
 }

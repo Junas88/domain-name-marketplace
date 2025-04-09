@@ -10,6 +10,43 @@ import {
 } from "@shared/schema";
 import { z } from "zod";
 import Stripe from "stripe";
+import multer from 'multer';
+import path from 'path';
+import fs from 'fs-extra';
+
+// Create uploads directory if it doesn't exist
+const uploadDir = path.join(process.cwd(), 'uploads');
+fs.ensureDirSync(uploadDir);
+
+// Configure multer for file uploads
+const storage_config = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, uploadDir);
+  },
+  filename: (req, file, cb) => {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    const ext = path.extname(file.originalname);
+    cb(null, file.fieldname + '-' + uniqueSuffix + ext);
+  }
+});
+
+const upload = multer({ 
+  storage: storage_config,
+  limits: {
+    fileSize: 10 * 1024 * 1024, // 10MB limit
+  },
+  fileFilter: (req, file, cb) => {
+    // Accept PDFs, images, and DOC files
+    const filetypes = /pdf|jpeg|jpg|png|doc|docx/;
+    const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
+    const mimetype = filetypes.test(file.mimetype);
+    if (mimetype && extname) {
+      return cb(null, true);
+    } else {
+      cb(new Error('Only PDF, image, and DOC files are allowed'));
+    }
+  }
+});
 
 if (!process.env.STRIPE_SECRET_KEY) {
   throw new Error('Missing required Stripe secret: STRIPE_SECRET_KEY');
@@ -345,6 +382,42 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
+  // Admin: Upload file for a page content
+  app.post("/api/admin/page-contents/:pageKey/upload", upload.single('file'), async (req, res) => {
+    try {
+      // Check if user is authenticated and an admin
+      if (!req.isAuthenticated() || !(req.user?.isAdmin)) {
+        return res.status(403).json({ message: "Unauthorized" });
+      }
+      
+      if (!req.file) {
+        return res.status(400).json({ message: "No file uploaded" });
+      }
+      
+      const pageKey = req.params.pageKey;
+      const pageContent = await storage.getPageContent(pageKey);
+      
+      if (!pageContent) {
+        // Delete the uploaded file if page doesn't exist
+        fs.unlinkSync(req.file.path);
+        return res.status(404).json({ message: "Page content not found" });
+      }
+      
+      // Update page content with file information
+      const updatedPageContent = await storage.updatePageContent(pageKey, {
+        filePath: req.file.path,
+        fileName: req.file.originalname,
+        fileType: req.file.mimetype,
+        fileSize: req.file.size
+      });
+      
+      res.json(updatedPageContent);
+    } catch (error) {
+      console.error("Error uploading file:", error);
+      res.status(500).json({ message: "Failed to upload file" });
+    }
+  });
+  
   // Admin: Delete a page content
   app.delete("/api/admin/page-contents/:pageKey", async (req, res) => {
     try {
@@ -367,14 +440,107 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Download file from a page content
+  app.get("/api/page-contents/:pageKey/download", async (req, res) => {
+    try {
+      const pageKey = req.params.pageKey;
+      const pageContent = await storage.getPageContent(pageKey);
+      
+      if (!pageContent) {
+        return res.status(404).json({ message: "Page content not found" });
+      }
+      
+      // Check if the page has a file
+      if (!pageContent.filePath || !pageContent.fileName) {
+        return res.status(404).json({ message: "No file associated with this content" });
+      }
+      
+      // Check if this content requires purchase
+      if (pageContent.isPurchaseRequired) {
+        // Check for payment verification
+        const paymentVerified = req.query.paymentVerified === 'true';
+        
+        if (!paymentVerified) {
+          return res.status(402).json({
+            message: "Payment required to download this file",
+            price: pageContent.price,
+            isPurchaseRequired: true
+          });
+        }
+      }
+      
+      // Send the file as a download
+      res.download(pageContent.filePath, pageContent.fileName);
+    } catch (error) {
+      console.error("Error downloading file:", error);
+      res.status(500).json({ message: "Failed to download file" });
+    }
+  });
+  
+  // Verify purchase and get download link
+  app.post("/api/verify-purchase/:pageKey", async (req, res) => {
+    try {
+      const { paymentIntentId } = req.body;
+      if (!paymentIntentId) {
+        return res.status(400).json({ message: "Payment intent ID is required" });
+      }
+      
+      // Verify the payment intent with Stripe
+      const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
+      
+      if (paymentIntent.status !== 'succeeded') {
+        return res.status(400).json({ message: "Payment has not been completed" });
+      }
+      
+      const pageKey = req.params.pageKey;
+      const pageContent = await storage.getPageContent(pageKey);
+      
+      if (!pageContent) {
+        return res.status(404).json({ message: "Page content not found" });
+      }
+      
+      // Check if the page has a file
+      if (!pageContent.filePath || !pageContent.fileName) {
+        return res.status(404).json({ message: "No file associated with this content" });
+      }
+      
+      // Generate download URL with payment verification
+      const downloadUrl = `/api/page-contents/${pageKey}/download?paymentVerified=true`;
+      
+      res.json({
+        success: true,
+        downloadUrl
+      });
+    } catch (error: any) {
+      console.error("Error verifying purchase:", error);
+      res.status(500).json({ message: "Failed to verify purchase: " + error.message });
+    }
+  });
+
   // Stripe payment routes
   app.post("/api/create-payment-intent", async (req, res) => {
     try {
-      const { amount } = req.body;
+      const { amount, pageKey } = req.body;
+      
+      let finalAmount = amount;
+      
+      // If a pageKey is provided, use the price from that page content
+      if (pageKey) {
+        const pageContent = await storage.getPageContent(pageKey);
+        if (pageContent && pageContent.price) {
+          finalAmount = pageContent.price;
+        }
+      }
+      
       const paymentIntent = await stripe.paymentIntents.create({
-        amount: Math.round(amount * 100), // Convert to cents
+        amount: Math.round(finalAmount * 100), // Convert to cents
         currency: "usd",
+        metadata: {
+          pageKey: pageKey || '',
+          type: pageKey ? 'ebook_purchase' : 'regular_payment'
+        }
       });
+      
       res.json({ clientSecret: paymentIntent.client_secret });
     } catch (error: any) {
       console.error("Error creating payment intent:", error);
