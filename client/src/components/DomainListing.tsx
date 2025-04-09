@@ -57,6 +57,7 @@ export default function DomainListing({ onMakeOffer }: DomainListingProps) {
   const domainsPerPage = 20;
 
   // Parse search query from URL if present
+  const [location] = useLocation();
   const urlParams = new URLSearchParams(window.location.search);
   const searchQuery = urlParams.get("search") || "";
 
@@ -65,6 +66,7 @@ export default function DomainListing({ onMakeOffer }: DomainListingProps) {
     queryKey: searchQuery ? ['/api/domains/search', searchQuery] : ['/api/domains'],
     queryFn: async () => {
       if (searchQuery) {
+        console.log("Searching for domains with query:", searchQuery);
         const response = await fetch(`/api/domains/search?q=${encodeURIComponent(searchQuery)}`);
         if (!response.ok) throw new Error('Network response was not ok');
         return response.json();
@@ -75,7 +77,15 @@ export default function DomainListing({ onMakeOffer }: DomainListingProps) {
       }
     },
     refetchOnWindowFocus: false,
+    staleTime: 0, // Always refetch when query changes
   });
+  
+  // Make sure query always refreshes when URL changes
+  useEffect(() => {
+    if (searchQuery) {
+      queryClient.invalidateQueries({ queryKey: ['/api/domains/search', searchQuery] });
+    }
+  }, [searchQuery, location]);
 
   useEffect(() => {
     // Reset filters when search query changes

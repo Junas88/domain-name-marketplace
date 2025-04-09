@@ -1,13 +1,43 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
-import { Search } from "lucide-react";
+import { Search, X } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { useLocation } from "wouter";
+import { queryClient } from "@/lib/queryClient";
 
 export default function Hero() {
   const [searchQuery, setSearchQuery] = useState("");
+  const [debouncedQuery, setDebouncedQuery] = useState("");
   const { toast } = useToast();
   const [, setLocation] = useLocation();
+  
+  // Set up debounced search to avoid too many requests
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (searchQuery.trim()) {
+        setDebouncedQuery(searchQuery.trim());
+      }
+    }, 300); // 300ms delay before search is applied
+    
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
+  
+  // Update URL and perform search when debounced query changes
+  useEffect(() => {
+    if (debouncedQuery) {
+      // Update URL without triggering a full page reload
+      setLocation(`/?search=${encodeURIComponent(debouncedQuery)}#domains`);
+      
+      // Invalidate query to force refetch
+      queryClient.invalidateQueries({ queryKey: ['/api/domains/search', debouncedQuery] });
+      
+      // Scroll to the domains section
+      const domainsSection = document.getElementById("domains");
+      if (domainsSection) {
+        domainsSection.scrollIntoView({ behavior: "smooth" });
+      }
+    }
+  }, [debouncedQuery, setLocation]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -21,16 +51,14 @@ export default function Hero() {
       return;
     }
     
-    // Use wouter's setLocation to navigate without full page reload
-    setLocation(`/?search=${encodeURIComponent(searchQuery.trim())}#domains`);
-    
-    // Scroll to the domains section
-    setTimeout(() => {
-      const domainsSection = document.getElementById("domains");
-      if (domainsSection) {
-        domainsSection.scrollIntoView({ behavior: "smooth" });
-      }
-    }, 100);
+    setDebouncedQuery(searchQuery.trim());
+  };
+  
+  // Function to clear search
+  const clearSearch = () => {
+    setSearchQuery("");
+    setDebouncedQuery("");
+    setLocation('/#domains');
   };
 
   return (
@@ -53,15 +81,27 @@ export default function Hero() {
           <form onSubmit={handleSearch} className="max-w-3xl mx-auto" role="search" aria-label="Search domains">
             <div className="bg-white rounded-full overflow-hidden shadow-lg flex border border-black">
               <label htmlFor="domain-search" className="sr-only">Search for domains</label>
-              <input 
-                id="domain-search"
-                type="text" 
-                placeholder="Search for domains..." 
-                className="flex-grow px-6 py-4 border-none focus:outline-none text-neutral-800"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                aria-label="Domain search input"
-              />
+              <div className="flex-grow flex items-center relative">
+                <input 
+                  id="domain-search"
+                  type="text" 
+                  placeholder="Search for domains..." 
+                  className="w-full px-6 py-4 border-none focus:outline-none text-neutral-800"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  aria-label="Domain search input"
+                />
+                {searchQuery && (
+                  <button 
+                    type="button"
+                    onClick={clearSearch}
+                    className="absolute right-3 text-gray-500 hover:text-gray-700"
+                    aria-label="Clear search"
+                  >
+                    <X size={18} />
+                  </button>
+                )}
+              </div>
               <button 
                 type="submit"
                 className="bg-black text-white px-8 py-4 font-semibold hover:bg-neutral-800 transition-colors"
