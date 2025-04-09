@@ -366,6 +366,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "Page content not found" });
       }
       
+      // For ebook-section, add info about the file availability
+      if (pageKey === 'ebook-section') {
+        let fileInfo = null;
+        
+        if (pageContent.filePath && fs.existsSync(pageContent.filePath)) {
+          fileInfo = {
+            fileName: pageContent.fileName || 'Domain Name Marketing.pdf',
+            fileSize: pageContent.fileSize,
+            fileUpdated: pageContent.updatedAt
+          };
+        }
+        
+        return res.json({
+          ...pageContent,
+          fileInfo
+        });
+      }
+      
       res.json(pageContent);
     } catch (error) {
       console.error("Error fetching page content:", error);

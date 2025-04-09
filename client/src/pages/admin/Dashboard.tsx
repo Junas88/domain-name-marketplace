@@ -112,7 +112,13 @@ export default function AdminDashboard() {
   // Form for adding/editing page content
   const pageContentForm = useForm<PageContentFormValues>({
     resolver: zodResolver(pageContentFormSchema),
-    defaultValues: editingPageContent || {
+    defaultValues: editingPageContent ? {
+      pageKey: editingPageContent.pageKey,
+      title: editingPageContent.title,
+      content: editingPageContent.content,
+      metaTitle: editingPageContent.metaTitle || "",
+      metaDescription: editingPageContent.metaDescription || "",
+    } : {
       pageKey: "",
       title: "",
       content: "",

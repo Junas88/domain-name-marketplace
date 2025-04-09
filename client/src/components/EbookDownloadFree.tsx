@@ -3,6 +3,7 @@ import { Button } from './ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from './ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, Download, FileText } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
 
 interface EbookDownloadProps {
   pageKey: string;
@@ -14,6 +15,12 @@ interface EbookDownloadProps {
 export default function EbookDownload({ pageKey, title, description, price }: EbookDownloadProps) {
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
+  
+  // Get the file info from page content
+  const { data: pageContent } = useQuery({
+    queryKey: [`/api/page-contents/${pageKey}`],
+    enabled: !!pageKey,
+  });
 
   const handleDownload = () => {
     setIsLoading(true);
@@ -22,7 +29,7 @@ export default function EbookDownload({ pageKey, title, description, price }: Eb
       // Create an anchor element for download
       const link = document.createElement('a');
       link.href = '/api/direct-download/ebook';
-      link.download = 'Domain Name Marketing.pdf';
+      // The file name will be determined by the server
       link.target = '_blank';
       document.body.appendChild(link);
       

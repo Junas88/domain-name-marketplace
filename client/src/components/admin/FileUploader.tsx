@@ -31,6 +31,17 @@ export default function FileUploader({ pageKey, onSuccess }: FileUploaderProps) 
       return;
     }
 
+    // Specifically check for ebook uploads - must be PDF
+    if (pageKey === 'ebook-section' && file.type !== 'application/pdf') {
+      setError("Only PDF files are allowed for the ebook");
+      toast({
+        title: "Invalid File",
+        description: "Only PDF files are allowed for the ebook",
+        variant: "destructive"
+      });
+      return;
+    }
+
     setUploading(true);
     setError("");
     
@@ -50,10 +61,19 @@ export default function FileUploader({ pageKey, onSuccess }: FileUploaderProps) 
       }
       
       setUploadSuccess(true);
-      toast({
-        title: "Upload Successful",
-        description: "File has been uploaded successfully",
-      });
+      
+      // Special message for ebook uploads
+      if (pageKey === 'ebook-section') {
+        toast({
+          title: "E-book Updated Successfully",
+          description: "The e-book PDF has been updated and will be available for download immediately",
+        });
+      } else {
+        toast({
+          title: "Upload Successful",
+          description: "File has been uploaded successfully",
+        });
+      }
       
       if (onSuccess) {
         onSuccess();
