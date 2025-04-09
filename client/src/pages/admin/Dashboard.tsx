@@ -341,7 +341,7 @@ export default function AdminDashboard() {
           onClick={() => {
             logoutMutation.mutate(undefined, {
               onSuccess: () => {
-                navigate('/admin/login');
+                navigate('/');
               }
             });
           }}
