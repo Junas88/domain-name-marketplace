@@ -1,4 +1,4 @@
-import { pgTable, text, serial, integer, boolean, timestamp } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, integer, boolean, timestamp, json } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -88,3 +88,39 @@ export const insertConsultationSchema = createInsertSchema(consultations).pick({
 
 export type InsertConsultation = z.infer<typeof insertConsultationSchema>;
 export type Consultation = typeof consultations.$inferSelect;
+
+// Page content table for CMS
+export const pageContents = pgTable("page_contents", {
+  id: serial("id").primaryKey(),
+  pageKey: text("page_key").notNull().unique(),
+  title: text("title").notNull(),
+  content: json("content").notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const insertPageContentSchema = createInsertSchema(pageContents).pick({
+  pageKey: true,
+  title: true,
+  content: true,
+});
+
+export type InsertPageContent = z.infer<typeof insertPageContentSchema>;
+export type PageContent = typeof pageContents.$inferSelect;
+
+// Define section content schema
+export const sectionContentSchema = z.object({
+  type: z.enum(['hero', 'heading', 'paragraph', 'list', 'image', 'features', 'faq', 'cta']),
+  heading: z.string().optional(),
+  subheading: z.string().optional(),
+  text: z.string().optional(),
+  items: z.array(z.object({
+    title: z.string().optional(),
+    description: z.string().optional(), 
+    icon: z.string().optional(),
+  })).optional(),
+  imageUrl: z.string().optional(),
+  linkText: z.string().optional(),
+  linkUrl: z.string().optional(),
+});
+
+export type SectionContent = z.infer<typeof sectionContentSchema>;

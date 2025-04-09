@@ -50,3 +50,22 @@ export interface ConsultationFormData {
   message: string;
   budget: string;
 }
+
+export interface PageContent {
+  id: number;
+  pageKey: string;
+  title: string;
+  content: string;
+  metaTitle?: string;
+  metaDescription?: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface PageContentFormData {
+  pageKey: string;
+  title: string;
+  content: string;
+  metaTitle?: string;
+  metaDescription?: string;
+}

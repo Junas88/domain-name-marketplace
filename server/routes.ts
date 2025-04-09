@@ -5,7 +5,8 @@ import { setupAuth } from "./auth";
 import { 
   insertOfferSchema, 
   insertConsultationSchema,
-  insertDomainSchema
+  insertDomainSchema,
+  insertPageContentSchema
 } from "@shared/schema";
 import { z } from "zod";
 import Stripe from "stripe";
@@ -253,6 +254,116 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error fetching consultations:", error);
       res.status(500).json({ message: "Failed to fetch consultations" });
+    }
+  });
+
+  // Page Content (CMS) API routes
+  
+  // Get all page contents (public)
+  app.get("/api/page-contents", async (req, res) => {
+    try {
+      const pageContents = await storage.getAllPageContents();
+      res.json(pageContents);
+    } catch (error) {
+      console.error("Error fetching page contents:", error);
+      res.status(500).json({ message: "Failed to fetch page contents" });
+    }
+  });
+  
+  // Get a specific page content by key (public)
+  app.get("/api/page-contents/:pageKey", async (req, res) => {
+    try {
+      const pageKey = req.params.pageKey;
+      const pageContent = await storage.getPageContent(pageKey);
+      
+      if (!pageContent) {
+        return res.status(404).json({ message: "Page content not found" });
+      }
+      
+      res.json(pageContent);
+    } catch (error) {
+      console.error("Error fetching page content:", error);
+      res.status(500).json({ message: "Failed to fetch page content" });
+    }
+  });
+  
+  // Admin: Get all page contents
+  app.get("/api/admin/page-contents", async (req, res) => {
+    try {
+      // Check if user is authenticated and an admin
+      if (!req.isAuthenticated() || !(req.user?.isAdmin)) {
+        return res.status(403).json({ message: "Unauthorized" });
+      }
+      
+      const pageContents = await storage.getAllPageContents();
+      res.json(pageContents);
+    } catch (error) {
+      console.error("Error fetching page contents:", error);
+      res.status(500).json({ message: "Failed to fetch page contents" });
+    }
+  });
+  
+  // Admin: Create a new page content
+  app.post("/api/admin/page-contents", async (req, res) => {
+    try {
+      // Check if user is authenticated and an admin
+      if (!req.isAuthenticated() || !(req.user?.isAdmin)) {
+        return res.status(403).json({ message: "Unauthorized" });
+      }
+      
+      const pageContentData = insertPageContentSchema.parse(req.body);
+      const pageContent = await storage.createPageContent(pageContentData);
+      res.status(201).json(pageContent);
+    } catch (error) {
+      console.error("Error creating page content:", error);
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Invalid page content data", errors: error.errors });
+      }
+      res.status(500).json({ message: "Failed to create page content" });
+    }
+  });
+  
+  // Admin: Update a page content
+  app.patch("/api/admin/page-contents/:pageKey", async (req, res) => {
+    try {
+      // Check if user is authenticated and an admin
+      if (!req.isAuthenticated() || !(req.user?.isAdmin)) {
+        return res.status(403).json({ message: "Unauthorized" });
+      }
+      
+      const pageKey = req.params.pageKey;
+      const pageContent = await storage.updatePageContent(pageKey, req.body);
+      
+      if (!pageContent) {
+        return res.status(404).json({ message: "Page content not found" });
+      }
+      
+      res.json(pageContent);
+    } catch (error) {
+      console.error("Error updating page content:", error);
+      res.status(500).json({ message: "Failed to update page content" });
+    }
+  });
+  
+  // Admin: Delete a page content
+  app.delete("/api/admin/page-contents/:pageKey", async (req, res) => {
+    try {
+      // Check if user is authenticated and an admin
+      if (!req.isAuthenticated() || !(req.user?.isAdmin)) {
+        return res.status(403).json({ message: "Unauthorized" });
+      }
+      
+      const pageKey = req.params.pageKey;
+      const success = await storage.deletePageContent(pageKey);
+      
+      if (!success) {
+        return res.status(404).json({ message: "Page content not found" });
+      }
+      
+      res.status(204).end();
+    } catch (error) {
+      console.error("Error deleting page content:", error);
+      res.status(500).json({ message: "Failed to delete page content" });
     }
   });
 

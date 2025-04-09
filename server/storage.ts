@@ -2,7 +2,9 @@ import {
   users, type User, type InsertUser,
   domains, type Domain, type InsertDomain,
   offers, type Offer, type InsertOffer,
-  consultations, type Consultation, type InsertConsultation
+  consultations, type Consultation, type InsertConsultation,
+  pageContents, type PageContent, type InsertPageContent,
+  type SectionContent
 } from "@shared/schema";
 import session from "express-session";
 import createMemoryStore from "memorystore";
@@ -49,6 +51,13 @@ export interface IStorage {
   // Consultation methods
   createConsultation(consultation: InsertConsultation): Promise<Consultation>;
   getAllConsultations(): Promise<Consultation[]>;
+  
+  // Page Content methods (CMS)
+  getAllPageContents(): Promise<PageContent[]>;
+  getPageContent(pageKey: string): Promise<PageContent | undefined>;
+  createPageContent(pageContent: InsertPageContent): Promise<PageContent>;
+  updatePageContent(pageKey: string, updates: Partial<InsertPageContent>): Promise<PageContent | undefined>;
+  deletePageContent(pageKey: string): Promise<boolean>;
 }
 
 export class MemStorage implements IStorage {
@@ -56,6 +65,7 @@ export class MemStorage implements IStorage {
   private domains: Map<number, Domain>;
   private offers: Map<number, Offer>;
   private consultations: Map<number, Consultation>;
+  private pageContents: Map<string, PageContent>;
   
   public sessionStore: session.Store;
   
@@ -63,12 +73,14 @@ export class MemStorage implements IStorage {
   private domainIdCounter: number;
   private offerIdCounter: number;
   private consultationIdCounter: number;
+  private pageContentIdCounter: number;
 
   constructor() {
     this.users = new Map();
     this.domains = new Map();
     this.offers = new Map();
     this.consultations = new Map();
+    this.pageContents = new Map();
     
     this.sessionStore = new MemoryStore({
       checkPeriod: 86400000 // prune expired entries every 24h
@@ -78,9 +90,109 @@ export class MemStorage implements IStorage {
     this.domainIdCounter = 1;
     this.offerIdCounter = 1;
     this.consultationIdCounter = 1;
+    this.pageContentIdCounter = 1;
     
     // Initialize with some sample domains
     this.initializeDomains();
+    
+    // Initialize with default page contents
+    this.initializePageContents();
+  }
+  
+  private initializePageContents() {
+    const defaultPages: InsertPageContent[] = [
+      {
+        pageKey: 'home',
+        title: 'Home Page',
+        content: [
+          {
+            type: 'hero',
+            heading: 'Find Your Perfect Domain',
+            subheading: 'Premium domain names for businesses of all sizes',
+            text: 'Browse our curated selection of domain names or let us help you find the perfect match for your brand.'
+          },
+          {
+            type: 'features',
+            heading: 'Why Choose Us',
+            items: [
+              {
+                title: 'Premium Selection', 
+                description: 'Hand-picked domains with high value and market potential', 
+                icon: 'Star'
+              },
+              {
+                title: 'Secure Transactions', 
+                description: 'Safe and transparent buying process with buyer protection', 
+                icon: 'Shield'
+              },
+              {
+                title: 'Expert Guidance', 
+                description: 'Professional advice on domain valuation and acquisition', 
+                icon: 'Lightbulb'
+              }
+            ]
+          }
+        ]
+      },
+      {
+        pageKey: 'about',
+        title: 'About Us',
+        content: [
+          {
+            type: 'heading',
+            heading: 'About DOMAIN NAME GUIDE',
+            subheading: 'Your trusted partner in domain investment'
+          },
+          {
+            type: 'paragraph',
+            text: 'DOMAIN NAME GUIDE is a premium domain marketplace focused on helping businesses find the perfect online identity. We curate high-quality domain names that can help establish a strong online presence for brands across all industries.'
+          },
+          {
+            type: 'paragraph',
+            text: 'Our team of domain experts has years of experience in the domain industry, providing valuable insights on domain valuation, acquisition, and portfolio management.'
+          }
+        ]
+      },
+      {
+        pageKey: 'faq',
+        title: 'Frequently Asked Questions',
+        content: [
+          {
+            type: 'heading',
+            heading: 'Frequently Asked Questions',
+            subheading: 'Get answers to common questions about domains and our services'
+          },
+          {
+            type: 'faq',
+            items: [
+              {
+                title: 'How do I purchase a domain?',
+                description: 'You can purchase a domain instantly using the Buy Now option or submit an offer through our Make Offer feature.'
+              },
+              {
+                title: 'What happens after I purchase a domain?',
+                description: 'After completing your purchase, we will initiate the domain transfer process to your preferred registrar account within 24-48 hours.'
+              },
+              {
+                title: 'Do you offer payment plans?',
+                description: 'Yes, for premium domains we offer flexible payment plans. Contact our support team for more information.'
+              }
+            ]
+          }
+        ]
+      }
+    ];
+    
+    for (const page of defaultPages) {
+      const pageContent: PageContent = {
+        id: this.pageContentIdCounter++,
+        pageKey: page.pageKey,
+        title: page.title,
+        content: page.content,
+        updatedAt: new Date()
+      };
+      this.pageContents.set(page.pageKey, pageContent);
+    }
   }
   
   private initializeDomains() {
@@ -906,6 +1018,54 @@ export class MemStorage implements IStorage {
   
   async getAllConsultations(): Promise<Consultation[]> {
     return Array.from(this.consultations.values());
+  }
+  
+  // Page Content methods for CMS
+  async getAllPageContents(): Promise<PageContent[]> {
+    return Array.from(this.pageContents.values());
+  }
+  
+  async getPageContent(pageKey: string): Promise<PageContent | undefined> {
+    return this.pageContents.get(pageKey);
+  }
+  
+  async createPageContent(pageContent: InsertPageContent): Promise<PageContent> {
+    const newPageContent: PageContent = {
+      id: this.pageContentIdCounter++,
+      pageKey: pageContent.pageKey,
+      title: pageContent.title,
+      content: pageContent.content,
+      updatedAt: new Date()
+    };
+    
+    this.pageContents.set(pageContent.pageKey, newPageContent);
+    return newPageContent;
+  }
+  
+  async updatePageContent(pageKey: string, updates: Partial<InsertPageContent>): Promise<PageContent | undefined> {
+    const existingContent = this.pageContents.get(pageKey);
+    
+    if (!existingContent) {
+      return undefined;
+    }
+    
+    const updatedContent: PageContent = {
+      ...existingContent,
+      title: updates.title ?? existingContent.title,
+      content: updates.content ?? existingContent.content,
+      updatedAt: new Date()
+    };
+    
+    this.pageContents.set(pageKey, updatedContent);
+    return updatedContent;
+  }
+  
+  async deletePageContent(pageKey: string): Promise<boolean> {
+    if (!this.pageContents.has(pageKey)) {
+      return false;
+    }
+    
+    return this.pageContents.delete(pageKey);
   }
 }
 
