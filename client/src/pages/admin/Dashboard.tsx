@@ -27,6 +27,7 @@ import {
 import {
   Check,
   EyeIcon,
+  FileText,
   FileUp,
   LogOut,
   PenIcon,
@@ -758,6 +759,52 @@ export default function AdminDashboard() {
                   className="border-black"
                 >
                   <RefreshCw className="h-4 w-4" />
+                </Button>
+                
+                <Button
+                  onClick={async () => {
+                    try {
+                      // First find the ebook section entry
+                      const ebookSection = pageContents.find(p => p.pageKey === 'ebook-section');
+                      
+                      if (ebookSection) {
+                        // Update the content to remove pricing information
+                        const updatedContent = ebookSection.content
+                          .replace(/<p>Regular price: \$49\.95<\/p>/g, '')
+                          .replace(/<p>Special offer: \$29\.95<\/p>/g, '');
+                        
+                        // Update via API
+                        await apiRequest(`/api/admin/page-contents/ebook-section`, {
+                          method: 'PATCH',
+                          body: JSON.stringify({
+                            content: updatedContent,
+                            isPurchaseRequired: false,
+                            price: 0
+                          })
+                        });
+                        
+                        toast({
+                          title: "Ebook Settings Fixed",
+                          description: "The ebook is now set to free with updated content.",
+                        });
+                        
+                        // Refresh data
+                        refetchPageContents();
+                      }
+                    } catch (error) {
+                      console.error("Error fixing ebook settings:", error);
+                      toast({
+                        title: "Error",
+                        description: "Failed to fix ebook settings. Please try again.",
+                        variant: "destructive"
+                      });
+                    }
+                  }}
+                  variant="outline"
+                  className="bg-blue-600 text-white hover:bg-blue-700 border-blue-600"
+                >
+                  <FileText className="h-4 w-4 mr-2" />
+                  Fix Ebook Settings
                 </Button>
                 <Dialog open={showPageContentDialog} onOpenChange={setShowPageContentDialog}>
                   <DialogTrigger asChild>

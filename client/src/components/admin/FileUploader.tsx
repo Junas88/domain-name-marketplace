@@ -64,10 +64,27 @@ export default function FileUploader({ pageKey, onSuccess }: FileUploaderProps) 
       
       // Special message for ebook uploads
       if (pageKey === 'ebook-section') {
-        toast({
-          title: "E-book Updated Successfully",
-          description: "The e-book PDF has been updated and will be available for download immediately",
-        });
+        // After uploading ebook, also update the page content settings to make it free
+        try {
+          await apiRequest(`/api/admin/page-contents/ebook-section`, {
+            method: 'PATCH',
+            body: JSON.stringify({
+              isPurchaseRequired: false,
+              price: 0
+            })
+          });
+          
+          toast({
+            title: "E-book Updated Successfully",
+            description: "The e-book PDF has been updated and set to free download mode",
+          });
+        } catch (settingsErr) {
+          console.error("Error updating ebook settings:", settingsErr);
+          toast({
+            title: "E-book Updated",
+            description: "The PDF was updated but we couldn't update the pricing settings. Please use the 'Fix Ebook Settings' button.",
+          });
+        }
       } else {
         toast({
           title: "Upload Successful",

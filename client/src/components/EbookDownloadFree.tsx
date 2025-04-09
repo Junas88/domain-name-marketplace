@@ -4,6 +4,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, Download, FileText } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
+import { PageContent } from '@/lib/types';
 
 interface EbookDownloadProps {
   pageKey: string;
@@ -17,15 +18,15 @@ export default function EbookDownload({ pageKey, title, description, price }: Eb
   const { toast } = useToast();
   
   // Get the file info from page content
-  const { data: pageContent } = useQuery({
+  const { data: pageContent } = useQuery<PageContent>({
     queryKey: [`/api/page-contents/${pageKey}`],
     enabled: !!pageKey,
   });
   
-  // Ensure the ebook is treated as free regardless of server settings
+  // Simply log when ebook is loaded - no need for the check now as we've fixed it
   useEffect(() => {
-    if (pageContent?.isPurchaseRequired) {
-      console.log('Ebook should be FREE - using direct-download endpoint');
+    if (pageContent) {
+      console.log('Ebook content loaded - using direct-download endpoint');
     }
   }, [pageContent]);
 
