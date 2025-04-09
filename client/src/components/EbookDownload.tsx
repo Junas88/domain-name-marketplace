@@ -94,36 +94,46 @@ export default function EbookDownload({ pageKey, title, description, price }: Eb
   };
 
   return (
-    <Card className="w-full max-w-md mx-auto border border-gray-200 shadow-sm">
-      <CardHeader>
-        <CardTitle>{title}</CardTitle>
+    <Card className="w-full max-w-md mx-auto border-0 rounded-xl shadow-lg overflow-hidden bg-white">
+      <CardHeader className="bg-white pb-0">
+        <CardTitle className="text-xl font-bold">{title}</CardTitle>
         {description && <CardDescription>{description}</CardDescription>}
       </CardHeader>
-      <CardContent>
-        <div className="text-center space-y-4">
-          <FileText className="h-16 w-16 mx-auto text-gray-400" />
-          <h3 className="font-semibold text-lg">Domain Marketing Guide</h3>
-          <p className="text-gray-500">Learn how to effectively market your domains with our comprehensive guide.</p>
+      <CardContent className="pt-6">
+        <div className="flex flex-col items-center justify-center space-y-6">
+          <div className="p-4 bg-gray-50 rounded-full">
+            <FileText className="h-14 w-14 text-black" />
+          </div>
+          <div className="text-center">
+            <h3 className="text-lg font-semibold mb-2">Domain Marketing Guide</h3>
+            <p className="text-gray-600">Learn how to effectively market your domains with our comprehensive guide.</p>
+          </div>
         </div>
       </CardContent>
       
-      <CardFooter>
+      <CardFooter className="flex flex-col pb-6">
+        {!hasPurchased && (
+          <div className="w-full text-center mb-4">
+            <p className="text-2xl font-bold text-black">${(price / 100).toFixed(2)}</p>
+          </div>
+        )}
+        
         {hasPurchased ? (
           <Button 
             onClick={handleDownload}
             disabled={isLoading}
-            className="w-full flex items-center justify-center bg-black hover:bg-gray-800 text-white py-4"
+            className="w-full h-12 rounded-lg flex items-center justify-center bg-black hover:bg-gray-800 text-white"
             variant="default"
           >
             {isLoading ? (
               <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Downloading...
+                <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                <span className="font-medium">Downloading...</span>
               </>
             ) : (
               <>
-                <Download className="mr-2 h-4 w-4" />
-                Download Ebook
+                <Download className="mr-2 h-5 w-5" />
+                <span className="font-medium">Download Ebook</span>
               </>
             )}
           </Button>
@@ -131,18 +141,18 @@ export default function EbookDownload({ pageKey, title, description, price }: Eb
           <Button 
             onClick={handlePurchase}
             disabled={isLoading}
-            className="w-full flex items-center justify-center bg-black hover:bg-gray-800 text-white py-4"
+            className="w-full h-12 rounded-lg flex items-center justify-center bg-black hover:bg-gray-800 text-white"
             variant="default"
           >
             {isLoading ? (
               <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Processing...
+                <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                <span className="font-medium">Processing...</span>
               </>
             ) : (
               <>
-                <CreditCard className="mr-2 h-4 w-4" />
-                Purchase Now (${(price / 100).toFixed(2)})
+                <CreditCard className="mr-2 h-5 w-5" />
+                <span className="font-medium">Purchase Now</span>
               </>
             )}
           </Button>

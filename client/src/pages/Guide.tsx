@@ -595,41 +595,44 @@ export default function Guide() {
 
 
       {/* Ebook section */}
-      <section className="py-16 bg-gray-50 border-t border-gray-200">
+      <section className="py-20 bg-gradient-to-b from-white to-gray-50 border-t border-gray-100">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="max-w-5xl mx-auto">
+          <div className="max-w-6xl mx-auto">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
               <div>
-                <h2 className="text-3xl font-bold mb-4">Complete Domain Marketing Guide</h2>
-                <p className="text-lg text-gray-700 mb-6">
+                <h2 className="text-4xl font-bold mb-6 leading-tight">Complete Domain Marketing Guide</h2>
+                <p className="text-lg text-gray-700 mb-8 leading-relaxed">
                   Take your domain knowledge to the next level with our comprehensive guide. Learn advanced marketing strategies, valuation techniques, and insider tips from industry experts.
                 </p>
-                <ul className="space-y-4 mb-6">
-                  <li className="flex items-start">
-                    <CheckSquare className="h-5 w-5 text-black mr-2 mt-0.5" />
+                <ul className="space-y-4 mb-8">
+                  <li className="flex items-start bg-white p-3 rounded-lg shadow-sm border border-gray-100 transition-all hover:shadow-md">
+                    <CheckSquare className="h-5 w-5 text-black mr-3 mt-0.5 flex-shrink-0" />
                     <span>30+ pages of expert domain knowledge</span>
                   </li>
-                  <li className="flex items-start">
-                    <CheckSquare className="h-5 w-5 text-black mr-2 mt-0.5" />
+                  <li className="flex items-start bg-white p-3 rounded-lg shadow-sm border border-gray-100 transition-all hover:shadow-md">
+                    <CheckSquare className="h-5 w-5 text-black mr-3 mt-0.5 flex-shrink-0" />
                     <span>Practical step-by-step domain marketing strategies</span>
                   </li>
-                  <li className="flex items-start">
-                    <CheckSquare className="h-5 w-5 text-black mr-2 mt-0.5" />
+                  <li className="flex items-start bg-white p-3 rounded-lg shadow-sm border border-gray-100 transition-all hover:shadow-md">
+                    <CheckSquare className="h-5 w-5 text-black mr-3 mt-0.5 flex-shrink-0" />
                     <span>Insider tips for maximizing domain profitability</span>
                   </li>
-                  <li className="flex items-start">
-                    <CheckSquare className="h-5 w-5 text-black mr-2 mt-0.5" />
+                  <li className="flex items-start bg-white p-3 rounded-lg shadow-sm border border-gray-100 transition-all hover:shadow-md">
+                    <CheckSquare className="h-5 w-5 text-black mr-3 mt-0.5 flex-shrink-0" />
                     <span>Case studies of successful domain investments</span>
                   </li>
                 </ul>
               </div>
-              <div>
-                <EbookDownload
-                  pageKey="ebook-section"
-                  title="Domain Marketing Guide"
-                  description="Premium domain marketing strategies"
-                  price={1995} // $19.95
-                />
+              <div className="flex justify-center">
+                <div className="relative z-10 w-full max-w-md">
+                  <div className="absolute inset-0 bg-black rounded-xl transform rotate-2 -z-10 opacity-5"></div>
+                  <EbookDownload
+                    pageKey="ebook-section"
+                    title="Domain Marketing Guide"
+                    description="Premium domain marketing strategies"
+                    price={1995} // $19.95
+                  />
+                </div>
               </div>
             </div>
           </div>
