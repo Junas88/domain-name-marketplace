@@ -21,14 +21,16 @@ export default function Hero() {
       return;
     }
     
-    // Scroll to the domains section and apply the search filter
-    const domainsSection = document.getElementById("domains");
-    if (domainsSection) {
-      domainsSection.scrollIntoView({ behavior: "smooth" });
-    }
+    // Use wouter's setLocation to navigate without full page reload
+    setLocation(`/?search=${encodeURIComponent(searchQuery.trim())}#domains`);
     
-    // Update URL with search parameter and trigger reload
-    window.location.href = `/?search=${encodeURIComponent(searchQuery)}#domains`;
+    // Scroll to the domains section
+    setTimeout(() => {
+      const domainsSection = document.getElementById("domains");
+      if (domainsSection) {
+        domainsSection.scrollIntoView({ behavior: "smooth" });
+      }
+    }, 100);
   };
 
   return (

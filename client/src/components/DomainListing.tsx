@@ -60,9 +60,20 @@ export default function DomainListing({ onMakeOffer }: DomainListingProps) {
   const urlParams = new URLSearchParams(window.location.search);
   const searchQuery = urlParams.get("search") || "";
 
-  // Fetch domains
+  // Fetch domains - use search endpoint when we have a search query
   const { data: domains, isLoading, isError } = useQuery<Domain[]>({
-    queryKey: ['/api/domains', searchQuery],
+    queryKey: searchQuery ? ['/api/domains/search', searchQuery] : ['/api/domains'],
+    queryFn: async () => {
+      if (searchQuery) {
+        const response = await fetch(`/api/domains/search?q=${encodeURIComponent(searchQuery)}`);
+        if (!response.ok) throw new Error('Network response was not ok');
+        return response.json();
+      } else {
+        const response = await fetch('/api/domains');
+        if (!response.ok) throw new Error('Network response was not ok');
+        return response.json();
+      }
+    },
     refetchOnWindowFocus: false,
   });
 
@@ -75,20 +86,9 @@ export default function DomainListing({ onMakeOffer }: DomainListingProps) {
     });
   }, [searchQuery]);
 
-  // Apply filters and search
+  // Apply filters only since search is now done on the server
   const filteredDomains = domains?.filter(domain => {
     let matches = true;
-    
-    // Apply search filter if query exists
-    if (searchQuery) {
-      const lowerQuery = searchQuery.toLowerCase();
-      const matchesSearch = 
-        domain.name.toLowerCase().includes(lowerQuery) ||
-        domain.description.toLowerCase().includes(lowerQuery) ||
-        domain.category.toLowerCase().includes(lowerQuery);
-      
-      if (!matchesSearch) matches = false;
-    }
     
     // Apply category filter
     if (filters.category && filters.category !== "All Categories") {
