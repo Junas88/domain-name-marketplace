@@ -71,10 +71,10 @@ export default function EbookDownload({ pageKey, title, description, price }: Eb
   return (
     <Card className="w-full max-w-md mx-auto border border-gray-200 rounded-lg shadow-sm overflow-hidden bg-white">
       <CardContent className="p-8">
-        <h3 className="text-2xl font-bold mb-6">Domain Marketing Guide</h3>
+        <h3 className="text-2xl font-bold mb-6">Domain Name Guide</h3>
         
         <p className="text-gray-600 mb-6">
-          Premium domain marketing strategies to help you maximize your investments and grow your portfolio.
+          Premium domain name strategies to help you maximize your investments and grow your portfolio.
         </p>
         
         <p className="text-lg font-medium mb-1">Free Ebook</p>

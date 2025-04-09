@@ -145,7 +145,7 @@ export default function EbookDownload({ pageKey, title, description, price }: Eb
             <FileText className="h-14 w-14 text-black" />
           </div>
           <div className="text-center">
-            <h3 className="text-lg font-semibold mb-2">Domain Marketing Guide</h3>
+            <h3 className="text-lg font-semibold mb-2">Domain Name Guide</h3>
             <p className="text-gray-600">Learn how to effectively market your domains with our comprehensive guide.</p>
           </div>
         </div>

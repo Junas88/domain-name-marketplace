@@ -600,7 +600,7 @@ export default function Guide() {
           <div className="max-w-6xl mx-auto">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
               <div>
-                <h2 className="text-4xl font-bold mb-6 leading-tight">Complete Domain Marketing Guide</h2>
+                <h2 className="text-4xl font-bold mb-6 leading-tight">Complete Domain Name Guide</h2>
                 <p className="text-lg text-gray-700 mb-8 leading-relaxed">
                   Take your domain knowledge to the next level with our comprehensive guide. Learn advanced marketing strategies, valuation techniques, and insider tips from industry experts.
                 </p>
@@ -628,8 +628,8 @@ export default function Guide() {
                   <div className="absolute inset-0 bg-black rounded-xl transform rotate-2 -z-10 opacity-5"></div>
                   <EbookDownload
                     pageKey="ebook-section"
-                    title="Domain Marketing Guide"
-                    description="Premium domain marketing strategies"
+                    title="Domain Name Guide"
+                    description="Premium domain name strategies"
                     price={0} // Free
                   />
                 </div>

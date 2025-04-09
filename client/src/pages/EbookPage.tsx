@@ -14,9 +14,9 @@ export default function EbookPage() {
       <div className="container mx-auto px-4 py-12">
         <div className="max-w-4xl mx-auto">
           <div className="mb-10 text-center">
-            <h1 className="text-3xl md:text-4xl font-bold mb-4">Domain Name Marketing Guide</h1>
+            <h1 className="text-3xl md:text-4xl font-bold mb-4">Domain Name Guide</h1>
             <p className="text-xl text-gray-600">
-              Download our free guide to learn effective domain marketing strategies
+              Download our free guide to learn effective domain name strategies
             </p>
           </div>
 
@@ -56,7 +56,7 @@ export default function EbookPage() {
               <div className="sticky top-8">
                 <EbookDownload
                   pageKey="ebook-section"
-                  title="Domain Marketing Guide"
+                  title="Domain Name Guide"
                   description="Get immediate access to our comprehensive guide"
                   price={0} // Free ebook
                 />
