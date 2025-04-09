@@ -1,62 +1,13 @@
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
-import { Search, X } from "lucide-react";
+import { Search } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
 import { useLocation } from "wouter";
-import { queryClient } from "@/lib/queryClient";
 
 export default function Hero() {
   const [searchQuery, setSearchQuery] = useState("");
-  const [debouncedSearchQuery, setDebouncedSearchQuery] = useState("");
   const { toast } = useToast();
   const [, setLocation] = useLocation();
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
-  
-  // Debounce search query to prevent excessive API calls
-  useEffect(() => {
-    // Clear previous timeout
-    if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current);
-    }
-    
-    // Only update debounced value and search if query is not empty
-    if (searchQuery.trim()) {
-      // Set a new timeout
-      timeoutRef.current = setTimeout(() => {
-        setDebouncedSearchQuery(searchQuery.trim());
-      }, 300); // 300ms debounce delay
-    } else {
-      setDebouncedSearchQuery("");
-    }
-    
-    // Cleanup on unmount
-    return () => {
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
-      }
-    };
-  }, [searchQuery]);
-  
-  // Execute search when debounced query changes
-  useEffect(() => {
-    if (debouncedSearchQuery) {
-      // Update URL without page reload
-      setLocation(`/?search=${encodeURIComponent(debouncedSearchQuery)}#domains`);
-      
-      // Force refresh the data
-      queryClient.invalidateQueries({ queryKey: ['/api/domains/search', debouncedSearchQuery] });
-      
-      // Scroll to results
-      const domainsSection = document.getElementById("domains");
-      if (domainsSection) {
-        domainsSection.scrollIntoView({ behavior: "smooth" });
-      }
-    }
-  }, [debouncedSearchQuery, setLocation]);
-
-  // Handle input changes - just update local state
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchQuery(e.target.value);
-  };
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -70,38 +21,14 @@ export default function Hero() {
       return;
     }
     
-    // Immediately apply the search without waiting for debounce
-    const query = searchQuery.trim();
-    setDebouncedSearchQuery(query);
-    
-    // Set URL and force refresh
-    setLocation(`/?search=${encodeURIComponent(query)}#domains`);
-    queryClient.invalidateQueries({ queryKey: ['/api/domains/search', query] });
-    
-    // Scroll to results immediately
+    // Scroll to the domains section and apply the search filter
     const domainsSection = document.getElementById("domains");
     if (domainsSection) {
       domainsSection.scrollIntoView({ behavior: "smooth" });
     }
-  };
-  
-  // Clear search and reset
-  const clearSearch = () => {
-    setSearchQuery("");
-    setDebouncedSearchQuery("");
-    setLocation('/#domains');
     
-    // Clear any pending timeouts
-    if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current);
-      timeoutRef.current = null;
-    }
-    
-    // Refresh with the default domain list
-    queryClient.invalidateQueries({ queryKey: ['/api/domains'] });
-    
-    // This ensures the domain listing shows all domains
-    queryClient.setQueryData(['/api/domains/search', ""], null);
+    // Update URL with search parameter
+    setLocation(`/?search=${encodeURIComponent(searchQuery)}`);
   };
 
   return (
@@ -124,27 +51,15 @@ export default function Hero() {
           <form onSubmit={handleSearch} className="max-w-3xl mx-auto" role="search" aria-label="Search domains">
             <div className="bg-white rounded-full overflow-hidden shadow-lg flex border border-black">
               <label htmlFor="domain-search" className="sr-only">Search for domains</label>
-              <div className="flex-grow flex items-center relative">
-                <input 
-                  id="domain-search"
-                  type="text" 
-                  placeholder="Search for domains..." 
-                  className="w-full px-6 py-4 border-none focus:outline-none text-neutral-800"
-                  value={searchQuery}
-                  onChange={handleInputChange}
-                  aria-label="Domain search input"
-                />
-                {searchQuery && (
-                  <button 
-                    type="button"
-                    onClick={clearSearch}
-                    className="absolute right-3 text-gray-500 hover:text-gray-700"
-                    aria-label="Clear search"
-                  >
-                    <X size={18} />
-                  </button>
-                )}
-              </div>
+              <input 
+                id="domain-search"
+                type="text" 
+                placeholder="Search for domains..." 
+                className="flex-grow px-6 py-4 border-none focus:outline-none text-neutral-800"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                aria-label="Domain search input"
+              />
               <button 
                 type="submit"
                 className="bg-black text-white px-8 py-4 font-semibold hover:bg-neutral-800 transition-colors"

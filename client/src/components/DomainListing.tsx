@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react";
+import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 import { useLocation } from "wouter";
@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ChevronLeft, ChevronRight, Shield, Check, X } from "lucide-react";
+import { ChevronLeft, ChevronRight, Shield, Check } from "lucide-react";
 
 // Helper function to get colors for different categories
 const getCategoryColor = (category: string): string => {
@@ -57,95 +57,71 @@ export default function DomainListing({ onMakeOffer }: DomainListingProps) {
   const domainsPerPage = 20;
 
   // Parse search query from URL if present
-  const [location] = useLocation();
   const urlParams = new URLSearchParams(window.location.search);
   const searchQuery = urlParams.get("search") || "";
 
-  // Optimized query implementation with better caching
+  // Fetch domains
   const { data: domains, isLoading, isError } = useQuery<Domain[]>({
-    queryKey: [searchQuery ? '/api/domains/search' : '/api/domains', searchQuery],
-    queryFn: async () => {
-      // Check if we already have cached data for this search query
-      const cachedData = queryClient.getQueryData(['/api/domains/search', searchQuery]);
-      if (cachedData) {
-        return cachedData;
-      }
-      
-      // If not cached, fetch from server
-      if (searchQuery) {
-        console.log("Searching for domains with query:", searchQuery);
-        const response = await fetch(`/api/domains/search?q=${encodeURIComponent(searchQuery)}`);
-        if (!response.ok) throw new Error('Network response was not ok');
-        return response.json();
-      } else {
-        const response = await fetch('/api/domains');
-        if (!response.ok) throw new Error('Network response was not ok');
-        return response.json();
-      }
-    },
+    queryKey: ['/api/domains'],
     refetchOnWindowFocus: false,
-    staleTime: 5 * 60 * 1000, // Cache for 5 minutes
-    gcTime: 10 * 60 * 1000 // Keep in cache for 10 minutes
   });
 
-  useEffect(() => {
-    // Reset filters when search query changes
-    setFilters({
-      category: "All Categories",
-      priceRange: "Any Price",
-      length: "Any Length",
-    });
-  }, [searchQuery]);
-
-  // Apply filters only since search is now done on the server
-  const filteredDomains = useMemo(() => {
-    if (!domains) return [];
+  // Apply filters and search
+  const filteredDomains = domains?.filter(domain => {
+    let matches = true;
     
-    return domains.filter((domain: Domain) => {
-      let matches = true;
+    // Apply search filter if query exists
+    if (searchQuery) {
+      const lowerQuery = searchQuery.toLowerCase();
+      const matchesSearch = 
+        domain.name.toLowerCase().includes(lowerQuery) ||
+        domain.description.toLowerCase().includes(lowerQuery) ||
+        domain.category.toLowerCase().includes(lowerQuery);
       
-      // Apply category filter
-      if (filters.category && filters.category !== "All Categories") {
-        if (domain.category !== filters.category) matches = false;
+      if (!matchesSearch) matches = false;
+    }
+    
+    // Apply category filter
+    if (filters.category && filters.category !== "All Categories") {
+      if (domain.category !== filters.category) matches = false;
+    }
+    
+    // Apply price range filter
+    if (filters.priceRange && filters.priceRange !== "Any Price") {
+      switch (filters.priceRange) {
+        case "Under $1,000":
+          if (domain.price >= 1000) matches = false;
+          break;
+        case "$1,000 - $5,000":
+          if (domain.price < 1000 || domain.price > 5000) matches = false;
+          break;
+        case "$5,000 - $10,000":
+          if (domain.price < 5000 || domain.price > 10000) matches = false;
+          break;
+        case "$10,000+":
+          if (domain.price <= 10000) matches = false;
+          break;
       }
-      
-      // Apply price range filter
-      if (filters.priceRange && filters.priceRange !== "Any Price") {
-        switch (filters.priceRange) {
-          case "Under $1,000":
-            if (domain.price >= 1000) matches = false;
-            break;
-          case "$1,000 - $5,000":
-            if (domain.price < 1000 || domain.price > 5000) matches = false;
-            break;
-          case "$5,000 - $10,000":
-            if (domain.price < 5000 || domain.price > 10000) matches = false;
-            break;
-          case "$10,000+":
-            if (domain.price <= 10000) matches = false;
-            break;
-        }
+    }
+    
+    // Apply length filter
+    if (filters.length && filters.length !== "Any Length") {
+      const domainNameLength = domain.name.length;
+      switch (filters.length) {
+        case "3-5 Characters":
+          if (domainNameLength < 3 || domainNameLength > 5) matches = false;
+          break;
+        case "6-9 Characters":
+          if (domainNameLength < 6 || domainNameLength > 9) matches = false;
+          break;
+        case "10+ Characters":
+          if (domainNameLength < 10) matches = false;
+          break;
       }
-      
-      // Apply length filter
-      if (filters.length && filters.length !== "Any Length") {
-        const domainNameLength = domain.name.length;
-        switch (filters.length) {
-          case "3-5 Characters":
-            if (domainNameLength < 3 || domainNameLength > 5) matches = false;
-            break;
-          case "6-9 Characters":
-            if (domainNameLength < 6 || domainNameLength > 9) matches = false;
-            break;
-          case "10+ Characters":
-            if (domainNameLength < 10) matches = false;
-            break;
-        }
-      }
-      
-      return matches;
-    });
-  }, [domains, filters]);
+    }
+    
+    return matches;
+  }) || [];
 
   // Pagination
   const indexOfLastDomain = currentPage * domainsPerPage;
@@ -258,23 +234,7 @@ export default function DomainListing({ onMakeOffer }: DomainListingProps) {
     <section id="domains" className="py-12 bg-white border-t border-black" aria-labelledby="domains-heading">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <h2 id="domains-heading" className="text-3xl font-bold mb-2">Premium Domains for Sale</h2>
-        <p className="text-neutral-800 mb-2">Browse our collection of premium domain names for businesses, startups, and brands</p>
-        
-        {/* Search status indicator */}
-        {searchQuery && (
-          <div className="mb-6 flex items-center gap-2 rounded-md bg-black text-white py-2 px-4 w-fit">
-            <span className="font-medium">Search results for: "{searchQuery}"</span>
-            <button 
-              onClick={() => {
-                window.location.href = '/#domains';
-              }}
-              className="ml-2 hover:bg-white/10 p-1 rounded"
-              aria-label="Clear search"
-            >
-              <X size={16} />
-            </button>
-          </div>
-        )}
+        <p className="text-neutral-800 mb-8">Browse our collection of premium domain names for businesses, startups, and brands</p>
         
         {/* Hidden keywords for SEO */}
         <div className="sr-only">
@@ -409,7 +369,7 @@ export default function DomainListing({ onMakeOffer }: DomainListingProps) {
             role="region" 
             aria-label="Available domains"
           >
-            {currentDomains.map((domain: Domain) => (
+            {currentDomains.map((domain) => (
               <Card 
                 key={domain.id} 
                 className="overflow-hidden transition-transform hover:shadow-md hover:-translate-y-1 border border-black"

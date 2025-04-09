@@ -903,42 +903,12 @@ export class MemStorage implements IStorage {
   async searchDomains(query: string): Promise<Domain[]> {
     if (!query) return this.getAllDomains();
     
-    // Convert query to lowercase for case-insensitive search
-    const lowercaseQuery = query.toLowerCase().trim();
-    
-    // First collect exact matches (highest priority)
-    const exactMatches: Domain[] = [];
-    const partialMatches: Domain[] = [];
-    
-    // Get all domains and sort them into exact and partial matches
-    const allDomains = Array.from(this.domains.values());
-    
-    for (const domain of allDomains) {
-      const name = domain.name.toLowerCase();
-      const description = domain.description.toLowerCase();
-      const category = domain.category.toLowerCase();
-      
-      // Check for exact match in name (highest priority)
-      if (name === lowercaseQuery || name.includes(lowercaseQuery)) {
-        exactMatches.push(domain);
-      }
-      // Check for partial match in name, description, or category
-      else if (
-        description.includes(lowercaseQuery) || 
-        category.includes(lowercaseQuery)
-      ) {
-        partialMatches.push(domain);
-      }
-    }
-    
-    // Combine results with exact matches first
-    const results = [...exactMatches, ...partialMatches];
-    
-    // Log for debugging
-    console.log(`Search query: "${query}"`);
-    console.log(`Found ${results.length} domains matching "${query}"`);
-    
-    return results;
+    const lowercaseQuery = query.toLowerCase();
+    return Array.from(this.domains.values()).filter(domain => 
+      domain.name.toLowerCase().includes(lowercaseQuery) ||
+      domain.description.toLowerCase().includes(lowercaseQuery) ||
+      domain.category.toLowerCase().includes(lowercaseQuery)
+    );
   }
   
   async filterDomains(filters: {

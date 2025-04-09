@@ -168,23 +168,31 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
-  // Search domains - this must be before the :id route
+  // Get a specific domain by ID
+  app.get("/api/domains/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) {
+        return res.status(400).json({ message: "Invalid domain ID" });
+      }
+      
+      const domain = await storage.getDomain(id);
+      if (!domain) {
+        return res.status(404).json({ message: "Domain not found" });
+      }
+      
+      res.json(domain);
+    } catch (error) {
+      console.error("Error fetching domain:", error);
+      res.status(500).json({ message: "Failed to fetch domain" });
+    }
+  });
+  
+  // Search domains
   app.get("/api/domains/search", async (req, res) => {
     try {
       const query = req.query.q as string;
-      
-      // Log the search query for debugging
-      console.log(`Search query: "${query}"`);
-      
-      // If query is empty, return all domains
-      if (!query || query.trim() === '') {
-        const allDomains = await storage.getAllDomains();
-        return res.json(allDomains);
-      }
-      
-      // Search domains with the provided query
       const domains = await storage.searchDomains(query);
-      console.log(`Found ${domains.length} domains matching "${query}"`);
       res.json(domains);
     } catch (error) {
       console.error("Error searching domains:", error);
