@@ -27,8 +27,8 @@ export default function Hero() {
       domainsSection.scrollIntoView({ behavior: "smooth" });
     }
     
-    // Update URL with search parameter
-    setLocation(`/?search=${encodeURIComponent(searchQuery)}`);
+    // Update URL with search parameter and trigger reload
+    window.location.href = `/?search=${encodeURIComponent(searchQuery)}#domains`;
   };
 
   return (

@@ -62,9 +62,18 @@ export default function DomainListing({ onMakeOffer }: DomainListingProps) {
 
   // Fetch domains
   const { data: domains, isLoading, isError } = useQuery<Domain[]>({
-    queryKey: ['/api/domains'],
+    queryKey: ['/api/domains', searchQuery],
     refetchOnWindowFocus: false,
   });
+
+  useEffect(() => {
+    // Reset filters when search query changes
+    setFilters({
+      category: "All Categories",
+      priceRange: "Any Price",
+      length: "Any Length",
+    });
+  }, [searchQuery]);
 
   // Apply filters and search
   const filteredDomains = domains?.filter(domain => {
