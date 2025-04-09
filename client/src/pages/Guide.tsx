@@ -1,6 +1,6 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import EbookPurchaseButton from "@/components/EbookPurchaseButton";
 import Layout from "@/components/Layout";
+import EbookDownload from "@/components/EbookDownload";
 import { 
   TrendingUp, 
   DollarSign, 
@@ -712,6 +712,48 @@ export default function Guide() {
                     </p>
                   </div>
                 </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Ebook section */}
+      <section className="py-12 bg-gray-50 border-t border-gray-200">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="max-w-5xl mx-auto">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+              <div>
+                <h2 className="text-3xl font-bold mb-4">Complete Domain Marketing Guide</h2>
+                <p className="text-lg text-gray-700 mb-6">
+                  Take your domain knowledge to the next level with our comprehensive guide. Learn advanced marketing strategies, valuation techniques, and insider tips from industry experts.
+                </p>
+                <ul className="space-y-3 mb-6">
+                  <li className="flex items-start">
+                    <CheckSquare className="h-5 w-5 text-green-600 mr-2 mt-0.5" />
+                    <span>30+ pages of expert domain knowledge</span>
+                  </li>
+                  <li className="flex items-start">
+                    <CheckSquare className="h-5 w-5 text-green-600 mr-2 mt-0.5" />
+                    <span>Practical step-by-step domain marketing strategies</span>
+                  </li>
+                  <li className="flex items-start">
+                    <CheckSquare className="h-5 w-5 text-green-600 mr-2 mt-0.5" />
+                    <span>Insider tips for maximizing domain profitability</span>
+                  </li>
+                  <li className="flex items-start">
+                    <CheckSquare className="h-5 w-5 text-green-600 mr-2 mt-0.5" />
+                    <span>Case studies of successful domain investments</span>
+                  </li>
+                </ul>
+              </div>
+              <div>
+                <EbookDownload
+                  pageKey="ebook-section"
+                  title="Domain Marketing Guide"
+                  description="Premium domain marketing strategies"
+                  price={1995} // $19.95
+                />
               </div>
             </div>
           </div>
