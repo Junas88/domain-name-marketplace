@@ -595,7 +595,7 @@ export default function Guide() {
 
 
       {/* Ebook section */}
-      <section className="py-12 bg-gray-50 border-t border-gray-200">
+      <section className="py-16 bg-gray-50 border-t border-gray-200">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-5xl mx-auto">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
@@ -604,21 +604,21 @@ export default function Guide() {
                 <p className="text-lg text-gray-700 mb-6">
                   Take your domain knowledge to the next level with our comprehensive guide. Learn advanced marketing strategies, valuation techniques, and insider tips from industry experts.
                 </p>
-                <ul className="space-y-3 mb-6">
+                <ul className="space-y-4 mb-6">
                   <li className="flex items-start">
-                    <CheckSquare className="h-5 w-5 text-green-600 mr-2 mt-0.5" />
+                    <CheckSquare className="h-5 w-5 text-black mr-2 mt-0.5" />
                     <span>30+ pages of expert domain knowledge</span>
                   </li>
                   <li className="flex items-start">
-                    <CheckSquare className="h-5 w-5 text-green-600 mr-2 mt-0.5" />
+                    <CheckSquare className="h-5 w-5 text-black mr-2 mt-0.5" />
                     <span>Practical step-by-step domain marketing strategies</span>
                   </li>
                   <li className="flex items-start">
-                    <CheckSquare className="h-5 w-5 text-green-600 mr-2 mt-0.5" />
+                    <CheckSquare className="h-5 w-5 text-black mr-2 mt-0.5" />
                     <span>Insider tips for maximizing domain profitability</span>
                   </li>
                   <li className="flex items-start">
-                    <CheckSquare className="h-5 w-5 text-green-600 mr-2 mt-0.5" />
+                    <CheckSquare className="h-5 w-5 text-black mr-2 mt-0.5" />
                     <span>Case studies of successful domain investments</span>
                   </li>
                 </ul>

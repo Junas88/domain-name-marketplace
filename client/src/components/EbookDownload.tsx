@@ -94,23 +94,16 @@ export default function EbookDownload({ pageKey, title, description, price }: Eb
   };
 
   return (
-    <Card className="w-full max-w-md mx-auto">
+    <Card className="w-full max-w-md mx-auto border border-gray-200 shadow-sm">
       <CardHeader>
         <CardTitle>{title}</CardTitle>
         {description && <CardDescription>{description}</CardDescription>}
       </CardHeader>
       <CardContent>
         <div className="text-center space-y-4">
-          <FileText className="h-16 w-16 mx-auto text-muted-foreground" />
+          <FileText className="h-16 w-16 mx-auto text-gray-400" />
           <h3 className="font-semibold text-lg">Domain Marketing Guide</h3>
           <p className="text-gray-500">Learn how to effectively market your domains with our comprehensive guide.</p>
-          
-          {!hasPurchased && (
-            <div className="mt-4 p-3 bg-gray-50 rounded-md">
-              <p className="font-medium text-lg">${(price / 100).toFixed(2)}</p>
-              <p className="text-sm text-gray-500">One-time purchase, instant download</p>
-            </div>
-          )}
         </div>
       </CardContent>
       
@@ -119,7 +112,8 @@ export default function EbookDownload({ pageKey, title, description, price }: Eb
           <Button 
             onClick={handleDownload}
             disabled={isLoading}
-            className="w-full"
+            className="w-full flex items-center justify-center bg-black hover:bg-gray-800 text-white py-4"
+            variant="default"
           >
             {isLoading ? (
               <>
@@ -137,7 +131,8 @@ export default function EbookDownload({ pageKey, title, description, price }: Eb
           <Button 
             onClick={handlePurchase}
             disabled={isLoading}
-            className="w-full"
+            className="w-full flex items-center justify-center bg-black hover:bg-gray-800 text-white py-4"
+            variant="default"
           >
             {isLoading ? (
               <>
