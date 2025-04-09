@@ -62,10 +62,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.use('/downloads', express.static(path.join(process.cwd(), 'public/downloads')));
   
   // Direct ebook download endpoint
-  app.get('/api/direct-download/ebook', (req, res) => {
+  app.get('/api/direct-download/ebook', async (req, res) => {
     try {
       console.log('Downloading ebook...');
-      const filePath = path.join(process.cwd(), 'public/downloads/Domain Name Marketing.pdf');
+      
+      // First try to get the ebook from page content
+      const pageContent = await storage.getPageContent('ebook-section');
+      
+      let filePath = '';
+      let fileName = 'Domain Name Marketing.pdf';
+      
+      if (pageContent && pageContent.filePath && fs.existsSync(pageContent.filePath)) {
+        // If the page content has a file path and the file exists, use that
+        filePath = pageContent.filePath;
+        if (pageContent.fileName) {
+          fileName = pageContent.fileName;
+        }
+        console.log('Using uploaded file:', filePath);
+      } else {
+        // Fallback to default file
+        filePath = path.join(process.cwd(), 'public/downloads/Domain Name Marketing.pdf');
+        console.log('Using default file:', filePath);
+      }
       
       // Check if file exists
       if (!fs.existsSync(filePath)) {
@@ -77,7 +95,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Set headers
       res.setHeader('Content-Type', 'application/pdf');
-      res.setHeader('Content-Disposition', 'attachment; filename="Domain Name Marketing.pdf"');
+      res.setHeader('Content-Disposition', `attachment; filename="${fileName}"`);
       
       // Send file stream
       const fileStream = fs.createReadStream(filePath);

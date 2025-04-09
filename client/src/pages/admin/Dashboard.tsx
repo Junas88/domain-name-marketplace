@@ -982,7 +982,7 @@ export default function AdminDashboard() {
                                     <DialogHeader>
                                       <DialogTitle>Upload E-book File</DialogTitle>
                                       <DialogDescription>
-                                        Upload a PDF file for the e-book that users can download after purchase.
+                                        Upload a PDF file for the e-book that users can download for free. This will replace the current PDF.
                                       </DialogDescription>
                                     </DialogHeader>
                                     <FileUploader 

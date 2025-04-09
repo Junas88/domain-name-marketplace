@@ -88,10 +88,10 @@ export default function FileUploader({ pageKey, onSuccess }: FileUploaderProps) 
                 type="file"
                 className="hidden"
                 onChange={handleFileChange}
-                accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                accept={pageKey === 'ebook-section' ? '.pdf' : '.pdf,.doc,.docx,.jpg,.jpeg,.png'}
               />
             </div>
-            <p className="mt-1 text-sm text-gray-500">PDF, DOC, DOCX, JPG, JPEG, PNG up to 10MB</p>
+            <p className="mt-1 text-sm text-gray-500">{pageKey === 'ebook-section' ? 'PDF files up to 10MB' : 'PDF, DOC, DOCX, JPG, JPEG, PNG up to 10MB'}</p>
           </div>
           
           {file && (
