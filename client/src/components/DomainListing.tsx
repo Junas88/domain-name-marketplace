@@ -54,7 +54,7 @@ export default function DomainListing({ onMakeOffer }: DomainListingProps) {
     length: "Any Length",
   });
   const [currentPage, setCurrentPage] = useState(1);
-  const domainsPerPage = 6;
+  const domainsPerPage = 20;
 
   // Parse search query from URL if present
   const urlParams = new URLSearchParams(window.location.search);
@@ -324,7 +324,7 @@ export default function DomainListing({ onMakeOffer }: DomainListingProps) {
         {isLoading ? (
           // Loading skeleton
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" aria-label="Loading domains">
-            {Array.from({ length: 6 }).map((_, index) => (
+            {Array.from({ length: 20 }).map((_, index) => (
               <Card key={index} className="overflow-hidden">
                 <CardContent className="p-6">
                   <div className="flex justify-between items-start mb-4">
