@@ -600,25 +600,25 @@ export default function Guide() {
           <div className="max-w-6xl mx-auto">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
               <div>
-                <h2 className="text-4xl font-bold mb-6 leading-tight">Complete Domain Name Guide</h2>
+                <h2 className="text-4xl font-bold mb-6 leading-tight">Domain Name Guide</h2>
                 <p className="text-lg text-gray-700 mb-8 leading-relaxed">
-                  Take your domain knowledge to the next level with our comprehensive guide. Learn advanced marketing strategies, valuation techniques, and insider tips from industry experts.
+                  Take your domain knowledge to the next level with our comprehensive guide. Learn advanced domain name strategies, valuation techniques, and insider tips from industry experts.
                 </p>
                 <ul className="space-y-4 mb-8">
                   <li className="flex items-start bg-white p-3 rounded-lg shadow-sm border border-gray-100 transition-all hover:shadow-md">
-                    <CheckSquare className="h-5 w-5 text-black mr-3 mt-0.5 flex-shrink-0" />
+                    <CheckSquare className="h-5 w-5 text-green-600 mr-3 mt-0.5 flex-shrink-0" />
                     <span>30+ pages of expert domain knowledge</span>
                   </li>
                   <li className="flex items-start bg-white p-3 rounded-lg shadow-sm border border-gray-100 transition-all hover:shadow-md">
-                    <CheckSquare className="h-5 w-5 text-black mr-3 mt-0.5 flex-shrink-0" />
-                    <span>Practical step-by-step domain marketing strategies</span>
+                    <CheckSquare className="h-5 w-5 text-green-600 mr-3 mt-0.5 flex-shrink-0" />
+                    <span>Practical step-by-step domain name strategies</span>
                   </li>
                   <li className="flex items-start bg-white p-3 rounded-lg shadow-sm border border-gray-100 transition-all hover:shadow-md">
-                    <CheckSquare className="h-5 w-5 text-black mr-3 mt-0.5 flex-shrink-0" />
+                    <CheckSquare className="h-5 w-5 text-green-600 mr-3 mt-0.5 flex-shrink-0" />
                     <span>Insider tips for maximizing domain profitability</span>
                   </li>
                   <li className="flex items-start bg-white p-3 rounded-lg shadow-sm border border-gray-100 transition-all hover:shadow-md">
-                    <CheckSquare className="h-5 w-5 text-black mr-3 mt-0.5 flex-shrink-0" />
+                    <CheckSquare className="h-5 w-5 text-green-600 mr-3 mt-0.5 flex-shrink-0" />
                     <span>Case studies of successful domain investments</span>
                   </li>
                 </ul>

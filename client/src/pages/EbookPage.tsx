@@ -35,7 +35,7 @@ export default function EbookPage() {
                   <div>
                     <h2 className="text-2xl font-semibold mb-4">What's Inside Our Free Guide</h2>
                     <ul className="list-disc pl-5 space-y-2">
-                      <li>How to effectively market your domain names</li>
+                      <li>How to effectively manage your domain names</li>
                       <li>Understanding domain name value factors</li>
                       <li>Strategies for selling domains at premium prices</li>
                       <li>Tips for domain name buyers and sellers</li>
@@ -45,7 +45,7 @@ export default function EbookPage() {
                     
                     <div className="mt-6 p-4 bg-gray-100 rounded-lg">
                       <h3 className="text-lg font-medium mb-2">Why Download This Guide?</h3>
-                      <p>This comprehensive 30+ page guide contains expert knowledge on how to market and profit from domain names. Whether you're a beginner or experienced domain investor, you'll find valuable insights to maximize your success in the domain industry.</p>
+                      <p>This comprehensive 30+ page guide contains expert knowledge on how to manage and profit from domain names. Whether you're a beginner or experienced domain investor, you'll find valuable insights to maximize your success in the domain industry.</p>
                     </div>
                   </div>
                 )}
