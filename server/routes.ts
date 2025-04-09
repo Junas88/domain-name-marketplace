@@ -61,6 +61,29 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Serve static files from public/downloads
   app.use('/downloads', express.static(path.join(process.cwd(), 'public/downloads')));
   
+  // Special endpoint to fix ebook section settings
+  app.get('/api/fix-ebook-settings', async (req, res) => {
+    try {
+      // Update ebook settings to make it free
+      const pageContent = await storage.updatePageContent('ebook-section', {
+        isPurchaseRequired: false,
+        price: 0
+      });
+      
+      if (!pageContent) {
+        return res.status(404).json({ message: 'Ebook section not found' });
+      }
+      
+      res.json({ 
+        message: 'Ebook settings updated successfully',
+        pageContent
+      });
+    } catch (err) {
+      console.error('Error updating ebook settings:', err);
+      res.status(500).json({ message: 'Error updating ebook settings' });
+    }
+  });
+
   // Direct ebook download endpoint
   app.get('/api/direct-download/ebook', async (req, res) => {
     try {
@@ -68,6 +91,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // First try to get the ebook from page content
       const pageContent = await storage.getPageContent('ebook-section');
+      
+      // For the direct-download/ebook endpoint, we always want to allow downloads
+      // regardless of the isPurchaseRequired flag
+      // This is a direct access endpoint specifically for free downloads 
+      // (Note: we're not updating the settings in the database here to avoid conflicts)
       
       let filePath = '';
       let fileName = 'Domain Name Marketing.pdf';
@@ -471,12 +499,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       // Update page content with file information
-      const updatedPageContent = await storage.updatePageContent(pageKey, {
+      // For ebook-section specifically, make sure to set isPurchaseRequired to false
+      const updates = {
         filePath: req.file.path,
         fileName: req.file.originalname,
         fileType: req.file.mimetype,
         fileSize: req.file.size
-      });
+      };
+      
+      if (pageKey === 'ebook-section') {
+        Object.assign(updates, {
+          isPurchaseRequired: false,
+          price: 0
+        });
+      }
+      
+      const updatedPageContent = await storage.updatePageContent(pageKey, updates);
       
       res.json(updatedPageContent);
     } catch (error) {

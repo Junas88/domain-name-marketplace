@@ -21,6 +21,13 @@ export default function EbookDownload({ pageKey, title, description, price }: Eb
     queryKey: [`/api/page-contents/${pageKey}`],
     enabled: !!pageKey,
   });
+  
+  // Ensure the ebook is treated as free regardless of server settings
+  useEffect(() => {
+    if (pageContent?.isPurchaseRequired) {
+      console.log('Ebook should be FREE - using direct-download endpoint');
+    }
+  }, [pageContent]);
 
   const handleDownload = () => {
     setIsLoading(true);
