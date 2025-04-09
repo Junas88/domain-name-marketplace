@@ -8,8 +8,7 @@ export default function BuyerProtection() {
       <section className="py-12 md:py-16 lg:py-20 bg-black text-white">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-4xl mx-auto text-center">
-            <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 flex items-center justify-center">
-              <Shield className="mr-3 h-10 w-10 text-green-500" />
+            <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4">
               Buyer Protection
             </h1>
             <p className="text-lg md:text-xl opacity-90 mb-8">
@@ -27,7 +26,7 @@ export default function BuyerProtection() {
               <h2 className="text-3xl font-bold mb-6">How We Protect Your Purchase</h2>
               
               <p className="text-lg text-gray-700 mb-8">
-                At TakeMyName.com, we understand that buying domain names can be a significant investment. 
+                At DomainnameGuide.com, we understand that buying domain names can be a significant investment. 
                 That's why we've partnered with GoDaddy, the world's largest domain registrar, to provide 
                 you with a secure, reliable, and trusted purchasing experience.
               </p>
@@ -38,7 +37,7 @@ export default function BuyerProtection() {
                   Secure Transactions through GoDaddy
                 </h3>
                 <p className="text-gray-700">
-                  All domain purchases on TakeMyName.com are processed through GoDaddy's secure platform. 
+                  All domain purchases on DomainnameGuide.com are processed through GoDaddy's secure platform. 
                   When you purchase a domain with the "Buy It Now" option, the transaction is handled by 
                   GoDaddy's infrastructure, ensuring your payment information is protected with industry-standard 
                   encryption and security protocols.
@@ -134,7 +133,7 @@ export default function BuyerProtection() {
                     <h4 className="text-lg font-semibold text-yellow-800">Important Note</h4>
                     <p className="text-yellow-700">
                       Be wary of domain sellers who don't use established escrow services or reputable registrars like GoDaddy for transactions. 
-                      TakeMyName.com exclusively uses GoDaddy to ensure your purchase is protected.
+                      DomainnameGuide.com exclusively uses GoDaddy to ensure your purchase is protected.
                     </p>
                   </div>
                 </div>
@@ -176,7 +175,7 @@ export default function BuyerProtection() {
                   Our Commitment to Your Security
                 </h3>
                 <p className="text-green-700 mb-4">
-                  TakeMyName.com is committed to providing you with a secure and trustworthy platform for your domain investments. 
+                  DomainnameGuide.com is committed to providing you with a secure and trustworthy platform for your domain investments. 
                   By partnering with GoDaddy, we ensure that every transaction is protected by industry-leading security measures.
                 </p>
                 <p className="text-green-700">

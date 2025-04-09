@@ -12,8 +12,8 @@ import { HelpCircle } from "lucide-react";
 export default function FAQs() {
   const faqs = [
     {
-      question: "How does buying a domain on TakeMyName.com work?",
-      answer: "Purchasing a domain on TakeMyName.com is simple and secure. You can click the 'Buy Now' button on any domain listing to make an immediate purchase at the listed price. All transactions are securely processed through GoDaddy, ensuring a safe transfer of ownership. After purchase, you'll receive instructions on accessing your new domain."
+      question: "How does buying a domain on DomainnameGuide.com work?",
+      answer: "Purchasing a domain on DomainnameGuide.com is simple and secure. You can click the 'Buy Now' button on any domain listing to make an immediate purchase at the listed price. All transactions are securely processed through GoDaddy, ensuring a safe transfer of ownership. After purchase, you'll receive instructions on accessing your new domain."
     },
     {
       question: "What is the difference between 'Buy Now' and 'Make Offer'?",
@@ -32,8 +32,8 @@ export default function FAQs() {
       answer: "Domains marked as 'Sold' are no longer available for purchase. However, we add new premium domains regularly. You can also use our Domain Name Finder service where our experts help you find alternative domains that match your business needs."
     },
     {
-      question: "Can I sell my domain on TakeMyName.com?",
-      answer: "Yes! We welcome domain sellers with quality names. To list your domain with us, visit our <a href='/selling-strategy' className='text-blue-600 hover:underline'>Selling Strategy</a> page or contact our team at <a href='mailto:sales@takemyname.com' className='text-blue-600 hover:underline'>sales@takemyname.com</a>. We'll help you determine a competitive price and list your domain on our marketplace."
+      question: "Can I sell my domain on DomainnameGuide.com?",
+      answer: "Yes! We welcome domain sellers with quality names. To list your domain with us, visit our <a href='/selling-strategy' className='text-blue-600 hover:underline'>Selling Strategy</a> page or contact our team at <a href='mailto:sales@domainnameguide.com' className='text-blue-600 hover:underline'>sales@domainnameguide.com</a>. We'll help you determine a competitive price and list your domain on our marketplace."
     },
     {
       question: "What makes a domain name valuable?",
@@ -49,7 +49,7 @@ export default function FAQs() {
     },
     {
       question: "Do you offer any guarantees on domain purchases?",
-      answer: "Yes, all domain purchases through TakeMyName.com come with our Buyer Protection Guarantee. This ensures your transaction is securely processed through GoDaddy, the domain is free of legal issues, and the transfer process is properly completed. If you encounter any problems, our support team is available to assist."
+      answer: "Yes, all domain purchases through DomainnameGuide.com come with our Buyer Protection Guarantee. This ensures your transaction is securely processed through GoDaddy, the domain is free of legal issues, and the transfer process is properly completed. If you encounter any problems, our support team is available to assist."
     }
   ];
 
@@ -60,12 +60,11 @@ export default function FAQs() {
         <section className="py-12 md:py-16 lg:py-20 bg-black text-white">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="max-w-4xl mx-auto text-center">
-              <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 flex items-center justify-center">
-                <HelpCircle className="mr-3 h-10 w-10 text-green-500" />
+              <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4">
                 Frequently Asked Questions
               </h1>
               <p className="text-lg md:text-xl opacity-90 mb-8">
-                Find answers to the most common questions about domain purchasing, selling, and transferring on TakeMyName.com
+                Find answers to the most common questions about domain purchasing, selling, and transferring on DomainnameGuide.com
               </p>
             </div>
           </div>

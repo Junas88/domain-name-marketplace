@@ -136,7 +136,7 @@ export default function Guide() {
                       <p className="italic text-gray-700">
                         "When negotiating for premium domains, always start with a reasonable offer backed by market research. Sellers respect informed buyers, and you're more likely to reach a favorable agreement when you demonstrate domain knowledge."
                       </p>
-                      <p className="mt-2 text-sm font-medium">— Domain Investment Expert, TakeMyName</p>
+                      <p className="mt-2 text-sm font-medium">— Domain Investment Expert, DomainnameGuide</p>
                     </div>
                   </div>
                 </div>
@@ -317,7 +317,7 @@ export default function Guide() {
                       <p className="italic text-gray-700">
                         "The domain market continues to segment into specialized niches, with AI, green tech, and digital health domains commanding increasing premiums. Investors are looking beyond traditional .COM extensions to industry-specific TLDs that offer targeted branding opportunities at lower entry points."
                       </p>
-                      <p className="mt-2 text-sm font-medium">— Domain Market Analyst, TakeMyName</p>
+                      <p className="mt-2 text-sm font-medium">— Domain Market Analyst, DomainnameGuide</p>
                     </div>
                   </div>
                 </div>
@@ -573,9 +573,9 @@ export default function Guide() {
                   </div>
 
                   <div className="border-t border-gray-200 pt-6">
-                    <h3 className="text-lg font-semibold mb-4">Next Step: Sell with TakeMyName</h3>
+                    <h3 className="text-lg font-semibold mb-4">Next Step: Sell with DomainnameGuide</h3>
                     <p className="text-gray-700 mb-6">
-                      Ready to sell your domain name? TakeMyName offers a premium marketplace, professional marketing, and secure transactions through GoDaddy. Our domain experts will help you maximize your domain's value.
+                      Ready to sell your domain name? DomainnameGuide offers a premium marketplace, professional marketing, and secure transactions through GoDaddy. Our domain experts will help you maximize your domain's value.
                     </p>
                     <div className="flex justify-center">
                       <a 

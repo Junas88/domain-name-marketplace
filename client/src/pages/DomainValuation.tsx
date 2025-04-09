@@ -160,8 +160,7 @@ export default function DomainValuation() {
         <section className="py-12 md:py-16 lg:py-20 bg-black text-white">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="max-w-4xl mx-auto text-center">
-              <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 flex items-center justify-center">
-                <BarChart3 className="mr-3 h-10 w-10 text-green-500" />
+              <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4">
                 Domain Valuation Guide
               </h1>
               <p className="text-lg md:text-xl opacity-90 mb-8">
@@ -177,7 +176,7 @@ export default function DomainValuation() {
             <h2 className="text-3xl font-bold mb-6">What Determines Domain Value?</h2>
             <p className="text-lg text-neutral-600 mb-10">
               Domain valuation is both an art and a science. While some factors are quantifiable, others depend on market trends 
-              and industry-specific demands. At TakeMyName.com, we consider multiple factors when determining a domain's value:
+              and industry-specific demands. At DomainnameGuide.com, we consider multiple factors when determining a domain's value:
             </p>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -225,7 +224,7 @@ export default function DomainValuation() {
           <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-4xl">
             <h2 className="text-3xl font-bold mb-6">Our Valuation Process</h2>
             <p className="text-lg text-neutral-600 mb-10">
-              At TakeMyName.com, we use a comprehensive approach to domain valuation:
+              At DomainnameGuide.com, we use a comprehensive approach to domain valuation:
             </p>
             
             <ol className="space-y-6">

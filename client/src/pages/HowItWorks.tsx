@@ -56,9 +56,8 @@ export default function HowItWorks() {
         <section className="py-12 md:py-16 lg:py-20 bg-black text-white">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="max-w-4xl mx-auto text-center">
-              <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 flex items-center justify-center">
-                <Info className="mr-3 h-10 w-10 text-green-500" />
-                How TakeMyName.com Works
+              <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4">
+                How DomainnameGuide.com Works
               </h1>
               <p className="text-lg md:text-xl opacity-90 mb-8">
                 Your straightforward guide to buying and selling premium domain names with confidence and security
@@ -128,7 +127,7 @@ export default function HowItWorks() {
           <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-4xl">
             <h2 className="text-3xl font-bold mb-8 text-center">Our Commitment to Security</h2>
             <p className="text-lg text-center text-neutral-600 mb-12">
-              At TakeMyName.com, we prioritize secure transactions and transparent processes.
+              At DomainnameGuide.com, we prioritize secure transactions and transparent processes.
             </p>
             
             <div className="bg-white border border-neutral-200 rounded-lg p-6 shadow-sm">
@@ -137,7 +136,7 @@ export default function HowItWorks() {
                 <h3 className="text-2xl font-semibold">Buyer Protection Guarantee</h3>
               </div>
               <p className="text-neutral-700 mb-6">
-                All domain purchases on TakeMyName.com are securely processed through GoDaddy, the world's largest domain registrar. This ensures:
+                All domain purchases on DomainnameGuide.com are securely processed through GoDaddy, the world's largest domain registrar. This ensures:
               </p>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="flex items-start gap-2">
