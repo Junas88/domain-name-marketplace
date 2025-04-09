@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ChevronLeft, ChevronRight, Shield, Check } from "lucide-react";
+import { ChevronLeft, ChevronRight, Shield, Check, X } from "lucide-react";
 
 // Helper function to get colors for different categories
 const getCategoryColor = (category: string): string => {
