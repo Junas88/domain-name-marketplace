@@ -4,7 +4,7 @@ import { useLocation } from "wouter";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useForm } from "react-hook-form";
@@ -26,6 +26,7 @@ import {
 } from "@/components/ui/table";
 import {
   Check,
+  EyeIcon,
   LogOut,
   PenIcon,
   PlusIcon,
@@ -923,6 +924,35 @@ export default function AdminDashboard() {
                               >
                                 <PenIcon className="h-4 w-4" />
                               </Button>
+                              <Dialog>
+                                <DialogTrigger asChild>
+                                  <Button
+                                    variant="outline"
+                                    size="icon"
+                                    className="border-blue-200 text-blue-500 hover:bg-blue-50"
+                                    title="Preview Content"
+                                  >
+                                    <EyeIcon className="h-4 w-4" />
+                                  </Button>
+                                </DialogTrigger>
+                                <DialogContent className="max-w-4xl">
+                                  <DialogHeader>
+                                    <DialogTitle>Preview: {pageContent.title}</DialogTitle>
+                                    <DialogDescription>
+                                      Content preview for page key: {pageContent.pageKey}
+                                    </DialogDescription>
+                                  </DialogHeader>
+                                  <div className="mt-4 border p-4 rounded-md bg-white overflow-auto max-h-[60vh]">
+                                    <div dangerouslySetInnerHTML={{ __html: pageContent.content }} />
+                                  </div>
+                                  <div className="mt-4 space-y-2">
+                                    <div className="text-sm font-medium">Meta Title:</div>
+                                    <div className="text-sm bg-gray-100 p-2 rounded">{pageContent.metaTitle || 'None'}</div>
+                                    <div className="text-sm font-medium">Meta Description:</div>
+                                    <div className="text-sm bg-gray-100 p-2 rounded">{pageContent.metaDescription || 'None'}</div>
+                                  </div>
+                                </DialogContent>
+                              </Dialog>
                               <Button
                                 variant="outline"
                                 size="icon"
