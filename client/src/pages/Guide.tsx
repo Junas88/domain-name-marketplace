@@ -1,6 +1,6 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Layout from "@/components/Layout";
-import EbookDownload from "@/components/EbookDownload";
+import EbookDownload from "@/components/EbookDownloadStripe";
 import { 
   TrendingUp, 
   DollarSign, 
@@ -630,7 +630,7 @@ export default function Guide() {
                     pageKey="ebook-section"
                     title="Domain Marketing Guide"
                     description="Premium domain marketing strategies"
-                    price={1995} // $19.95
+                    price={4900} // $49.00
                   />
                 </div>
               </div>

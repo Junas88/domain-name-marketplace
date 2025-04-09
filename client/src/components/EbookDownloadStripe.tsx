@@ -162,7 +162,7 @@ export default function EbookDownload({ pageKey, title, description, price }: Eb
           <Button 
             onClick={handleDownload}
             disabled={isLoading}
-            className="w-full h-12 rounded-lg flex items-center justify-center bg-black hover:bg-gray-800 text-white"
+            className="w-full h-12 rounded-lg flex items-center justify-center bg-green-600 hover:bg-green-700 text-white"
             variant="default"
           >
             {isLoading ? (
@@ -181,7 +181,7 @@ export default function EbookDownload({ pageKey, title, description, price }: Eb
           <Button 
             onClick={handlePurchase}
             disabled={isLoading}
-            className="w-full h-12 rounded-lg flex items-center justify-center bg-black hover:bg-gray-800 text-white"
+            className="w-full h-12 rounded-lg flex items-center justify-center bg-green-600 hover:bg-green-700 text-white"
             variant="default"
           >
             {isLoading ? (

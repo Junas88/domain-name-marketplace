@@ -584,8 +584,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
       }
       
+      // For amount coming from the client, we need to be careful as it might already be in cents
+      const amountInCents = pageKey ? Math.round(finalAmount * 100) : finalAmount;
+      
       const paymentIntent = await stripe.paymentIntents.create({
-        amount: Math.round(finalAmount * 100), // Convert to cents
+        amount: amountInCents,
         currency: "usd",
         metadata: {
           pageKey: pageKey || '',
