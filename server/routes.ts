@@ -63,8 +63,29 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   // Direct ebook download endpoint
   app.get('/api/direct-download/ebook', (req, res) => {
-    const filePath = path.join(process.cwd(), 'public/downloads/Domain Name Marketing.pdf');
-    res.download(filePath, 'Domain Name Marketing.pdf');
+    try {
+      console.log('Downloading ebook...');
+      const filePath = path.join(process.cwd(), 'public/downloads/Domain Name Marketing.pdf');
+      
+      // Check if file exists
+      if (!fs.existsSync(filePath)) {
+        console.error('File not found:', filePath);
+        return res.status(404).send('File not found');
+      }
+      
+      console.log('File exists at:', filePath);
+      
+      // Set headers
+      res.setHeader('Content-Type', 'application/pdf');
+      res.setHeader('Content-Disposition', 'attachment; filename="Domain Name Marketing.pdf"');
+      
+      // Send file stream
+      const fileStream = fs.createReadStream(filePath);
+      fileStream.pipe(res);
+    } catch (err) {
+      console.error('Error downloading file:', err);
+      res.status(500).send('Error processing download');
+    }
   });
   
   // prefix all routes with /api

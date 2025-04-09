@@ -59,8 +59,18 @@ export default function EbookDownload({ pageKey, title, description, price }: Eb
     setIsLoading(true);
     
     try {
-      // Directly download the PDF file
-      window.location.href = '/api/direct-download/ebook';
+      // Create an anchor element for download
+      const link = document.createElement('a');
+      link.href = '/api/direct-download/ebook';
+      link.download = 'Domain Name Marketing.pdf';
+      link.target = '_blank';
+      document.body.appendChild(link);
+      
+      // Trigger click to start download
+      link.click();
+      
+      // Clean up
+      document.body.removeChild(link);
       
       // Show success toast
       toast({
