@@ -33,11 +33,9 @@ import {
   PlusIcon,
   RefreshCw,
   TagIcon,
-  TrashIcon,
-  UploadIcon
+  TrashIcon
 } from "lucide-react";
 import FileUploader from "@/components/admin/FileUploader";
-import BulkUpload from "./BulkUpload";
 import { Domain, Offer, Consultation, PageContent } from "@/lib/types";
 import { formatDistanceToNow } from "date-fns";
 
@@ -114,7 +112,7 @@ export default function AdminDashboard() {
   // Form for adding/editing page content
   const pageContentForm = useForm<PageContentFormValues>({
     resolver: zodResolver(pageContentFormSchema),
-    defaultValues: {
+    defaultValues: editingPageContent || {
       pageKey: "",
       title: "",
       content: "",
@@ -207,7 +205,7 @@ export default function AdminDashboard() {
   // Form for adding/editing domains
   const form = useForm<DomainFormValues>({
     resolver: zodResolver(domainFormSchema),
-    defaultValues: {
+    defaultValues: editingDomain || {
       name: "",
       description: "",
       price: 0,
@@ -354,9 +352,8 @@ export default function AdminDashboard() {
       </header>
 
       <Tabs defaultValue="domains" value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="grid w-full grid-cols-5 mb-6">
+        <TabsList className="grid w-full grid-cols-4 mb-6">
           <TabsTrigger value="domains">Domains</TabsTrigger>
-          <TabsTrigger value="bulk">Bulk Upload</TabsTrigger>
           <TabsTrigger value="offers">Offers</TabsTrigger>
           <TabsTrigger value="consultations">Consultations</TabsTrigger>
           <TabsTrigger value="content">Page Content</TabsTrigger>
@@ -646,11 +643,6 @@ export default function AdminDashboard() {
               )}
             </CardContent>
           </Card>
-        </TabsContent>
-        
-        {/* BULK UPLOAD TAB */}
-        <TabsContent value="bulk" className="space-y-6">
-          <BulkUpload />
         </TabsContent>
         
         {/* OFFERS TAB */}

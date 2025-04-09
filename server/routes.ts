@@ -53,72 +53,6 @@ if (!process.env.STRIPE_SECRET_KEY) {
 }
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
-// Admin middleware
-const isAdmin = (req: Request, res: Response, next: NextFunction) => {
-  if (!req.isAuthenticated() || !(req.user?.isAdmin)) {
-    return res.status(403).json({ message: "Unauthorized" });
-  }
-  next();
-};
-
-// Helper functions for bulk domain upload
-function generateDomainDescription(name: string, category?: string): string {
-  // Extract name without extension
-  const domainName = name.split('.')[0];
-  
-  // Generate generic descriptions
-  const genericDescriptions = [
-    `Perfect for ${category || 'businesses'} looking to establish a strong online presence.`,
-    `Ideal for ${category || 'companies'} in need of a memorable domain name.`,
-    `A premium domain name for ${category || 'organizations'} that want to stand out.`,
-    `Exceptional choice for ${category || 'entrepreneurs'} seeking a professional web address.`,
-    `Short, memorable, and perfect for ${category || 'any business'} looking to make an impact online.`
-  ];
-  
-  // Select a random description
-  return genericDescriptions[Math.floor(Math.random() * genericDescriptions.length)];
-}
-
-function calculateDomainPrice(name: string): number {
-  // Extract name without extension
-  const domainName = name.split('.')[0];
-  const length = domainName.length;
-  
-  // Base pricing based on length
-  if (length <= 3) {
-    return 4999; // Premium 3-character domains
-  } else if (length <= 5) {
-    return 1999; // Premium 4-5 character domains
-  } else if (length <= 8) {
-    return 999; // Medium length domains
-  } else {
-    return 499; // Longer domains
-  }
-}
-
-function categorizeByName(name: string): string {
-  // Some basic categorization logic based on keywords in the domain
-  const domainName = name.toLowerCase();
-  
-  if (/tech|code|app|soft|dev|ai|data|cloud|cyber|net/.test(domainName)) {
-    return 'Technology';
-  } else if (/finance|bank|invest|money|cash|pay|fund|trade|capital/.test(domainName)) {
-    return 'Finance';
-  } else if (/health|med|doc|care|wellness|fit|pharm|clinic|hospital/.test(domainName)) {
-    return 'Healthcare';
-  } else if (/food|eat|recipe|cook|kitchen|meal|dish|chef|restaurant/.test(domainName)) {
-    return 'Food';
-  } else if (/travel|tour|trip|visit|holiday|vacation|journey|adventure/.test(domainName)) {
-    return 'Travel';
-  } else if (/edu|learn|course|school|college|university|academy|teach/.test(domainName)) {
-    return 'Education';
-  } else if (/shop|store|buy|sell|market|retail|commerce|mall/.test(domainName)) {
-    return 'E-commerce';
-  } else {
-    return 'General';
-  }
-}
-
 export async function registerRoutes(app: Express): Promise<Server> {
   // Set up authentication
   setupAuth(app);
@@ -316,7 +250,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
   
   // Get domain statistics
-  app.get("/api/admin/domains/stats", isAdmin, async (req, res) => {
+  app.get("/api/admin/domains/stats", async (req, res) => {
     try {
       const stats = await storage.getDomainStats();
       res.json(stats);
@@ -326,67 +260,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
-  // Bulk domain upload
-  app.post("/api/admin/domains/bulk", isAdmin, async (req, res) => {
-    try {
-      const { domains } = req.body;
-      
-      if (!Array.isArray(domains)) {
-        return res.status(400).json({ error: "Expected an array of domains" });
-      }
-      
-      const results = {
-        added: 0,
-        skipped: 0,
-        details: [] as string[]
-      };
-      
-      for (const domain of domains) {
-        if (!domain.name) continue;
-        
-        // Check if domain already exists
-        const existingDomains = await storage.searchDomains(domain.name);
-        const isDuplicate = existingDomains.some(d => d.name.toLowerCase() === domain.name.toLowerCase());
-        
-        if (isDuplicate) {
-          results.skipped++;
-          results.details.push(`Skipped ${domain.name} - Already exists`);
-          continue;
-        }
-        
-        // Generate domain description based on name and category
-        let description = generateDomainDescription(domain.name, domain.category);
-        
-        // Set price based on domain length or use provided price
-        const price = domain.price || calculateDomainPrice(domain.name);
-        
-        // Calculate domain length
-        const length = domain.name.split('.')[0].length;
-        
-        // Set category if not provided
-        const category = domain.category || categorizeByName(domain.name);
-        
-        await storage.createDomain({
-          name: domain.name,
-          description,
-          price,
-          category,
-          length
-        });
-        
-        results.added++;
-        results.details.push(`Added ${domain.name} - Category: ${category}, Price: $${price}`);
-      }
-      
-      res.status(200).json(results);
-    } catch (error: any) {
-      console.error("Error in bulk domain upload:", error);
-      res.status(500).json({ error: error.message });
-    }
-  });
-  
   // Get all offers (admin)
-  app.get("/api/admin/offers", isAdmin, async (req, res) => {
+  app.get("/api/admin/offers", async (req, res) => {
     try {
       let offers: any[] = [];
       // Get all domains
@@ -409,7 +284,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
   
   // Get all consultations (admin)
-  app.get("/api/admin/consultations", isAdmin, async (req, res) => {
+  app.get("/api/admin/consultations", async (req, res) => {
     try {
       const consultations = await storage.getAllConsultations();
       res.json(consultations);
@@ -450,8 +325,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
   
   // Admin: Get all page contents
-  app.get("/api/admin/page-contents", isAdmin, async (req, res) => {
+  app.get("/api/admin/page-contents", async (req, res) => {
     try {
+      // Check if user is authenticated and an admin
+      if (!req.isAuthenticated() || !(req.user?.isAdmin)) {
+        return res.status(403).json({ message: "Unauthorized" });
+      }
       
       const pageContents = await storage.getAllPageContents();
       res.json(pageContents);
