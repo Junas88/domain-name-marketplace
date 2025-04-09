@@ -69,31 +69,31 @@ export default function EbookDownload({ pageKey, title, description, price }: Eb
   };
 
   return (
-    <Card className="w-full max-w-md mx-auto border-0 rounded-xl shadow-lg overflow-hidden bg-white">
-      <CardHeader className="bg-white pb-0">
-        <CardTitle className="text-xl font-bold">{title}</CardTitle>
-        {description && <CardDescription>{description}</CardDescription>}
+    <Card className="w-full max-w-md mx-auto border-0 rounded-xl shadow-lg overflow-hidden bg-black text-white">
+      <CardHeader className="bg-black pb-0">
+        <CardTitle className="text-xl font-bold text-white">{title}</CardTitle>
+        {description && <CardDescription className="text-gray-300">{description}</CardDescription>}
       </CardHeader>
       <CardContent className="pt-6">
         <div className="flex flex-col items-center justify-center space-y-6">
-          <div className="p-4 bg-gray-50 rounded-full">
-            <FileText className="h-14 w-14 text-black" />
+          <div className="p-4 bg-gray-900 rounded-full">
+            <FileText className="h-14 w-14 text-white" />
           </div>
           <div className="text-center">
-            <h3 className="text-lg font-semibold mb-2">Domain Marketing Guide</h3>
-            <p className="text-gray-600">Learn how to effectively market your domains with our comprehensive guide.</p>
+            <h3 className="text-lg font-semibold mb-2 text-white">Domain Marketing Guide</h3>
+            <p className="text-gray-300">Learn how to effectively market your domains with our comprehensive guide.</p>
           </div>
         </div>
       </CardContent>
       
       <CardFooter className="flex flex-col pb-6">
         <div className="w-full text-center mb-4">
-          <p className="text-2xl font-bold text-black">FREE</p>
+          <p className="text-2xl font-bold text-white">FREE</p>
         </div>
         <Button 
           onClick={handleDownload}
           disabled={isLoading}
-          className="w-full h-12 rounded-lg flex items-center justify-center bg-black hover:bg-gray-800 text-white"
+          className="w-full h-12 rounded-lg flex items-center justify-center bg-green-600 hover:bg-green-700 text-white"
           variant="default"
         >
           {isLoading ? (
