@@ -36,7 +36,7 @@ export default function Hero() {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto text-center">
           <h1 id="hero-heading" className="text-4xl md:text-5xl font-bold mb-6">
-            DOMAIN NAME GUIDE: Find Your Perfect Domain Name
+            Find Your Perfect Domain Name
           </h1>
           <p className="text-xl mb-8">
             Premium domains with instant Buy-It-Now prices or make an offer. Secure the ideal domain for your startup, business, brand, or project.
