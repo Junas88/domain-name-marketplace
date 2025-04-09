@@ -14,9 +14,9 @@ export default function EbookPage() {
       <div className="container mx-auto px-4 py-12">
         <div className="max-w-4xl mx-auto">
           <div className="mb-10 text-center">
-            <h1 className="text-3xl md:text-4xl font-bold mb-4">Domain Investment Ebook</h1>
+            <h1 className="text-3xl md:text-4xl font-bold mb-4">Domain Name Marketing Guide</h1>
             <p className="text-xl text-gray-600">
-              Learn the secrets of successful domain investment from experts in the industry
+              Download our free guide to learn effective domain marketing strategies
             </p>
           </div>
 
@@ -31,24 +31,35 @@ export default function EbookPage() {
                     <div className="h-4 bg-gray-200 rounded w-full mb-4"></div>
                     <div className="h-4 bg-gray-200 rounded w-3/4 mb-4"></div>
                   </div>
-                ) : ebookContent ? (
-                  <div dangerouslySetInnerHTML={{ __html: ebookContent.content }} />
                 ) : (
-                  <p>No content available. Please check back later.</p>
+                  <div>
+                    <h2 className="text-2xl font-semibold mb-4">What's Inside Our Free Guide</h2>
+                    <ul className="list-disc pl-5 space-y-2">
+                      <li>How to effectively market your domain names</li>
+                      <li>Understanding domain name value factors</li>
+                      <li>Strategies for selling domains at premium prices</li>
+                      <li>Tips for domain name buyers and sellers</li>
+                      <li>Making money with domain parking services</li>
+                      <li>Proven tactics for domain name investments</li>
+                    </ul>
+                    
+                    <div className="mt-6 p-4 bg-gray-100 rounded-lg">
+                      <h3 className="text-lg font-medium mb-2">Why Download This Guide?</h3>
+                      <p>This comprehensive 30+ page guide contains expert knowledge on how to market and profit from domain names. Whether you're a beginner or experienced domain investor, you'll find valuable insights to maximize your success in the domain industry.</p>
+                    </div>
+                  </div>
                 )}
               </div>
             </div>
             
             <div>
               <div className="sticky top-8">
-                {ebookContent && (
-                  <EbookDownload
-                    pageKey="ebook-section"
-                    title="Domain Investment Guide"
-                    description="Get immediate access to our comprehensive guide"
-                    price={ebookContent.price || 1999} // Default price if not set
-                  />
-                )}
+                <EbookDownload
+                  pageKey="ebook-section"
+                  title="Domain Marketing Guide"
+                  description="Get immediate access to our comprehensive guide"
+                  price={0} // Free ebook
+                />
               </div>
             </div>
           </div>

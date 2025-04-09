@@ -43,6 +43,9 @@ export default function Header() {
             <Link href="/guide" className="text-neutral-800 hover:text-black font-medium">
               Domain Guide
             </Link>
+            <Link href="/ebook" className="text-neutral-800 hover:text-black font-medium">
+              Free Ebook
+            </Link>
             <Link href="/faqs" className="text-neutral-800 hover:text-black font-medium">
               FAQs
             </Link>
@@ -108,6 +111,13 @@ export default function Header() {
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Domain Guide
+              </Link>
+              <Link 
+                href="/ebook" 
+                className="block px-3 py-2 text-neutral-800 hover:bg-neutral-100 rounded-md"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Free Ebook
               </Link>
               <Link 
                 href="/faqs" 
