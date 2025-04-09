@@ -1,9 +1,12 @@
 import { useState } from "react";
 import { Link } from "wouter";
 import { Menu, X } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { useAuth } from "@/hooks/use-auth";
 
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { user } = useAuth();
 
   const toggleMobileMenu = () => {
     setMobileMenuOpen(!mobileMenuOpen);
@@ -21,7 +24,7 @@ export default function Header() {
           </div>
 
           {/* Navigation - Desktop */}
-          <nav className="hidden md:flex space-x-6">
+          <nav className="hidden md:flex space-x-6 items-center">
             <Link href="/" className="text-neutral-800 hover:text-black font-medium">
               Home
             </Link>
@@ -46,6 +49,19 @@ export default function Header() {
             <Link href="/contact" className="text-neutral-800 hover:text-black font-medium">
               Contact
             </Link>
+            {user ? (
+              <Link href="/admin/dashboard">
+                <Button variant="outline" className="ml-2 border-black hover:bg-black hover:text-white">
+                  Admin Dashboard
+                </Button>
+              </Link>
+            ) : (
+              <Link href="/admin/dashboard">
+                <Button variant="outline" className="ml-2 border-black hover:bg-black hover:text-white">
+                  Login
+                </Button>
+              </Link>
+            )}
           </nav>
 
           {/* Navigation - Mobile */}
@@ -107,6 +123,23 @@ export default function Header() {
               >
                 Contact
               </Link>
+              {user ? (
+                <Link 
+                  href="/admin/dashboard" 
+                  className="block px-3 py-2 mt-4 text-center bg-black text-white rounded-md hover:bg-neutral-800"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  Admin Dashboard
+                </Link>
+              ) : (
+                <Link 
+                  href="/admin/dashboard" 
+                  className="block px-3 py-2 mt-4 text-center bg-black text-white rounded-md hover:bg-neutral-800"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  Login
+                </Link>
+              )}
             </div>
           </div>
         )}
