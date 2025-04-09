@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
@@ -11,9 +11,16 @@ import { Loader2 } from "lucide-react";
 export default function LoginPage() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const { loginMutation } = useAuth();
+  const { user, loginMutation } = useAuth();
   const [, navigate] = useLocation();
   const { toast } = useToast();
+  
+  // If already logged in, redirect to admin dashboard
+  useEffect(() => {
+    if (user?.isAdmin) {
+      navigate("/admin/dashboard");
+    }
+  }, [user, navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

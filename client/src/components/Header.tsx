@@ -49,7 +49,7 @@ export default function Header() {
             <Link href="/contact" className="text-neutral-800 hover:text-black font-medium">
               Contact
             </Link>
-            {user ? (
+            {user?.isAdmin ? (
               <Link href="/admin/dashboard">
                 <Button variant="outline" className="ml-2 border-black hover:bg-black hover:text-white">
                   Admin Dashboard
@@ -123,7 +123,7 @@ export default function Header() {
               >
                 Contact
               </Link>
-              {user ? (
+              {user?.isAdmin ? (
                 <Link 
                   href="/admin/dashboard" 
                   className="block px-3 py-2 mt-4 text-center bg-black text-white rounded-md hover:bg-neutral-800"

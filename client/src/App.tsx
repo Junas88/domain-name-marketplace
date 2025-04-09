@@ -32,6 +32,7 @@ function Router() {
       <Route path="/ebook" component={EbookPage} />
       <Route path="/login" component={LoginPage} />
       <ProtectedRoute path="/admin/dashboard" component={AdminDashboard} />
+      <ProtectedRoute path="/admin" component={AdminDashboard} />
       <Route component={NotFound} />
     </Switch>
   );
