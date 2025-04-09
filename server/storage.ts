@@ -184,6 +184,20 @@ export class MemStorage implements IStorage {
         content: '<h1>Terms of Service</h1><p>These Terms of Service ("Terms") govern your access to and use of Domain Name Guide services. By using our services, you agree to be bound by these Terms.</p><h2>Account Registration</h2><p>To access certain features, you may need to register for an account. You agree to provide accurate information and keep it updated.</p><h2>Domain Purchases</h2><p>When you purchase a domain:</p><ul><li>You agree to pay the specified price</li><li>We agree to facilitate the transfer of the domain to you</li><li>All sales are final unless otherwise specified</li></ul><h2>Ownership Transfer Process</h2><p>After purchase, we will initiate the domain transfer process within 24-48 hours. You agree to promptly complete any required steps to facilitate the transfer.</p>',
         metaTitle: 'Terms of Service | Domain Name Guide',
         metaDescription: 'Review the terms and conditions governing your use of Domain Name Guide services, including account registration, purchases, and transfers.'
+      },
+      {
+        pageKey: 'ebook-section',
+        title: 'E-Book Section',
+        content: '<h2>The Ultimate Domain Investment Guide</h2><p>Our comprehensive e-book provides everything you need to know about investing in domain names. From valuation techniques to portfolio management strategies, this guide covers it all.</p><h3>What\'s Inside:</h3><ul><li>Domain valuation methods and tools</li><li>Market timing strategies</li><li>Portfolio diversification techniques</li><li>Case studies of successful domain investments</li><li>Tax considerations for domain investors</li><li>Legal protections for your domain portfolio</li></ul><p>Regular price: $49.95</p><p>Special offer: $29.95</p>',
+        metaTitle: 'Ultimate Domain Investment Guide | Domain Name Guide',
+        metaDescription: 'Download our comprehensive domain investment e-book. Learn valuation techniques, market timing strategies, and portfolio management from domain experts.'
+      },
+      {
+        pageKey: 'domain-guide-settings',
+        title: 'Domain Guide Settings',
+        content: '<h1>Domain Investment Guide</h1><p>Welcome to our comprehensive guide to domain name investment. This resource is designed to help both beginners and experienced investors make informed decisions in the domain market.</p><h2>Understanding Domain Value</h2><p>Domain value is determined by several key factors:</p><ul><li><strong>Length:</strong> Shorter domains are generally more valuable than longer ones.</li><li><strong>Extension:</strong> .com domains typically command the highest prices, followed by .net and .org.</li><li><strong>Memorability:</strong> Easy to spell, pronounce, and remember domains have higher value.</li><li><strong>Commercial Potential:</strong> Domains that align with profitable industries or popular search terms.</li><li><strong>Brandability:</strong> Names that can serve as effective brand identifiers.</li></ul><h2>Investment Strategies</h2><p>Successful domain investors typically follow these approaches:</p><ol><li><strong>Buy and Hold:</strong> Purchasing domains with long-term appreciation potential.</li><li><strong>Development:</strong> Adding value through website creation.</li><li><strong>Flipping:</strong> Buying undervalued domains and reselling quickly.</li><li><strong>Portfolio Building:</strong> Diversifying across different types of domains.</li></ol>',
+        metaTitle: 'Domain Investment Guide | Learning Center',
+        metaDescription: 'Learn domain investment strategies, valuation techniques, and market insights from our comprehensive domain guide.'
       }
     ];
     
