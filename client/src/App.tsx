@@ -15,6 +15,7 @@ import DomainValuation from "@/pages/DomainValuation";
 import SellingStrategy from "@/pages/SellingStrategy";
 import BuyerProtection from "@/pages/BuyerProtection";
 import EbookPage from "@/pages/EbookPage";
+import EbookSuccess from "@/pages/EbookSuccess";
 import AdminDashboard from "@/pages/admin/Dashboard";
 import LoginPage from "@/pages/auth/LoginPage";
 
@@ -30,6 +31,7 @@ function Router() {
       <Route path="/selling-strategy" component={SellingStrategy} />
       <Route path="/buyer-protection" component={BuyerProtection} />
       <Route path="/ebook" component={EbookPage} />
+      <Route path="/ebook-success" component={EbookSuccess} />
       <Route path="/login" component={LoginPage} />
       <ProtectedRoute path="/admin/dashboard" component={AdminDashboard} />
       <ProtectedRoute path="/admin" component={AdminDashboard} />

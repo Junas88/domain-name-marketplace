@@ -480,9 +480,30 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Verify purchase and get download link
   app.post("/api/verify-purchase/:pageKey", async (req, res) => {
     try {
-      const { paymentIntentId } = req.body;
+      const { paymentIntentId, sessionId } = req.body;
+      
+      // Check if we have a session ID (direct checkout)
+      if (sessionId) {
+        const session = await stripe.checkout.sessions.retrieve(sessionId);
+        if (session.payment_status === 'paid' && session.metadata?.pageKey === req.params.pageKey) {
+          const pageContent = await storage.getPageContent(req.params.pageKey);
+          if (!pageContent || !pageContent.filePath) {
+            return res.status(404).json({ message: "File not found" });
+          }
+          
+          const downloadUrl = `/api/page-contents/${req.params.pageKey}/download?paymentVerified=true`;
+          return res.json({
+            success: true,
+            downloadUrl
+          });
+        } else {
+          return res.status(400).json({ message: "Invalid payment session" });
+        }
+      }
+      
+      // Otherwise check for payment intent ID
       if (!paymentIntentId) {
-        return res.status(400).json({ message: "Payment intent ID is required" });
+        return res.status(400).json({ message: "Payment intent ID or session ID is required" });
       }
       
       // Verify the payment intent with Stripe
@@ -545,6 +566,53 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error: any) {
       console.error("Error creating payment intent:", error);
       res.status(500).json({ message: "Error creating payment intent: " + error.message });
+    }
+  });
+  
+  // Create a direct Stripe checkout session for ebooks
+  app.post("/api/create-checkout-session", async (req, res) => {
+    try {
+      const { pageKey, successUrl, cancelUrl } = req.body;
+      
+      if (!pageKey) {
+        return res.status(400).json({ message: "pageKey is required" });
+      }
+      
+      // Get the page content to determine the price
+      const pageContent = await storage.getPageContent(pageKey);
+      if (!pageContent || !pageContent.price) {
+        return res.status(404).json({ message: "Page content not found or has no price" });
+      }
+      
+      // Create a Stripe checkout session
+      const session = await stripe.checkout.sessions.create({
+        payment_method_types: ['card'],
+        line_items: [
+          {
+            price_data: {
+              currency: 'usd',
+              product_data: {
+                name: pageContent.title || 'Ebook Purchase',
+                description: pageContent.metaDescription || 'Digital download',
+              },
+              unit_amount: Math.round(pageContent.price * 100), // Convert to cents
+            },
+            quantity: 1,
+          },
+        ],
+        mode: 'payment',
+        success_url: successUrl || `${req.headers.origin || ''}/ebook-success?pageKey=${pageKey}&session_id={CHECKOUT_SESSION_ID}`,
+        cancel_url: cancelUrl || `${req.headers.origin || ''}/ebook?pageKey=${pageKey}`,
+        metadata: {
+          pageKey: pageKey,
+          type: 'ebook_purchase'
+        }
+      });
+      
+      res.json({ url: session.url });
+    } catch (error: any) {
+      console.error("Error creating checkout session:", error);
+      res.status(500).json({ message: "Error creating checkout session: " + error.message });
     }
   });
 
