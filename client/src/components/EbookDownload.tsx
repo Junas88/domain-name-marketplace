@@ -94,101 +94,63 @@ export default function EbookDownload({ pageKey, title, description, price }: Eb
   };
 
   return (
-    <Card className="w-full max-w-md mx-auto shadow-lg border-2 border-black">
-      <div className="absolute top-0 right-0 -mt-3 -mr-3">
-        <div className="bg-black text-white text-xs font-bold px-3 py-1 rounded-full transform rotate-6 shadow-md">
-          SPECIAL OFFER
-        </div>
-      </div>
-      
-      <CardHeader className="bg-gradient-to-r from-gray-900 to-gray-800 text-white rounded-t-md">
-        <CardTitle className="text-2xl font-bold text-center">{title}</CardTitle>
-        {description && <CardDescription className="text-gray-200 text-center">{description}</CardDescription>}
+    <Card className="w-full max-w-md mx-auto">
+      <CardHeader>
+        <CardTitle>{title}</CardTitle>
+        {description && <CardDescription>{description}</CardDescription>}
       </CardHeader>
-      
-      <CardContent className="pt-6">
-        <div className="text-center space-y-6">
-          <div className="bg-gray-50 p-4 rounded-lg shadow-inner mx-auto w-32 h-32 flex items-center justify-center">
-            <FileText className="h-20 w-20 text-black" />
-          </div>
-          
-          <div>
-            <h3 className="font-bold text-xl mb-2">Premium Domain Marketing Guide</h3>
-            <p className="text-gray-700">Advanced strategies to maximize your domain investments</p>
-          </div>
-          
-          <div className="space-y-3 border-t border-b border-gray-200 py-4 my-4">
-            <div className="flex items-center justify-between">
-              <span className="font-medium">Format:</span>
-              <span className="bg-gray-100 px-3 py-1 rounded">PDF Digital Download</span>
-            </div>
-            <div className="flex items-center justify-between">
-              <span className="font-medium">Pages:</span>
-              <span className="bg-gray-100 px-3 py-1 rounded">30+ Full Color</span>
-            </div>
-            <div className="flex items-center justify-between">
-              <span className="font-medium">Access:</span>
-              <span className="bg-gray-100 px-3 py-1 rounded">Instant Delivery</span>
-            </div>
-          </div>
+      <CardContent>
+        <div className="text-center space-y-4">
+          <FileText className="h-16 w-16 mx-auto text-muted-foreground" />
+          <h3 className="font-semibold text-lg">Domain Marketing Guide</h3>
+          <p className="text-gray-500">Learn how to effectively market your domains with our comprehensive guide.</p>
           
           {!hasPurchased && (
-            <div className="pt-2">
-              <div className="flex items-center justify-center gap-3">
-                <p className="text-gray-500 line-through">$79.99</p>
-                <p className="text-3xl font-bold text-black">${(price / 100).toFixed(2)}</p>
-                <span className="bg-red-600 text-white text-xs font-bold px-2 py-1 rounded-full">SAVE 40%</span>
-              </div>
-              <p className="text-sm text-gray-500 mt-1">One-time purchase, lifetime updates</p>
+            <div className="mt-4 p-3 bg-gray-50 rounded-md">
+              <p className="font-medium text-lg">${(price / 100).toFixed(2)}</p>
+              <p className="text-sm text-gray-500">One-time purchase, instant download</p>
             </div>
           )}
         </div>
       </CardContent>
       
-      <CardFooter className="flex flex-col gap-3">
+      <CardFooter>
         {hasPurchased ? (
           <Button 
             onClick={handleDownload}
             disabled={isLoading}
-            className="w-full bg-black hover:bg-gray-800 text-white py-6 text-lg font-bold"
+            className="w-full"
           >
             {isLoading ? (
               <>
-                <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 Downloading...
               </>
             ) : (
               <>
-                <Download className="mr-2 h-5 w-5" />
-                Download Your Guide Now
+                <Download className="mr-2 h-4 w-4" />
+                Download Ebook
               </>
             )}
           </Button>
         ) : (
-          <>
-            <Button 
-              onClick={handlePurchase}
-              disabled={isLoading}
-              className="w-full bg-black hover:bg-gray-800 text-white py-6 text-lg font-bold"
-            >
-              {isLoading ? (
-                <>
-                  <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                  Processing...
-                </>
-              ) : (
-                <>
-                  <CreditCard className="mr-2 h-5 w-5" />
-                  GET INSTANT ACCESS NOW
-                </>
-              )}
-            </Button>
-            <div className="flex items-center justify-center w-full gap-2 mt-2">
-              <p className="text-sm text-gray-500 text-center">
-                🔒 Secure checkout • Instant download • 30-day guarantee
-              </p>
-            </div>
-          </>
+          <Button 
+            onClick={handlePurchase}
+            disabled={isLoading}
+            className="w-full"
+          >
+            {isLoading ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Processing...
+              </>
+            ) : (
+              <>
+                <CreditCard className="mr-2 h-4 w-4" />
+                Purchase Now (${(price / 100).toFixed(2)})
+              </>
+            )}
+          </Button>
         )}
       </CardFooter>
     </Card>

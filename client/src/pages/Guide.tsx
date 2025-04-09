@@ -595,85 +595,40 @@ export default function Guide() {
 
 
       {/* Ebook section */}
-      <section className="py-16 bg-gradient-to-b from-gray-900 to-black text-white border-t border-gray-200">
+      <section className="py-12 bg-gray-50 border-t border-gray-200">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="max-w-6xl mx-auto">
-            <div className="text-center mb-12">
-              <h2 className="text-4xl md:text-5xl font-extrabold mb-4">ELITE DOMAIN MARKETING GUIDE</h2>
-              <div className="h-1 w-24 bg-white mx-auto my-6"></div>
-              <p className="text-xl max-w-3xl mx-auto text-gray-300">
-                Unlock the secrets of successful domain investors with our premium guide
-              </p>
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
-              <div className="bg-gray-900 p-8 rounded-lg border border-gray-700 shadow-xl">
-                <h3 className="text-2xl font-bold mb-6 flex items-center">
-                  <Award className="mr-3 h-7 w-7 text-yellow-400" />
-                  What You'll Learn
-                </h3>
-                
-                <ul className="space-y-5">
+          <div className="max-w-5xl mx-auto">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+              <div>
+                <h2 className="text-3xl font-bold mb-4">Complete Domain Marketing Guide</h2>
+                <p className="text-lg text-gray-700 mb-6">
+                  Take your domain knowledge to the next level with our comprehensive guide. Learn advanced marketing strategies, valuation techniques, and insider tips from industry experts.
+                </p>
+                <ul className="space-y-3 mb-6">
                   <li className="flex items-start">
-                    <div className="flex-shrink-0 h-8 w-8 rounded-full bg-indigo-900 flex items-center justify-center mr-3 mt-0.5">
-                      <CheckSquare className="h-4 w-4 text-indigo-300" />
-                    </div>
-                    <div>
-                      <h4 className="font-semibold text-lg text-indigo-200">Advanced Valuation Formulas</h4>
-                      <p className="text-gray-400">Professional frameworks to accurately assess domain worth</p>
-                    </div>
+                    <CheckSquare className="h-5 w-5 text-green-600 mr-2 mt-0.5" />
+                    <span>30+ pages of expert domain knowledge</span>
                   </li>
-                  
                   <li className="flex items-start">
-                    <div className="flex-shrink-0 h-8 w-8 rounded-full bg-indigo-900 flex items-center justify-center mr-3 mt-0.5">
-                      <CheckSquare className="h-4 w-4 text-indigo-300" />
-                    </div>
-                    <div>
-                      <h4 className="font-semibold text-lg text-indigo-200">Portfolio Growth Tactics</h4>
-                      <p className="text-gray-400">Strategic methods to build a high-value domain collection</p>
-                    </div>
+                    <CheckSquare className="h-5 w-5 text-green-600 mr-2 mt-0.5" />
+                    <span>Practical step-by-step domain marketing strategies</span>
                   </li>
-                  
                   <li className="flex items-start">
-                    <div className="flex-shrink-0 h-8 w-8 rounded-full bg-indigo-900 flex items-center justify-center mr-3 mt-0.5">
-                      <CheckSquare className="h-4 w-4 text-indigo-300" />
-                    </div>
-                    <div>
-                      <h4 className="font-semibold text-lg text-indigo-200">Exit Strategy Maximization</h4>
-                      <p className="text-gray-400">Timing and techniques to sell domains at premium prices</p>
-                    </div>
+                    <CheckSquare className="h-5 w-5 text-green-600 mr-2 mt-0.5" />
+                    <span>Insider tips for maximizing domain profitability</span>
                   </li>
-                  
                   <li className="flex items-start">
-                    <div className="flex-shrink-0 h-8 w-8 rounded-full bg-indigo-900 flex items-center justify-center mr-3 mt-0.5">
-                      <CheckSquare className="h-4 w-4 text-indigo-300" />
-                    </div>
-                    <div>
-                      <h4 className="font-semibold text-lg text-indigo-200">Success Case Studies</h4>
-                      <p className="text-gray-400">Real examples with step-by-step breakdowns of profitable flips</p>
-                    </div>
+                    <CheckSquare className="h-5 w-5 text-green-600 mr-2 mt-0.5" />
+                    <span>Case studies of successful domain investments</span>
                   </li>
                 </ul>
-                
-                <div className="mt-8 p-4 border border-gray-700 rounded-lg bg-gray-800">
-                  <div className="flex items-center">
-                    <div className="h-10 w-10 bg-yellow-500 rounded-full flex items-center justify-center mr-4">
-                      <Award className="h-5 w-5 text-gray-900" />
-                    </div>
-                    <div>
-                      <p className="font-semibold">30+ pages of professional content</p>
-                      <p className="text-sm text-gray-400">Continuously updated with latest industry trends</p>
-                    </div>
-                  </div>
-                </div>
               </div>
-              
               <div>
                 <EbookDownload
                   pageKey="ebook-section"
                   title="Domain Marketing Guide"
                   description="Premium domain marketing strategies"
-                  price={4900} // $49.00
+                  price={1995} // $19.95
                 />
               </div>
             </div>
