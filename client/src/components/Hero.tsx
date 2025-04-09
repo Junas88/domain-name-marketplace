@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { Search, X } from "lucide-react";
 import { useLocation } from "wouter";
@@ -6,21 +6,44 @@ import { queryClient } from "@/lib/queryClient";
 
 export default function Hero() {
   const [searchQuery, setSearchQuery] = useState("");
+  const [debouncedSearchQuery, setDebouncedSearchQuery] = useState("");
   const { toast } = useToast();
   const [, setLocation] = useLocation();
-
-  // Handle input changes - search as you type
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setSearchQuery(value);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  
+  // Debounce search query to prevent excessive API calls
+  useEffect(() => {
+    // Clear previous timeout
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
     
-    // Send search immediately to backend if there's a value
-    if (value.trim()) {
+    // Only update debounced value and search if query is not empty
+    if (searchQuery.trim()) {
+      // Set a new timeout
+      timeoutRef.current = setTimeout(() => {
+        setDebouncedSearchQuery(searchQuery.trim());
+      }, 300); // 300ms debounce delay
+    } else {
+      setDebouncedSearchQuery("");
+    }
+    
+    // Cleanup on unmount
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
+  }, [searchQuery]);
+  
+  // Execute search when debounced query changes
+  useEffect(() => {
+    if (debouncedSearchQuery) {
       // Update URL without page reload
-      setLocation(`/?search=${encodeURIComponent(value.trim())}#domains`);
+      setLocation(`/?search=${encodeURIComponent(debouncedSearchQuery)}#domains`);
       
       // Force refresh the data
-      queryClient.invalidateQueries({ queryKey: ['/api/domains/search'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/domains/search', debouncedSearchQuery] });
       
       // Scroll to results
       const domainsSection = document.getElementById("domains");
@@ -28,6 +51,11 @@ export default function Hero() {
         domainsSection.scrollIntoView({ behavior: "smooth" });
       }
     }
+  }, [debouncedSearchQuery, setLocation]);
+
+  // Handle input changes - just update local state
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(e.target.value);
   };
 
   const handleSearch = (e: React.FormEvent) => {
@@ -42,16 +70,38 @@ export default function Hero() {
       return;
     }
     
+    // Immediately apply the search without waiting for debounce
+    const query = searchQuery.trim();
+    setDebouncedSearchQuery(query);
+    
     // Set URL and force refresh
-    setLocation(`/?search=${encodeURIComponent(searchQuery.trim())}#domains`);
-    queryClient.invalidateQueries({ queryKey: ['/api/domains/search'] });
+    setLocation(`/?search=${encodeURIComponent(query)}#domains`);
+    queryClient.invalidateQueries({ queryKey: ['/api/domains/search', query] });
+    
+    // Scroll to results immediately
+    const domainsSection = document.getElementById("domains");
+    if (domainsSection) {
+      domainsSection.scrollIntoView({ behavior: "smooth" });
+    }
   };
   
   // Clear search and reset
   const clearSearch = () => {
     setSearchQuery("");
+    setDebouncedSearchQuery("");
     setLocation('/#domains');
+    
+    // Clear any pending timeouts
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
+    }
+    
+    // Refresh with the default domain list
     queryClient.invalidateQueries({ queryKey: ['/api/domains'] });
+    
+    // This ensures the domain listing shows all domains
+    queryClient.setQueryData(['/api/domains/search', ""], null);
   };
 
   return (

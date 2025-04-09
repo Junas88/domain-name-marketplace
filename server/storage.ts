@@ -95,6 +95,9 @@ export class MemStorage implements IStorage {
     // Initialize with some sample domains
     this.initializeDomains();
     
+    // Build the search index after domains are initialized
+    this.buildSearchIndex();
+    
     // Initialize with default page contents
     this.initializePageContents();
   }
@@ -900,15 +903,88 @@ export class MemStorage implements IStorage {
     return this.domains.get(id);
   }
   
+  // Search index for faster lookups
+  private domainSearchIndex: Map<string, Set<number>> = new Map();
+  
+  // Build search index at startup
+  private buildSearchIndex() {
+    // Clear existing index
+    this.domainSearchIndex.clear();
+    
+    // Index all domains
+    Array.from(this.domains.values()).forEach(domain => {
+      // Add domain name to index 
+      const words = [
+        ...domain.name.toLowerCase().split(/[^a-z0-9]/g),
+        domain.name.toLowerCase(),
+        ...domain.description.toLowerCase().split(/\s+/),
+        domain.category.toLowerCase()
+      ].filter(word => word.length > 0);
+      
+      // Add each word to the index
+      words.forEach(word => {
+        if (!this.domainSearchIndex.has(word)) {
+          this.domainSearchIndex.set(word, new Set());
+        }
+        this.domainSearchIndex.get(word)?.add(domain.id);
+      });
+    });
+  }
+  
   async searchDomains(query: string): Promise<Domain[]> {
     if (!query) return this.getAllDomains();
     
-    const lowercaseQuery = query.toLowerCase();
-    return Array.from(this.domains.values()).filter(domain => 
-      domain.name.toLowerCase().includes(lowercaseQuery) ||
-      domain.description.toLowerCase().includes(lowercaseQuery) ||
-      domain.category.toLowerCase().includes(lowercaseQuery)
-    );
+    // Rebuild index if it's empty
+    if (this.domainSearchIndex.size === 0) {
+      this.buildSearchIndex();
+    }
+    
+    const lowercaseQuery = query.toLowerCase().trim();
+    const queryWords = lowercaseQuery.split(/\s+/);
+    
+    // For exact domain name match (highest priority)
+    const exactMatches = new Set<number>();
+    
+    // For partial word matches
+    const wordMatches = new Map<number, number>(); // domain id -> match count
+    
+    // First pass: check for exact domain name match
+    if (this.domainSearchIndex.has(lowercaseQuery)) {
+      const matchIds = this.domainSearchIndex.get(lowercaseQuery) || new Set();
+      matchIds.forEach(id => exactMatches.add(id));
+    }
+    
+    // Second pass: check for word matches
+    queryWords.forEach(word => {
+      // Get all domains that contain this word
+      Array.from(this.domainSearchIndex.entries())
+        .filter(([key]) => key.includes(word))
+        .forEach(([, domainIds]) => {
+          domainIds.forEach(id => {
+            if (!exactMatches.has(id)) { // Skip if already in exact matches
+              wordMatches.set(id, (wordMatches.get(id) || 0) + 1);
+            }
+          });
+        });
+    });
+    
+    // Combine results with exact matches first, then sorted by match count
+    const exactMatchDomains = Array.from(exactMatches)
+      .map(id => this.domains.get(id)!)
+      .filter(Boolean);
+    
+    const partialMatchDomains = Array.from(wordMatches.entries())
+      .sort((a, b) => b[1] - a[1]) // Sort by match count, highest first
+      .map(([id]) => this.domains.get(id)!)
+      .filter(Boolean);
+    
+    // Return combined results
+    const results = [...exactMatchDomains, ...partialMatchDomains];
+    
+    // Log for debugging
+    console.log(`Found ${results.length} domains matching "${query}"`);
+    
+    return results;
   }
   
   async filterDomains(filters: {
