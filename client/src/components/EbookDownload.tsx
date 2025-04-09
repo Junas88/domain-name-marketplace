@@ -55,6 +55,8 @@ export default function EbookDownload({ pageKey, title, description, price }: Eb
     setError(null);
     
     try {
+      console.log('Starting checkout process for pageKey:', pageKey);
+      
       const response = await fetch('/api/create-checkout-session', {
         method: 'POST',
         headers: {
@@ -67,20 +69,31 @@ export default function EbookDownload({ pageKey, title, description, price }: Eb
         credentials: 'include'
       });
       
+      console.log('Checkout response status:', response.status);
+      
+      // Check if the response is OK
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('Error response:', errorText);
+        throw new Error(`Server returned ${response.status}: ${errorText}`);
+      }
+      
       const data = await response.json();
+      console.log('Checkout response data:', data);
       
       if (data.url) {
+        console.log('Redirecting to:', data.url);
         // Redirect to Stripe Checkout
         window.location.href = data.url;
       } else {
-        throw new Error('Failed to create checkout session');
+        throw new Error('Failed to create checkout session - no URL returned');
       }
     } catch (err: any) {
       console.error('Error creating checkout session:', err);
       setError('Could not initialize checkout. Please try again later.');
       toast({
         title: 'Error',
-        description: 'Could not initialize checkout. Please try again later.',
+        description: err.message || 'Could not initialize checkout. Please try again later.',
         variant: 'destructive',
       });
     } finally {
