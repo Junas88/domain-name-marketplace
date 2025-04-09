@@ -717,6 +717,23 @@ export default function Guide() {
           </div>
         </div>
       </section>
+      
+      {/* Separator Section */}
+      <section className="py-10 bg-white border-t border-black">
+        <div className="container mx-auto px-4">
+          <div className="max-w-6xl mx-auto">
+            <div className="flex items-center justify-center">
+              <div className="w-full h-px bg-gray-200"></div>
+              <div className="px-4">
+                <div className="w-8 h-8 rounded-full bg-black flex items-center justify-center">
+                  <span className="text-white text-sm font-bold">TN</span>
+                </div>
+              </div>
+              <div className="w-full h-px bg-gray-200"></div>
+            </div>
+          </div>
+        </div>
+      </section>
     </Layout>
   );
 }
