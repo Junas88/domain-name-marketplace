@@ -6,9 +6,9 @@ export default function Footer() {
   
   // Function to handle smooth scrolling to sections
   const scrollToSection = (sectionId: string) => {
-    // If we're not on the home page, navigate there first
+    // If we're not on the home page, navigate to home page with appropriate hash
     if (location !== "/") {
-      window.location.href = `/${sectionId}`;
+      window.location.href = `/#${sectionId}`;
       return;
     }
     
