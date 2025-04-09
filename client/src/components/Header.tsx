@@ -1,31 +1,12 @@
 import { useState } from "react";
-import { Link, useLocation } from "wouter";
+import { Link } from "wouter";
 import { Menu, X } from "lucide-react";
 
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [location] = useLocation();
 
   const toggleMobileMenu = () => {
     setMobileMenuOpen(!mobileMenuOpen);
-  };
-
-  // Function to handle smooth scrolling to sections
-  const scrollToSection = (sectionId: string) => {
-    // Close mobile menu
-    setMobileMenuOpen(false);
-    
-    // If we're not on the home page, navigate there first
-    if (location !== "/") {
-      window.location.href = `/${sectionId}`;
-      return;
-    }
-    
-    // Otherwise scroll to the section
-    const element = document.getElementById(sectionId);
-    if (element) {
-      element.scrollIntoView({ behavior: "smooth" });
-    }
   };
 
   return (
@@ -44,26 +25,18 @@ export default function Header() {
             <Link href="/" className="text-neutral-800 hover:text-black font-medium">
               Home
             </Link>
-            <a 
-              href="#domain-finder" 
+            <Link 
+              href="/#domain-finder" 
               className="text-neutral-800 hover:text-black font-medium cursor-pointer"
-              onClick={(e) => {
-                e.preventDefault();
-                scrollToSection("domain-finder");
-              }}
             >
               Domain Finder
-            </a>
-            <a 
-              href="#domains" 
+            </Link>
+            <Link 
+              href="/#domains" 
               className="text-neutral-800 hover:text-black font-medium cursor-pointer"
-              onClick={(e) => {
-                e.preventDefault();
-                scrollToSection("domains");
-              }}
             >
               Browse Domains
-            </a>
+            </Link>
             <Link href="/guide" className="text-neutral-800 hover:text-black font-medium">
               Domain Guide
             </Link>
@@ -99,26 +72,20 @@ export default function Header() {
               >
                 Home
               </Link>
-              <a 
-                href="#domain-finder" 
+              <Link 
+                href="/#domain-finder" 
                 className="block px-3 py-2 text-neutral-800 hover:bg-neutral-100 rounded-md cursor-pointer"
-                onClick={(e) => {
-                  e.preventDefault();
-                  scrollToSection("domain-finder");
-                }}
+                onClick={() => setMobileMenuOpen(false)}
               >
                 Domain Finder
-              </a>
-              <a 
-                href="#domains" 
+              </Link>
+              <Link 
+                href="/#domains" 
                 className="block px-3 py-2 text-neutral-800 hover:bg-neutral-100 rounded-md cursor-pointer"
-                onClick={(e) => {
-                  e.preventDefault();
-                  scrollToSection("domains");
-                }}
+                onClick={() => setMobileMenuOpen(false)}
               >
                 Browse Domains
-              </a>
+              </Link>
               <Link 
                 href="/guide" 
                 className="block px-3 py-2 text-neutral-800 hover:bg-neutral-100 rounded-md"
