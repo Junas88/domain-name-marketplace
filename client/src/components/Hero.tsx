@@ -1,43 +1,34 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { Search, X } from "lucide-react";
-import { useQuery } from "@tanstack/react-query";
 import { useLocation } from "wouter";
 import { queryClient } from "@/lib/queryClient";
 
 export default function Hero() {
   const [searchQuery, setSearchQuery] = useState("");
-  const [debouncedQuery, setDebouncedQuery] = useState("");
   const { toast } = useToast();
   const [, setLocation] = useLocation();
-  
-  // Set up debounced search to avoid too many requests
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      if (searchQuery.trim()) {
-        setDebouncedQuery(searchQuery.trim());
-      }
-    }, 300); // 300ms delay before search is applied
+
+  // Handle input changes - search as you type
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setSearchQuery(value);
     
-    return () => clearTimeout(timer);
-  }, [searchQuery]);
-  
-  // Update URL and perform search when debounced query changes
-  useEffect(() => {
-    if (debouncedQuery) {
-      // Update URL without triggering a full page reload
-      setLocation(`/?search=${encodeURIComponent(debouncedQuery)}#domains`);
+    // Send search immediately to backend if there's a value
+    if (value.trim()) {
+      // Update URL without page reload
+      setLocation(`/?search=${encodeURIComponent(value.trim())}#domains`);
       
-      // Invalidate query to force refetch
-      queryClient.invalidateQueries({ queryKey: ['/api/domains/search', debouncedQuery] });
+      // Force refresh the data
+      queryClient.invalidateQueries({ queryKey: ['/api/domains/search'] });
       
-      // Scroll to the domains section
+      // Scroll to results
       const domainsSection = document.getElementById("domains");
       if (domainsSection) {
         domainsSection.scrollIntoView({ behavior: "smooth" });
       }
     }
-  }, [debouncedQuery, setLocation]);
+  };
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -51,14 +42,16 @@ export default function Hero() {
       return;
     }
     
-    setDebouncedQuery(searchQuery.trim());
+    // Set URL and force refresh
+    setLocation(`/?search=${encodeURIComponent(searchQuery.trim())}#domains`);
+    queryClient.invalidateQueries({ queryKey: ['/api/domains/search'] });
   };
   
-  // Function to clear search
+  // Clear search and reset
   const clearSearch = () => {
     setSearchQuery("");
-    setDebouncedQuery("");
     setLocation('/#domains');
+    queryClient.invalidateQueries({ queryKey: ['/api/domains'] });
   };
 
   return (
@@ -88,7 +81,7 @@ export default function Hero() {
                   placeholder="Search for domains..." 
                   className="w-full px-6 py-4 border-none focus:outline-none text-neutral-800"
                   value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onChange={handleInputChange}
                   aria-label="Domain search input"
                 />
                 {searchQuery && (

@@ -61,9 +61,9 @@ export default function DomainListing({ onMakeOffer }: DomainListingProps) {
   const urlParams = new URLSearchParams(window.location.search);
   const searchQuery = urlParams.get("search") || "";
 
-  // Fetch domains - use search endpoint when we have a search query
+  // Simpler query implementation that responds faster to URL changes
   const { data: domains, isLoading, isError } = useQuery<Domain[]>({
-    queryKey: searchQuery ? ['/api/domains/search', searchQuery] : ['/api/domains'],
+    queryKey: [searchQuery ? '/api/domains/search' : '/api/domains', searchQuery],
     queryFn: async () => {
       if (searchQuery) {
         console.log("Searching for domains with query:", searchQuery);
@@ -77,15 +77,9 @@ export default function DomainListing({ onMakeOffer }: DomainListingProps) {
       }
     },
     refetchOnWindowFocus: false,
-    staleTime: 0, // Always refetch when query changes
+    staleTime: 0, // Always refetch
+    refetchInterval: searchQuery ? 0 : false, // No auto-refresh for regular listing
   });
-  
-  // Make sure query always refreshes when URL changes
-  useEffect(() => {
-    if (searchQuery) {
-      queryClient.invalidateQueries({ queryKey: ['/api/domains/search', searchQuery] });
-    }
-  }, [searchQuery, location]);
 
   useEffect(() => {
     // Reset filters when search query changes
@@ -253,7 +247,23 @@ export default function DomainListing({ onMakeOffer }: DomainListingProps) {
     <section id="domains" className="py-12 bg-white border-t border-black" aria-labelledby="domains-heading">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <h2 id="domains-heading" className="text-3xl font-bold mb-2">Premium Domains for Sale</h2>
-        <p className="text-neutral-800 mb-8">Browse our collection of premium domain names for businesses, startups, and brands</p>
+        <p className="text-neutral-800 mb-2">Browse our collection of premium domain names for businesses, startups, and brands</p>
+        
+        {/* Search status indicator */}
+        {searchQuery && (
+          <div className="mb-6 flex items-center gap-2 rounded-md bg-black text-white py-2 px-4 w-fit">
+            <span className="font-medium">Search results for: "{searchQuery}"</span>
+            <button 
+              onClick={() => {
+                window.location.href = '/#domains';
+              }}
+              className="ml-2 hover:bg-white/10 p-1 rounded"
+              aria-label="Clear search"
+            >
+              <X size={16} />
+            </button>
+          </div>
+        )}
         
         {/* Hidden keywords for SEO */}
         <div className="sr-only">
