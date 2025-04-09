@@ -124,9 +124,6 @@ export default function Footer() {
         
         <div className="border-t border-white/20 mt-8 pt-8 text-center text-white">
           <p>&copy; {new Date().getFullYear()} DOMAIN NAME GUIDE. All rights reserved.</p>
-          <div className="mt-2">
-            <Link href="/admin" className="text-gray-400 hover:text-white text-sm">Admin Dashboard</Link>
-          </div>
         </div>
       </div>
     </footer>

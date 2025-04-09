@@ -56,7 +56,7 @@ export default function Header() {
                 </Button>
               </Link>
             ) : (
-              <Link href="/admin/dashboard">
+              <Link href="/login">
                 <Button variant="outline" className="ml-2 border-black hover:bg-black hover:text-white">
                   Login
                 </Button>
@@ -133,7 +133,7 @@ export default function Header() {
                 </Link>
               ) : (
                 <Link 
-                  href="/admin/dashboard" 
+                  href="/login" 
                   className="block px-3 py-2 mt-4 text-center bg-black text-white rounded-md hover:bg-neutral-800"
                   onClick={() => setMobileMenuOpen(false)}
                 >

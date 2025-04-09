@@ -16,7 +16,7 @@ import SellingStrategy from "@/pages/SellingStrategy";
 import BuyerProtection from "@/pages/BuyerProtection";
 import EbookPage from "@/pages/EbookPage";
 import AdminDashboard from "@/pages/admin/Dashboard";
-import AdminLogin from "@/pages/admin/Login";
+import LoginPage from "@/pages/auth/LoginPage";
 
 function Router() {
   return (
@@ -30,8 +30,8 @@ function Router() {
       <Route path="/selling-strategy" component={SellingStrategy} />
       <Route path="/buyer-protection" component={BuyerProtection} />
       <Route path="/ebook" component={EbookPage} />
-      <Route path="/admin/login" component={AdminLogin} />
-      <ProtectedRoute path="/admin" component={AdminDashboard} />
+      <Route path="/login" component={LoginPage} />
+      <ProtectedRoute path="/admin/dashboard" component={AdminDashboard} />
       <Route component={NotFound} />
     </Switch>
   );
