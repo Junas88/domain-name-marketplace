@@ -13,6 +13,7 @@ import Stripe from "stripe";
 import multer from 'multer';
 import path from 'path';
 import fs from 'fs-extra';
+import express from 'express';
 
 // Create uploads directory if it doesn't exist
 const uploadDir = path.join(process.cwd(), 'uploads');
@@ -56,6 +57,15 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 export async function registerRoutes(app: Express): Promise<Server> {
   // Set up authentication
   setupAuth(app);
+  
+  // Serve static files from public/downloads
+  app.use('/downloads', express.static(path.join(process.cwd(), 'public/downloads')));
+  
+  // Direct ebook download endpoint
+  app.get('/api/direct-download/ebook', (req, res) => {
+    const filePath = path.join(process.cwd(), 'public/downloads/Domain Name Marketing.pdf');
+    res.download(filePath, 'Domain Name Marketing.pdf');
+  });
   
   // prefix all routes with /api
   

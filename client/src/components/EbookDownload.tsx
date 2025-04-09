@@ -1,9 +1,8 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Button } from './ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from './ui/card';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Download, CheckCircle, ExternalLink } from 'lucide-react';
-import { apiRequest } from '@/lib/queryClient';
+import { Loader2, Download, FileText } from 'lucide-react';
 
 interface EbookDownloadProps {
   pageKey: string;
@@ -14,96 +13,33 @@ interface EbookDownloadProps {
 
 export default function EbookDownload({ pageKey, title, description, price }: EbookDownloadProps) {
   const [isLoading, setIsLoading] = useState(false);
-  const [downloadUrl, setDownloadUrl] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
 
-  // Check if there's a session_id in the URL (redirect from successful payment)
-  useEffect(() => {
-    const checkSessionId = async () => {
-      const url = new URL(window.location.href);
-      const sessionId = url.searchParams.get('session_id');
-      
-      if (sessionId) {
-        try {
-          const response = await fetch(`/api/verify-purchase/${pageKey}`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ sessionId }),
-            credentials: 'include'
-          });
-          
-          const data = await response.json();
-          if (data.success && data.downloadUrl) {
-            setDownloadUrl(data.downloadUrl);
-            // Clean up the URL
-            window.history.replaceState({}, document.title, window.location.pathname);
-          }
-        } catch (error) {
-          console.error('Error verifying session:', error);
-        }
-      }
-    };
-    
-    checkSessionId();
-  }, [pageKey]);
-
-  const handleCheckout = async () => {
+  const handleDownload = () => {
     setIsLoading(true);
-    setError(null);
     
     try {
-      console.log('Starting checkout process for pageKey:', pageKey);
+      // Directly download the PDF file
+      window.location.href = '/api/direct-download/ebook';
       
-      const response = await fetch('/api/create-checkout-session', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          pageKey,
-          // Let the server determine success and cancel URLs
-        }),
-        credentials: 'include'
+      // Show success toast
+      toast({
+        title: 'Success',
+        description: 'Your download has started!',
       });
       
-      console.log('Checkout response status:', response.status);
-      
-      // Check if the response is OK
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error('Error response:', errorText);
-        throw new Error(`Server returned ${response.status}: ${errorText}`);
-      }
-      
-      const data = await response.json();
-      console.log('Checkout response data:', data);
-      
-      if (data.url) {
-        console.log('Redirecting to:', data.url);
-        // Redirect to Stripe Checkout
-        window.location.href = data.url;
-      } else {
-        throw new Error('Failed to create checkout session - no URL returned');
-      }
+      // Reset loading state after a short delay
+      setTimeout(() => {
+        setIsLoading(false);
+      }, 1000);
     } catch (err: any) {
-      console.error('Error creating checkout session:', err);
-      setError('Could not initialize checkout. Please try again later.');
+      console.error('Error downloading ebook:', err);
       toast({
         title: 'Error',
-        description: err.message || 'Could not initialize checkout. Please try again later.',
+        description: 'Could not download the ebook. Please try again.',
         variant: 'destructive',
       });
-    } finally {
       setIsLoading(false);
-    }
-  };
-
-  const handleDownload = () => {
-    if (downloadUrl) {
-      window.location.href = downloadUrl;
     }
   };
 
@@ -114,52 +50,32 @@ export default function EbookDownload({ pageKey, title, description, price }: Eb
         {description && <CardDescription>{description}</CardDescription>}
       </CardHeader>
       <CardContent>
-        {!downloadUrl && (
-          <div className="space-y-4">
-            <p className="text-lg font-semibold">
-              ${(price / 100).toFixed(2)}
-            </p>
-            <Button 
-              onClick={handleCheckout} 
-              disabled={isLoading}
-              className="w-full"
-            >
-              {isLoading ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Redirecting to checkout...
-                </>
-              ) : (
-                <>
-                  <ExternalLink className="mr-2 h-4 w-4" />
-                  Checkout with Stripe
-                </>
-              )}
-            </Button>
-            {error && <p className="text-red-500 text-sm">{error}</p>}
-          </div>
-        )}
-        
-        {downloadUrl && (
-          <div className="text-center space-y-4">
-            <CheckCircle className="h-12 w-12 text-green-500 mx-auto" />
-            <h3 className="font-semibold text-lg">Payment Complete!</h3>
-            <p className="text-gray-500">Thank you for your purchase. Your ebook is ready to download.</p>
-          </div>
-        )}
+        <div className="text-center space-y-4">
+          <FileText className="h-16 w-16 mx-auto text-muted-foreground" />
+          <h3 className="font-semibold text-lg">Free Domain Marketing Guide</h3>
+          <p className="text-gray-500">Learn how to effectively market your domains with our comprehensive guide.</p>
+        </div>
       </CardContent>
       
-      {downloadUrl && (
-        <CardFooter>
-          <Button 
-            onClick={handleDownload}
-            className="w-full"
-          >
-            <Download className="mr-2 h-4 w-4" />
-            Download Ebook
-          </Button>
-        </CardFooter>
-      )}
+      <CardFooter>
+        <Button 
+          onClick={handleDownload}
+          disabled={isLoading}
+          className="w-full"
+        >
+          {isLoading ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              Downloading...
+            </>
+          ) : (
+            <>
+              <Download className="mr-2 h-4 w-4" />
+              Download Free Ebook
+            </>
+          )}
+        </Button>
+      </CardFooter>
     </Card>
   );
 }
