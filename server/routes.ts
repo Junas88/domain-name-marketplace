@@ -84,7 +84,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Direct ebook download endpoint
+  // Direct ebook download endpoint - always serves the PDF regardless of purchase status
   app.get('/api/direct-download/ebook', async (req, res) => {
     try {
       console.log('Downloading ebook...');
@@ -93,40 +93,61 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const pageContent = await storage.getPageContent('ebook-section');
       
       // For the direct-download/ebook endpoint, we always want to allow downloads
-      // regardless of the isPurchaseRequired flag
-      // This is a direct access endpoint specifically for free downloads 
-      // (Note: we're not updating the settings in the database here to avoid conflicts)
+      // regardless of the isPurchaseRequired flag - this is a free download endpoint
       
       let filePath = '';
       let fileName = 'Domain Name Marketing.pdf';
       
-      if (pageContent && pageContent.filePath && fs.existsSync(pageContent.filePath)) {
-        // If the page content has a file path and the file exists, use that
-        filePath = pageContent.filePath;
-        if (pageContent.fileName) {
-          fileName = pageContent.fileName;
+      // Check if we have a valid file path from page content
+      if (pageContent && pageContent.filePath) {
+        // First check if the file exists as-is
+        if (fs.existsSync(pageContent.filePath)) {
+          filePath = pageContent.filePath;
+          if (pageContent.fileName) {
+            fileName = pageContent.fileName;
+          }
+          console.log('Using uploaded file:', filePath);
+        } else {
+          // If the file doesn't exist exactly as stored, check if it's just a filename issue 
+          // by trying to find the file in the uploads folder
+          const possiblePath = path.join('uploads', path.basename(pageContent.filePath));
+          if (fs.existsSync(possiblePath)) {
+            filePath = possiblePath;
+            console.log('Found file in uploads directory:', filePath);
+          }
         }
-        console.log('Using uploaded file:', filePath);
-      } else {
-        // Fallback to default file
-        filePath = path.join(process.cwd(), 'public/downloads/Domain Name Marketing.pdf');
-        console.log('Using default file:', filePath);
       }
       
-      // Check if file exists
-      if (!fs.existsSync(filePath)) {
-        console.error('File not found:', filePath);
-        return res.status(404).send('File not found');
+      // If we still don't have a valid file path, try the fallback file
+      if (!filePath || !fs.existsSync(filePath)) {
+        filePath = path.join(process.cwd(), 'public/downloads/Domain Name Marketing.pdf');
+        console.log('Using default file:', filePath);
+        
+        // Ensure the downloads directory exists
+        fs.ensureDirSync(path.join(process.cwd(), 'public/downloads'));
+        
+        // If the default file doesn't exist either, return error
+        if (!fs.existsSync(filePath)) {
+          console.error('Default file not found:', filePath);
+          return res.status(404).send('Ebook file not found. Please upload an ebook from the admin dashboard.');
+        }
       }
       
       console.log('File exists at:', filePath);
       
-      // Set headers
+      // Set headers for download
       res.setHeader('Content-Type', 'application/pdf');
       res.setHeader('Content-Disposition', `attachment; filename="${fileName}"`);
       
       // Send file stream
       const fileStream = fs.createReadStream(filePath);
+      fileStream.on('error', (error) => {
+        console.error('Error streaming file:', error);
+        if (!res.headersSent) {
+          res.status(500).send('Error streaming file');
+        }
+      });
+      
       fileStream.pipe(res);
     } catch (err) {
       console.error('Error downloading file:', err);
@@ -498,8 +519,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "Page content not found" });
       }
       
+      // If this is the ebook, we want to make sure the file is properly saved
+      if (pageKey === 'ebook-section') {
+        // Create a copy in the default location for failsafe
+        const pdfName = 'Domain Name Marketing.pdf';
+        const defaultPath = path.join(process.cwd(), 'public/downloads', pdfName);
+        
+        // Ensure the downloads directory exists
+        fs.ensureDirSync(path.join(process.cwd(), 'public/downloads'));
+        
+        // Copy the uploaded file to the default location
+        try {
+          fs.copyFileSync(req.file.path, defaultPath);
+          console.log('Created backup copy of PDF at:', defaultPath);
+        } catch (copyErr) {
+          console.error('Failed to create backup copy:', copyErr);
+          // Continue even if copy fails, since we still have the uploaded file
+        }
+      }
+      
       // Update page content with file information
-      // For ebook-section specifically, make sure to set isPurchaseRequired to false
       const updates = {
         filePath: req.file.path,
         fileName: req.file.originalname,
@@ -507,6 +546,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         fileSize: req.file.size
       };
       
+      // For ebook-section specifically, make sure to set isPurchaseRequired to false
       if (pageKey === 'ebook-section') {
         Object.assign(updates, {
           isPurchaseRequired: false,
@@ -516,7 +556,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       const updatedPageContent = await storage.updatePageContent(pageKey, updates);
       
-      res.json(updatedPageContent);
+      // Special message for ebook uploads to guide the admin
+      if (pageKey === 'ebook-section') {
+        res.json({
+          ...updatedPageContent,
+          message: "E-book uploaded successfully and set to FREE. Users can now download it from the website."
+        });
+      } else {
+        res.json(updatedPageContent);
+      }
     } catch (error) {
       console.error("Error uploading file:", error);
       res.status(500).json({ message: "Failed to upload file" });
