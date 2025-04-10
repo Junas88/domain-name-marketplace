@@ -251,8 +251,8 @@ export default function DomainListing({ onMakeOffer }: DomainListingProps) {
   return (
     <section id="domains" className="py-12 bg-white border-t border-black" aria-labelledby="domains-heading">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <h2 id="domains-heading" className="text-3xl font-bold mb-2">Premium Domains for Sale</h2>
-        <p className="text-neutral-800 mb-8">Browse our collection of premium domain names for businesses, startups, and brands</p>
+        <h2 id="domains-heading" className="text-4xl font-bold mb-3">Find Your Perfect Domain Name</h2>
+        <p className="text-neutral-800 mb-8">Premium domains with instant Buy-It-Now prices or make an offer. Secure the ideal domain for your startup, business, brand, or project.</p>
         
         {/* Hidden keywords for SEO */}
         <div className="sr-only">
@@ -260,30 +260,38 @@ export default function DomainListing({ onMakeOffer }: DomainListingProps) {
         </div>
         
         {/* Search Bar */}
-        <div className="mb-6">
-          <div className="relative flex items-center max-w-md mx-auto">
-            <Input
-              type="text"
-              placeholder="Search domains by name or category..."
-              className="pr-10 border-black focus-visible:ring-black"
-              value={searchText}
-              onChange={(e) => setSearchText(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') {
-                  applyFilters();
-                }
-              }}
-            />
-            {searchText ? (
-              <button 
-                onClick={() => setSearchText("")}
-                className="absolute right-10 w-5 h-5 text-gray-500 hover:text-black"
-                aria-label="Clear search"
-              >
-                ✕
-              </button>
-            ) : null}
-            <Search className="absolute right-3 w-5 h-5 text-gray-500" />
+        <div className="mb-8">
+          <div className="flex items-center max-w-xl mx-auto">
+            <div className="relative flex-1">
+              <Input
+                type="text"
+                placeholder="Search domains by name or category..."
+                className="pr-10 border-black focus-visible:ring-black rounded-r-none"
+                value={searchText}
+                onChange={(e) => setSearchText(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    applyFilters();
+                  }
+                }}
+              />
+              {searchText ? (
+                <button 
+                  onClick={() => setSearchText("")}
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-500 hover:text-black"
+                  aria-label="Clear search"
+                >
+                  ✕
+                </button>
+              ) : null}
+            </div>
+            <Button 
+              onClick={applyFilters}
+              className="h-10 bg-black text-white hover:bg-neutral-800 rounded-l-none"
+              aria-label="Search domains"
+            >
+              <Search className="w-5 h-5 mr-1" /> Search
+            </Button>
           </div>
         </div>
         
