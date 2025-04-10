@@ -259,34 +259,6 @@ export default function DomainListing({ onMakeOffer }: DomainListingProps) {
           Buy domains, domain marketplace, premium domains, domain names for sale, domain broker, domain auction, domain negotiation
         </div>
         
-        {/* Search Bar */}
-        <div className="mb-6">
-          <div className="relative flex items-center max-w-md mx-auto">
-            <Input
-              type="text"
-              placeholder="Search domains by name or category..."
-              className="pr-10 border-black focus-visible:ring-black"
-              value={searchText}
-              onChange={(e) => setSearchText(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') {
-                  applyFilters();
-                }
-              }}
-            />
-            {searchText ? (
-              <button 
-                onClick={() => setSearchText("")}
-                className="absolute right-10 w-5 h-5 text-gray-500 hover:text-black"
-                aria-label="Clear search"
-              >
-                ✕
-              </button>
-            ) : null}
-            <Search className="absolute right-3 w-5 h-5 text-gray-500" />
-          </div>
-        </div>
-        
         {/* Filters */}
         <Card className="mb-8 border border-black">
           <CardContent className="p-4">

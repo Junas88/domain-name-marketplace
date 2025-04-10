@@ -49,23 +49,24 @@ export default function Hero() {
           
           {/* Search Bar */}
           <form onSubmit={handleSearch} className="max-w-3xl mx-auto" role="search" aria-label="Search domains">
-            <div className="bg-white rounded-full overflow-hidden shadow-lg flex border border-black">
+            <div className="relative shadow-lg rounded-full overflow-hidden">
               <label htmlFor="domain-search" className="sr-only">Search for domains</label>
               <input 
                 id="domain-search"
                 type="text" 
                 placeholder="Search for domains..." 
-                className="flex-grow px-6 py-4 border-none focus:outline-none text-neutral-800"
+                className="w-full px-6 py-4 border-none focus:outline-none focus:ring-0 text-neutral-800"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 aria-label="Domain search input"
               />
               <button 
                 type="submit"
-                className="bg-black text-white px-8 py-4 font-semibold hover:bg-neutral-800 transition-colors"
+                className="absolute right-0 top-0 bottom-0 rounded-r-full bg-black text-white px-8 font-semibold hover:bg-neutral-800 transition-colors flex items-center"
                 aria-label="Search domains"
               >
-                <Search className="mr-2 inline-block" size={18} /> Search
+                <Search className="mr-2" size={18} />
+                <span>Search</span>
               </button>
             </div>
           </form>
