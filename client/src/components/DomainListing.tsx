@@ -257,13 +257,13 @@ export default function DomainListing({ onMakeOffer }: DomainListingProps) {
         </div>
         
         {/* Search Bar */}
-        <div className="mb-8">
-          <div className="flex items-center max-w-xl mx-auto shadow-md rounded-md overflow-hidden border border-gray-300">
+        <div className="mb-12">
+          <div className="flex items-center max-w-3xl mx-auto shadow-lg rounded-md overflow-hidden border-2 border-black">
             <div className="relative flex-1">
               <Input
                 type="text"
                 placeholder="Search domains by name or category..."
-                className="h-11 border-0 focus-visible:ring-0 focus-visible:ring-offset-0 rounded-none"
+                className="h-16 text-lg px-6 border-0 focus-visible:ring-0 focus-visible:ring-offset-0 rounded-none"
                 value={searchText}
                 onChange={(e) => setSearchText(e.target.value)}
                 onKeyDown={(e) => {
@@ -275,7 +275,7 @@ export default function DomainListing({ onMakeOffer }: DomainListingProps) {
               {searchText ? (
                 <button 
                   onClick={() => setSearchText("")}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-500 hover:text-black"
+                  className="absolute right-6 top-1/2 transform -translate-y-1/2 w-6 h-6 text-gray-500 hover:text-black"
                   aria-label="Clear search"
                 >
                   ✕
@@ -284,10 +284,10 @@ export default function DomainListing({ onMakeOffer }: DomainListingProps) {
             </div>
             <Button 
               onClick={applyFilters}
-              className="h-11 px-4 text-sm bg-black text-white hover:bg-neutral-800 rounded-none"
+              className="h-16 px-8 text-base font-medium bg-black text-white hover:bg-neutral-800 rounded-none"
               aria-label="Search domains"
             >
-              <Search className="w-4 h-4 mr-1" /> Search
+              <Search className="w-5 h-5 mr-2" /> Search
             </Button>
           </div>
         </div>
