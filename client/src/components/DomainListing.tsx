@@ -251,9 +251,6 @@ export default function DomainListing({ onMakeOffer }: DomainListingProps) {
   return (
     <section id="domains" className="py-12 bg-white border-t border-black" aria-labelledby="domains-heading">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <h2 id="domains-heading" className="text-5xl font-bold mb-5 text-center">Find Your Perfect Domain Name</h2>
-        <p className="text-neutral-700 mb-8 text-center text-lg max-w-3xl mx-auto">Premium domains with instant Buy-It-Now prices or make an offer. Secure the ideal domain for your startup, business, brand, or project.</p>
-        
         {/* Hidden keywords for SEO */}
         <div className="sr-only">
           Buy domains, domain marketplace, premium domains, domain names for sale, domain broker, domain auction, domain negotiation
