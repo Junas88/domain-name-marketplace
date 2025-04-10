@@ -16,8 +16,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ChevronLeft, ChevronRight, Shield, Check } from "lucide-react";
+import { ChevronLeft, ChevronRight, Shield, Check, Search } from "lucide-react";
 
 // Helper function to get colors for different categories
 const getCategoryColor = (category: string): string => {
@@ -54,11 +55,15 @@ export default function DomainListing({ onMakeOffer }: DomainListingProps) {
     length: "Any Length",
   });
   const [currentPage, setCurrentPage] = useState(1);
+  const [searchText, setSearchText] = useState("");
   const domainsPerPage = 20;
 
   // Parse search query from URL if present
   const urlParams = new URLSearchParams(window.location.search);
-  const searchQuery = urlParams.get("search") || "";
+  const searchQueryFromUrl = urlParams.get("search") || "";
+  
+  // Use either direct search text or URL search param
+  const searchQuery = searchText || searchQueryFromUrl;
 
   // Fetch domains
   const { data: domains, isLoading, isError } = useQuery<Domain[]>({
@@ -252,6 +257,34 @@ export default function DomainListing({ onMakeOffer }: DomainListingProps) {
         {/* Hidden keywords for SEO */}
         <div className="sr-only">
           Buy domains, domain marketplace, premium domains, domain names for sale, domain broker, domain auction, domain negotiation
+        </div>
+        
+        {/* Search Bar */}
+        <div className="mb-6">
+          <div className="relative flex items-center max-w-md mx-auto">
+            <Input
+              type="text"
+              placeholder="Search domains by name or category..."
+              className="pr-10 border-black focus-visible:ring-black"
+              value={searchText}
+              onChange={(e) => setSearchText(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  applyFilters();
+                }
+              }}
+            />
+            {searchText ? (
+              <button 
+                onClick={() => setSearchText("")}
+                className="absolute right-10 w-5 h-5 text-gray-500 hover:text-black"
+                aria-label="Clear search"
+              >
+                ✕
+              </button>
+            ) : null}
+            <Search className="absolute right-3 w-5 h-5 text-gray-500" />
+          </div>
         </div>
         
         {/* Filters */}
