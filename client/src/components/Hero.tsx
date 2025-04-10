@@ -9,16 +9,6 @@ export default function Hero() {
   const { toast } = useToast();
   const [, setLocation] = useLocation();
 
-  const [debouncedSearch] = useState(() => {
-    let timeoutId: NodeJS.Timeout;
-    return (value: string) => {
-      clearTimeout(timeoutId);
-      timeoutId = setTimeout(() => {
-        setLocation(`/?search=${encodeURIComponent(value)}`);
-      }, 300);
-    };
-  });
-
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -37,8 +27,8 @@ export default function Hero() {
       domainsSection.scrollIntoView({ behavior: "smooth" });
     }
     
-    // Update URL with debounced search
-    debouncedSearch(searchQuery);
+    // Update URL with search parameter
+    setLocation(`/?search=${encodeURIComponent(searchQuery)}`);
   };
 
   return (

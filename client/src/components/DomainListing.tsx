@@ -66,66 +66,62 @@ export default function DomainListing({ onMakeOffer }: DomainListingProps) {
     refetchOnWindowFocus: false,
   });
 
-  // Memoized search function
-  const getFilteredDomains = useCallback((domains: Domain[] | undefined, searchQuery: string, filters: DomainFilters) => {
-    if (!domains) return [];
+  // Apply filters and search
+  const filteredDomains = domains?.filter(domain => {
+    let matches = true;
     
-    return domains.filter(domain => {
-      // Quick exits for empty filters
-      if (!searchQuery && filters.category === "All Categories" && 
-          filters.priceRange === "Any Price" && filters.length === "Any Length") {
-        return true;
-      }
-
-      // Search query check
-      if (searchQuery) {
-        const lowerQuery = searchQuery.toLowerCase();
-        const searchMatches = [
-          domain.name.toLowerCase(),
-          domain.description.toLowerCase(),
-          domain.category.toLowerCase()
-        ].some(text => text.includes(lowerQuery));
-        
-        if (!searchMatches) return false;
-      }
+    // Apply search filter if query exists
+    if (searchQuery) {
+      const lowerQuery = searchQuery.toLowerCase();
+      const matchesSearch = 
+        domain.name.toLowerCase().includes(lowerQuery) ||
+        domain.description.toLowerCase().includes(lowerQuery) ||
+        domain.category.toLowerCase().includes(lowerQuery);
       
-      // Category check
-      if (filters.category !== "All Categories" && domain.category !== filters.category) {
-        return false;
+      if (!matchesSearch) matches = false;
+    }
+    
+    // Apply category filter
+    if (filters.category && filters.category !== "All Categories") {
+      if (domain.category !== filters.category) matches = false;
+    }
+    
+    // Apply price range filter
+    if (filters.priceRange && filters.priceRange !== "Any Price") {
+      switch (filters.priceRange) {
+        case "Under $1,000":
+          if (domain.price >= 1000) matches = false;
+          break;
+        case "$1,000 - $5,000":
+          if (domain.price < 1000 || domain.price > 5000) matches = false;
+          break;
+        case "$5,000 - $10,000":
+          if (domain.price < 5000 || domain.price > 10000) matches = false;
+          break;
+        case "$10,000+":
+          if (domain.price <= 10000) matches = false;
+          break;
       }
-      
-      // Price range check
-      if (filters.priceRange !== "Any Price") {
-        const price = domain.price;
-        const ranges = {
-          "Under $1,000": price < 1000,
-          "$1,000 - $5,000": price >= 1000 && price <= 5000,
-          "$5,000 - $10,000": price > 5000 && price <= 10000,
-          "$10,000+": price > 10000
-        };
-        if (!ranges[filters.priceRange as keyof typeof ranges]) return false;
+    }
+    
+    // Apply length filter
+    if (filters.length && filters.length !== "Any Length") {
+      const domainNameLength = domain.name.length;
+      switch (filters.length) {
+        case "3-5 Characters":
+          if (domainNameLength < 3 || domainNameLength > 5) matches = false;
+          break;
+        case "6-9 Characters":
+          if (domainNameLength < 6 || domainNameLength > 9) matches = false;
+          break;
+        case "10+ Characters":
+          if (domainNameLength < 10) matches = false;
+          break;
       }
-      
-      // Length check
-      if (filters.length !== "Any Length") {
-        const length = domain.name.length;
-        const ranges = {
-          "3-5 Characters": length >= 3 && length <= 5,
-          "6-9 Characters": length >= 6 && length <= 9,
-          "10+ Characters": length >= 10
-        };
-        if (!ranges[filters.length as keyof typeof ranges]) return false;
-      }
-      
-      return true;
-    });
-  }, []);
-
-  // Use memoized filtered domains
-  const filteredDomains = useMemo(() => 
-    getFilteredDomains(domains, searchQuery, filters),
-    [domains, searchQuery, filters, getFilteredDomains]
-  );
+    }
+    
+    return matches;
+  }) || [];
 
   // Pagination
   const indexOfLastDomain = currentPage * domainsPerPage;
