@@ -152,8 +152,21 @@ export default function DomainListing({ onMakeOffer }: DomainListingProps) {
       // Directly redirect to the domain
       const domainUrl = `https://${domain.name}`;
       
-      // Open the domain in a new window
-      window.open(domainUrl, "_blank");
+      // Use location.href for mobile compatibility or window.open for desktop
+      // The setTimeout gives the toast a chance to appear before navigating
+      setTimeout(() => {
+        // Force open in the same window for mobile devices or new window for desktop
+        try {
+          const newWindow = window.open(domainUrl, "_blank");
+          // If the new window wasn't successfully opened (often happens on mobile), redirect in the same window
+          if (!newWindow || newWindow.closed || typeof newWindow.closed === 'undefined') {
+            window.location.href = domainUrl;
+          }
+        } catch (e) {
+          // Fallback for any issues with window.open
+          window.location.href = domainUrl;
+        }
+      }, 500);
     } catch (error) {
       toast({
         title: "Purchase failed",
