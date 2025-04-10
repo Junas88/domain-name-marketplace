@@ -251,8 +251,8 @@ export default function DomainListing({ onMakeOffer }: DomainListingProps) {
   return (
     <section id="domains" className="py-12 bg-white border-t border-black" aria-labelledby="domains-heading">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <h2 id="domains-heading" className="text-4xl font-bold mb-3">Find Your Perfect Domain Name</h2>
-        <p className="text-neutral-800 mb-8">Premium domains with instant Buy-It-Now prices or make an offer. Secure the ideal domain for your startup, business, brand, or project.</p>
+        <h2 id="domains-heading" className="text-5xl font-bold mb-5 text-center">Find Your Perfect Domain Name</h2>
+        <p className="text-neutral-700 mb-12 text-center text-lg max-w-3xl mx-auto">Premium domains with instant Buy-It-Now prices or make an offer. Secure the ideal domain for your startup, business, brand, or project.</p>
         
         {/* Hidden keywords for SEO */}
         <div className="sr-only">
@@ -260,13 +260,13 @@ export default function DomainListing({ onMakeOffer }: DomainListingProps) {
         </div>
         
         {/* Search Bar */}
-        <div className="mb-8">
-          <div className="flex items-center max-w-xl mx-auto">
+        <div className="mb-12">
+          <div className="flex items-center max-w-2xl mx-auto shadow-lg rounded-lg overflow-hidden border-2 border-black">
             <div className="relative flex-1">
               <Input
                 type="text"
                 placeholder="Search domains by name or category..."
-                className="pr-10 border-black focus-visible:ring-black rounded-r-none"
+                className="h-14 text-lg border-0 focus-visible:ring-0 focus-visible:ring-offset-0 rounded-none"
                 value={searchText}
                 onChange={(e) => setSearchText(e.target.value)}
                 onKeyDown={(e) => {
@@ -278,7 +278,7 @@ export default function DomainListing({ onMakeOffer }: DomainListingProps) {
               {searchText ? (
                 <button 
                   onClick={() => setSearchText("")}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-500 hover:text-black"
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 w-6 h-6 text-gray-500 hover:text-black"
                   aria-label="Clear search"
                 >
                   ✕
@@ -287,10 +287,10 @@ export default function DomainListing({ onMakeOffer }: DomainListingProps) {
             </div>
             <Button 
               onClick={applyFilters}
-              className="h-10 bg-black text-white hover:bg-neutral-800 rounded-l-none"
+              className="h-14 px-6 text-base bg-black text-white hover:bg-neutral-800 rounded-none"
               aria-label="Search domains"
             >
-              <Search className="w-5 h-5 mr-1" /> Search
+              <Search className="w-5 h-5 mr-2" /> Search
             </Button>
           </div>
         </div>
