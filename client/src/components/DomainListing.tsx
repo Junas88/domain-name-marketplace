@@ -252,7 +252,7 @@ export default function DomainListing({ onMakeOffer }: DomainListingProps) {
     <section id="domains" className="py-12 bg-white border-t border-black" aria-labelledby="domains-heading">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <h2 id="domains-heading" className="text-5xl font-bold mb-5 text-center">Find Your Perfect Domain Name</h2>
-        <p className="text-neutral-700 mb-12 text-center text-lg max-w-3xl mx-auto">Premium domains with instant Buy-It-Now prices or make an offer. Secure the ideal domain for your startup, business, brand, or project.</p>
+        <p className="text-neutral-700 mb-8 text-center text-lg max-w-3xl mx-auto">Premium domains with instant Buy-It-Now prices or make an offer. Secure the ideal domain for your startup, business, brand, or project.</p>
         
         {/* Hidden keywords for SEO */}
         <div className="sr-only">
@@ -260,13 +260,13 @@ export default function DomainListing({ onMakeOffer }: DomainListingProps) {
         </div>
         
         {/* Search Bar */}
-        <div className="mb-12">
-          <div className="flex items-center max-w-2xl mx-auto shadow-lg rounded-lg overflow-hidden border-2 border-black">
+        <div className="mb-8">
+          <div className="flex items-center max-w-xl mx-auto shadow-md rounded-md overflow-hidden border border-gray-300">
             <div className="relative flex-1">
               <Input
                 type="text"
                 placeholder="Search domains by name or category..."
-                className="h-14 text-lg border-0 focus-visible:ring-0 focus-visible:ring-offset-0 rounded-none"
+                className="h-11 border-0 focus-visible:ring-0 focus-visible:ring-offset-0 rounded-none"
                 value={searchText}
                 onChange={(e) => setSearchText(e.target.value)}
                 onKeyDown={(e) => {
@@ -278,7 +278,7 @@ export default function DomainListing({ onMakeOffer }: DomainListingProps) {
               {searchText ? (
                 <button 
                   onClick={() => setSearchText("")}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 w-6 h-6 text-gray-500 hover:text-black"
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-500 hover:text-black"
                   aria-label="Clear search"
                 >
                   ✕
@@ -287,92 +287,90 @@ export default function DomainListing({ onMakeOffer }: DomainListingProps) {
             </div>
             <Button 
               onClick={applyFilters}
-              className="h-14 px-6 text-base bg-black text-white hover:bg-neutral-800 rounded-none"
+              className="h-11 px-4 text-sm bg-black text-white hover:bg-neutral-800 rounded-none"
               aria-label="Search domains"
             >
-              <Search className="w-5 h-5 mr-2" /> Search
+              <Search className="w-4 h-4 mr-1" /> Search
             </Button>
           </div>
         </div>
         
         {/* Filters */}
-        <Card className="mb-8 border border-black">
-          <CardContent className="p-4">
-            <div className="flex flex-wrap items-center gap-4" role="search" aria-label="Domain filter options">
-              <div className="w-full md:w-auto">
-                <label htmlFor="price-range-select" className="block text-sm font-medium text-neutral-800 mb-1">Price Range</label>
-                <Select 
-                  value={filters.priceRange} 
-                  onValueChange={(value) => setFilters({...filters, priceRange: value})}
-                  name="price-range"
-                >
-                  <SelectTrigger id="price-range-select" className="w-full md:w-48 border-black">
-                    <SelectValue placeholder="Any Price" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Any Price">Any Price</SelectItem>
-                    <SelectItem value="Under $1,000">Under $1,000</SelectItem>
-                    <SelectItem value="$1,000 - $5,000">$1,000 - $5,000</SelectItem>
-                    <SelectItem value="$5,000 - $10,000">$5,000 - $10,000</SelectItem>
-                    <SelectItem value="$10,000+">$10,000+</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              
-              <div className="w-full md:w-auto">
-                <label htmlFor="category-select" className="block text-sm font-medium text-neutral-800 mb-1">Category</label>
-                <Select 
-                  value={filters.category} 
-                  onValueChange={(value) => setFilters({...filters, category: value})}
-                  name="category"
-                >
-                  <SelectTrigger id="category-select" className="w-full md:w-48 border-black">
-                    <SelectValue placeholder="All Categories" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="All Categories">All Categories</SelectItem>
-                    <SelectItem value="Technology">Technology</SelectItem>
-                    <SelectItem value="Business">Business</SelectItem>
-                    <SelectItem value="Health">Health</SelectItem>
-                    <SelectItem value="Education">Education</SelectItem>
-                    <SelectItem value="Entertainment">Entertainment</SelectItem>
-                    <SelectItem value="Finance">Finance</SelectItem>
-                    <SelectItem value="Crypto">Crypto</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              
-              <div className="w-full md:w-auto">
-                <label htmlFor="length-select" className="block text-sm font-medium text-neutral-800 mb-1">Length</label>
-                <Select 
-                  value={filters.length} 
-                  onValueChange={(value) => setFilters({...filters, length: value})}
-                  name="length"
-                >
-                  <SelectTrigger id="length-select" className="w-full md:w-48 border-black">
-                    <SelectValue placeholder="Any Length" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Any Length">Any Length</SelectItem>
-                    <SelectItem value="3-5 Characters">3-5 Characters</SelectItem>
-                    <SelectItem value="6-9 Characters">6-9 Characters</SelectItem>
-                    <SelectItem value="10+ Characters">10+ Characters</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              
-              <div className="w-full md:w-auto md:ml-auto mt-4 md:mt-0">
-                <Button 
-                  onClick={applyFilters} 
-                  className="bg-black text-white hover:bg-neutral-800"
-                  aria-label="Apply domain filters"
-                >
-                  Apply Filters
-                </Button>
-              </div>
+        <div className="max-w-4xl mx-auto mb-12 border border-gray-200 rounded-lg p-4">
+          <div className="flex flex-wrap items-center gap-6" role="search" aria-label="Domain filter options">
+            <div className="w-full md:w-auto">
+              <label htmlFor="price-range-select" className="block text-sm font-medium text-neutral-800 mb-1">Price Range</label>
+              <Select 
+                value={filters.priceRange} 
+                onValueChange={(value) => setFilters({...filters, priceRange: value})}
+                name="price-range"
+              >
+                <SelectTrigger id="price-range-select" className="w-full md:w-40 border-gray-300">
+                  <SelectValue placeholder="Any Price" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Any Price">Any Price</SelectItem>
+                  <SelectItem value="Under $1,000">Under $1,000</SelectItem>
+                  <SelectItem value="$1,000 - $5,000">$1,000 - $5,000</SelectItem>
+                  <SelectItem value="$5,000 - $10,000">$5,000 - $10,000</SelectItem>
+                  <SelectItem value="$10,000+">$10,000+</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
-          </CardContent>
-        </Card>
+            
+            <div className="w-full md:w-auto">
+              <label htmlFor="category-select" className="block text-sm font-medium text-neutral-800 mb-1">Category</label>
+              <Select 
+                value={filters.category} 
+                onValueChange={(value) => setFilters({...filters, category: value})}
+                name="category"
+              >
+                <SelectTrigger id="category-select" className="w-full md:w-40 border-gray-300">
+                  <SelectValue placeholder="All Categories" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="All Categories">All Categories</SelectItem>
+                  <SelectItem value="Technology">Technology</SelectItem>
+                  <SelectItem value="Business">Business</SelectItem>
+                  <SelectItem value="Health">Health</SelectItem>
+                  <SelectItem value="Education">Education</SelectItem>
+                  <SelectItem value="Entertainment">Entertainment</SelectItem>
+                  <SelectItem value="Finance">Finance</SelectItem>
+                  <SelectItem value="Crypto">Crypto</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            
+            <div className="w-full md:w-auto">
+              <label htmlFor="length-select" className="block text-sm font-medium text-neutral-800 mb-1">Length</label>
+              <Select 
+                value={filters.length} 
+                onValueChange={(value) => setFilters({...filters, length: value})}
+                name="length"
+              >
+                <SelectTrigger id="length-select" className="w-full md:w-40 border-gray-300">
+                  <SelectValue placeholder="Any Length" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Any Length">Any Length</SelectItem>
+                  <SelectItem value="3-5 Characters">3-5 Characters</SelectItem>
+                  <SelectItem value="6-9 Characters">6-9 Characters</SelectItem>
+                  <SelectItem value="10+ Characters">10+ Characters</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            
+            <div className="w-full md:w-auto md:ml-auto mt-4 md:mt-0">
+              <Button 
+                onClick={applyFilters} 
+                className="bg-black text-white hover:bg-neutral-800 rounded-sm"
+                aria-label="Apply domain filters"
+              >
+                Apply Filters
+              </Button>
+            </div>
+          </div>
+        </div>
         
         {/* Domain Grid */}
         {isLoading ? (
