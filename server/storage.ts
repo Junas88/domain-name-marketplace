@@ -71,6 +71,7 @@ export class MemStorage implements IStorage {
   private offers: Map<number, Offer>;
   private consultations: Map<number, Consultation>;
   private pageContents: Map<string, PageContent>;
+  private emailSubmissions: Map<number, EmailSubmission>;
   
   public sessionStore: session.Store;
   
@@ -79,6 +80,7 @@ export class MemStorage implements IStorage {
   private offerIdCounter: number;
   private consultationIdCounter: number;
   private pageContentIdCounter: number;
+  private emailSubmissionIdCounter: number;
 
   constructor() {
     this.users = new Map();
@@ -86,6 +88,7 @@ export class MemStorage implements IStorage {
     this.offers = new Map();
     this.consultations = new Map();
     this.pageContents = new Map();
+    this.emailSubmissions = new Map();
     
     this.sessionStore = new MemoryStore({
       checkPeriod: 86400000 // prune expired entries every 24h
@@ -96,6 +99,7 @@ export class MemStorage implements IStorage {
     this.offerIdCounter = 1;
     this.consultationIdCounter = 1;
     this.pageContentIdCounter = 1;
+    this.emailSubmissionIdCounter = 1;
     
     // Initialize with some sample domains
     this.initializeDomains();
@@ -1120,6 +1124,23 @@ export class MemStorage implements IStorage {
     }
     
     return this.pageContents.delete(pageKey);
+  }
+  
+  // Email Submissions methods for ebook downloads
+  async createEmailSubmission(submission: InsertEmailSubmission): Promise<EmailSubmission> {
+    const newSubmission: EmailSubmission = {
+      id: this.emailSubmissionIdCounter++,
+      email: submission.email,
+      source: submission.source || "ebook",
+      downloadedAt: new Date(),
+    };
+    
+    this.emailSubmissions.set(newSubmission.id, newSubmission);
+    return newSubmission;
+  }
+  
+  async getAllEmailSubmissions(): Promise<EmailSubmission[]> {
+    return Array.from(this.emailSubmissions.values());
   }
 }
 

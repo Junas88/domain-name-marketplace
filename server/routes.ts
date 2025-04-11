@@ -6,7 +6,8 @@ import {
   insertOfferSchema, 
   insertConsultationSchema,
   insertDomainSchema,
-  insertPageContentSchema
+  insertPageContentSchema,
+  insertEmailSubmissionSchema
 } from "@shared/schema";
 import { z } from "zod";
 import Stripe from "stripe";
@@ -389,6 +390,37 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error fetching consultations:", error);
       res.status(500).json({ message: "Failed to fetch consultations" });
+    }
+  });
+  
+  // Get all email submissions (admin)
+  app.get("/api/admin/email-submissions", async (req, res) => {
+    try {
+      // Check if user is authenticated and an admin
+      if (!req.isAuthenticated() || !(req.user?.isAdmin)) {
+        return res.status(403).json({ message: "Unauthorized" });
+      }
+      
+      const emailSubmissions = await storage.getAllEmailSubmissions();
+      res.json(emailSubmissions);
+    } catch (error) {
+      console.error("Error fetching email submissions:", error);
+      res.status(500).json({ message: "Failed to fetch email submissions" });
+    }
+  });
+  
+  // Create an email submission
+  app.post("/api/email-submissions", async (req, res) => {
+    try {
+      const submissionData = insertEmailSubmissionSchema.parse(req.body);
+      const submission = await storage.createEmailSubmission(submissionData);
+      res.status(201).json(submission);
+    } catch (error) {
+      console.error("Error creating email submission:", error);
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Invalid email submission data", errors: error.errors });
+      }
+      res.status(500).json({ message: "Failed to create email submission" });
     }
   });
 
