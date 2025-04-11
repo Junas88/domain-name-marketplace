@@ -251,6 +251,9 @@ export default function DomainListing({ onMakeOffer }: DomainListingProps) {
   return (
     <section id="domains" className="py-12 bg-white border-t border-black" aria-labelledby="domains-heading">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Hidden section title for accessibility */}
+        <h2 id="domains-heading" className="sr-only">Premium Domains</h2>
+        
         {/* Hidden keywords for SEO */}
         <div className="sr-only">
           Buy domains, domain marketplace, premium domains, domain names for sale, domain broker, domain auction, domain negotiation
@@ -416,7 +419,7 @@ export default function DomainListing({ onMakeOffer }: DomainListingProps) {
           <div 
             className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" 
             role="region" 
-            aria-label="Available domains"
+            aria-label="Premium domains"
           >
             {currentDomains.map((domain) => (
               <Card 
