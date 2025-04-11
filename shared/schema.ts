@@ -141,3 +141,19 @@ export const sectionContentSchema = z.object({
 });
 
 export type SectionContent = z.infer<typeof sectionContentSchema>;
+
+// Email submissions for ebook downloads
+export const emailSubmissions = pgTable("email_submissions", {
+  id: serial("id").primaryKey(),
+  email: text("email").notNull(),
+  source: text("source").notNull().default("ebook"),
+  downloadedAt: timestamp("downloaded_at").notNull().defaultNow(),
+});
+
+export const insertEmailSubmissionSchema = createInsertSchema(emailSubmissions).pick({
+  email: true,
+  source: true,
+});
+
+export type InsertEmailSubmission = z.infer<typeof insertEmailSubmissionSchema>;
+export type EmailSubmission = typeof emailSubmissions.$inferSelect;

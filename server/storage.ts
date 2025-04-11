@@ -4,6 +4,7 @@ import {
   offers, type Offer, type InsertOffer,
   consultations, type Consultation, type InsertConsultation,
   pageContents, type PageContent, type InsertPageContent,
+  emailSubmissions, type EmailSubmission, type InsertEmailSubmission,
   type SectionContent
 } from "@shared/schema";
 import session from "express-session";
@@ -58,6 +59,10 @@ export interface IStorage {
   createPageContent(pageContent: InsertPageContent): Promise<PageContent>;
   updatePageContent(pageKey: string, updates: Partial<InsertPageContent>): Promise<PageContent | undefined>;
   deletePageContent(pageKey: string): Promise<boolean>;
+  
+  // Email Submissions methods for ebook downloads
+  createEmailSubmission(submission: InsertEmailSubmission): Promise<EmailSubmission>;
+  getAllEmailSubmissions(): Promise<EmailSubmission[]>;
 }
 
 export class MemStorage implements IStorage {
