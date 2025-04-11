@@ -73,16 +73,12 @@ export default function Footer() {
                 </a>
               </li>
               <li>
-                <a 
-                  href="#domain-finder" 
-                  className="text-white hover:text-gray-300 transition-colors cursor-pointer"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    scrollToSection("domain-finder");
-                  }}
+                <Link 
+                  href="/domain-finder" 
+                  className="text-white hover:text-gray-300 transition-colors"
                 >
                   Domain Finder
-                </a>
+                </Link>
               </li>
               <li><Link href="/guide" className="text-white hover:text-gray-300 transition-colors">Domain Guide</Link></li>
               <li><Link href="/contact" className="text-white hover:text-gray-300 transition-colors">Contact Us</Link></li>
@@ -108,7 +104,7 @@ export default function Footer() {
             <ul className="space-y-2">
               <li className="flex items-start">
                 <Mail className="text-white mt-1 mr-3 shrink-0" size={18} />
-                <a href="mailto:support@domainguide.com" className="text-white hover:text-gray-300 transition-colors">support@domainguide.com</a>
+                <a href="mailto:support@domainnameguide.com" className="text-white hover:text-gray-300 transition-colors">support@domainnameguide.com</a>
               </li>
               <li className="flex items-start">
                 <Phone className="text-white mt-1 mr-3 shrink-0" size={18} />
