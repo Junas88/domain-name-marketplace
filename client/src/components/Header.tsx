@@ -25,20 +25,17 @@ export default function Header() {
 
           {/* Navigation - Desktop */}
           <nav className="hidden md:flex space-x-6 items-center">
-            <Link href="/" className="text-neutral-800 hover:text-black font-medium">
-              Home
+            <Link 
+              href="/" 
+              className="text-neutral-800 hover:text-black font-medium cursor-pointer"
+            >
+              Premium Domains
             </Link>
             <Link 
               href="/domain-finder" 
               className="text-neutral-800 hover:text-black font-medium cursor-pointer"
             >
               Domain Finder
-            </Link>
-            <Link 
-              href="/#domains" 
-              className="text-neutral-800 hover:text-black font-medium cursor-pointer"
-            >
-              Premium Domains
             </Link>
             <Link href="/guide" className="text-neutral-800 hover:text-black font-medium">
               Domain Guide
@@ -83,10 +80,10 @@ export default function Header() {
             <div className="py-3 space-y-2">
               <Link 
                 href="/" 
-                className="block px-3 py-2 text-neutral-800 hover:bg-neutral-100 rounded-md"
+                className="block px-3 py-2 text-neutral-800 hover:bg-neutral-100 rounded-md cursor-pointer"
                 onClick={() => setMobileMenuOpen(false)}
               >
-                Home
+                Premium Domains
               </Link>
               <Link 
                 href="/domain-finder" 
@@ -94,13 +91,6 @@ export default function Header() {
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Domain Finder
-              </Link>
-              <Link 
-                href="/#domains" 
-                className="block px-3 py-2 text-neutral-800 hover:bg-neutral-100 rounded-md cursor-pointer"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                Premium Domains
               </Link>
               <Link 
                 href="/guide" 

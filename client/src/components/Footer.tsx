@@ -59,19 +59,7 @@ export default function Footer() {
           <div>
             <h3 className="text-lg font-semibold mb-4">Quick Links</h3>
             <ul className="space-y-2">
-              <li><Link href="/" className="text-white hover:text-gray-300 transition-colors">Home</Link></li>
-              <li>
-                <a 
-                  href="#domains" 
-                  className="text-white hover:text-gray-300 transition-colors cursor-pointer"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    scrollToSection("domains");
-                  }}
-                >
-                  Premium Domains
-                </a>
-              </li>
+              <li><Link href="/" className="text-white hover:text-gray-300 transition-colors">Premium Domains</Link></li>
               <li>
                 <Link 
                   href="/domain-finder" 
