@@ -38,7 +38,7 @@ export default function Header() {
               href="/#domains" 
               className="text-neutral-800 hover:text-black font-medium cursor-pointer"
             >
-              Browse Domains
+              Premium Domains
             </Link>
             <Link href="/guide" className="text-neutral-800 hover:text-black font-medium">
               Domain Guide
@@ -100,7 +100,7 @@ export default function Header() {
                 className="block px-3 py-2 text-neutral-800 hover:bg-neutral-100 rounded-md cursor-pointer"
                 onClick={() => setMobileMenuOpen(false)}
               >
-                Browse Domains
+                Premium Domains
               </Link>
               <Link 
                 href="/guide" 

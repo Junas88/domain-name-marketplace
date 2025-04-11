@@ -69,7 +69,7 @@ export default function Footer() {
                     scrollToSection("domains");
                   }}
                 >
-                  Browse Domains
+                  Premium Domains
                 </a>
               </li>
               <li>
