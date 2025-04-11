@@ -360,11 +360,12 @@ export default function AdminDashboard() {
       </header>
 
       <Tabs defaultValue="domains" value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="grid w-full grid-cols-4 mb-6">
+        <TabsList className="grid w-full grid-cols-5 mb-6">
           <TabsTrigger value="domains">Domains</TabsTrigger>
           <TabsTrigger value="offers">Offers</TabsTrigger>
           <TabsTrigger value="consultations">Consultations</TabsTrigger>
           <TabsTrigger value="content">Page Content</TabsTrigger>
+          <TabsTrigger value="emails">Email Submissions</TabsTrigger>
         </TabsList>
         
         {/* DOMAINS TAB */}
@@ -1065,6 +1066,11 @@ export default function AdminDashboard() {
               )}
             </CardContent>
           </Card>
+        </TabsContent>
+
+        {/* EMAIL SUBMISSIONS TAB */}
+        <TabsContent value="emails" className="space-y-6">
+          <EmailSubmissionsTable />
         </TabsContent>
       </Tabs>
     </div>

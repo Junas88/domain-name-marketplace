@@ -56,9 +56,12 @@ export default function EbookDownload({ pageKey, title, description, price }: Eb
   // Email submission mutation
   const emailSubmissionMutation = useMutation({
     mutationFn: async (data: EmailFormValues) => {
-      const res = await apiRequest('POST', '/api/email-submissions', {
-        email: data.email,
-        source: 'ebook-download'
+      const res = await apiRequest('/api/email-submissions', {
+        method: 'POST',
+        body: JSON.stringify({
+          email: data.email,
+          source: 'ebook-download'
+        })
       });
       return await res.json();
     },
