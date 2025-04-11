@@ -23,8 +23,8 @@ export default function Guide() {
       <section className="py-12 md:py-16 lg:py-20 bg-black text-white">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-4xl mx-auto text-center">
-            <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4">
-              Domain Name Guide
+            <h1 className="text-3xl md:text-4xl lg:text-5xl font-black tracking-tight uppercase mb-4">
+              DOMAIN NAME GUIDE
             </h1>
             <p className="text-lg md:text-xl opacity-90 mb-8">
               Expert insights and strategies for buying, valuing, and selling domain names
@@ -628,7 +628,7 @@ export default function Guide() {
                   <div className="absolute inset-0 bg-black rounded-xl transform rotate-2 -z-10 opacity-5"></div>
                   <EbookDownload
                     pageKey="ebook-section"
-                    title="Domain Name Guide"
+                    title="DOMAIN NAME GUIDE"
                     description="Premium domain name strategies"
                     price={0} // Free
                   />

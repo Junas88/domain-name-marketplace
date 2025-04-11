@@ -19,7 +19,7 @@ export default function Header() {
           <div className="flex items-center">
             {/* Logo */}
             <Link href="/" className="flex items-center">
-              <span className="text-black font-bold text-2xl">DOMAIN NAME GUIDE</span>
+              <span className="text-black font-black text-2xl tracking-tight uppercase">DOMAIN NAME GUIDE</span>
             </Link>
           </div>
 

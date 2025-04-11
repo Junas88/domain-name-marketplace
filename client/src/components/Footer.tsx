@@ -25,7 +25,7 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Company Info */}
           <div>
-            <h3 className="text-xl font-bold mb-4">DOMAIN NAME GUIDE</h3>
+            <h3 className="text-xl font-black tracking-tight mb-4">DOMAIN NAME GUIDE</h3>
             <p className="text-white mb-4">Your trusted resource for premium domain names.</p>
             <div className="flex space-x-4">
               <a href="#" className="text-white hover:text-gray-300 transition-colors" aria-label="Facebook">
