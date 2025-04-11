@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 
 export default function Hero() {
   return (
-    <section className="bg-white text-black py-16" aria-labelledby="hero-heading">
+    <section className="bg-black text-white py-16" aria-labelledby="hero-heading">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto text-center">
           <h1 id="hero-heading" className="text-4xl md:text-5xl font-bold mb-6">

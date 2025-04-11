@@ -12,13 +12,13 @@ export default function DomainFinderPage() {
     <Layout>
       <div className="min-h-screen">
         {/* Header Section */}
-        <section className="py-16 bg-white">
+        <section className="py-16 bg-black text-white">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="max-w-4xl mx-auto text-center">
               <h1 className="text-4xl md:text-5xl font-bold mb-6">
                 Expert Domain Name Finder Service
               </h1>
-              <p className="text-lg text-neutral-700 mb-8">
+              <p className="text-lg mb-8">
                 Find the perfect domain name for your business with our expert consultation service. 
                 Our domain specialists will help you discover and acquire the ideal domain that aligns with your brand.
               </p>
