@@ -2,7 +2,6 @@ import { useState } from "react";
 import Header from "@/components/Header";
 import Hero from "@/components/Hero";
 import DomainListing from "@/components/DomainListing";
-import DomainFinder from "@/components/DomainFinder";
 import Features from "@/components/Features";
 import Reviews from "@/components/Reviews";
 import Footer from "@/components/Footer";
@@ -28,7 +27,6 @@ export default function Home() {
       <Header />
       <Hero />
       <DomainListing onMakeOffer={handleMakeOffer} />
-      <DomainFinder />
       <Features />
       <Reviews />
       <Footer />

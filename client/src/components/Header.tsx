@@ -29,7 +29,7 @@ export default function Header() {
               Home
             </Link>
             <Link 
-              href="/#domain-finder" 
+              href="/domain-finder" 
               className="text-neutral-800 hover:text-black font-medium cursor-pointer"
             >
               Domain Finder
@@ -89,7 +89,7 @@ export default function Header() {
                 Home
               </Link>
               <Link 
-                href="/#domain-finder" 
+                href="/domain-finder" 
                 className="block px-3 py-2 text-neutral-800 hover:bg-neutral-100 rounded-md cursor-pointer"
                 onClick={() => setMobileMenuOpen(false)}
               >
