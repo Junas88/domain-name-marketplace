@@ -5,12 +5,13 @@ import { Label } from './ui/label';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from './ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, Download, FileText, Check, Mail } from 'lucide-react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation } from '@tanstack/react-query';
 import { PageContent } from '@/lib/types';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from './ui/form';
+import { apiRequest } from '@/lib/queryClient';
 
 interface EbookDownloadProps {
   pageKey: string;
@@ -52,28 +53,42 @@ export default function EbookDownload({ pageKey, title, description, price }: Eb
     }
   }, [pageContent]);
 
-  const onSubmitEmail = (data: EmailFormValues) => {
-    setIsLoading(true);
-    
-    // In a real app, you'd save this email to your database
-    console.log("Email submitted:", data.email);
-    
-    // Show success toast
-    toast({
-      title: 'Thank you!',
-      description: 'Your email has been registered. Your download will begin shortly.',
-    });
-    
-    // Simulate saving email to database
-    setTimeout(() => {
+  // Email submission mutation
+  const emailSubmissionMutation = useMutation({
+    mutationFn: async (data: EmailFormValues) => {
+      const res = await apiRequest('POST', '/api/email-submissions', {
+        email: data.email,
+        source: 'ebook-download'
+      });
+      return await res.json();
+    },
+    onSuccess: () => {
       setIsLoading(false);
       setHasSubmittedEmail(true);
+      
+      toast({
+        title: 'Thank you!',
+        description: 'Your email has been registered. Your download will begin shortly.',
+      });
       
       // Start download after email is submitted
       setTimeout(() => {
         handleDownload();
       }, 500);
-    }, 1000);
+    },
+    onError: (error: Error) => {
+      toast({
+        title: 'Error',
+        description: `Failed to register your email: ${error.message}`,
+        variant: 'destructive',
+      });
+      setIsLoading(false);
+    }
+  });
+
+  const onSubmitEmail = (data: EmailFormValues) => {
+    setIsLoading(true);
+    emailSubmissionMutation.mutate(data);
   };
 
   const handleDownload = () => {

@@ -37,6 +37,7 @@ import {
   TrashIcon
 } from "lucide-react";
 import FileUploader from "@/components/admin/FileUploader";
+import EmailSubmissionsTable from "@/components/admin/EmailSubmissionsTable";
 import { Domain, Offer, Consultation, PageContent } from "@/lib/types";
 import { formatDistanceToNow } from "date-fns";
 
