@@ -1,10 +1,16 @@
 import { useState, useEffect } from 'react';
 import { Button } from './ui/button';
+import { Input } from './ui/input';
+import { Label } from './ui/label';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from './ui/card';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Download, FileText, Check } from 'lucide-react';
+import { Loader2, Download, FileText, Check, Mail } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { PageContent } from '@/lib/types';
+import { z } from 'zod';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from './ui/form';
 
 interface EbookDownloadProps {
   pageKey: string;
@@ -13,8 +19,16 @@ interface EbookDownloadProps {
   price: number;
 }
 
+// Email validation schema
+const emailSchema = z.object({
+  email: z.string().email({ message: "Please enter a valid email address" }),
+});
+
+type EmailFormValues = z.infer<typeof emailSchema>;
+
 export default function EbookDownload({ pageKey, title, description, price }: EbookDownloadProps) {
   const [isLoading, setIsLoading] = useState(false);
+  const [hasSubmittedEmail, setHasSubmittedEmail] = useState(false);
   const { toast } = useToast();
   
   // Get the file info from page content
@@ -23,12 +37,44 @@ export default function EbookDownload({ pageKey, title, description, price }: Eb
     enabled: !!pageKey,
   });
   
+  // Define form
+  const form = useForm<EmailFormValues>({
+    resolver: zodResolver(emailSchema),
+    defaultValues: {
+      email: "",
+    },
+  });
+  
   // Simply log when ebook is loaded - no need for the check now as we've fixed it
   useEffect(() => {
     if (pageContent) {
       console.log('Ebook content loaded - using direct-download endpoint');
     }
   }, [pageContent]);
+
+  const onSubmitEmail = (data: EmailFormValues) => {
+    setIsLoading(true);
+    
+    // In a real app, you'd save this email to your database
+    console.log("Email submitted:", data.email);
+    
+    // Show success toast
+    toast({
+      title: 'Thank you!',
+      description: 'Your email has been registered. Your download will begin shortly.',
+    });
+    
+    // Simulate saving email to database
+    setTimeout(() => {
+      setIsLoading(false);
+      setHasSubmittedEmail(true);
+      
+      // Start download after email is submitted
+      setTimeout(() => {
+        handleDownload();
+      }, 500);
+    }, 1000);
+  };
 
   const handleDownload = () => {
     setIsLoading(true);
@@ -78,30 +124,87 @@ export default function EbookDownload({ pageKey, title, description, price }: Eb
         </p>
         
         <p className="text-lg font-medium mb-1">Free Ebook</p>
-        <p className="text-sm text-gray-500 mb-8">Normally $49.95 - Free for a limited time</p>
+        <p className="text-sm text-gray-500 mb-6">Normally $49.95 - Free for a limited time</p>
         
-        <Button 
-          onClick={handleDownload}
-          disabled={isLoading}
-          className="w-full h-14 rounded-md flex items-center justify-center bg-black hover:bg-gray-800 text-white"
-          variant="default"
-        >
-          {isLoading ? (
-            <>
-              <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-              <span>Downloading...</span>
-            </>
-          ) : (
-            <>
-              <Download className="mr-2 h-5 w-5" />
-              <span>Download Free Ebook</span>
-            </>
-          )}
-        </Button>
-        
-        <p className="text-xs text-center text-gray-500 mt-3">
-          No email required. Instant download.
-        </p>
+        {!hasSubmittedEmail ? (
+          <div className="mb-6">
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(onSubmitEmail)} className="space-y-4">
+                <FormField
+                  control={form.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Email Address</FormLabel>
+                      <FormControl>
+                        <div className="flex items-center relative">
+                          <Mail className="absolute left-3 h-5 w-5 text-gray-400" />
+                          <Input 
+                            placeholder="Enter your email" 
+                            className="pl-10 border-gray-300 focus:border-black focus-visible:ring-black" 
+                            {...field} 
+                          />
+                        </div>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <Button 
+                  type="submit" 
+                  disabled={isLoading}
+                  className="w-full h-12 rounded-md flex items-center justify-center bg-black hover:bg-gray-800 text-white"
+                  variant="default"
+                >
+                  {isLoading ? (
+                    <>
+                      <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                      <span>Processing...</span>
+                    </>
+                  ) : (
+                    "Get Your Free Ebook"
+                  )}
+                </Button>
+              </form>
+            </Form>
+            <p className="text-xs text-center text-gray-500 mt-3">
+              We respect your privacy. Your email will only be used to send you domain insights from Domain Name Guide.
+            </p>
+          </div>
+        ) : (
+          <>
+            <div className="bg-green-50 p-4 rounded-md mb-6 border border-green-100 flex items-start">
+              <Check className="text-green-500 mr-3 mt-0.5 shrink-0" />
+              <div>
+                <p className="text-green-800 font-medium">Thank you for signing up!</p>
+                <p className="text-green-700 text-sm">Your download is being prepared.</p>
+              </div>
+            </div>
+            
+            <Button 
+              onClick={handleDownload}
+              disabled={isLoading}
+              className="w-full h-14 rounded-md flex items-center justify-center bg-black hover:bg-gray-800 text-white"
+              variant="default"
+            >
+              {isLoading ? (
+                <>
+                  <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                  <span>Downloading...</span>
+                </>
+              ) : (
+                <>
+                  <Download className="mr-2 h-5 w-5" />
+                  <span>Download Free Ebook</span>
+                </>
+              )}
+            </Button>
+            
+            <p className="text-xs text-center text-gray-500 mt-3">
+              If your download doesn't start automatically, click the button above.
+            </p>
+          </>
+        )}
       </CardContent>
     </Card>
   );
