@@ -1606,12 +1606,302 @@ const isDatabaseAvailable = () => {
 // Choose the appropriate storage implementation based on database availability
 let storage: IStorage;
 
+// Seed a lot of sample domains to the in-memory storage
+async function seedInMemoryStorage(memStorage: MemStorage) {
+  console.log("Seeding in-memory storage with sample data...");
+  
+  // Create many more sample domains for in-memory storage
+  const additionalDomains: InsertDomain[] = [
+    // Original domains from the seed.ts file
+    {
+      name: "iptvhd.com",
+      description: "Perfect for streaming services or IPTV providers. Short, memorable, and descriptive.",
+      price: 2995,
+      category: "Entertainment",
+      length: 7,
+      viewCount: 0,
+      isSold: true
+    },
+    {
+      name: "lakome.com",
+      description: "Short, brandable domain suitable for various industries. Easy to remember and type.",
+      price: 1795,
+      category: "Brandable",
+      length: 6,
+      viewCount: 0,
+      isSold: true
+    },
+    {
+      name: "expired-website.com",
+      description: "Useful for services related to domain expiration, website maintenance, or renewals.",
+      price: 995,
+      category: "Business",
+      length: 17,
+      viewCount: 0,
+      isSold: true
+    },
+    {
+      name: "grape-website.com",
+      description: "Perfect for vineyards, wine retailers, or grape-related businesses. Memorable and descriptive.",
+      price: 1195,
+      category: "Food & Beverage",
+      length: 15,
+      viewCount: 0,
+      isSold: true
+    },
+    {
+      name: "highchips.com",
+      description: "Great for premium snack brands, technology products, or gambling services.",
+      price: 2495,
+      category: "Food & Beverage",
+      length: 9,
+      viewCount: 0,
+      isSold: true
+    },
+    {
+      name: "allgreenplants.com",
+      description: "Ideal for plant nurseries, gardening supplies, or sustainable products businesses.",
+      price: 1895,
+      category: "Home & Garden",
+      length: 15,
+      viewCount: 0,
+      isSold: true
+    },
+    // Add more domains (20+ domains) with a mix of categories for a rich demonstration
+    {
+      name: "zoneplumbing.com",
+      description: "Perfect for plumbing businesses, contractors, or home service providers.",
+      price: 3495,
+      category: "Home & Garden",
+      length: 13,
+      viewCount: 65,
+      isSold: false
+    },
+    {
+      name: "cyberinsurance.net",
+      description: "Ideal for cybersecurity insurance providers or digital protection services.",
+      price: 4995,
+      category: "Finance",
+      length: 15,
+      viewCount: 47,
+      isSold: false
+    },
+    {
+      name: "quickrecipes.com",
+      description: "Perfect for food blogs, recipe sites, or meal planning services.",
+      price: 6995,
+      category: "Food & Beverage",
+      length: 12,
+      viewCount: 120,
+      isSold: false
+    },
+    {
+      name: "organicskincare.com",
+      description: "Excellent for natural beauty products, organic cosmetics, or skincare lines.",
+      price: 5495,
+      category: "Health",
+      length: 16,
+      viewCount: 89,
+      isSold: false
+    },
+    {
+      name: "seoexperts.com",
+      description: "Ideal for digital marketing agencies, SEO consultants, or online visibility services.",
+      price: 8995,
+      category: "Business",
+      length: 10,
+      viewCount: 155,
+      isSold: false
+    },
+    {
+      name: "travelsafety.org",
+      description: "Great for travel safety information, secure tourism, or traveler protection services.",
+      price: 2995,
+      category: "Travel",
+      length: 12,
+      viewCount: 43,
+      isSold: false
+    },
+    {
+      name: "greenenergy.solutions",
+      description: "Perfect for renewable energy companies, sustainability consultants, or eco-friendly power providers.",
+      price: 4495,
+      category: "Business",
+      length: 17,
+      viewCount: 62,
+      isSold: false
+    },
+    {
+      name: "petadoption.org",
+      description: "Ideal for animal shelters, pet adoption agencies, or animal welfare organizations.",
+      price: 3295,
+      category: "Pets",
+      length: 12,
+      viewCount: 108,
+      isSold: false
+    },
+    {
+      name: "digitallearning.com",
+      description: "Perfect for online education platforms, e-learning services, or digital courses.",
+      price: 7995,
+      category: "Education",
+      length: 15,
+      viewCount: 127,
+      isSold: false
+    },
+    {
+      name: "artgallery.online",
+      description: "Great for virtual art exhibitions, online galleries, or digital artists showcases.",
+      price: 3795,
+      category: "Arts",
+      length: 9,
+      viewCount: 75,
+      isSold: false
+    },
+    {
+      name: "fitnesscoach.app",
+      description: "Ideal for personal trainers, workout apps, or fitness coaching services.",
+      price: 4295,
+      category: "Health",
+      length: 12,
+      viewCount: 91,
+      isSold: false
+    },
+    {
+      name: "telemedicine.io",
+      description: "Perfect for virtual healthcare, remote medical consultations, or health tech startups.",
+      price: 9995,
+      category: "Health",
+      length: 11,
+      viewCount: 144,
+      isSold: false
+    },
+    {
+      name: "cloudbackup.net",
+      description: "Great for data backup services, cloud storage providers, or IT security companies.",
+      price: 5995,
+      category: "Technology",
+      length: 11,
+      viewCount: 81,
+      isSold: false
+    },
+    {
+      name: "weddingplanner.com",
+      description: "Ideal for wedding coordinators, event planners, or bridal services.",
+      price: 12995,
+      category: "Events",
+      length: 14,
+      viewCount: 203,
+      isSold: false
+    },
+    {
+      name: "vintageautos.com",
+      description: "Perfect for classic car sales, vintage automobile restoration, or collector vehicles.",
+      price: 6495,
+      category: "Automotive",
+      length: 12,
+      viewCount: 97,
+      isSold: false
+    }
+  ];
+  
+  // Add all domains to memory storage
+  for (const domain of additionalDomains) {
+    await memStorage.createDomain(domain);
+  }
+  
+  // Add SEO Settings for major pages
+  const seoSettings = [
+    {
+      pageKey: "home",
+      title: "Domain Name Guide - Premium Domain Marketplace",
+      metaDescription: "Find the perfect domain name for your business from our curated selection of premium domains. Expert guidance and secure transactions.",
+      metaKeywords: "domain names, premium domains, buy domains, domain marketplace",
+      structuredData: JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": "Domain Name Guide",
+        "url": "https://domainnameguide.com/",
+        "description": "Premium domain marketplace for businesses and entrepreneurs.",
+        "potentialAction": {
+          "@type": "SearchAction",
+          "target": "https://domainnameguide.com/search?q={search_term_string}",
+          "query-input": "required name=search_term_string"
+        }
+      })
+    },
+    {
+      pageKey: "guide",
+      title: "Domain Guide | Everything You Need to Know About Domains",
+      metaDescription: "Learn about domain basics, selection criteria, value factors, and investment potential in our comprehensive domain guide.",
+      metaKeywords: "domain guide, domain basics, domain selection, domain value, domain investment",
+      structuredData: JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "WebPage",
+        "name": "Domain Guide",
+        "description": "Comprehensive guide to understanding domain names, selection criteria, and value factors."
+      })
+    },
+    {
+      pageKey: "domain-finder",
+      title: "Domain Finder | Find Your Perfect Domain Name",
+      metaDescription: "Get expert help finding the ideal domain name for your business or project with our domain consultation service.",
+      metaKeywords: "domain finder, domain consultation, find domain name, domain research, domain expert",
+      structuredData: JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "Service",
+        "name": "Domain Finder Service",
+        "description": "Expert consultation to help you find the perfect domain name for your business.",
+        "provider": {
+          "@type": "Organization",
+          "name": "Domain Name Guide"
+        }
+      })
+    }
+  ];
+  
+  // Add all SEO settings
+  for (const seoSetting of seoSettings) {
+    await memStorage.createSeoSetting(seoSetting);
+  }
+  
+  // Add ebook content
+  await memStorage.createPageContent({
+    pageKey: "ebook-section",
+    title: "Domain Name Guide: The Complete E-Book",
+    content: "<h2>Domain Name Guide: The Complete E-Book</h2><p>Download our comprehensive guide to domain names, from acquisition strategies to investment opportunities.</p>",
+    metaTitle: "Domain Name Guide E-Book | Free Download",
+    metaDescription: "Get our free comprehensive e-book about domain names, acquisition strategies, and investment opportunities.",
+    price: 0,
+    isPurchaseRequired: false,
+    filePath: "/public/downloads/Domain Name Marketing.pdf",
+    fileName: "Domain-Name-Guide-2023.pdf",
+    fileType: "application/pdf",
+    fileSize: 2457600
+  });
+  
+  // Create the admin user
+  await memStorage.createUser({
+    username: "admin",
+    password: "$2a$10$EB3dXbEH32M9yP.Oz32Zj.VPnUCerRJLWLtFE5Z7RSLYgHjQayAr.",
+    isAdmin: true
+  });
+  
+  console.log("In-memory database seeded with sample data");
+}
+
 if (isDatabaseAvailable()) {
   console.log("Using database storage");
   storage = new DatabaseStorage();
 } else {
   console.log("Database not available, using in-memory storage");
-  storage = new MemStorage();
+  const memStorage = new MemStorage();
+  storage = memStorage;
+  
+  // Seed the in-memory storage with sample data
+  seedInMemoryStorage(memStorage).catch(error => {
+    console.error("Error seeding in-memory storage:", error);
+  });
 }
 
 export { storage };
