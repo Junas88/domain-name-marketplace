@@ -4,6 +4,8 @@ import { useLocation } from "wouter";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -86,10 +88,10 @@ export default function AdminPage() {
       setIsRedirecting(true);
       
       setTimeout(() => {
-        window.location.href = "/login";
+        navigate("/login");
       }, 300);
     }
-  }, [user, isLoading]);
+  }, [user, isLoading, navigate]);
   
   // Define stats type
   type DomainStats = {
@@ -538,7 +540,8 @@ export default function AdminPage() {
           onClick={() => {
             logoutMutation.mutate(undefined, {
               onSuccess: () => {
-                navigate('/');
+                // Force a full reload to ensure clean state
+                window.location.href = '/';
               }
             });
           }}
@@ -605,34 +608,15 @@ export default function AdminPage() {
         </Card>
       </div>
       
-      <div className="mb-6">
-        <Card>
-          <CardHeader>
-            <CardTitle>Domain Categories Distribution</CardTitle>
-            <CardDescription>Breakdown of domains by category</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
-              {Object.entries(stats.domainsByCategory || {}).map(([category, count]) => (
-                <div key={category} className="flex flex-col p-3 border rounded-md">
-                  <span className="text-sm font-medium text-gray-500 capitalize">{category}</span>
-                  <span className="text-xl font-bold mt-1">{count}</span>
-                  <span className="text-xs text-gray-500 mt-1">
-                    {stats.totalDomains > 0 ? ((count as number / stats.totalDomains) * 100).toFixed(1) : "0"}%
-                  </span>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+
 
       <Tabs defaultValue="domains" value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="grid w-full grid-cols-7 mb-6">
+        <TabsList className="grid w-full grid-cols-8 mb-6">
           <TabsTrigger value="domains">Domains</TabsTrigger>
           <TabsTrigger value="offers">Offers</TabsTrigger>
           <TabsTrigger value="consultations">Consultations</TabsTrigger>
           <TabsTrigger value="content">Page Content</TabsTrigger>
+          <TabsTrigger value="site">Website Editor</TabsTrigger>
           <TabsTrigger value="emails">Email Submissions</TabsTrigger>
           <TabsTrigger value="seo">SEO Settings</TabsTrigger>
           <TabsTrigger value="ebooks">Ebook Files</TabsTrigger>
@@ -897,6 +881,1184 @@ export default function AdminPage() {
                 </div>
               </CardContent>
             </Card>
+          </div>
+        </TabsContent>
+
+        {/* WEBSITE EDITOR TAB */}
+        <TabsContent value="site" className="space-y-6">
+          <div className="flex justify-between items-center">
+            <h2 className="text-xl font-bold">Complete Website Editor</h2>
+            <Button variant="outline">
+              <EyeIcon className="h-4 w-4 mr-2" />
+              Preview Site
+            </Button>
+          </div>
+          
+          <div className="grid grid-cols-1 gap-4">
+            <div className="col-span-1">
+              <Tabs defaultValue="homepage">
+                <TabsList className="mb-4">
+                  <TabsTrigger value="homepage">Homepage</TabsTrigger>
+                  <TabsTrigger value="about">About Page</TabsTrigger>
+                  <TabsTrigger value="guide">Guide Page</TabsTrigger>
+                  <TabsTrigger value="contact">Contact Page</TabsTrigger>
+                  <TabsTrigger value="global">Global Elements</TabsTrigger>
+                </TabsList>
+                
+                {/* HOMEPAGE EDITOR */}
+                <TabsContent value="homepage">
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Home Page Editor</CardTitle>
+                      <CardDescription>Edit all sections of your home page</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-6">
+                        <Accordion type="single" collapsible className="w-full">
+                          <AccordionItem value="item-1">
+                            <AccordionTrigger><h3 className="text-base font-medium">Hero Section</h3></AccordionTrigger>
+                            <AccordionContent>
+                              <div className="space-y-3 p-2">
+                                <div>
+                                  <label className="text-sm font-medium">Heading</label>
+                                  <Input 
+                                    defaultValue="Find The Perfect Domain Name For Your Business" 
+                                    className="mt-1"
+                                  />
+                                </div>
+                                <div>
+                                  <label className="text-sm font-medium">Subheading</label>
+                                  <Input 
+                                    defaultValue="Premium domains for startups and established businesses" 
+                                    className="mt-1"
+                                  />
+                                </div>
+                                <div>
+                                  <label className="text-sm font-medium">Button Text</label>
+                                  <Input 
+                                    defaultValue="Browse Domains" 
+                                    className="mt-1"
+                                  />
+                                </div>
+                                <div>
+                                  <label className="text-sm font-medium">Button Link</label>
+                                  <Input 
+                                    defaultValue="/domains" 
+                                    className="mt-1"
+                                  />
+                                </div>
+                                <div>
+                                  <label className="text-sm font-medium">Background Color</label>
+                                  <div className="flex items-center mt-1 space-x-2">
+                                    <div className="w-6 h-6 bg-black rounded"></div>
+                                    <Input defaultValue="#000000" className="w-32" />
+                                  </div>
+                                </div>
+                                <div>
+                                  <label className="text-sm font-medium">Text Color</label>
+                                  <div className="flex items-center mt-1 space-x-2">
+                                    <div className="w-6 h-6 bg-white border rounded"></div>
+                                    <Input defaultValue="#FFFFFF" className="w-32" />
+                                  </div>
+                                </div>
+                                <div className="pt-2">
+                                  <Button variant="outline" size="sm">
+                                    <EyeIcon className="h-4 w-4 mr-2" />
+                                    Preview Hero Section
+                                  </Button>
+                                </div>
+                              </div>
+                            </AccordionContent>
+                          </AccordionItem>
+                          
+                          <AccordionItem value="item-2">
+                            <AccordionTrigger><h3 className="text-base font-medium">Domain Search Section</h3></AccordionTrigger>
+                            <AccordionContent>
+                              <div className="space-y-3 p-2">
+                                <div>
+                                  <label className="text-sm font-medium">Search Title</label>
+                                  <Input 
+                                    defaultValue="Find Your Perfect Domain" 
+                                    className="mt-1"
+                                  />
+                                </div>
+                                <div>
+                                  <label className="text-sm font-medium">Search Placeholder</label>
+                                  <Input 
+                                    defaultValue="Enter domain name or keyword..." 
+                                    className="mt-1"
+                                  />
+                                </div>
+                                <div>
+                                  <label className="text-sm font-medium">Search Button Text</label>
+                                  <Input 
+                                    defaultValue="Search" 
+                                    className="mt-1"
+                                  />
+                                </div>
+                                <div className="flex items-center space-x-2 mt-2">
+                                  <Checkbox id="enable-filters" defaultChecked />
+                                  <label htmlFor="enable-filters">Enable category filters</label>
+                                </div>
+                                <div className="flex items-center space-x-2">
+                                  <Checkbox id="enable-price" defaultChecked />
+                                  <label htmlFor="enable-price">Enable price range filter</label>
+                                </div>
+                                <div className="pt-2">
+                                  <Button variant="outline" size="sm">
+                                    <EyeIcon className="h-4 w-4 mr-2" />
+                                    Preview Search Section
+                                  </Button>
+                                </div>
+                              </div>
+                            </AccordionContent>
+                          </AccordionItem>
+                          
+                          <AccordionItem value="item-3">
+                            <AccordionTrigger><h3 className="text-base font-medium">Features Section</h3></AccordionTrigger>
+                            <AccordionContent>
+                              <div className="space-y-3 p-2">
+                                <div>
+                                  <label className="text-sm font-medium">Section Title</label>
+                                  <Input 
+                                    defaultValue="Why Choose DomainNameGuide" 
+                                    className="mt-1"
+                                  />
+                                </div>
+                                <div className="border rounded-md p-3 mt-3">
+                                  <h4 className="text-sm font-medium mb-2">Feature 1</h4>
+                                  <div className="space-y-2">
+                                    <div>
+                                      <label className="text-sm font-medium">Title</label>
+                                      <Input 
+                                        defaultValue="Premium Domains" 
+                                        className="mt-1"
+                                      />
+                                    </div>
+                                    <div>
+                                      <label className="text-sm font-medium">Description</label>
+                                      <Textarea 
+                                        defaultValue="Handpicked premium domains ideal for businesses looking to establish a strong online presence."
+                                        className="mt-1"
+                                      />
+                                    </div>
+                                    <div>
+                                      <label className="text-sm font-medium">Icon</label>
+                                      <Select defaultValue="star">
+                                        <SelectTrigger>
+                                          <SelectValue placeholder="Select an icon" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                          <SelectItem value="star">Star</SelectItem>
+                                          <SelectItem value="shield">Shield</SelectItem>
+                                          <SelectItem value="check">Check</SelectItem>
+                                          <SelectItem value="globe">Globe</SelectItem>
+                                        </SelectContent>
+                                      </Select>
+                                    </div>
+                                  </div>
+                                </div>
+                                
+                                <div className="border rounded-md p-3">
+                                  <h4 className="text-sm font-medium mb-2">Feature 2</h4>
+                                  <div className="space-y-2">
+                                    <div>
+                                      <label className="text-sm font-medium">Title</label>
+                                      <Input 
+                                        defaultValue="Secure Transactions" 
+                                        className="mt-1"
+                                      />
+                                    </div>
+                                    <div>
+                                      <label className="text-sm font-medium">Description</label>
+                                      <Textarea 
+                                        defaultValue="100% secure payment processing and domain transfers with our buyer protection guarantee."
+                                        className="mt-1"
+                                      />
+                                    </div>
+                                    <div>
+                                      <label className="text-sm font-medium">Icon</label>
+                                      <Select defaultValue="shield">
+                                        <SelectTrigger>
+                                          <SelectValue placeholder="Select an icon" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                          <SelectItem value="star">Star</SelectItem>
+                                          <SelectItem value="shield">Shield</SelectItem>
+                                          <SelectItem value="check">Check</SelectItem>
+                                          <SelectItem value="globe">Globe</SelectItem>
+                                        </SelectContent>
+                                      </Select>
+                                    </div>
+                                  </div>
+                                </div>
+                                
+                                <div className="border rounded-md p-3">
+                                  <h4 className="text-sm font-medium mb-2">Feature 3</h4>
+                                  <div className="space-y-2">
+                                    <div>
+                                      <label className="text-sm font-medium">Title</label>
+                                      <Input 
+                                        defaultValue="Expert Support" 
+                                        className="mt-1"
+                                      />
+                                    </div>
+                                    <div>
+                                      <label className="text-sm font-medium">Description</label>
+                                      <Textarea 
+                                        defaultValue="Our domain experts are available to help you find the perfect domain for your business."
+                                        className="mt-1"
+                                      />
+                                    </div>
+                                    <div>
+                                      <label className="text-sm font-medium">Icon</label>
+                                      <Select defaultValue="headset">
+                                        <SelectTrigger>
+                                          <SelectValue placeholder="Select an icon" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                          <SelectItem value="star">Star</SelectItem>
+                                          <SelectItem value="shield">Shield</SelectItem>
+                                          <SelectItem value="headset">Headset</SelectItem>
+                                          <SelectItem value="globe">Globe</SelectItem>
+                                        </SelectContent>
+                                      </Select>
+                                    </div>
+                                  </div>
+                                </div>
+                                
+                                <Button variant="outline" size="sm">
+                                  <PlusIcon className="h-4 w-4 mr-2" />
+                                  Add New Feature
+                                </Button>
+                              </div>
+                            </AccordionContent>
+                          </AccordionItem>
+                          
+                          <AccordionItem value="item-4">
+                            <AccordionTrigger><h3 className="text-base font-medium">Recently Sold Section</h3></AccordionTrigger>
+                            <AccordionContent>
+                              <div className="space-y-3 p-2">
+                                <div>
+                                  <label className="text-sm font-medium">Section Title</label>
+                                  <Input 
+                                    defaultValue="Gone Fast – See What's Already Sold" 
+                                    className="mt-1"
+                                  />
+                                </div>
+                                <div>
+                                  <label className="text-sm font-medium">Number of Domains to Show</label>
+                                  <Input 
+                                    type="number"
+                                    defaultValue="6" 
+                                    className="mt-1 w-24"
+                                  />
+                                </div>
+                                <div className="flex items-center space-x-2 mt-2">
+                                  <Checkbox id="auto-scroll" defaultChecked />
+                                  <label htmlFor="auto-scroll">Enable auto-scrolling carousel</label>
+                                </div>
+                                <div className="flex items-center space-x-2">
+                                  <Checkbox id="show-price" defaultChecked />
+                                  <label htmlFor="show-price">Show selling price</label>
+                                </div>
+                                <div className="flex items-center space-x-2">
+                                  <Checkbox id="show-date" defaultChecked />
+                                  <label htmlFor="show-date">Show sale date</label>
+                                </div>
+                                <div className="pt-2 flex justify-between">
+                                  <Button variant="outline" size="sm">
+                                    <PenIcon className="h-4 w-4 mr-2" />
+                                    Edit Carousel Settings
+                                  </Button>
+                                  <Button variant="outline" size="sm">
+                                    <EyeIcon className="h-4 w-4 mr-2" />
+                                    Preview Carousel
+                                  </Button>
+                                </div>
+                              </div>
+                            </AccordionContent>
+                          </AccordionItem>
+                          
+                          <AccordionItem value="item-5">
+                            <AccordionTrigger><h3 className="text-base font-medium">Call to Action Section</h3></AccordionTrigger>
+                            <AccordionContent>
+                              <div className="space-y-3 p-2">
+                                <div>
+                                  <label className="text-sm font-medium">Heading</label>
+                                  <Input 
+                                    defaultValue="Ready to secure your perfect domain?" 
+                                    className="mt-1"
+                                  />
+                                </div>
+                                <div>
+                                  <label className="text-sm font-medium">Subheading</label>
+                                  <Input 
+                                    defaultValue="Browse our premium selection or contact our experts for assistance" 
+                                    className="mt-1"
+                                  />
+                                </div>
+                                <div>
+                                  <label className="text-sm font-medium">Primary Button Text</label>
+                                  <Input 
+                                    defaultValue="Browse Domains" 
+                                    className="mt-1"
+                                  />
+                                </div>
+                                <div>
+                                  <label className="text-sm font-medium">Primary Button Link</label>
+                                  <Input 
+                                    defaultValue="/domains" 
+                                    className="mt-1"
+                                  />
+                                </div>
+                                <div>
+                                  <label className="text-sm font-medium">Secondary Button Text</label>
+                                  <Input 
+                                    defaultValue="Contact Us" 
+                                    className="mt-1"
+                                  />
+                                </div>
+                                <div>
+                                  <label className="text-sm font-medium">Secondary Button Link</label>
+                                  <Input 
+                                    defaultValue="/contact" 
+                                    className="mt-1"
+                                  />
+                                </div>
+                                <div>
+                                  <label className="text-sm font-medium">Background Color</label>
+                                  <div className="flex items-center mt-1 space-x-2">
+                                    <div className="w-6 h-6 bg-gray-900 rounded"></div>
+                                    <Input defaultValue="#111111" className="w-32" />
+                                  </div>
+                                </div>
+                              </div>
+                            </AccordionContent>
+                          </AccordionItem>
+                        </Accordion>
+                      </div>
+                      <div className="flex justify-end mt-6">
+                        <Button variant="outline" className="mr-2">
+                          Preview Page
+                        </Button>
+                        <Button className="bg-black hover:bg-gray-800">
+                          Save All Changes
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </TabsContent>
+                
+                {/* ABOUT PAGE EDITOR */}
+                <TabsContent value="about">
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>About Page Editor</CardTitle>
+                      <CardDescription>Edit all sections of your about page</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-6">
+                        <Accordion type="single" collapsible className="w-full">
+                          <AccordionItem value="about-hero">
+                            <AccordionTrigger><h3 className="text-base font-medium">Hero Section</h3></AccordionTrigger>
+                            <AccordionContent>
+                              <div className="space-y-3 p-2">
+                                <div>
+                                  <label className="text-sm font-medium">Page Title</label>
+                                  <Input 
+                                    defaultValue="About Domain Name Guide" 
+                                    className="mt-1"
+                                  />
+                                </div>
+                                <div>
+                                  <label className="text-sm font-medium">Subtitle</label>
+                                  <Input 
+                                    defaultValue="Your trusted partner in domain acquisition" 
+                                    className="mt-1"
+                                  />
+                                </div>
+                                <div>
+                                  <label className="text-sm font-medium">Background Color</label>
+                                  <div className="flex items-center mt-1 space-x-2">
+                                    <div className="w-6 h-6 bg-black rounded"></div>
+                                    <Input defaultValue="#000000" className="w-32" />
+                                  </div>
+                                </div>
+                              </div>
+                            </AccordionContent>
+                          </AccordionItem>
+                          
+                          <AccordionItem value="about-mission">
+                            <AccordionTrigger><h3 className="text-base font-medium">Our Mission Section</h3></AccordionTrigger>
+                            <AccordionContent>
+                              <div className="space-y-3 p-2">
+                                <div>
+                                  <label className="text-sm font-medium">Section Title</label>
+                                  <Input 
+                                    defaultValue="Our Mission" 
+                                    className="mt-1"
+                                  />
+                                </div>
+                                <div>
+                                  <label className="text-sm font-medium">Mission Statement</label>
+                                  <Textarea 
+                                    defaultValue="At Domain Name Guide, our mission is to connect entrepreneurs and businesses with premium domain names that enhance their brand identity and online presence. We believe that the right domain name is a cornerstone of digital success." 
+                                    className="mt-1 min-h-[100px]"
+                                  />
+                                </div>
+                              </div>
+                            </AccordionContent>
+                          </AccordionItem>
+                          
+                          <AccordionItem value="about-team">
+                            <AccordionTrigger><h3 className="text-base font-medium">Our Team Section</h3></AccordionTrigger>
+                            <AccordionContent>
+                              <div className="space-y-3 p-2">
+                                <div>
+                                  <label className="text-sm font-medium">Section Title</label>
+                                  <Input 
+                                    defaultValue="Our Expert Team" 
+                                    className="mt-1"
+                                  />
+                                </div>
+                                <div>
+                                  <label className="text-sm font-medium">Section Description</label>
+                                  <Textarea 
+                                    defaultValue="Meet the domain experts behind Domain Name Guide. Our team brings decades of combined experience in domain acquisition, branding, and digital strategy." 
+                                    className="mt-1"
+                                  />
+                                </div>
+                                
+                                <div className="border rounded-md p-3 mt-3">
+                                  <h4 className="text-sm font-medium mb-2">Team Member 1</h4>
+                                  <div className="space-y-2">
+                                    <div>
+                                      <label className="text-sm font-medium">Name</label>
+                                      <Input 
+                                        defaultValue="John Smith" 
+                                        className="mt-1"
+                                      />
+                                    </div>
+                                    <div>
+                                      <label className="text-sm font-medium">Title</label>
+                                      <Input 
+                                        defaultValue="CEO & Founder" 
+                                        className="mt-1"
+                                      />
+                                    </div>
+                                    <div>
+                                      <label className="text-sm font-medium">Bio</label>
+                                      <Textarea 
+                                        defaultValue="John has over 15 years of experience in the domain industry and has personally brokered over $10 million in domain transactions."
+                                        className="mt-1"
+                                      />
+                                    </div>
+                                  </div>
+                                </div>
+                                
+                                <div className="border rounded-md p-3">
+                                  <h4 className="text-sm font-medium mb-2">Team Member 2</h4>
+                                  <div className="space-y-2">
+                                    <div>
+                                      <label className="text-sm font-medium">Name</label>
+                                      <Input 
+                                        defaultValue="Sarah Johnson" 
+                                        className="mt-1"
+                                      />
+                                    </div>
+                                    <div>
+                                      <label className="text-sm font-medium">Title</label>
+                                      <Input 
+                                        defaultValue="Domain Acquisition Specialist" 
+                                        className="mt-1"
+                                      />
+                                    </div>
+                                    <div>
+                                      <label className="text-sm font-medium">Bio</label>
+                                      <Textarea 
+                                        defaultValue="Sarah specializes in premium domain acquisition and has a proven track record of securing high-value domains for clients across multiple industries."
+                                        className="mt-1"
+                                      />
+                                    </div>
+                                  </div>
+                                </div>
+                                
+                                <Button variant="outline" size="sm">
+                                  <PlusIcon className="h-4 w-4 mr-2" />
+                                  Add Team Member
+                                </Button>
+                              </div>
+                            </AccordionContent>
+                          </AccordionItem>
+                        </Accordion>
+                      </div>
+                      <div className="flex justify-end mt-6">
+                        <Button variant="outline" className="mr-2">
+                          Preview Page
+                        </Button>
+                        <Button className="bg-black hover:bg-gray-800">
+                          Save All Changes
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </TabsContent>
+                
+                {/* GUIDE PAGE EDITOR */}
+                <TabsContent value="guide">
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Guide Page Editor</CardTitle>
+                      <CardDescription>Edit all sections of your domain guide page</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-6">
+                        <Accordion type="single" collapsible className="w-full">
+                          <AccordionItem value="guide-hero">
+                            <AccordionTrigger><h3 className="text-base font-medium">Hero Section</h3></AccordionTrigger>
+                            <AccordionContent>
+                              <div className="space-y-3 p-2">
+                                <div>
+                                  <label className="text-sm font-medium">Page Title</label>
+                                  <Input 
+                                    defaultValue="Domain Name Guide" 
+                                    className="mt-1"
+                                  />
+                                </div>
+                                <div>
+                                  <label className="text-sm font-medium">Subtitle</label>
+                                  <Input 
+                                    defaultValue="Everything you need to know about domains" 
+                                    className="mt-1"
+                                  />
+                                </div>
+                                <div>
+                                  <label className="text-sm font-medium">Background Color</label>
+                                  <div className="flex items-center mt-1 space-x-2">
+                                    <div className="w-6 h-6 bg-black rounded"></div>
+                                    <Input defaultValue="#000000" className="w-32" />
+                                  </div>
+                                </div>
+                              </div>
+                            </AccordionContent>
+                          </AccordionItem>
+                          
+                          <AccordionItem value="guide-content">
+                            <AccordionTrigger><h3 className="text-base font-medium">Guide Content Tabs</h3></AccordionTrigger>
+                            <AccordionContent>
+                              <div className="space-y-3 p-2">
+                                <div className="border rounded-md p-3 mt-3">
+                                  <h4 className="text-sm font-medium mb-2">Tab 1</h4>
+                                  <div className="space-y-2">
+                                    <div>
+                                      <label className="text-sm font-medium">Tab Title</label>
+                                      <Input 
+                                        defaultValue="How to Choose a Domain" 
+                                        className="mt-1"
+                                      />
+                                    </div>
+                                    <div>
+                                      <label className="text-sm font-medium">Tab Content</label>
+                                      <Textarea 
+                                        defaultValue="Choosing the right domain name is crucial for your brand's online identity. Here are our expert tips for selecting the perfect domain name for your business."
+                                        className="mt-1 min-h-[100px]"
+                                      />
+                                    </div>
+                                  </div>
+                                </div>
+                                
+                                <div className="border rounded-md p-3">
+                                  <h4 className="text-sm font-medium mb-2">Tab 2</h4>
+                                  <div className="space-y-2">
+                                    <div>
+                                      <label className="text-sm font-medium">Tab Title</label>
+                                      <Input 
+                                        defaultValue="Domain Valuation" 
+                                        className="mt-1"
+                                      />
+                                    </div>
+                                    <div>
+                                      <label className="text-sm font-medium">Tab Content</label>
+                                      <Textarea 
+                                        defaultValue="Understanding domain valuation is key when buying or selling domains. Learn how domain values are determined and what factors influence a domain's worth."
+                                        className="mt-1 min-h-[100px]"
+                                      />
+                                    </div>
+                                  </div>
+                                </div>
+                                
+                                <div className="border rounded-md p-3">
+                                  <h4 className="text-sm font-medium mb-2">Tab 3</h4>
+                                  <div className="space-y-2">
+                                    <div>
+                                      <label className="text-sm font-medium">Tab Title</label>
+                                      <Input 
+                                        defaultValue="Domain Transfer Process" 
+                                        className="mt-1"
+                                      />
+                                    </div>
+                                    <div>
+                                      <label className="text-sm font-medium">Tab Content</label>
+                                      <Textarea 
+                                        defaultValue="Our comprehensive guide to the domain transfer process ensures a smooth transition when buying or selling a domain. We walk you through each step of the secure transfer process."
+                                        className="mt-1 min-h-[100px]"
+                                      />
+                                    </div>
+                                  </div>
+                                </div>
+                                
+                                <Button variant="outline" size="sm">
+                                  <PlusIcon className="h-4 w-4 mr-2" />
+                                  Add New Tab
+                                </Button>
+                              </div>
+                            </AccordionContent>
+                          </AccordionItem>
+                          
+                          <AccordionItem value="guide-ebook">
+                            <AccordionTrigger><h3 className="text-base font-medium">Ebook Download Section</h3></AccordionTrigger>
+                            <AccordionContent>
+                              <div className="space-y-3 p-2">
+                                <div>
+                                  <label className="text-sm font-medium">Section Title</label>
+                                  <Input 
+                                    defaultValue="Download Our Free Ebook" 
+                                    className="mt-1"
+                                  />
+                                </div>
+                                <div>
+                                  <label className="text-sm font-medium">Ebook Title</label>
+                                  <Input 
+                                    defaultValue="Domain Name Guide: The Ultimate Resource" 
+                                    className="mt-1"
+                                  />
+                                </div>
+                                <div>
+                                  <label className="text-sm font-medium">Description</label>
+                                  <Textarea 
+                                    defaultValue="Get our comprehensive guide to domain acquisition, valuation, and management. Everything you need to know about domains in one easy-to-read ebook." 
+                                    className="mt-1"
+                                  />
+                                </div>
+                                <div>
+                                  <label className="text-sm font-medium">Price Display Text</label>
+                                  <Input 
+                                    defaultValue="Normally $49.95 - Free for a limited time" 
+                                    className="mt-1"
+                                  />
+                                </div>
+                                <div>
+                                  <label className="text-sm font-medium">Button Text</label>
+                                  <Input 
+                                    defaultValue="Download Now" 
+                                    className="mt-1"
+                                  />
+                                </div>
+                                <div className="flex items-center space-x-2 mt-2">
+                                  <Checkbox id="require-email" defaultChecked />
+                                  <label htmlFor="require-email">Require email to download</label>
+                                </div>
+                              </div>
+                            </AccordionContent>
+                          </AccordionItem>
+                        </Accordion>
+                      </div>
+                      <div className="flex justify-end mt-6">
+                        <Button variant="outline" className="mr-2">
+                          Preview Page
+                        </Button>
+                        <Button className="bg-black hover:bg-gray-800">
+                          Save All Changes
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </TabsContent>
+                
+                {/* CONTACT PAGE EDITOR */}
+                <TabsContent value="contact">
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Contact Page Editor</CardTitle>
+                      <CardDescription>Edit all sections of your contact page</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-6">
+                        <Accordion type="single" collapsible className="w-full">
+                          <AccordionItem value="contact-hero">
+                            <AccordionTrigger><h3 className="text-base font-medium">Hero Section</h3></AccordionTrigger>
+                            <AccordionContent>
+                              <div className="space-y-3 p-2">
+                                <div>
+                                  <label className="text-sm font-medium">Page Title</label>
+                                  <Input 
+                                    defaultValue="Contact Us" 
+                                    className="mt-1"
+                                  />
+                                </div>
+                                <div>
+                                  <label className="text-sm font-medium">Subtitle</label>
+                                  <Input 
+                                    defaultValue="Get in touch with our domain experts" 
+                                    className="mt-1"
+                                  />
+                                </div>
+                                <div>
+                                  <label className="text-sm font-medium">Background Color</label>
+                                  <div className="flex items-center mt-1 space-x-2">
+                                    <div className="w-6 h-6 bg-black rounded"></div>
+                                    <Input defaultValue="#000000" className="w-32" />
+                                  </div>
+                                </div>
+                              </div>
+                            </AccordionContent>
+                          </AccordionItem>
+                          
+                          <AccordionItem value="contact-info">
+                            <AccordionTrigger><h3 className="text-base font-medium">Contact Information</h3></AccordionTrigger>
+                            <AccordionContent>
+                              <div className="space-y-3 p-2">
+                                <div>
+                                  <label className="text-sm font-medium">Email</label>
+                                  <Input 
+                                    defaultValue="contact@domainnameguide.com" 
+                                    className="mt-1"
+                                  />
+                                </div>
+                                <div>
+                                  <label className="text-sm font-medium">Phone</label>
+                                  <Input 
+                                    defaultValue="+1 (555) 123-4567" 
+                                    className="mt-1"
+                                  />
+                                </div>
+                                <div>
+                                  <label className="text-sm font-medium">Address</label>
+                                  <Textarea 
+                                    defaultValue="123 Domain Street\nSuite 456\nNew York, NY 10001" 
+                                    className="mt-1"
+                                  />
+                                </div>
+                                <div>
+                                  <label className="text-sm font-medium">Business Hours</label>
+                                  <Textarea 
+                                    defaultValue="Monday - Friday: 9:00 AM - 5:00 PM EST\nSaturday - Sunday: Closed" 
+                                    className="mt-1"
+                                  />
+                                </div>
+                              </div>
+                            </AccordionContent>
+                          </AccordionItem>
+                          
+                          <AccordionItem value="contact-form">
+                            <AccordionTrigger><h3 className="text-base font-medium">Contact Form</h3></AccordionTrigger>
+                            <AccordionContent>
+                              <div className="space-y-3 p-2">
+                                <div>
+                                  <label className="text-sm font-medium">Form Title</label>
+                                  <Input 
+                                    defaultValue="Send Us a Message" 
+                                    className="mt-1"
+                                  />
+                                </div>
+                                <div>
+                                  <label className="text-sm font-medium">Form Description</label>
+                                  <Textarea 
+                                    defaultValue="Have a question about a domain or need assistance? Fill out the form below and our team will get back to you shortly." 
+                                    className="mt-1"
+                                  />
+                                </div>
+                                <div>
+                                  <label className="text-sm font-medium">Submit Button Text</label>
+                                  <Input 
+                                    defaultValue="Send Message" 
+                                    className="mt-1"
+                                  />
+                                </div>
+                                <div>
+                                  <label className="text-sm font-medium">Success Message</label>
+                                  <Textarea 
+                                    defaultValue="Thank you for your message! We'll get back to you within 24 hours." 
+                                    className="mt-1"
+                                  />
+                                </div>
+                                <div className="flex items-center space-x-2 mt-2">
+                                  <Checkbox id="include-phone" defaultChecked />
+                                  <label htmlFor="include-phone">Include phone field</label>
+                                </div>
+                                <div className="flex items-center space-x-2">
+                                  <Checkbox id="include-company" defaultChecked />
+                                  <label htmlFor="include-company">Include company field</label>
+                                </div>
+                              </div>
+                            </AccordionContent>
+                          </AccordionItem>
+                          
+                          <AccordionItem value="contact-map">
+                            <AccordionTrigger><h3 className="text-base font-medium">Map Settings</h3></AccordionTrigger>
+                            <AccordionContent>
+                              <div className="space-y-3 p-2">
+                                <div className="flex items-center space-x-2 mt-2">
+                                  <Checkbox id="show-map" defaultChecked />
+                                  <label htmlFor="show-map">Show map on contact page</label>
+                                </div>
+                                <div>
+                                  <label className="text-sm font-medium">Map Coordinates</label>
+                                  <div className="grid grid-cols-2 gap-2 mt-1">
+                                    <Input 
+                                      placeholder="Latitude"
+                                      defaultValue="40.7128" 
+                                    />
+                                    <Input 
+                                      placeholder="Longitude"
+                                      defaultValue="-74.0060" 
+                                    />
+                                  </div>
+                                </div>
+                                <div>
+                                  <label className="text-sm font-medium">Map Zoom Level (1-20)</label>
+                                  <Input 
+                                    type="number"
+                                    defaultValue="14" 
+                                    className="mt-1 w-24"
+                                    min="1"
+                                    max="20"
+                                  />
+                                </div>
+                              </div>
+                            </AccordionContent>
+                          </AccordionItem>
+                        </Accordion>
+                      </div>
+                      <div className="flex justify-end mt-6">
+                        <Button variant="outline" className="mr-2">
+                          Preview Page
+                        </Button>
+                        <Button className="bg-black hover:bg-gray-800">
+                          Save All Changes
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </TabsContent>
+                
+                {/* GLOBAL ELEMENTS EDITOR */}
+                <TabsContent value="global">
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Global Elements Editor</CardTitle>
+                      <CardDescription>Edit elements that appear across all pages</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-6">
+                        <Accordion type="single" collapsible className="w-full">
+                          <AccordionItem value="global-header">
+                            <AccordionTrigger><h3 className="text-base font-medium">Header & Navigation</h3></AccordionTrigger>
+                            <AccordionContent>
+                              <div className="space-y-3 p-2">
+                                <div>
+                                  <label className="text-sm font-medium">Site Logo Text</label>
+                                  <Input 
+                                    defaultValue="DOMAIN NAME GUIDE" 
+                                    className="mt-1"
+                                  />
+                                </div>
+                                <div className="flex items-center space-x-2 mt-2">
+                                  <Checkbox id="use-logo-image" />
+                                  <label htmlFor="use-logo-image">Use image logo instead of text</label>
+                                </div>
+                                
+                                <div className="border rounded-md p-3 mt-3">
+                                  <h4 className="text-sm font-medium mb-2">Navigation Items</h4>
+                                  
+                                  <div className="border-b pb-2 mb-2">
+                                    <div className="flex items-center justify-between">
+                                      <span className="font-medium">Premium Domains</span>
+                                      <div className="flex space-x-1">
+                                        <Button variant="ghost" size="sm">Edit</Button>
+                                        <Button variant="ghost" size="sm">↑</Button>
+                                        <Button variant="ghost" size="sm">↓</Button>
+                                      </div>
+                                    </div>
+                                    <span className="text-xs text-gray-500">Link: /</span>
+                                  </div>
+                                  
+                                  <div className="border-b pb-2 mb-2">
+                                    <div className="flex items-center justify-between">
+                                      <span className="font-medium">About</span>
+                                      <div className="flex space-x-1">
+                                        <Button variant="ghost" size="sm">Edit</Button>
+                                        <Button variant="ghost" size="sm">↑</Button>
+                                        <Button variant="ghost" size="sm">↓</Button>
+                                      </div>
+                                    </div>
+                                    <span className="text-xs text-gray-500">Link: /about</span>
+                                  </div>
+                                  
+                                  <div className="border-b pb-2 mb-2">
+                                    <div className="flex items-center justify-between">
+                                      <span className="font-medium">Guide</span>
+                                      <div className="flex space-x-1">
+                                        <Button variant="ghost" size="sm">Edit</Button>
+                                        <Button variant="ghost" size="sm">↑</Button>
+                                        <Button variant="ghost" size="sm">↓</Button>
+                                      </div>
+                                    </div>
+                                    <span className="text-xs text-gray-500">Link: /guide</span>
+                                  </div>
+                                  
+                                  <div className="border-b pb-2 mb-2">
+                                    <div className="flex items-center justify-between">
+                                      <span className="font-medium">Contact</span>
+                                      <div className="flex space-x-1">
+                                        <Button variant="ghost" size="sm">Edit</Button>
+                                        <Button variant="ghost" size="sm">↑</Button>
+                                        <Button variant="ghost" size="sm">↓</Button>
+                                      </div>
+                                    </div>
+                                    <span className="text-xs text-gray-500">Link: /contact</span>
+                                  </div>
+                                  
+                                  <Button variant="outline" size="sm" className="mt-2">
+                                    <PlusIcon className="h-4 w-4 mr-2" />
+                                    Add Navigation Item
+                                  </Button>
+                                </div>
+                              </div>
+                            </AccordionContent>
+                          </AccordionItem>
+                          
+                          <AccordionItem value="global-footer">
+                            <AccordionTrigger><h3 className="text-base font-medium">Footer</h3></AccordionTrigger>
+                            <AccordionContent>
+                              <div className="space-y-3 p-2">
+                                <div>
+                                  <label className="text-sm font-medium">Footer Text</label>
+                                  <Textarea 
+                                    defaultValue="Domain Name Guide offers premium domain names for businesses and entrepreneurs. Our curated selection includes domains in various industries and price ranges." 
+                                    className="mt-1"
+                                  />
+                                </div>
+                                
+                                <div className="border rounded-md p-3 mt-3">
+                                  <h4 className="text-sm font-medium mb-2">Footer Links</h4>
+                                  
+                                  <div className="grid grid-cols-3 gap-4">
+                                    <div>
+                                      <h5 className="text-sm font-semibold mb-2">Column 1</h5>
+                                      <Input 
+                                        defaultValue="Site Links" 
+                                        className="mb-2"
+                                        placeholder="Column Heading"
+                                      />
+                                      
+                                      <div className="space-y-1 mb-2">
+                                        <div className="flex items-center justify-between text-sm">
+                                          <span>Home</span>
+                                          <Button variant="ghost" size="sm">Edit</Button>
+                                        </div>
+                                        <div className="flex items-center justify-between text-sm">
+                                          <span>About</span>
+                                          <Button variant="ghost" size="sm">Edit</Button>
+                                        </div>
+                                        <div className="flex items-center justify-between text-sm">
+                                          <span>Guide</span>
+                                          <Button variant="ghost" size="sm">Edit</Button>
+                                        </div>
+                                        <div className="flex items-center justify-between text-sm">
+                                          <span>Contact</span>
+                                          <Button variant="ghost" size="sm">Edit</Button>
+                                        </div>
+                                      </div>
+                                      
+                                      <Button variant="outline" size="sm" className="w-full">
+                                        <PlusIcon className="h-3 w-3 mr-1" />
+                                        Add Link
+                                      </Button>
+                                    </div>
+                                    
+                                    <div>
+                                      <h5 className="text-sm font-semibold mb-2">Column 2</h5>
+                                      <Input 
+                                        defaultValue="Resources" 
+                                        className="mb-2"
+                                        placeholder="Column Heading"
+                                      />
+                                      
+                                      <div className="space-y-1 mb-2">
+                                        <div className="flex items-center justify-between text-sm">
+                                          <span>Domain Guide</span>
+                                          <Button variant="ghost" size="sm">Edit</Button>
+                                        </div>
+                                        <div className="flex items-center justify-between text-sm">
+                                          <span>FAQ</span>
+                                          <Button variant="ghost" size="sm">Edit</Button>
+                                        </div>
+                                        <div className="flex items-center justify-between text-sm">
+                                          <span>Blog</span>
+                                          <Button variant="ghost" size="sm">Edit</Button>
+                                        </div>
+                                      </div>
+                                      
+                                      <Button variant="outline" size="sm" className="w-full">
+                                        <PlusIcon className="h-3 w-3 mr-1" />
+                                        Add Link
+                                      </Button>
+                                    </div>
+                                    
+                                    <div>
+                                      <h5 className="text-sm font-semibold mb-2">Column 3</h5>
+                                      <Input 
+                                        defaultValue="Legal" 
+                                        className="mb-2"
+                                        placeholder="Column Heading"
+                                      />
+                                      
+                                      <div className="space-y-1 mb-2">
+                                        <div className="flex items-center justify-between text-sm">
+                                          <span>Privacy Policy</span>
+                                          <Button variant="ghost" size="sm">Edit</Button>
+                                        </div>
+                                        <div className="flex items-center justify-between text-sm">
+                                          <span>Terms of Service</span>
+                                          <Button variant="ghost" size="sm">Edit</Button>
+                                        </div>
+                                      </div>
+                                      
+                                      <Button variant="outline" size="sm" className="w-full">
+                                        <PlusIcon className="h-3 w-3 mr-1" />
+                                        Add Link
+                                      </Button>
+                                    </div>
+                                  </div>
+                                </div>
+                                
+                                <div>
+                                  <label className="text-sm font-medium">Copyright Text</label>
+                                  <Input 
+                                    defaultValue="© 2025 Domain Name Guide. All rights reserved." 
+                                    className="mt-1"
+                                  />
+                                </div>
+                              </div>
+                            </AccordionContent>
+                          </AccordionItem>
+                          
+                          <AccordionItem value="global-colors">
+                            <AccordionTrigger><h3 className="text-base font-medium">Color Scheme</h3></AccordionTrigger>
+                            <AccordionContent>
+                              <div className="space-y-3 p-2">
+                                <div>
+                                  <label className="text-sm font-medium">Primary Color</label>
+                                  <div className="flex items-center mt-1 space-x-2">
+                                    <div className="w-6 h-6 bg-black rounded"></div>
+                                    <Input defaultValue="#000000" className="w-32" />
+                                  </div>
+                                </div>
+                                
+                                <div>
+                                  <label className="text-sm font-medium">Secondary Color</label>
+                                  <div className="flex items-center mt-1 space-x-2">
+                                    <div className="w-6 h-6 bg-white border rounded"></div>
+                                    <Input defaultValue="#FFFFFF" className="w-32" />
+                                  </div>
+                                </div>
+                                
+                                <div>
+                                  <label className="text-sm font-medium">Accent Color</label>
+                                  <div className="flex items-center mt-1 space-x-2">
+                                    <div className="w-6 h-6 bg-green-500 rounded"></div>
+                                    <Input defaultValue="#10B981" className="w-32" />
+                                  </div>
+                                </div>
+                                
+                                <div>
+                                  <label className="text-sm font-medium">Text Color</label>
+                                  <div className="flex items-center mt-1 space-x-2">
+                                    <div className="w-6 h-6 bg-gray-900 rounded"></div>
+                                    <Input defaultValue="#111827" className="w-32" />
+                                  </div>
+                                </div>
+                                
+                                <div>
+                                  <label className="text-sm font-medium">Background Color</label>
+                                  <div className="flex items-center mt-1 space-x-2">
+                                    <div className="w-6 h-6 bg-gray-50 border rounded"></div>
+                                    <Input defaultValue="#F9FAFB" className="w-32" />
+                                  </div>
+                                </div>
+                              </div>
+                            </AccordionContent>
+                          </AccordionItem>
+                          
+                          <AccordionItem value="global-typography">
+                            <AccordionTrigger><h3 className="text-base font-medium">Typography</h3></AccordionTrigger>
+                            <AccordionContent>
+                              <div className="space-y-3 p-2">
+                                <div>
+                                  <label className="text-sm font-medium">Heading Font</label>
+                                  <Select defaultValue="Inter">
+                                    <SelectTrigger>
+                                      <SelectValue placeholder="Select font" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                      <SelectItem value="Inter">Inter</SelectItem>
+                                      <SelectItem value="Roboto">Roboto</SelectItem>
+                                      <SelectItem value="Montserrat">Montserrat</SelectItem>
+                                      <SelectItem value="Poppins">Poppins</SelectItem>
+                                      <SelectItem value="Open Sans">Open Sans</SelectItem>
+                                    </SelectContent>
+                                  </Select>
+                                </div>
+                                
+                                <div>
+                                  <label className="text-sm font-medium">Body Font</label>
+                                  <Select defaultValue="Inter">
+                                    <SelectTrigger>
+                                      <SelectValue placeholder="Select font" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                      <SelectItem value="Inter">Inter</SelectItem>
+                                      <SelectItem value="Roboto">Roboto</SelectItem>
+                                      <SelectItem value="Montserrat">Montserrat</SelectItem>
+                                      <SelectItem value="Poppins">Poppins</SelectItem>
+                                      <SelectItem value="Open Sans">Open Sans</SelectItem>
+                                    </SelectContent>
+                                  </Select>
+                                </div>
+                                
+                                <div>
+                                  <label className="text-sm font-medium">Base Font Size</label>
+                                  <Select defaultValue="16px">
+                                    <SelectTrigger className="w-24">
+                                      <SelectValue placeholder="Select size" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                      <SelectItem value="14px">14px</SelectItem>
+                                      <SelectItem value="16px">16px</SelectItem>
+                                      <SelectItem value="18px">18px</SelectItem>
+                                    </SelectContent>
+                                  </Select>
+                                </div>
+                              </div>
+                            </AccordionContent>
+                          </AccordionItem>
+                        </Accordion>
+                      </div>
+                      <div className="flex justify-end mt-6">
+                        <Button variant="outline" className="mr-2">
+                          Preview Site
+                        </Button>
+                        <Button className="bg-black hover:bg-gray-800">
+                          Save All Changes
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </TabsContent>
+              </Tabs>
+            </div>
           </div>
         </TabsContent>
 
