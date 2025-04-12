@@ -385,13 +385,19 @@ async function main() {
     console.log(`Connecting to database: ${process.env.DATABASE_URL}`);
     const pool = new Pool({ connectionString: process.env.DATABASE_URL });
     
-    // Insert all domains
-    console.log(`Adding ${domains.length} domains to the database...`);
+    // Process domains in smaller batches to avoid timeouts
+    const BATCH_SIZE = 50;
+    const totalDomains = domains.length;
+    const startIndex = parseInt(process.argv[2] || '0');
+    const endIndex = Math.min(startIndex + BATCH_SIZE, totalDomains);
+    
+    console.log(`Processing domains ${startIndex + 1} to ${endIndex} (of ${totalDomains})...`);
     
     let inserted = 0;
     let skipped = 0;
     
-    for (const domainName of domains) {
+    for (let i = startIndex; i < endIndex; i++) {
+      const domainName = domains[i];
       try {
         // Check if domain already exists
         const existingDomain = await pool.query('SELECT * FROM domains WHERE name = $1', [domainName]);
@@ -410,20 +416,26 @@ async function main() {
         
         // Insert domain
         await pool.query(
-          'INSERT INTO domains (name, description, price, category, length, "viewCount", "isSold", "createdAt", "updatedAt") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $8)',
+          'INSERT INTO domains (name, description, price, category, length, view_count, is_sold, created_at) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)',
           [domainName, description, price, category, length, 0, false, new Date()]
         );
         
         inserted++;
-        if (inserted % 10 === 0) {
-          console.log(`Progress: ${inserted} domains added...`);
-        }
+        console.log(`Added domain: ${domainName} (${inserted} domains added in this batch)`);
       } catch (err) {
         console.error(`Error adding domain ${domainName}:`, err);
       }
     }
     
-    console.log(`Added ${inserted} new domains. Skipped ${skipped} existing domains.`);
+    console.log(`Batch complete! Added ${inserted} new domains. Skipped ${skipped} existing domains.`);
+    console.log(`Processed ${endIndex} of ${totalDomains} domains.`);
+    
+    if (endIndex < totalDomains) {
+      console.log(`To process the next batch, run: node add-domains.js ${endIndex}`);
+    } else {
+      console.log('All domains have been processed!');
+    }
+    
     await pool.end();
     
   } catch (error) {
