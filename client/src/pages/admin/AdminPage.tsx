@@ -91,6 +91,16 @@ export default function AdminPage() {
     }
   }, [user, isLoading]);
   
+  // Define stats type
+  type DomainStats = {
+    totalDomains: number;
+    soldDomains: number;
+    totalViews: number;
+    domainsByCategory: Record<string, number>;
+    totalRevenue: number;
+    averagePrice: number;
+  };
+
   // Fetch data - all queries must be before any conditional returns
   // and all enabled by admin check
   const { data: domains = [] } = useQuery<Domain[]>({
@@ -98,7 +108,14 @@ export default function AdminPage() {
     enabled: !!user?.isAdmin,
   });
   
-  const { data: stats = { totalDomains: 0, soldDomains: 0, totalViews: 0 } } = useQuery({
+  const { data: stats = { 
+    totalDomains: 0, 
+    soldDomains: 0, 
+    totalViews: 0,
+    domainsByCategory: {},
+    totalRevenue: 0,
+    averagePrice: 0
+  } } = useQuery<DomainStats>({
     queryKey: ['/api/admin/domains/stats'],
     enabled: !!user?.isAdmin,
   });
@@ -558,13 +575,67 @@ export default function AdminPage() {
         </Card>
       </div>
 
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium text-gray-500">Total Revenue</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-3xl font-bold">${stats.totalRevenue.toLocaleString()}</div>
+            <div className="text-sm text-gray-500 mt-1">From sold domains</div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium text-gray-500">Average Price</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-3xl font-bold">${stats.averagePrice.toLocaleString()}</div>
+            <div className="text-sm text-gray-500 mt-1">Per domain</div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium text-gray-500">Conversion Rate</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-3xl font-bold">{stats.soldDomains > 0 ? ((stats.soldDomains / stats.totalDomains) * 100).toFixed(1) : "0"}%</div>
+            <div className="text-sm text-gray-500 mt-1">Domains sold / total domains</div>
+          </CardContent>
+        </Card>
+      </div>
+      
+      <div className="mb-6">
+        <Card>
+          <CardHeader>
+            <CardTitle>Domain Categories Distribution</CardTitle>
+            <CardDescription>Breakdown of domains by category</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
+              {Object.entries(stats.domainsByCategory || {}).map(([category, count]) => (
+                <div key={category} className="flex flex-col p-3 border rounded-md">
+                  <span className="text-sm font-medium text-gray-500 capitalize">{category}</span>
+                  <span className="text-xl font-bold mt-1">{count}</span>
+                  <span className="text-xs text-gray-500 mt-1">
+                    {stats.totalDomains > 0 ? ((count as number / stats.totalDomains) * 100).toFixed(1) : "0"}%
+                  </span>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
       <Tabs defaultValue="domains" value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="grid w-full grid-cols-5 mb-6">
+        <TabsList className="grid w-full grid-cols-7 mb-6">
           <TabsTrigger value="domains">Domains</TabsTrigger>
+          <TabsTrigger value="offers">Offers</TabsTrigger>
           <TabsTrigger value="consultations">Consultations</TabsTrigger>
           <TabsTrigger value="content">Page Content</TabsTrigger>
           <TabsTrigger value="emails">Email Submissions</TabsTrigger>
           <TabsTrigger value="seo">SEO Settings</TabsTrigger>
+          <TabsTrigger value="ebooks">Ebook Files</TabsTrigger>
         </TabsList>
         
         {/* DOMAINS TAB */}
@@ -768,6 +839,64 @@ export default function AdminPage() {
                 ))}
               </TableBody>
             </Table>
+          </div>
+        </TabsContent>
+
+        {/* OFFERS TAB */}
+        <TabsContent value="offers" className="space-y-6">
+          <h2 className="text-xl font-bold">Domain Offers</h2>
+          
+          <div className="rounded-md border">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Domain</TableHead>
+                  <TableHead>Offer Amount</TableHead>
+                  <TableHead>Name</TableHead>
+                  <TableHead>Email</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead>Date</TableHead>
+                  <TableHead>Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {/* We'll fetch offers from the API in a future update */}
+                <TableRow>
+                  <TableCell colSpan={7} className="h-24 text-center">
+                    No offers received yet.
+                  </TableCell>
+                </TableRow>
+              </TableBody>
+            </Table>
+          </div>
+          
+          <div className="mt-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Offer Statistics</CardTitle>
+                <CardDescription>Overview of offers received and conversion rates</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+                  <div className="flex flex-col">
+                    <span className="text-sm font-medium text-gray-500">Total Offers</span>
+                    <span className="text-2xl font-bold">0</span>
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="text-sm font-medium text-gray-500">Avg. Offer Amount</span>
+                    <span className="text-2xl font-bold">$0</span>
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="text-sm font-medium text-gray-500">Conversion Rate</span>
+                    <span className="text-2xl font-bold">0%</span>
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="text-sm font-medium text-gray-500">Pending Offers</span>
+                    <span className="text-2xl font-bold">0</span>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
           </div>
         </TabsContent>
 
@@ -989,6 +1118,83 @@ export default function AdminPage() {
         <TabsContent value="emails" className="space-y-6">
           <h2 className="text-xl font-bold">Email Submissions</h2>
           <EmailSubmissionsTable />
+        </TabsContent>
+
+        {/* EBOOKS TAB */}
+        <TabsContent value="ebooks" className="space-y-6">
+          <div className="flex justify-between items-center">
+            <h2 className="text-xl font-bold">Ebook File Management</h2>
+            <Button>
+              <PlusIcon className="h-4 w-4 mr-2" />
+              Upload New Ebook
+            </Button>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <Card>
+              <CardHeader>
+                <CardTitle>Domain Name Guide.pdf</CardTitle>
+                <CardDescription>Main guide ebook</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="flex items-center space-x-2 text-sm text-muted-foreground">
+                  <FileText className="h-4 w-4" />
+                  <span>PDF • 4.2MB</span>
+                </div>
+              </CardContent>
+              <div className="p-4 pt-0 flex justify-end space-x-2">
+                <Button variant="outline" size="sm">
+                  <EyeIcon className="h-4 w-4 mr-2" />
+                  Preview
+                </Button>
+                <Button variant="outline" size="sm">
+                  <TrashIcon className="h-4 w-4" />
+                </Button>
+              </div>
+            </Card>
+            
+            <Card className="border-dashed border-2 flex flex-col justify-center items-center p-6">
+              <div className="text-center">
+                <PlusIcon className="h-10 w-10 mx-auto text-gray-400 mb-2" />
+                <h3 className="font-medium">Upload New Ebook</h3>
+                <p className="text-sm text-muted-foreground mt-1">
+                  Drag and drop a PDF file or click to browse
+                </p>
+              </div>
+              <Button variant="outline" className="mt-4">
+                Upload File
+              </Button>
+            </Card>
+          </div>
+          
+          <div className="mt-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Email Capture Statistics</CardTitle>
+                <CardDescription>Track engagement with your ebook marketing</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+                  <div className="flex flex-col">
+                    <span className="text-sm font-medium text-gray-500">Total Downloads</span>
+                    <span className="text-2xl font-bold">128</span>
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="text-sm font-medium text-gray-500">This Month</span>
+                    <span className="text-2xl font-bold">42</span>
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="text-sm font-medium text-gray-500">Conversion Rate</span>
+                    <span className="text-2xl font-bold">6.8%</span>
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="text-sm font-medium text-gray-500">Avg. Time on Page</span>
+                    <span className="text-2xl font-bold">2:34</span>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
         </TabsContent>
 
         {/* SEO SETTINGS TAB */}
