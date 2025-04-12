@@ -893,60 +893,8 @@ export default function AdminPage() {
             </Button>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <div className="md:col-span-1">
-              <Card>
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-md">Pages</CardTitle>
-                </CardHeader>
-                <CardContent className="p-0">
-                  <div className="flex flex-col">
-                    <Button variant="ghost" className="justify-start rounded-none py-2 px-4 font-normal border-b border-gray-100">
-                      Home Page
-                    </Button>
-                    <Button variant="ghost" className="justify-start rounded-none py-2 px-4 font-normal border-b border-gray-100">
-                      About Us
-                    </Button>
-                    <Button variant="ghost" className="justify-start rounded-none py-2 px-4 font-normal border-b border-gray-100">
-                      Guide Page
-                    </Button>
-                    <Button variant="ghost" className="justify-start rounded-none py-2 px-4 font-normal border-b border-gray-100">
-                      Contact Us
-                    </Button>
-                    <Button variant="ghost" className="justify-start rounded-none py-2 px-4 font-normal text-primary">
-                      + Add New Page
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-              
-              <Card className="mt-4">
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-md">Components</CardTitle>
-                </CardHeader>
-                <CardContent className="p-0">
-                  <div className="flex flex-col">
-                    <Button variant="ghost" className="justify-start rounded-none py-2 px-4 font-normal border-b border-gray-100">
-                      Header
-                    </Button>
-                    <Button variant="ghost" className="justify-start rounded-none py-2 px-4 font-normal border-b border-gray-100">
-                      Hero Section
-                    </Button>
-                    <Button variant="ghost" className="justify-start rounded-none py-2 px-4 font-normal border-b border-gray-100">
-                      Recently Sold
-                    </Button>
-                    <Button variant="ghost" className="justify-start rounded-none py-2 px-4 font-normal border-b border-gray-100">
-                      Features Section
-                    </Button>
-                    <Button variant="ghost" className="justify-start rounded-none py-2 px-4 font-normal border-b border-gray-100">
-                      Footer
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-            
-            <div className="md:col-span-3">
+          <div className="grid grid-cols-1 gap-4">
+            <div className="col-span-1">
               <Tabs defaultValue="homepage">
                 <TabsList className="mb-4">
                   <TabsTrigger value="homepage">Homepage</TabsTrigger>
