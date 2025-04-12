@@ -1,16 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { Domain } from "@shared/schema";
 import { Badge } from "@/components/ui/badge";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import { cn, formatCurrency } from "@/lib/utils";
-import { Card, CardHeader, CardContent, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   Carousel,
@@ -49,18 +40,25 @@ export default function RecentlySoldDomains() {
 
   if (isLoading) {
     return (
-      <Card className="mb-8">
-        <CardHeader>
-          <CardTitle className="text-center text-2xl">Recently Sold Domains</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex flex-col space-y-3">
-            <Skeleton className="h-12 w-full" />
-            <Skeleton className="h-12 w-full" />
-            <Skeleton className="h-12 w-full" />
-          </div>
-        </CardContent>
-      </Card>
+      <div className="mb-8">
+        <h2 className="text-center text-3xl font-bold mb-8">Recently Sold Domains</h2>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="p-1">
+              <div className="overflow-hidden border border-white/20 rounded-lg bg-black/40 backdrop-blur-sm">
+                <div className="p-6">
+                  <div className="flex flex-col items-center space-y-4">
+                    <Skeleton className="h-8 w-3/4 bg-white/10" />
+                    <Skeleton className="h-6 w-1/3 bg-white/10" />
+                    <Skeleton className="h-8 w-1/2 bg-white/10" />
+                    <Skeleton className="h-4 w-1/4 bg-white/10" />
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
     );
   }
 
@@ -73,16 +71,16 @@ export default function RecentlySoldDomains() {
       return domains.map((domain) => (
         <CarouselItem key={domain.id}>
           <div className="p-1">
-            <Card className="overflow-hidden">
-              <CardContent className="p-4">
-                <div className="flex flex-col items-center space-y-3">
+            <div className="overflow-hidden border border-white/20 rounded-lg bg-black/40 backdrop-blur-sm">
+              <div className="p-6">
+                <div className="flex flex-col items-center space-y-4">
                   <div className="w-full text-center">
-                    <h3 className="text-xl font-bold mb-1 truncate hover:text-clip">
+                    <h3 className="text-xl font-bold mb-2 truncate hover:text-clip text-white">
                       <a 
                         href={`https://${domain.name}`} 
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex items-center justify-center"
+                        className="flex items-center justify-center hover:text-gray-300 transition-colors"
                       >
                         {domain.name}
                         <ExternalLink className="ml-1 h-4 w-4" />
@@ -92,12 +90,15 @@ export default function RecentlySoldDomains() {
                       {domain.category}
                     </Badge>
                   </div>
-                  <div className="font-semibold text-xl">
+                  <div className="font-semibold text-2xl text-white">
                     {formatCurrency(domain.price)}
                   </div>
+                  <div className="text-xs uppercase tracking-wide text-gray-400">
+                    SOLD
+                  </div>
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
           </div>
         </CarouselItem>
       ));
@@ -106,19 +107,15 @@ export default function RecentlySoldDomains() {
   };
 
   return (
-    <Card className="mb-8">
-      <CardHeader>
-        <CardTitle className="text-center text-2xl">Recently Sold Domains</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <Carousel className="mx-auto">
-          <CarouselContent>
-            {carouselItems()}
-          </CarouselContent>
-          <CarouselPrevious />
-          <CarouselNext />
-        </Carousel>
-      </CardContent>
-    </Card>
+    <div className="mb-8">
+      <h2 className="text-center text-3xl font-bold mb-8">Recently Sold Domains</h2>
+      <Carousel className="mx-auto">
+        <CarouselContent>
+          {carouselItems()}
+        </CarouselContent>
+        <CarouselPrevious className="bg-white/10 hover:bg-white/20 text-white border-none" />
+        <CarouselNext className="bg-white/10 hover:bg-white/20 text-white border-none" />
+      </Carousel>
+    </div>
   );
 }

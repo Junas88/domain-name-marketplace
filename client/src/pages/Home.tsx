@@ -27,10 +27,12 @@ export default function Home() {
     <div className="min-h-screen flex flex-col">
       <Header />
       <Hero />
-      <div className="container mx-auto px-4 py-6">
-        <RecentlySoldDomains />
-      </div>
       <DomainListing onMakeOffer={handleMakeOffer} />
+      <div className="bg-black text-white py-12">
+        <div className="container mx-auto px-4">
+          <RecentlySoldDomains />
+        </div>
+      </div>
       <Features />
       <Reviews />
       <Footer />
