@@ -31,8 +31,6 @@ async function comparePasswords(supplied: string, stored: string) {
 }
 
 export function setupAuth(app: Express) {
-  // This auth status check endpoint will be setup later
-  // after passport is initialized
   const sessionSettings: session.SessionOptions = {
     secret: process.env.SESSION_SECRET || "takemyname-secret-key",
     resave: false,
@@ -118,7 +116,6 @@ export function setupAuth(app: Express) {
     });
   });
 
-  // Add endpoint for user authentication check
   app.get("/api/auth/user", (req, res) => {
     if (!req.isAuthenticated()) {
       return res.status(401).json({ message: "Not authenticated" });

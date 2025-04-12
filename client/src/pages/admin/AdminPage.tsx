@@ -88,7 +88,7 @@ export default function AdminPage() {
       setIsRedirecting(true);
       
       setTimeout(() => {
-        window.location.href = "/auth";
+        navigate("/login");
       }, 300);
     }
   }, [user, isLoading, navigate]);

@@ -50,63 +50,12 @@ const upload = multer({
   }
 });
 
+// Helper function to check if we're in a deployment environment
+const isDeployment = process.env.REPL_DEPLOYMENT === 'true';
+
+// Stripe functionality has been removed
+
 export async function registerRoutes(app: Express): Promise<Server> {
-  // Serve static files from public directory
-  app.use(express.static(path.join(process.cwd(), 'public')));
-  
-  // Serve the admin page directly instead of redirecting
-  app.get('/admin', (req, res) => {
-    // Simple admin check page
-    const adminHtml = `<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin Dashboard - Domain Name Guide</title>
-  <script>
-    window.addEventListener('DOMContentLoaded', async () => {
-      try {
-        const response = await fetch('/api/auth/user');
-        if (response.ok) {
-          const user = await response.json();
-          
-          if (user && user.isAdmin) {
-            window.location.href = '/admin-dashboard.html';
-            return;
-          }
-        }
-        window.location.href = '/auth';
-      } catch (error) {
-        console.error('Error checking authentication:', error);
-        window.location.href = '/auth';
-      }
-    });
-  </script>
-</head>
-<body>
-  <div style="display: flex; justify-content: center; align-items: center; height: 100vh; font-family: sans-serif;">
-    <div style="text-align: center;">
-      <div style="border: 4px solid #000; width: 40px; height: 40px; border-radius: 50%; border-top-color: transparent; animation: spin 1s linear infinite; margin: 0 auto;"></div>
-      <p style="margin-top: 20px; font-size: 18px;">Verifying admin access...</p>
-    </div>
-  </div>
-  <style>
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-    body {
-      margin: 0;
-      padding: 0;
-      background-color: #f8f8f8;
-    }
-  </style>
-</body>
-</html>`;
-    res.setHeader('Content-Type', 'text/html');
-    res.send(adminHtml);
-  });
-  
   // Set up authentication
   setupAuth(app);
   
@@ -589,10 +538,80 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(pageContent);
     } catch (error) {
       console.error("Error updating page content:", error);
-      if (error instanceof z.ZodError) {
-        return res.status(400).json({ message: "Invalid page content data", errors: error.errors });
-      }
       res.status(500).json({ message: "Failed to update page content" });
+    }
+  });
+  
+  // Admin: Upload file for a page content
+  app.post("/api/admin/page-contents/:pageKey/upload", upload.single('file'), async (req, res) => {
+    try {
+      // Check if user is authenticated and an admin
+      if (!req.isAuthenticated() || !(req.user?.isAdmin)) {
+        return res.status(403).json({ message: "Unauthorized" });
+      }
+      
+      if (!req.file) {
+        return res.status(400).json({ message: "No file uploaded" });
+      }
+      
+      const pageKey = req.params.pageKey;
+      const pageContent = await storage.getPageContent(pageKey);
+      
+      if (!pageContent) {
+        // Delete the uploaded file if page doesn't exist
+        fs.unlinkSync(req.file.path);
+        return res.status(404).json({ message: "Page content not found" });
+      }
+      
+      // If this is the ebook, we want to make sure the file is properly saved
+      if (pageKey === 'ebook-section') {
+        // Create a copy in the default location for failsafe
+        const pdfName = 'Domain Name Marketing.pdf';
+        const defaultPath = path.join(process.cwd(), 'public/downloads', pdfName);
+        
+        // Ensure the downloads directory exists
+        fs.ensureDirSync(path.join(process.cwd(), 'public/downloads'));
+        
+        // Copy the uploaded file to the default location
+        try {
+          fs.copyFileSync(req.file.path, defaultPath);
+          console.log('Created backup copy of PDF at:', defaultPath);
+        } catch (copyErr) {
+          console.error('Failed to create backup copy:', copyErr);
+          // Continue even if copy fails, since we still have the uploaded file
+        }
+      }
+      
+      // Update page content with file information
+      const updates = {
+        filePath: req.file.path,
+        fileName: req.file.originalname,
+        fileType: req.file.mimetype,
+        fileSize: req.file.size
+      };
+      
+      // For ebook-section specifically, make sure to set isPurchaseRequired to false
+      if (pageKey === 'ebook-section') {
+        Object.assign(updates, {
+          isPurchaseRequired: false,
+          price: 0
+        });
+      }
+      
+      const updatedPageContent = await storage.updatePageContent(pageKey, updates);
+      
+      // Special message for ebook uploads to guide the admin
+      if (pageKey === 'ebook-section') {
+        res.json({
+          ...updatedPageContent,
+          message: "E-book uploaded successfully and set to FREE. Users can now download it from the website."
+        });
+      } else {
+        res.json(updatedPageContent);
+      }
+    } catch (error) {
+      console.error("Error uploading file:", error);
+      res.status(500).json({ message: "Failed to upload file" });
     }
   });
   
@@ -618,18 +637,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
-  // Admin: Upload a file for a page content
-  app.post("/api/admin/page-contents/:pageKey/upload", upload.single('file'), async (req, res) => {
+  // SEO SETTINGS API ROUTES - Added to handle metadata for Google search ranking optimization
+
+  // Download file from a page content
+  app.get("/api/page-contents/:pageKey/download", async (req, res) => {
     try {
-      // Check if user is authenticated and an admin
-      if (!req.isAuthenticated() || !(req.user?.isAdmin)) {
-        return res.status(403).json({ message: "Unauthorized" });
-      }
-      
-      if (!req.file) {
-        return res.status(400).json({ message: "No file uploaded" });
-      }
-      
       const pageKey = req.params.pageKey;
       const pageContent = await storage.getPageContent(pageKey);
       
@@ -637,53 +649,64 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "Page content not found" });
       }
       
-      // Update the page content with the file info
-      const updates = {
-        filePath: req.file.path,
-        fileName: req.file.originalname,
-        fileSize: req.file.size
-      };
-      
-      const updatedPageContent = await storage.updatePageContent(pageKey, updates);
-      
-      res.json(updatedPageContent);
-    } catch (error) {
-      console.error("Error uploading file:", error);
-      res.status(500).json({ message: "Failed to upload file" });
-    }
-  });
-  
-  // SEO Settings API routes
-  
-  // Get all SEO settings (public)
-  app.get("/api/seo-settings", async (req, res) => {
-    try {
-      const seoSettings = await storage.getAllSeoSettings();
-      res.json(seoSettings);
-    } catch (error) {
-      console.error("Error fetching SEO settings:", error);
-      res.status(500).json({ message: "Failed to fetch SEO settings" });
-    }
-  });
-  
-  // Get a specific SEO setting by page key (public)
-  app.get("/api/seo-settings/:pageKey", async (req, res) => {
-    try {
-      const pageKey = req.params.pageKey;
-      const seoSetting = await storage.getSeoSettingByPageKey(pageKey);
-      
-      if (!seoSetting) {
-        return res.status(404).json({ message: "SEO setting not found" });
+      // Check if the page has a file
+      if (!pageContent.filePath || !pageContent.fileName) {
+        return res.status(404).json({ message: "No file associated with this content" });
       }
       
-      res.json(seoSetting);
+      // Check if this content requires purchase
+      if (pageContent.isPurchaseRequired) {
+        // Check for payment verification
+        const paymentVerified = req.query.paymentVerified === 'true';
+        
+        if (!paymentVerified) {
+          return res.status(402).json({
+            message: "Payment required to download this file",
+            price: pageContent.price,
+            isPurchaseRequired: true
+          });
+        }
+      }
+      
+      // Send the file as a download
+      res.download(pageContent.filePath, pageContent.fileName);
     } catch (error) {
-      console.error("Error fetching SEO setting:", error);
-      res.status(500).json({ message: "Failed to fetch SEO setting" });
+      console.error("Error downloading file:", error);
+      res.status(500).json({ message: "Failed to download file" });
     }
   });
   
-  // Admin: Get all SEO settings
+  // Direct download of ebooks without payment
+  app.post("/api/request-download/:pageKey", async (req, res) => {
+    try {
+      const pageKey = req.params.pageKey;
+      const pageContent = await storage.getPageContent(pageKey);
+      
+      if (!pageContent) {
+        return res.status(404).json({ message: "Page content not found" });
+      }
+      
+      // Check if the page has a file
+      if (!pageContent.filePath || !pageContent.fileName) {
+        return res.status(404).json({ message: "No file associated with this content" });
+      }
+      
+      // Generate download URL - no payment verification needed anymore
+      const downloadUrl = `/api/page-contents/${pageKey}/download`;
+      
+      res.json({
+        success: true,
+        downloadUrl
+      });
+    } catch (error: any) {
+      console.error("Error processing download request:", error);
+      res.status(500).json({ message: "Failed to process download request: " + error.message });
+    }
+  });
+
+  // SEO Settings routes
+  
+  // Get all SEO settings (admin)
   app.get("/api/admin/seo-settings", async (req, res) => {
     try {
       // Check if user is authenticated and an admin
@@ -699,7 +722,29 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
-  // Admin: Create a new SEO setting
+  // Get a specific SEO setting by page key (admin)
+  app.get("/api/admin/seo-settings/:pageKey", async (req, res) => {
+    try {
+      // Check if user is authenticated and an admin
+      if (!req.isAuthenticated() || !(req.user?.isAdmin)) {
+        return res.status(403).json({ message: "Unauthorized" });
+      }
+      
+      const pageKey = req.params.pageKey;
+      const seoSetting = await storage.getSeoSettingByPageKey(pageKey);
+      
+      if (!seoSetting) {
+        return res.status(404).json({ message: "SEO setting not found" });
+      }
+      
+      res.json(seoSetting);
+    } catch (error) {
+      console.error("Error fetching SEO setting:", error);
+      res.status(500).json({ message: "Failed to fetch SEO setting" });
+    }
+  });
+  
+  // Create a new SEO setting (admin)
   app.post("/api/admin/seo-settings", async (req, res) => {
     try {
       // Check if user is authenticated and an admin
@@ -708,6 +753,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       const seoSettingData = insertSeoSettingsSchema.parse(req.body);
+      
+      // Check if the SEO setting already exists
+      const existingSetting = await storage.getSeoSettingByPageKey(seoSettingData.pageKey);
+      if (existingSetting) {
+        return res.status(400).json({ message: "SEO setting for this page already exists" });
+      }
+      
       const seoSetting = await storage.createSeoSetting(seoSettingData);
       res.status(201).json(seoSetting);
     } catch (error) {
@@ -719,7 +771,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
-  // Admin: Update a SEO setting
+  // Update an existing SEO setting (admin)
   app.patch("/api/admin/seo-settings/:pageKey", async (req, res) => {
     try {
       // Check if user is authenticated and an admin
@@ -728,23 +780,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       const pageKey = req.params.pageKey;
-      const seoSetting = await storage.updateSeoSetting(pageKey, req.body);
       
-      if (!seoSetting) {
+      // Check if the SEO setting exists
+      const existingSetting = await storage.getSeoSettingByPageKey(pageKey);
+      if (!existingSetting) {
         return res.status(404).json({ message: "SEO setting not found" });
       }
       
-      res.json(seoSetting);
+      const updatedSetting = await storage.updateSeoSetting(pageKey, req.body);
+      res.json(updatedSetting);
     } catch (error) {
       console.error("Error updating SEO setting:", error);
-      if (error instanceof z.ZodError) {
-        return res.status(400).json({ message: "Invalid SEO setting data", errors: error.errors });
-      }
       res.status(500).json({ message: "Failed to update SEO setting" });
     }
   });
   
-  // Admin: Delete a SEO setting
+  // Delete an SEO setting (admin)
   app.delete("/api/admin/seo-settings/:pageKey", async (req, res) => {
     try {
       // Check if user is authenticated and an admin
@@ -753,20 +804,42 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       const pageKey = req.params.pageKey;
-      const success = await storage.deleteSeoSetting(pageKey);
       
-      if (!success) {
+      // Check if the SEO setting exists
+      const existingSetting = await storage.getSeoSettingByPageKey(pageKey);
+      if (!existingSetting) {
         return res.status(404).json({ message: "SEO setting not found" });
       }
       
-      res.status(204).end();
+      const success = await storage.deleteSeoSetting(pageKey);
+      if (success) {
+        res.status(204).end();
+      } else {
+        res.status(500).json({ message: "Failed to delete SEO setting" });
+      }
     } catch (error) {
       console.error("Error deleting SEO setting:", error);
       res.status(500).json({ message: "Failed to delete SEO setting" });
     }
   });
+  
+  // Get SEO settings for a specific page (public)
+  app.get("/api/seo-settings/:pageKey", async (req, res) => {
+    try {
+      const pageKey = req.params.pageKey;
+      const seoSetting = await storage.getSeoSettingByPageKey(pageKey);
+      
+      if (!seoSetting) {
+        return res.status(404).json({ message: "SEO setting not found" });
+      }
+      
+      res.json(seoSetting);
+    } catch (error) {
+      console.error("Error fetching SEO setting:", error);
+      res.status(500).json({ message: "Failed to fetch SEO setting" });
+    }
+  });
 
   const httpServer = createServer(app);
-
   return httpServer;
 }

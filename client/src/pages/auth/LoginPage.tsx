@@ -19,10 +19,10 @@ export default function LoginPage() {
   // If already logged in, redirect to admin dashboard
   useEffect(() => {
     if (user?.isAdmin) {
-      // Use direct admin route to bypass SPA routing
-      window.location.href = '/admin';
+      // Always use the simplest path for consistency
+      navigate('/admin');
     }
-  }, [user]);
+  }, [user, navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -51,7 +51,7 @@ export default function LoginPage() {
       // DEPLOYMENT-SAFE APPROACH: Complete page refresh and hard navigation
       // Delay slightly to allow the toast to be seen
       setTimeout(() => {
-        // Go directly to the admin dashboard route, skipping SPA routing
+        // Use the simplest path that works in all environments
         window.location.href = '/admin';
       }, 300);
       
