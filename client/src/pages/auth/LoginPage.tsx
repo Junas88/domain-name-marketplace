@@ -41,11 +41,14 @@ export default function LoginPage() {
       const userData = await loginMutation.mutateAsync({ username, password });
       console.log("Login successful, user data:", userData);
       
-      // Add a delay before navigation to ensure the auth state is updated
-      setTimeout(() => {
-        console.log("Redirecting to admin dashboard...");
-        navigate("/admin/dashboard");
-      }, 800);
+      toast({
+        title: "Login successful",
+        description: "Redirecting to admin dashboard"
+      });
+      
+      // FORCE HARD RELOAD TO THE ADMIN PAGE FOR DEPLOYMENT RELIABILITY
+      // This ensures the page fully reloads and re-initializes all data
+      window.location.href = '/admin/dashboard';
       
     } catch (error) {
       console.error("Login error:", error);

@@ -35,11 +35,11 @@ const EbookWrapper = () => <SeoPageWrapper pageKey="ebook"><EbookPage /></SeoPag
 const EbookSuccessWrapper = () => <SeoPageWrapper pageKey="ebook-success"><EbookSuccess /></SeoPageWrapper>;
 const NotFoundWrapper = () => <SeoPageWrapper pageKey="not-found"><NotFound /></SeoPageWrapper>;
 
-// Simplified protected route component 
+// Deployment-reliable admin route component
 function AdminRoute() {
   const { user, isLoading } = useAuth();
-  const [, navigate] = useLocation();
   
+  // Show loading spinner while checking authentication
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -48,11 +48,25 @@ function AdminRoute() {
     );
   }
   
+  // Redirect to login if not authenticated or not admin
   if (!user || !user.isAdmin) {
-    navigate("/login");
-    return null;
+    // Use hard redirect for deployment reliability
+    console.log("User not authenticated as admin, redirecting to login");
+    
+    // Small delay to allow console log to complete
+    setTimeout(() => {
+      window.location.href = "/login";
+    }, 100);
+    
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <Loader2 className="h-8 w-8 animate-spin text-border" />
+        <span className="ml-2">Redirecting to login...</span>
+      </div>
+    );
   }
   
+  // User is authenticated and is admin, show dashboard
   return <AdminDashboard />;
 }
 
