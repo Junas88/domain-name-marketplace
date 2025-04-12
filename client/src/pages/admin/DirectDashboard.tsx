@@ -13,11 +13,12 @@ export default function DirectDashboard() {
     if (!isLoading && (!user || !user.isAdmin)) {
       console.log("Not authenticated as admin, redirecting to login...");
       setIsRedirecting(true);
-      
-      // Force navigation to login page
-      setTimeout(() => {
-        window.location.href = "/login";
-      }, 300);
+      window.location.href = "/login";
+      return;
+    }
+
+    if (user?.isAdmin) {
+      setIsRedirecting(false);
     }
   }, [user, isLoading]);
   
