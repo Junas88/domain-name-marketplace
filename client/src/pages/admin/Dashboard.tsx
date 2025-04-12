@@ -96,9 +96,14 @@ export default function AdminDashboard() {
       setIsRedirecting(true);
       
       setTimeout(() => {
-        // Use window.location for a hard redirect to ensure clean state
         window.location.href = "/login";
       }, 300);
+      return;
+    }
+
+    // Reset redirecting state if user is authenticated
+    if (user?.isAdmin) {
+      setIsRedirecting(false);
     }
   }, [user, isLoading]);
   
