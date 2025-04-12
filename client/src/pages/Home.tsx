@@ -28,13 +28,13 @@ export default function Home() {
       <Header />
       <Hero />
       <DomainListing onMakeOffer={handleMakeOffer} />
-      <Features />
-      <Reviews />
       <div className="bg-black text-white py-16">
         <div className="container mx-auto px-4">
           <RecentlySoldDomains />
         </div>
       </div>
+      <Features />
+      <Reviews />
       <Footer />
       <OfferModal 
         isOpen={isOfferModalOpen}
