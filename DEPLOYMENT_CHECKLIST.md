@@ -43,12 +43,21 @@ For database connection issues:
 - Verify that the values are correct (no typos)
 - Make sure the database is accessible from the Replit deployment environment
 
+## Admin Access
+
+After deployment, you can access the admin dashboard with these credentials:
+- Username: `admin`
+- Password: `admin123`
+
+These credentials work in both database mode and fallback mode.
+
 ## Post-Deployment Verification
 
 After successful deployment, verify:
 - [ ] Website loads correctly
 - [ ] Domain listings appear (from in-memory or database storage)
 - [ ] Free ebook downloads work correctly
-- [ ] Admin dashboard is accessible
+- [ ] Login to admin dashboard works with credentials above
+- [ ] Admin dashboard displays data correctly
 
 For any persistent issues, check the deployment logs for specific error messages.
