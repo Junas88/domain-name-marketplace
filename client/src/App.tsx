@@ -17,7 +17,9 @@ import BuyerProtection from "@/pages/BuyerProtection";
 import EbookPage from "@/pages/EbookPage";
 import EbookSuccess from "@/pages/EbookSuccess";
 import DomainFinderPage from "@/pages/DomainFinderPage";
-// Admin pages and login page removed as requested
+// Simple admin components
+import SimpleAdminPage from "@/pages/SimpleAdminPage";
+import SimpleLoginPage from "@/pages/SimpleLoginPage";
 
 // Enhanced components with SEO metadata
 const HomePage = () => <SeoPageWrapper pageKey="home"><Home /></SeoPageWrapper>;
@@ -50,7 +52,9 @@ function Router() {
       <Route path="/domain-finder" component={DomainFinderWrapper} />
       <Route path="/ebook" component={EbookWrapper} />
       <Route path="/ebook-success" component={EbookSuccessWrapper} />
-      {/* Not found fallback */}
+      {/* Simple admin routes */}
+      <Route path="/simple-login" component={SimpleLoginPage} />
+      <Route path="/simple-admin" component={SimpleAdminPage} />
       <Route component={NotFoundWrapper} />
     </Switch>
   );
