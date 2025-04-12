@@ -9,8 +9,12 @@ import {
 } from "@shared/schema";
 import session from "express-session";
 import createMemoryStore from "memorystore";
+import { db, pool } from "./db";
+import { eq, desc, count, sum, and, like, or, not, gt, lt, between } from "drizzle-orm";
+import connectPgSimple from "connect-pg-simple";
 
 const MemoryStore = createMemoryStore(session);
+const PostgresStore = connectPgSimple(session);
 
 // modify the interface with any CRUD methods
 // you might need
@@ -1144,4 +1148,226 @@ export class MemStorage implements IStorage {
   }
 }
 
-export const storage = new MemStorage();
+export class DatabaseStorage implements IStorage {
+  public sessionStore: session.Store;
+
+  constructor() {
+    this.sessionStore = new PostgresStore({
+      pool,
+      createTableIfMissing: true
+    });
+  }
+
+  async getUser(id: number): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.id, id));
+    return user;
+  }
+
+  async getUserByUsername(username: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.username, username));
+    return user;
+  }
+
+  async createUser(insertUser: InsertUser): Promise<User> {
+    const [user] = await db.insert(users).values(insertUser).returning();
+    return user;
+  }
+
+  async getAllDomains(): Promise<Domain[]> {
+    return await db.select().from(domains).orderBy(desc(domains.id));
+  }
+
+  async getDomain(id: number): Promise<Domain | undefined> {
+    const [domain] = await db.select().from(domains).where(eq(domains.id, id));
+    return domain;
+  }
+
+  async searchDomains(query: string): Promise<Domain[]> {
+    return await db.select()
+      .from(domains)
+      .where(
+        or(
+          like(domains.name, `%${query}%`),
+          like(domains.description, `%${query}%`),
+          like(domains.category, `%${query}%`)
+        )
+      )
+      .orderBy(desc(domains.id));
+  }
+
+  async filterDomains(filters: {
+    category?: string;
+    priceRange?: string;
+    length?: string;
+  }): Promise<Domain[]> {
+    let conditions = [];
+    
+    if (filters.category && filters.category !== 'all') {
+      conditions.push(eq(domains.category, filters.category));
+    }
+    
+    if (filters.priceRange && filters.priceRange !== 'all') {
+      const [min, max] = filters.priceRange.split('-').map(Number);
+      if (max) {
+        conditions.push(and(
+          gt(domains.price, min),
+          lt(domains.price, max)
+        ));
+      } else {
+        conditions.push(gt(domains.price, min));
+      }
+    }
+    
+    if (filters.length && filters.length !== 'all') {
+      const lengthNum = parseInt(filters.length);
+      conditions.push(eq(domains.length, lengthNum));
+    }
+    
+    // If there are no filters, return all domains
+    if (conditions.length === 0) {
+      return await this.getAllDomains();
+    }
+    
+    return await db.select()
+      .from(domains)
+      .where(conditions.length > 1 ? and(...conditions) : conditions[0])
+      .orderBy(desc(domains.id));
+  }
+
+  async createDomain(insertDomain: InsertDomain): Promise<Domain> {
+    const [domain] = await db.insert(domains).values(insertDomain).returning();
+    return domain;
+  }
+
+  async updateDomain(id: number, updates: Partial<Domain>): Promise<Domain | undefined> {
+    const [updatedDomain] = await db.update(domains)
+      .set(updates)
+      .where(eq(domains.id, id))
+      .returning();
+    return updatedDomain;
+  }
+
+  async deleteDomain(id: number): Promise<boolean> {
+    const result = await db.delete(domains).where(eq(domains.id, id));
+    return true; // Drizzle doesn't return affected rows, so we assume success
+  }
+
+  async markDomainAsSold(id: number): Promise<Domain | undefined> {
+    return await this.updateDomain(id, { isSold: true });
+  }
+
+  async incrementViewCount(id: number): Promise<Domain | undefined> {
+    const domain = await this.getDomain(id);
+    if (!domain) return undefined;
+    
+    const currentViews = domain.viewCount || 0;
+    return await this.updateDomain(id, { viewCount: currentViews + 1 });
+  }
+
+  async getDomainStats(): Promise<{
+    totalDomains: number;
+    soldDomains: number;
+    totalViews: number;
+    domainsByCategory: Record<string, number>;
+  }> {
+    // Get total domains
+    const [totalResult] = await db.select({ count: count() }).from(domains);
+    const totalDomains = Number(totalResult.count);
+    
+    // Get sold domains
+    const [soldResult] = await db.select({ count: count() })
+      .from(domains)
+      .where(eq(domains.isSold, true));
+    const soldDomains = Number(soldResult.count);
+    
+    // Get total views
+    const [viewsResult] = await db.select({ sum: sum(domains.viewCount) }).from(domains);
+    const totalViews = Number(viewsResult.sum || 0);
+    
+    // Get domains by category
+    const categoryCounts = await db.select({
+      category: domains.category,
+      count: count(),
+    })
+    .from(domains)
+    .groupBy(domains.category);
+    
+    const domainsByCategory: Record<string, number> = {};
+    for (const row of categoryCounts) {
+      domainsByCategory[row.category] = Number(row.count);
+    }
+    
+    return {
+      totalDomains,
+      soldDomains,
+      totalViews,
+      domainsByCategory
+    };
+  }
+
+  async createOffer(insertOffer: InsertOffer): Promise<Offer> {
+    const [offer] = await db.insert(offers).values(insertOffer).returning();
+    return offer;
+  }
+
+  async getOffersByDomainId(domainId: number): Promise<Offer[]> {
+    return await db.select()
+      .from(offers)
+      .where(eq(offers.domainId, domainId))
+      .orderBy(desc(offers.createdAt));
+  }
+
+  async createConsultation(insertConsultation: InsertConsultation): Promise<Consultation> {
+    const [consultation] = await db.insert(consultations).values(insertConsultation).returning();
+    return consultation;
+  }
+
+  async getAllConsultations(): Promise<Consultation[]> {
+    return await db.select()
+      .from(consultations)
+      .orderBy(desc(consultations.createdAt));
+  }
+
+  async getAllPageContents(): Promise<PageContent[]> {
+    return await db.select().from(pageContents);
+  }
+
+  async getPageContent(pageKey: string): Promise<PageContent | undefined> {
+    const [content] = await db.select()
+      .from(pageContents)
+      .where(eq(pageContents.pageKey, pageKey));
+    return content;
+  }
+
+  async createPageContent(insertPageContent: InsertPageContent): Promise<PageContent> {
+    const [content] = await db.insert(pageContents).values(insertPageContent).returning();
+    return content;
+  }
+
+  async updatePageContent(pageKey: string, updates: Partial<InsertPageContent>): Promise<PageContent | undefined> {
+    const [updatedContent] = await db.update(pageContents)
+      .set(updates)
+      .where(eq(pageContents.pageKey, pageKey))
+      .returning();
+    return updatedContent;
+  }
+
+  async deletePageContent(pageKey: string): Promise<boolean> {
+    await db.delete(pageContents).where(eq(pageContents.pageKey, pageKey));
+    return true;
+  }
+
+  async createEmailSubmission(submission: InsertEmailSubmission): Promise<EmailSubmission> {
+    const [newSubmission] = await db.insert(emailSubmissions).values(submission).returning();
+    return newSubmission;
+  }
+
+  async getAllEmailSubmissions(): Promise<EmailSubmission[]> {
+    return await db.select()
+      .from(emailSubmissions)
+      .orderBy(desc(emailSubmissions.createdAt));
+  }
+}
+
+// Change to database storage
+export const storage = new DatabaseStorage();
