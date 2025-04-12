@@ -170,6 +170,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
+  // Get recently sold domains
+  app.get("/api/domains/recently-sold", async (req, res) => {
+    try {
+      const limit = req.query.limit ? parseInt(req.query.limit as string) : 6;
+      const domains = await storage.getRecentlySoldDomains(limit);
+      res.json(domains);
+    } catch (error) {
+      console.error("Error fetching recently sold domains:", error);
+      res.status(500).json({ message: "Failed to fetch recently sold domains" });
+    }
+  });
+  
   // Get a specific domain by ID
   app.get("/api/domains/:id", async (req, res) => {
     try {

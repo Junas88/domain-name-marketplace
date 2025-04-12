@@ -1008,6 +1008,24 @@ export class MemStorage implements IStorage {
     return this.domains.delete(id);
   }
   
+  async getRecentlySoldDomains(limit: number = 6): Promise<Domain[]> {
+    const domains = Array.from(this.domains.values());
+    
+    // Filter to only sold domains
+    const soldDomains = domains.filter(domain => domain.isSold);
+    
+    // Sort by most recently created (which we'll use as a proxy for recently sold)
+    // In a real app, we'd want to track the actual sold date
+    soldDomains.sort((a, b) => {
+      const dateA = new Date(a.createdAt);
+      const dateB = new Date(b.createdAt);
+      return dateB.getTime() - dateA.getTime();
+    });
+    
+    // Return the specified number of domains
+    return soldDomains.slice(0, limit);
+  }
+  
   async markDomainAsSold(id: number): Promise<Domain | undefined> {
     return this.updateDomain(id, { isSold: true });
   }
@@ -1325,6 +1343,14 @@ export class DatabaseStorage implements IStorage {
     
     const currentViews = domain.viewCount || 0;
     return await this.updateDomain(id, { viewCount: currentViews + 1 });
+  }
+  
+  async getRecentlySoldDomains(limit: number = 6): Promise<Domain[]> {
+    return await db.select()
+      .from(domains)
+      .where(eq(domains.isSold, true))
+      .orderBy(desc(domains.createdAt))
+      .limit(limit);
   }
 
   async getDomainStats(): Promise<{
