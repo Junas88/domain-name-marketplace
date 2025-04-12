@@ -19,8 +19,8 @@ export default function LoginPage() {
   // If already logged in, redirect to admin dashboard
   useEffect(() => {
     if (user?.isAdmin) {
-      // Use utility to get the correct admin path based on environment
-      navigate(getAdminPath());
+      // Always use the simplest path for consistency
+      navigate('/admin');
     }
   }, [user, navigate]);
 
@@ -51,8 +51,8 @@ export default function LoginPage() {
       // DEPLOYMENT-SAFE APPROACH: Complete page refresh and hard navigation
       // Delay slightly to allow the toast to be seen
       setTimeout(() => {
-        // Get the correct admin path and force a full page reload
-        window.location.href = getAdminPath();
+        // Use the simplest path that works in all environments
+        window.location.href = '/admin';
       }, 300);
       
     } catch (error) {

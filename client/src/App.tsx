@@ -18,6 +18,7 @@ import EbookPage from "@/pages/EbookPage";
 import EbookSuccess from "@/pages/EbookSuccess";
 import DomainFinderPage from "@/pages/DomainFinderPage";
 import AdminPage from "@/pages/admin/AdminPage";
+import AdminDashboard from "@/pages/admin/AdminDashboard";
 import LoginPage from "@/pages/auth/LoginPage";
 
 // Enhanced components with SEO metadata
@@ -52,12 +53,14 @@ function Router() {
       <Route path="/ebook" component={EbookWrapper} />
       <Route path="/ebook-success" component={EbookSuccessWrapper} />
       <Route path="/login" component={LoginPage} />
-      {/* Support multiple admin path formats for various deployment environments */}
-      <Route path="/admin/dashboard" component={AdminPage} />
+      {/* Use direct component for stable paths */}
       <Route path="/admin" component={AdminPage} />
-      <Route path="/dashboard" component={AdminPage} />
-      <Route path="/admin/index.html" component={AdminPage} />
-      <Route path="/dashboard/index.html" component={AdminPage} />
+      
+      {/* Use the bridge component for potentially problematic paths in production */}
+      <Route path="/admin/dashboard" component={AdminDashboard} />
+      <Route path="/dashboard" component={AdminDashboard} />
+      <Route path="/admin/index.html" component={AdminDashboard} />
+      <Route path="/dashboard/index.html" component={AdminDashboard} />
       <Route component={NotFoundWrapper} />
     </Switch>
   );

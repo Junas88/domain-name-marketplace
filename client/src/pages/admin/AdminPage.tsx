@@ -540,7 +540,8 @@ export default function AdminPage() {
           onClick={() => {
             logoutMutation.mutate(undefined, {
               onSuccess: () => {
-                navigate('/');
+                // Force a full reload to ensure clean state
+                window.location.href = '/';
               }
             });
           }}
