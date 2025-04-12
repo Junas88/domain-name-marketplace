@@ -39,8 +39,7 @@ export default function AdminLogin() {
   // Redirect if already logged in
   useEffect(() => {
     if (user?.isAdmin) {
-      // Use direct navigation in production for more reliable state handling
-      window.location.href = "/admin";
+      window.location.href = "/admin/dashboard";
     }
   }, [user]);
 
