@@ -5,6 +5,7 @@ import {
   consultations, type Consultation, type InsertConsultation,
   pageContents, type PageContent, type InsertPageContent,
   emailSubmissions, type EmailSubmission, type InsertEmailSubmission,
+  seoSettings, type SeoSettings, type InsertSeoSettings,
   type SectionContent
 } from "@shared/schema";
 import session from "express-session";
@@ -83,6 +84,7 @@ export class MemStorage implements IStorage {
   private consultations: Map<number, Consultation>;
   private pageContents: Map<string, PageContent>;
   private emailSubmissions: Map<number, EmailSubmission>;
+  private seoSettings: Map<string, SeoSettings>;
   
   public sessionStore: session.Store;
   
@@ -92,6 +94,7 @@ export class MemStorage implements IStorage {
   private consultationIdCounter: number;
   private pageContentIdCounter: number;
   private emailSubmissionIdCounter: number;
+  private seoSettingIdCounter: number;
 
   constructor() {
     this.users = new Map();
@@ -100,6 +103,7 @@ export class MemStorage implements IStorage {
     this.consultations = new Map();
     this.pageContents = new Map();
     this.emailSubmissions = new Map();
+    this.seoSettings = new Map();
     
     this.sessionStore = new MemoryStore({
       checkPeriod: 86400000 // prune expired entries every 24h
@@ -111,6 +115,7 @@ export class MemStorage implements IStorage {
     this.consultationIdCounter = 1;
     this.pageContentIdCounter = 1;
     this.emailSubmissionIdCounter = 1;
+    this.seoSettingIdCounter = 1;
     
     // Initialize with some sample domains
     this.initializeDomains();
@@ -1152,6 +1157,62 @@ export class MemStorage implements IStorage {
   
   async getAllEmailSubmissions(): Promise<EmailSubmission[]> {
     return Array.from(this.emailSubmissions.values());
+  }
+  
+  // SEO Settings methods
+  async getAllSeoSettings(): Promise<SeoSettings[]> {
+    return Array.from(this.seoSettings.values());
+  }
+
+  async getSeoSettingByPageKey(pageKey: string): Promise<SeoSettings | undefined> {
+    for (const seoSetting of this.seoSettings.values()) {
+      if (seoSetting.pageKey === pageKey) {
+        return seoSetting;
+      }
+    }
+    return undefined;
+  }
+
+  async createSeoSetting(seoSetting: InsertSeoSettings): Promise<SeoSettings> {
+    const newSetting: SeoSettings = {
+      id: this.seoSettingIdCounter++,
+      pageKey: seoSetting.pageKey,
+      title: seoSetting.title,
+      metaDescription: seoSetting.metaDescription,
+      metaKeywords: seoSetting.metaKeywords,
+      ogTitle: seoSetting.ogTitle || null,
+      ogDescription: seoSetting.ogDescription || null,
+      ogImage: seoSetting.ogImage || null,
+      twitterTitle: seoSetting.twitterTitle || null,
+      twitterDescription: seoSetting.twitterDescription || null,
+      twitterImage: seoSetting.twitterImage || null,
+      structuredData: seoSetting.structuredData || null,
+      updatedAt: new Date()
+    };
+    
+    this.seoSettings.set(newSetting.pageKey, newSetting);
+    return newSetting;
+  }
+
+  async updateSeoSetting(pageKey: string, updates: Partial<InsertSeoSettings>): Promise<SeoSettings | undefined> {
+    const existingSetting = await this.getSeoSettingByPageKey(pageKey);
+    
+    if (!existingSetting) {
+      return undefined;
+    }
+    
+    const updatedSetting: SeoSettings = {
+      ...existingSetting,
+      ...updates,
+      updatedAt: new Date()
+    };
+    
+    this.seoSettings.set(pageKey, updatedSetting);
+    return updatedSetting;
+  }
+
+  async deleteSeoSetting(pageKey: string): Promise<boolean> {
+    return this.seoSettings.delete(pageKey);
   }
 }
 
