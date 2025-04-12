@@ -35,25 +35,48 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     queryFn: getQueryFn({ on401: "returnNull" }),
   });
 
+  // Enhanced login mutation with better error handling and state management
   const loginMutation = useMutation({
     mutationFn: async (credentials: LoginData) => {
-      const res = await apiRequest("/api/auth/login", {
-        method: "POST",
-        body: JSON.stringify(credentials)
-      });
-      return await res.json();
+      console.log("Login attempt with:", credentials.username);
+      
+      try {
+        const res = await apiRequest("/api/auth/login", {
+          method: "POST",
+          body: JSON.stringify(credentials)
+        });
+        
+        if (!res.ok) {
+          const errorData = await res.json();
+          throw new Error(errorData.message || "Authentication failed");
+        }
+        
+        const userData = await res.json();
+        console.log("Login response:", userData);
+        return userData;
+      } catch (error) {
+        console.error("Login fetch error:", error);
+        throw error;
+      }
     },
     onSuccess: (userData: SelectUser) => {
+      console.log("Setting user data in cache:", userData);
+      
+      // Use direct synchronous updates for state consistency
       queryClient.setQueryData(["/api/auth/user"], userData);
+      
       toast({
         title: "Login successful",
-        description: "Welcome back!",
+        description: "Welcome to the admin dashboard!",
       });
+      
+      // We'll rely on the redirect timer in the login page component
     },
-    onError: (error: Error) => {
+    onError: (error: any) => {
+      console.error("Login error:", error);
       toast({
         title: "Login failed",
-        description: error.message,
+        description: error.message || "Please check your username and password",
         variant: "destructive",
       });
     },

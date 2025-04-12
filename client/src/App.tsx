@@ -3,7 +3,6 @@ import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { AuthProvider } from "@/hooks/use-auth";
-import { ProtectedRoute } from "@/lib/protected-route";
 import { ScrollManager } from "@/components/ScrollManager";
 import SeoPageWrapper from "@/components/SeoPageWrapper";
 import NotFound from "@/pages/not-found";
@@ -18,7 +17,7 @@ import BuyerProtection from "@/pages/BuyerProtection";
 import EbookPage from "@/pages/EbookPage";
 import EbookSuccess from "@/pages/EbookSuccess";
 import DomainFinderPage from "@/pages/DomainFinderPage";
-import AdminDashboard from "@/pages/admin/Dashboard";
+import AdminPage from "@/pages/admin/AdminPage";
 import LoginPage from "@/pages/auth/LoginPage";
 
 // Enhanced components with SEO metadata
@@ -35,6 +34,9 @@ const EbookWrapper = () => <SeoPageWrapper pageKey="ebook"><EbookPage /></SeoPag
 const EbookSuccessWrapper = () => <SeoPageWrapper pageKey="ebook-success"><EbookSuccess /></SeoPageWrapper>;
 const NotFoundWrapper = () => <SeoPageWrapper pageKey="not-found"><NotFound /></SeoPageWrapper>;
 
+// Auth checking for admin dashboard is handled by the dashboard component itself
+
+// Normal router for all pages
 function Router() {
   return (
     <Switch>
@@ -50,8 +52,8 @@ function Router() {
       <Route path="/ebook" component={EbookWrapper} />
       <Route path="/ebook-success" component={EbookSuccessWrapper} />
       <Route path="/login" component={LoginPage} />
-      <ProtectedRoute path="/admin/dashboard" component={AdminDashboard} />
-      <ProtectedRoute path="/admin" component={AdminDashboard} />
+      <Route path="/admin/dashboard" component={AdminPage} />
+      <Route path="/admin" component={AdminPage} />
       <Route component={NotFoundWrapper} />
     </Switch>
   );
