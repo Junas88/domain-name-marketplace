@@ -29,6 +29,7 @@ import {
   EyeIcon,
   FileText,
   FileUp,
+  Loader2,
   LogOut,
   PenIcon,
   PlusIcon,
