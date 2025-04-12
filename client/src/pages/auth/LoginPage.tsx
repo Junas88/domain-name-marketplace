@@ -7,7 +7,6 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
-import { getAdminPath } from "@/lib/admin-path";
 
 export default function LoginPage() {
   const [username, setUsername] = useState("");

@@ -87,11 +87,12 @@ export default function AdminPage() {
       console.log("Not authenticated as admin, redirecting to login page");
       setIsRedirecting(true);
       
+      // Force a hard redirect for reliable path handling
       setTimeout(() => {
-        navigate("/login");
+        window.location.href = "/login";
       }, 300);
     }
-  }, [user, isLoading, navigate]);
+  }, [user, isLoading]);
   
   // Define stats type
   type DomainStats = {

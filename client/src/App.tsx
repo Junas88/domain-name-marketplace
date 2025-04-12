@@ -53,14 +53,10 @@ function Router() {
       <Route path="/ebook" component={EbookWrapper} />
       <Route path="/ebook-success" component={EbookSuccessWrapper} />
       <Route path="/login" component={LoginPage} />
-      {/* Use direct component for stable paths */}
+      {/* Simple, consistent admin routing */}
       <Route path="/admin" component={AdminPage} />
-      
-      {/* Use the bridge component for potentially problematic paths in production */}
-      <Route path="/admin/dashboard" component={AdminDashboard} />
-      <Route path="/dashboard" component={AdminDashboard} />
-      <Route path="/admin/index.html" component={AdminDashboard} />
-      <Route path="/dashboard/index.html" component={AdminDashboard} />
+      <Route path="/admin/dashboard" component={AdminPage} />
+      <Route path="/dashboard" component={AdminPage} />
       <Route component={NotFoundWrapper} />
     </Switch>
   );
