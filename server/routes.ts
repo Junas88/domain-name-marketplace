@@ -365,7 +365,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       <h3 class="card-title">Admin Actions</h3>
       <p>Access the full admin dashboard with all features:</p>
       <div class="btn-group">
-        <a href="/?admin=true" class="btn btn-black">Full Admin Dashboard</a>
+        <a href="/?admin=true" class="btn btn-black">Full Settings Dashboard</a>
+        <a href="/?admin=domains" class="btn btn-black">Manage Domains</a>
+        <a href="/?admin=pages" class="btn btn-black">Edit Website Pages</a>
+        <a href="/?admin=seo" class="btn btn-black">SEO Settings</a>
+        <a href="/?admin=emails" class="btn btn-black">Email Submissions</a>
         <a href="/" class="btn btn-outline">Return to Website</a>
       </div>
     </div>
