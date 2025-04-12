@@ -7,7 +7,8 @@ import {
   insertConsultationSchema,
   insertDomainSchema,
   insertPageContentSchema,
-  insertEmailSubmissionSchema
+  insertEmailSubmissionSchema,
+  insertSeoSettingsSchema
 } from "@shared/schema";
 import { z } from "zod";
 import Stripe from "stripe";
@@ -801,6 +802,142 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error: any) {
       console.error("Error creating checkout session:", error);
       res.status(500).json({ message: "Error creating checkout session: " + error.message });
+    }
+  });
+
+  // SEO Settings routes
+  
+  // Get all SEO settings (admin)
+  app.get("/api/admin/seo-settings", async (req, res) => {
+    try {
+      // Check if user is authenticated and an admin
+      if (!req.isAuthenticated() || !(req.user?.isAdmin)) {
+        return res.status(403).json({ message: "Unauthorized" });
+      }
+      
+      const seoSettings = await storage.getAllSeoSettings();
+      res.json(seoSettings);
+    } catch (error) {
+      console.error("Error fetching SEO settings:", error);
+      res.status(500).json({ message: "Failed to fetch SEO settings" });
+    }
+  });
+  
+  // Get a specific SEO setting by page key (admin)
+  app.get("/api/admin/seo-settings/:pageKey", async (req, res) => {
+    try {
+      // Check if user is authenticated and an admin
+      if (!req.isAuthenticated() || !(req.user?.isAdmin)) {
+        return res.status(403).json({ message: "Unauthorized" });
+      }
+      
+      const pageKey = req.params.pageKey;
+      const seoSetting = await storage.getSeoSettingByPageKey(pageKey);
+      
+      if (!seoSetting) {
+        return res.status(404).json({ message: "SEO setting not found" });
+      }
+      
+      res.json(seoSetting);
+    } catch (error) {
+      console.error("Error fetching SEO setting:", error);
+      res.status(500).json({ message: "Failed to fetch SEO setting" });
+    }
+  });
+  
+  // Create a new SEO setting (admin)
+  app.post("/api/admin/seo-settings", async (req, res) => {
+    try {
+      // Check if user is authenticated and an admin
+      if (!req.isAuthenticated() || !(req.user?.isAdmin)) {
+        return res.status(403).json({ message: "Unauthorized" });
+      }
+      
+      const seoSettingData = insertSeoSettingsSchema.parse(req.body);
+      
+      // Check if the SEO setting already exists
+      const existingSetting = await storage.getSeoSettingByPageKey(seoSettingData.pageKey);
+      if (existingSetting) {
+        return res.status(400).json({ message: "SEO setting for this page already exists" });
+      }
+      
+      const seoSetting = await storage.createSeoSetting(seoSettingData);
+      res.status(201).json(seoSetting);
+    } catch (error) {
+      console.error("Error creating SEO setting:", error);
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Invalid SEO setting data", errors: error.errors });
+      }
+      res.status(500).json({ message: "Failed to create SEO setting" });
+    }
+  });
+  
+  // Update an existing SEO setting (admin)
+  app.patch("/api/admin/seo-settings/:pageKey", async (req, res) => {
+    try {
+      // Check if user is authenticated and an admin
+      if (!req.isAuthenticated() || !(req.user?.isAdmin)) {
+        return res.status(403).json({ message: "Unauthorized" });
+      }
+      
+      const pageKey = req.params.pageKey;
+      
+      // Check if the SEO setting exists
+      const existingSetting = await storage.getSeoSettingByPageKey(pageKey);
+      if (!existingSetting) {
+        return res.status(404).json({ message: "SEO setting not found" });
+      }
+      
+      const updatedSetting = await storage.updateSeoSetting(pageKey, req.body);
+      res.json(updatedSetting);
+    } catch (error) {
+      console.error("Error updating SEO setting:", error);
+      res.status(500).json({ message: "Failed to update SEO setting" });
+    }
+  });
+  
+  // Delete an SEO setting (admin)
+  app.delete("/api/admin/seo-settings/:pageKey", async (req, res) => {
+    try {
+      // Check if user is authenticated and an admin
+      if (!req.isAuthenticated() || !(req.user?.isAdmin)) {
+        return res.status(403).json({ message: "Unauthorized" });
+      }
+      
+      const pageKey = req.params.pageKey;
+      
+      // Check if the SEO setting exists
+      const existingSetting = await storage.getSeoSettingByPageKey(pageKey);
+      if (!existingSetting) {
+        return res.status(404).json({ message: "SEO setting not found" });
+      }
+      
+      const success = await storage.deleteSeoSetting(pageKey);
+      if (success) {
+        res.status(204).end();
+      } else {
+        res.status(500).json({ message: "Failed to delete SEO setting" });
+      }
+    } catch (error) {
+      console.error("Error deleting SEO setting:", error);
+      res.status(500).json({ message: "Failed to delete SEO setting" });
+    }
+  });
+  
+  // Get SEO settings for a specific page (public)
+  app.get("/api/seo-settings/:pageKey", async (req, res) => {
+    try {
+      const pageKey = req.params.pageKey;
+      const seoSetting = await storage.getSeoSettingByPageKey(pageKey);
+      
+      if (!seoSetting) {
+        return res.status(404).json({ message: "SEO setting not found" });
+      }
+      
+      res.json(seoSetting);
+    } catch (error) {
+      console.error("Error fetching SEO setting:", error);
+      res.status(500).json({ message: "Failed to fetch SEO setting" });
     }
   });
 
