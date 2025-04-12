@@ -70,7 +70,7 @@ export default function RecentlySoldDomains() {
           <div className="p-2">
             <div className="overflow-hidden border border-gray-200 rounded-lg bg-gray-50 shadow-sm hover:border-gray-300 hover:shadow-md transition-all">
               <div className="p-5 flex flex-col items-center justify-center">
-                <h3 className="text-xl md:text-2xl font-bold mb-2 text-gray-800 text-center">
+                <h3 className="text-xl md:text-2xl font-black mb-2 text-gray-800 text-center">
                   <a 
                     href={`https://${domain.name}`} 
                     target="_blank"
@@ -82,11 +82,11 @@ export default function RecentlySoldDomains() {
                   </a>
                 </h3>
                 
-                <div className="font-bold text-2xl md:text-3xl text-gray-900 mt-1 mb-2">
+                <div className="font-black text-2xl md:text-3xl text-gray-900 mt-1 mb-2">
                   {formatCurrency(domain.price)}
                 </div>
                 
-                <div className="text-xs uppercase tracking-widest font-semibold text-emerald-600 mt-1 border border-emerald-200 bg-emerald-50 px-2 py-0.5 rounded-full">
+                <div className="text-xs uppercase tracking-widest font-black text-emerald-600 mt-1 border border-emerald-200 bg-emerald-50 px-2 py-0.5 rounded-full">
                   SOLD
                 </div>
               </div>
