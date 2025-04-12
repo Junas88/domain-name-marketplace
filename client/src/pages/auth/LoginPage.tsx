@@ -34,14 +34,18 @@ export default function LoginPage() {
       return;
     }
     
-    loginMutation.mutate(
-      { username, password },
-      {
-        onSuccess: () => {
-          navigate("/admin/dashboard");
-        }
-      }
-    );
+    try {
+      await loginMutation.mutateAsync({ username, password });
+      
+      // Add a delay before navigation to ensure state is updated
+      setTimeout(() => {
+        navigate("/admin/dashboard");
+        console.log("Navigating to admin dashboard after successful login");
+      }, 500);
+      
+    } catch (error) {
+      console.error("Login error:", error);
+    }
   };
 
   return (
