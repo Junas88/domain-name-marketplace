@@ -5,7 +5,19 @@ import { useToast } from '@/hooks/use-toast';
 import { Loader2, Download, FileText, CreditCard } from 'lucide-react';
 import { loadStripe } from '@stripe/stripe-js';
 
+// Check if we're in deployment - different environments handle this differently
+const isDeployment = window.location.hostname.includes('.replit.app');
+
 // Initialize Stripe with the public key
+if (!import.meta.env.VITE_STRIPE_PUBLIC_KEY) {
+  if (isDeployment) {
+    console.error("DEPLOYMENT ERROR: VITE_STRIPE_PUBLIC_KEY must be set in deployment environment");
+    throw new Error('VITE_STRIPE_PUBLIC_KEY not configured for deployment. Please add VITE_STRIPE_PUBLIC_KEY to your deployment environment variables.');
+  } else {
+    throw new Error('Missing required Stripe key: VITE_STRIPE_PUBLIC_KEY');
+  }
+}
+
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY);
 
 interface EbookDownloadProps {

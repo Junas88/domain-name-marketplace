@@ -51,8 +51,16 @@ const upload = multer({
   }
 });
 
+// Helper function to check if we're in a deployment environment
+const isDeployment = process.env.REPL_DEPLOYMENT === 'true';
+
 if (!process.env.STRIPE_SECRET_KEY) {
-  throw new Error('Missing required Stripe secret: STRIPE_SECRET_KEY');
+  if (isDeployment) {
+    console.error("DEPLOYMENT ERROR: STRIPE_SECRET_KEY must be set in the deployment environment");
+    throw new Error('STRIPE_SECRET_KEY not configured for deployment. Please add STRIPE_SECRET_KEY to your deployment environment variables.');
+  } else {
+    throw new Error('Missing required Stripe secret: STRIPE_SECRET_KEY');
+  }
 }
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
