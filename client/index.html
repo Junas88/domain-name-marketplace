@@ -50,6 +50,8 @@
   </head>
   <body>
     <div id="root"></div>
+    <!-- Admin path fix for all environments - loads before React for faster path correction -->
+    <script src="/admin-path-fix.js"></script>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
