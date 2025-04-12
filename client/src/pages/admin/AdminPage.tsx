@@ -81,16 +81,26 @@ export default function AdminPage() {
   const [isRedirecting, setIsRedirecting] = useState(false);
   const [, navigate] = useLocation();
   
-  // Auth check - redirect to login if not admin
+  // Auth check - redirect to login if not admin with better state handling
   useEffect(() => {
     if (!isLoading && (!user || !user.isAdmin)) {
       console.log("Not authenticated as admin, redirecting to login page");
       setIsRedirecting(true);
       
+      // Clear any existing redirects from sessionStorage to prevent loops
+      sessionStorage.removeItem('adminFixRedirect');
+      
       // Force a hard redirect for reliable path handling
       setTimeout(() => {
         window.location.href = "/login";
-      }, 300);
+      }, 500);
+    } else if (user?.isAdmin) {
+      // Reset any failure counters when successfully logged in as admin
+      try {
+        localStorage.removeItem('adminFailures');
+      } catch (e) {
+        console.error('Could not reset admin failures:', e);
+      }
     }
   }, [user, isLoading]);
   
@@ -539,10 +549,25 @@ export default function AdminPage() {
           variant="outline" 
           className="mt-4 md:mt-0 border-black" 
           onClick={() => {
+            // Clear all admin navigation state before logout
+            try {
+              localStorage.removeItem('adminFailures');
+              sessionStorage.removeItem('adminFixRedirect');
+            } catch (e) {
+              console.error('Could not clear admin state:', e);
+            }
+            
             logoutMutation.mutate(undefined, {
               onSuccess: () => {
-                // Force a full reload to ensure clean state
-                window.location.href = '/';
+                toast({
+                  title: "Logged out successfully",
+                  description: "You have been logged out of the admin dashboard",
+                });
+                
+                // Force a hard reload to ensure clean state
+                setTimeout(() => {
+                  window.location.href = '/';
+                }, 500);
               }
             });
           }}
