@@ -1,8 +1,8 @@
-import { Switch, Route, useLocation } from "wouter";
+import { Switch, Route } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
-import { AuthProvider, useAuth } from "@/hooks/use-auth";
+import { AuthProvider } from "@/hooks/use-auth";
 import { ScrollManager } from "@/components/ScrollManager";
 import SeoPageWrapper from "@/components/SeoPageWrapper";
 import NotFound from "@/pages/not-found";
@@ -19,7 +19,6 @@ import EbookSuccess from "@/pages/EbookSuccess";
 import DomainFinderPage from "@/pages/DomainFinderPage";
 import AdminDashboard from "@/pages/admin/Dashboard";
 import LoginPage from "@/pages/auth/LoginPage";
-import { Loader2 } from "lucide-react";
 
 // Enhanced components with SEO metadata
 const HomePage = () => <SeoPageWrapper pageKey="home"><Home /></SeoPageWrapper>;
@@ -35,41 +34,9 @@ const EbookWrapper = () => <SeoPageWrapper pageKey="ebook"><EbookPage /></SeoPag
 const EbookSuccessWrapper = () => <SeoPageWrapper pageKey="ebook-success"><EbookSuccess /></SeoPageWrapper>;
 const NotFoundWrapper = () => <SeoPageWrapper pageKey="not-found"><NotFound /></SeoPageWrapper>;
 
-// Deployment-reliable admin route component
-function AdminRoute() {
-  const { user, isLoading } = useAuth();
-  
-  // Show loading spinner while checking authentication
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <Loader2 className="h-8 w-8 animate-spin text-border" />
-      </div>
-    );
-  }
-  
-  // Redirect to login if not authenticated or not admin
-  if (!user || !user.isAdmin) {
-    // Use hard redirect for deployment reliability
-    console.log("User not authenticated as admin, redirecting to login");
-    
-    // Small delay to allow console log to complete
-    setTimeout(() => {
-      window.location.href = "/login";
-    }, 100);
-    
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <Loader2 className="h-8 w-8 animate-spin text-border" />
-        <span className="ml-2">Redirecting to login...</span>
-      </div>
-    );
-  }
-  
-  // User is authenticated and is admin, show dashboard
-  return <AdminDashboard />;
-}
+// Auth checking for admin dashboard is handled by the dashboard component itself
 
+// Normal router for all pages
 function Router() {
   return (
     <Switch>
@@ -85,9 +52,8 @@ function Router() {
       <Route path="/ebook" component={EbookWrapper} />
       <Route path="/ebook-success" component={EbookSuccessWrapper} />
       <Route path="/login" component={LoginPage} />
-      {/* Simplified admin routes */}
-      <Route path="/admin/dashboard" component={AdminRoute} />
-      <Route path="/admin" component={AdminRoute} />
+      <Route path="/admin/dashboard" component={AdminDashboard} />
+      <Route path="/admin" component={AdminDashboard} />
       <Route component={NotFoundWrapper} />
     </Switch>
   );

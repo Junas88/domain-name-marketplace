@@ -46,15 +46,18 @@ export default function LoginPage() {
         description: "Redirecting to admin dashboard"
       });
       
-      // FORCE HARD RELOAD TO THE ADMIN PAGE FOR DEPLOYMENT RELIABILITY
-      // This ensures the page fully reloads and re-initializes all data
-      window.location.href = '/admin/dashboard';
+      // DEPLOYMENT-SAFE APPROACH: Complete page refresh and hard navigation
+      // Delay slightly to allow the toast to be seen
+      setTimeout(() => {
+        // This forces a full-page reload to ensure a clean state
+        window.location.href = '/admin/dashboard'; 
+      }, 300);
       
     } catch (error) {
       console.error("Login error:", error);
       toast({
         title: "Login failed",
-        description: "Please check your username and password",
+        description: "Please check your username and password (admin/DomainGuide#2025)",
         variant: "destructive"
       });
     }

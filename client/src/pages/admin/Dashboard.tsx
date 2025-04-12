@@ -84,8 +84,39 @@ export default function AdminDashboard() {
   const [showSeoSettingsDialog, setShowSeoSettingsDialog] = useState(false);
   const [editingSeoSettings, setEditingSeoSettings] = useState<null | SeoSettings>(null);
   const { toast } = useToast();
-  const { logoutMutation } = useAuth();
+  const { user, isLoading, logoutMutation } = useAuth();
   const [, navigate] = useLocation();
+  const [isRedirecting, setIsRedirecting] = useState(false);
+  
+  // Authentication check - redirect to login if not admin
+  useEffect(() => {
+    if (!isLoading && (!user || !user.isAdmin)) {
+      console.log("Not authenticated as admin, redirecting to login page");
+      setIsRedirecting(true);
+      
+      setTimeout(() => {
+        // Use window.location for a hard redirect to ensure clean state
+        window.location.href = "/login";
+      }, 300);
+    }
+  }, [user, isLoading]);
+  
+  // Show loading state
+  if (isLoading || isRedirecting) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen">
+        <Loader2 className="h-8 w-8 animate-spin text-black mb-4" />
+        <p className="text-lg font-medium">
+          {isRedirecting ? "Redirecting to login..." : "Loading dashboard..."}
+        </p>
+      </div>
+    );
+  }
+  
+  // Don't render anything if not admin
+  if (!user?.isAdmin) {
+    return null;
+  }
 
   // Fetch all domains
   const { data: domains = [], isLoading: isLoadingDomains, refetch: refetchDomains } = useQuery<Domain[]>({
