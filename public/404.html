@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>DOMAIN NAME GUIDE</title>
+  <script>
+    // Production SPA fix for handling URLs properly
+    (function() {
+      // Current location without the path
+      var baseUrl = window.location.protocol + '//' + window.location.host;
+      
+      // Get the path from the URL
+      var path = window.location.pathname;
+      
+      // Admin path fixes - direct redirects for admin paths
+      var adminPaths = ['/dashboard', '/admin/dashboard', '/admin/index.html', '/dashboard/index.html'];
+      if (adminPaths.includes(path) || path.includes('/dashboard/') || (path.includes('/admin/') && path !== '/admin/')) {
+        // This is an admin path - redirect directly to /admin
+        window.location.href = baseUrl + '/admin';
+        return;
+      }
+      
+      // For other routes, redirect to the root and let React router handle it
+      window.location.href = baseUrl + '/?redirectFrom=' + encodeURIComponent(path);
+    })();
+  </script>
+</head>
+<body>
+  <h1>Redirecting...</h1>
+  <p>If you are not redirected automatically, click <a href="/">here</a>.</p>
+</body>
+</html>

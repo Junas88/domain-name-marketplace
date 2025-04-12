@@ -1,0 +1,6 @@
+# Handle admin paths
+/admin/*       /admin    200
+/dashboard/*   /admin    200
+
+# Handle all other paths for SPA routing
+/*            /index.html   200
