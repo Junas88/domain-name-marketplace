@@ -18,6 +18,7 @@ import EbookPage from "@/pages/EbookPage";
 import EbookSuccess from "@/pages/EbookSuccess";
 import DomainFinderPage from "@/pages/DomainFinderPage";
 import AdminPage from "@/pages/admin/AdminPage";
+import BasicAdminFallback from "@/pages/admin/BasicAdminFallback";
 import LoginPage from "@/pages/auth/LoginPage";
 
 // Enhanced components with SEO metadata
@@ -56,6 +57,7 @@ function Router() {
       <Route path="/admin" component={AdminPage} />
       <Route path="/admin/dashboard" component={AdminPage} />
       <Route path="/dashboard" component={AdminPage} />
+      <Route path="/admin-fallback" component={BasicAdminFallback} />
       <Route component={NotFoundWrapper} />
     </Switch>
   );

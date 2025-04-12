@@ -4,15 +4,40 @@
   <meta charset="utf-8">
   <title>DOMAIN NAME GUIDE - Redirecting...</title>
   <script>
-    // Ultra simplified SPA routing
+    // Ultra simplified SPA routing with fallback
     (function() {
+      // Constants
+      var ADMIN_PATH = '/admin';
+      var FALLBACK_PATH = '/admin-fallback';
+      var MAX_FAILURES = 2;
+      
+      // Simple persistent state management
+      function getFailureCount() {
+        return parseInt(localStorage.getItem('adminFailures') || '0', 10);
+      }
+      
+      function incrementFailureCount() {
+        var count = getFailureCount() + 1;
+        localStorage.setItem('adminFailures', count.toString());
+        return count;
+      }
+      
       // Get current path
       var path = window.location.pathname;
       
       // Super simple admin path detection for maximum compatibility
       if (path.indexOf('admin') !== -1 || path.indexOf('dashboard') !== -1) {
-        // Admin paths go directly to /admin - no complicated logic
-        window.location.href = '/admin';
+        // Check failure count for admin paths
+        var failures = getFailureCount();
+        
+        if (failures >= MAX_FAILURES) {
+          // Too many failures, use fallback path
+          window.location.href = FALLBACK_PATH;
+        } else {
+          // Increment failure count and try normal admin
+          incrementFailureCount();
+          window.location.href = ADMIN_PATH;
+        }
       } else {
         // For all other paths, use root with redirect parameter
         var redirect = '/?redirectFrom=' + encodeURIComponent(path);
@@ -31,5 +56,6 @@
 <body style="font-family: system-ui, sans-serif; text-align: center; padding: 20px;">
   <h2>Redirecting...</h2>
   <p>If you are not redirected automatically, <a href="/">click here</a>.</p>
+  <p>For admin access, try the <a href="/admin-fallback">backup admin page</a>.</p>
 </body>
 </html>
