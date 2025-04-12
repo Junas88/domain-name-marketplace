@@ -1,3 +1,4 @@
+
 import { Pool, neonConfig } from '@neondatabase/serverless';
 import { drizzle } from 'drizzle-orm/neon-serverless';
 import ws from "ws";
@@ -27,29 +28,29 @@ function constructDatabaseUrl() {
     return `postgresql://${user}:${password}@${host}:${port}/${database}`;
   }
   
-  // If neither approach works, log a warning but don't crash the application
   console.warn("No database credentials found. Using in-memory storage.");
   return null;
 }
 
-// Get the database URL (either directly or constructed)
-const databaseUrl = constructDatabaseUrl();
-
 let pool;
 let db;
 
-// Only initialize database if credentials are available
-if (databaseUrl) {
-  try {
-    console.log(`Database connection initialized ${isDeployment ? 'in deployment' : 'in development'}`);
+try {
+  const databaseUrl = constructDatabaseUrl();
+  
+  if (databaseUrl) {
+    console.log(`Initializing database connection ${isDeployment ? 'in deployment' : 'in development'}`);
     pool = new Pool({ connectionString: databaseUrl });
-    db = drizzle({ client: pool, schema });
-  } catch (error) {
-    console.error("Failed to initialize database connection:", error);
+    db = drizzle(pool, { schema });
+    console.log('Database connection established successfully');
+  } else {
+    console.log('No database URL available - falling back to in-memory mode');
     pool = null;
     db = null;
   }
-} else {
+} catch (error) {
+  console.error("Failed to initialize database connection:", error);
+  console.log('Falling back to in-memory mode');
   pool = null;
   db = null;
 }
