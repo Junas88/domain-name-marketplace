@@ -10,7 +10,7 @@ import {
 import session from "express-session";
 import createMemoryStore from "memorystore";
 import { db, pool } from "./db";
-import { eq, desc, count, sum, and, like, or, not, gt, lt, between } from "drizzle-orm";
+import { eq, desc, count, sum, avg, and, like, or, not, gt, lt, between } from "drizzle-orm";
 import connectPgSimple from "connect-pg-simple";
 
 const MemoryStore = createMemoryStore(session);
@@ -1269,6 +1269,14 @@ export class DatabaseStorage implements IStorage {
     soldDomains: number;
     totalViews: number;
     domainsByCategory: Record<string, number>;
+    totalRevenue: number;
+    averagePrice: number;
+    averageViews: number;
+    mostViewedDomains: Array<{ id: number, name: string, viewCount: number, price: number }>;
+    revenueByCategory: Record<string, number>;
+    averagePriceByCategory: Record<string, number>;
+    conversionRate: number;
+    performanceByLength: Array<{ length: number, count: number, averagePrice: number, averageViews: number }>;
   }> {
     // Get total domains
     const [totalResult] = await db.select({ count: count() }).from(domains);
@@ -1284,6 +1292,9 @@ export class DatabaseStorage implements IStorage {
     const [viewsResult] = await db.select({ sum: sum(domains.viewCount) }).from(domains);
     const totalViews = Number(viewsResult.sum || 0);
     
+    // Calculate average views per domain
+    const averageViews = totalDomains > 0 ? totalViews / totalDomains : 0;
+    
     // Get domains by category
     const categoryCounts = await db.select({
       category: domains.category,
@@ -1297,11 +1308,89 @@ export class DatabaseStorage implements IStorage {
       domainsByCategory[row.category] = Number(row.count);
     }
     
+    // Calculate total revenue and average price
+    const [priceStats] = await db.select({
+      totalRevenue: sum(domains.price),
+      averagePrice: avg(domains.price)
+    })
+    .from(domains)
+    .where(eq(domains.isSold, true));
+    
+    const totalRevenue = Number(priceStats?.totalRevenue || 0);
+    const averagePrice = Number(priceStats?.averagePrice || 0);
+    
+    // Get top 5 most viewed domains
+    const mostViewedDomains = await db.select({
+      id: domains.id,
+      name: domains.name,
+      viewCount: domains.viewCount,
+      price: domains.price
+    })
+    .from(domains)
+    .orderBy(desc(domains.viewCount))
+    .limit(5);
+    
+    // Calculate conversion rate (sold domains / total domains)
+    const conversionRate = totalDomains > 0 ? (soldDomains / totalDomains) * 100 : 0;
+    
+    // Calculate revenue by category
+    const categoryRevenue = await db.select({
+      category: domains.category,
+      revenue: sum(domains.price)
+    })
+    .from(domains)
+    .where(eq(domains.isSold, true))
+    .groupBy(domains.category);
+    
+    const revenueByCategory: Record<string, number> = {};
+    for (const row of categoryRevenue) {
+      revenueByCategory[row.category] = Number(row.revenue || 0);
+    }
+    
+    // Calculate average price by category
+    const categoryPriceAvg = await db.select({
+      category: domains.category,
+      avgPrice: avg(domains.price)
+    })
+    .from(domains)
+    .groupBy(domains.category);
+    
+    const averagePriceByCategory: Record<string, number> = {};
+    for (const row of categoryPriceAvg) {
+      averagePriceByCategory[row.category] = Number(row.avgPrice || 0);
+    }
+    
+    // Calculate performance metrics by domain length
+    const lengthPerformance = await db.select({
+      length: domains.length,
+      count: count(),
+      avgPrice: avg(domains.price),
+      avgViews: avg(domains.viewCount)
+    })
+    .from(domains)
+    .groupBy(domains.length)
+    .orderBy(domains.length);
+    
+    const performanceByLength = lengthPerformance.map(row => ({
+      length: Number(row.length),
+      count: Number(row.count),
+      averagePrice: Number(row.avgPrice || 0),
+      averageViews: Number(row.avgViews || 0)
+    }));
+    
     return {
       totalDomains,
       soldDomains,
       totalViews,
-      domainsByCategory
+      domainsByCategory,
+      totalRevenue,
+      averagePrice,
+      averageViews,
+      mostViewedDomains,
+      revenueByCategory,
+      averagePriceByCategory,
+      conversionRate,
+      performanceByLength
     };
   }
 
