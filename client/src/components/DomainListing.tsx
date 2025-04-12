@@ -485,7 +485,7 @@ export default function DomainListing({ onMakeOffer }: DomainListingProps) {
             <h3 className="text-xl font-semibold">Buyer Protection Guarantee</h3>
           </div>
           <p className="text-neutral-700 mb-4">
-            All domain purchases on TakeMyName.com are securely processed through GoDaddy, 
+            All domain purchases on Domainnameguide.com are securely processed through GoDaddy, 
             the world's largest domain registrar. This ensures your transaction is protected 
             and the domain transfer is handled professionally.
           </p>
