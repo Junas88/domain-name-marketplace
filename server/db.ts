@@ -14,6 +14,7 @@ const isDeployment = process.env.REPL_DEPLOYMENT === 'true';
 function constructDatabaseUrl() {
   // If DATABASE_URL is already set, use it
   if (process.env.DATABASE_URL) {
+    console.log('Using DATABASE_URL from environment');
     return process.env.DATABASE_URL;
   }
   
@@ -25,10 +26,16 @@ function constructDatabaseUrl() {
   const database = process.env.PGDATABASE;
   
   if (user && password && host && port && database) {
+    console.log('Constructing DATABASE_URL from individual credentials');
     return `postgresql://${user}:${password}@${host}:${port}/${database}`;
   }
   
-  console.warn("No database credentials found. Using in-memory storage.");
+  if (isDeployment) {
+    console.warn("⚠️ No database credentials found in deployment environment!");
+    console.warn("Please add DATABASE_URL to your deployment environment variables.");
+  } else {
+    console.warn("No database credentials found. Using in-memory storage for development.");
+  }
   return null;
 }
 
@@ -40,19 +47,33 @@ try {
   
   if (databaseUrl) {
     console.log(`Initializing database connection ${isDeployment ? 'in deployment' : 'in development'}`);
-    pool = new Pool({ connectionString: databaseUrl });
+    pool = new Pool({ 
+      connectionString: databaseUrl,
+      ssl: isDeployment ? { rejectUnauthorized: false } : false,
+      connectionTimeoutMillis: 5000
+    });
+    
+    // Test the connection
+    await pool.query('SELECT 1');
     db = drizzle(pool, { schema });
-    console.log('Database connection established successfully');
+    console.log('✅ Database connection established successfully');
   } else {
-    console.log('No database URL available - falling back to in-memory mode');
+    pool = null;
+    db = null;
+    if (isDeployment) {
+      throw new Error('DATABASE_URL is required in deployment environment');
+    }
+  }
+} catch (error) {
+  console.error("❌ Database connection error:", error.message);
+  if (isDeployment) {
+    console.error("Critical: Database connection failed in deployment environment");
+    throw error; // Re-throw in deployment to prevent starting without database
+  } else {
+    console.log('Falling back to in-memory mode for development');
     pool = null;
     db = null;
   }
-} catch (error) {
-  console.error("Failed to initialize database connection:", error);
-  console.log('Falling back to in-memory mode');
-  pool = null;
-  db = null;
 }
 
 export { pool, db };
