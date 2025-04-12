@@ -1,89 +1,61 @@
 /**
- * Production deployment fix for admin paths
- * This script runs early in the page load process to catch and fix path issues
- * It's particularly designed to handle production deployment edge cases
+ * MINIMAL PRODUCTION PATH FIX
+ * This script runs early in page load to ensure proper routing
+ * Using absolute minimum code for maximum compatibility
  */
 (function() {
-  console.log("PRODFIX: Running path detection and correction");
+  // Skip if not in browser
+  if (typeof window === 'undefined') return;
   
-  // PART 1: Handle SPA routing from 404.html redirects
-  if (typeof window !== 'undefined') {
-    // Check if we're being redirected with a query param
-    const params = new URLSearchParams(window.location.search);
-    const redirectFrom = params.get('redirectFrom');
+  // Function to fix admin paths - ultra simple approach
+  function fixAdminPath() {
+    // Get current path
+    var path = window.location.pathname;
     
-    if (redirectFrom) {
-      console.log("PRODFIX: Detected redirect from 404.html with path:", redirectFrom);
+    // Check if this is an admin path (simpler is more reliable)
+    var hasAdmin = path.indexOf('admin') !== -1;
+    var hasDashboard = path.indexOf('dashboard') !== -1;
+    
+    // Only redirect if we're not already at /admin
+    if ((hasAdmin || hasDashboard) && path !== '/admin') {
+      console.log('Admin path needs fixing:', path);
       
-      // Clean the URL in address bar
-      const cleanUrl = window.location.pathname;
-      window.history.replaceState(null, '', cleanUrl);
-      
-      // Handle admin path specifically
-      if (redirectFrom.includes('admin') || redirectFrom.includes('dashboard')) {
-        console.log("PRODFIX: Admin path detected in redirect, sending to /admin");
+      // Prevent redirect loops
+      if (!sessionStorage.getItem('prodFixRedirect')) {
+        console.log('Redirecting to /admin');
+        sessionStorage.setItem('prodFixRedirect', 'true');
+        
+        // Clear flag after delay
+        setTimeout(function() {
+          sessionStorage.removeItem('prodFixRedirect');
+        }, 3000);
+        
+        // Direct navigation is most reliable
         window.location.href = '/admin';
-        return;
       }
     }
   }
-
-  // PART 2: Direct path detection and correction
-  // Get current path
-  const path = window.location.pathname;
   
-  // Known problematic admin paths in production environments
-  const adminPaths = [
-    '/dashboard',
-    '/dashboard/',
-    '/admin/dashboard',
-    '/admin/dashboard/',
-    '/admin/index.html',
-    '/dashboard/index.html',
-    '/domainnameguide.com/admin',
-    '/domainnameguide.com/dashboard'
-  ];
+  // Handle 404.html redirects
+  var params = new URLSearchParams(window.location.search);
+  var redirectFrom = params.get('redirectFrom');
   
-  // More complex path pattern detection
-  function isNonStandardAdminPath(urlPath) {
-    // Direct matches
-    if (adminPaths.includes(urlPath)) return true;
+  if (redirectFrom) {
+    console.log('Handling redirect from:', redirectFrom);
     
-    // Check segments for admin/dashboard keywords
-    const segments = urlPath.split('/').filter(Boolean);
-    if (segments.length === 0) return false;
-    
-    // Check for admin paths with additional segments
-    if (urlPath.includes('/admin/') && urlPath !== '/admin/') return true;
-    if (urlPath.includes('/dashboard/')) return true;
-    
-    // Domain prefix checks for production environments
-    const domainPrefixMatch = urlPath.match(/^\/[^\/]+\/(admin|dashboard)/);
-    if (domainPrefixMatch) return true;
-    
-    return false;
-  }
-  
-  // If we're on a non-standard admin path that needs fixing
-  if (isNonStandardAdminPath(path)) {
-    console.log('PRODFIX: Non-standard admin path detected:', path);
-    
-    // Loop prevention
-    if (!sessionStorage.getItem('adminPathFixed')) {
-      console.log('PRODFIX: Redirecting to standard admin path: /admin');
-      sessionStorage.setItem('adminPathFixed', 'true');
-      
-      // Clear flag after delay
-      setTimeout(() => {
-        sessionStorage.removeItem('adminPathFixed');
-      }, 3000);
-      
-      // Force navigation to standard admin path
-      window.location.href = '/admin';
-    } else {
-      console.log('PRODFIX: Redirect already attempted, avoiding loop');
+    // Clean URL
+    var cleanUrl = window.location.pathname;
+    if (window.history && window.history.replaceState) {
+      window.history.replaceState(null, '', cleanUrl);
     }
-  } else {
-    console.log('PRODFIX: No path correction needed');
+    
+    // Handle admin path in redirect
+    if (redirectFrom.indexOf('admin') !== -1 || redirectFrom.indexOf('dashboard') !== -1) {
+      window.location.href = '/admin';
+      return;
+    }
   }
+  
+  // Also run the general fix
+  fixAdminPath();
 })();

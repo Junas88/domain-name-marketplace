@@ -4,41 +4,31 @@
   <meta charset="utf-8">
   <title>DOMAIN NAME GUIDE - Redirecting...</title>
   <script>
-    // Handles SPA routing in production environments
+    // Ultra simplified SPA routing
     (function() {
-      // Get the current path from the URL
+      // Get current path
       var path = window.location.pathname;
       
-      // Check if this is an admin/dashboard path
-      var isAdminPath = path.includes('/admin') || 
-                        path.includes('/dashboard') || 
-                        path.match(/^\/[^\/]+\/(admin|dashboard)/);
-      
-      if (isAdminPath) {
-        // Special handling for admin paths - go directly to /admin
+      // Super simple admin path detection for maximum compatibility
+      if (path.indexOf('admin') !== -1 || path.indexOf('dashboard') !== -1) {
+        // Admin paths go directly to /admin - no complicated logic
         window.location.href = '/admin';
       } else {
-        // For all other paths, preserve them in a redirect parameter
-        // This allows the SPA router to handle the path once loaded
-        var redirectUrl = '/?redirectFrom=' + encodeURIComponent(path);
+        // For all other paths, use root with redirect parameter
+        var redirect = '/?redirectFrom=' + encodeURIComponent(path);
         
         // Add any query parameters
         if (window.location.search) {
-          redirectUrl += '&' + window.location.search.substring(1);
+          redirect += '&' + window.location.search.substring(1);
         }
         
-        // Add any hash
-        if (window.location.hash) {
-          redirectUrl += window.location.hash;
-        }
-        
-        // Perform the redirect
-        window.location.replace(redirectUrl);
+        // Simple and direct redirect
+        window.location.href = redirect;
       }
     })();
   </script>
 </head>
-<body>
+<body style="font-family: system-ui, sans-serif; text-align: center; padding: 20px;">
   <h2>Redirecting...</h2>
   <p>If you are not redirected automatically, <a href="/">click here</a>.</p>
 </body>
