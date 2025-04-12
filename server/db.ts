@@ -3,6 +3,7 @@ import { drizzle } from 'drizzle-orm/neon-serverless';
 import ws from "ws";
 import * as schema from "@shared/schema";
 
+// Configure Neon database to use websockets
 neonConfig.webSocketConstructor = ws;
 
 // Helper function to check if we're in a deployment environment
@@ -26,28 +27,31 @@ function constructDatabaseUrl() {
     return `postgresql://${user}:${password}@${host}:${port}/${database}`;
   }
   
-  // If we're in deployment and can't construct the URL, this is a critical error
-  if (isDeployment) {
-    console.error(
-      "DEPLOYMENT ERROR: DATABASE_URL or individual database credentials must be set."
-    );
-    
-    // In deployment, we'll throw an error that's more helpful
-    throw new Error(
-      "DATABASE_URL not configured for deployment. Please add DATABASE_URL to your deployment environment variables."
-    );
-  } else {
-    // In development, use the original error
-    throw new Error(
-      "DATABASE_URL must be set. Did you forget to provision a database?"
-    );
-  }
+  // If neither approach works, log a warning but don't crash the application
+  console.warn("No database credentials found. Using in-memory storage.");
+  return null;
 }
 
 // Get the database URL (either directly or constructed)
 const databaseUrl = constructDatabaseUrl();
 
-console.log(`Database connection initialized ${isDeployment ? 'in deployment' : 'in development'}`);
+let pool;
+let db;
 
-export const pool = new Pool({ connectionString: databaseUrl });
-export const db = drizzle({ client: pool, schema });
+// Only initialize database if credentials are available
+if (databaseUrl) {
+  try {
+    console.log(`Database connection initialized ${isDeployment ? 'in deployment' : 'in development'}`);
+    pool = new Pool({ connectionString: databaseUrl });
+    db = drizzle({ client: pool, schema });
+  } catch (error) {
+    console.error("Failed to initialize database connection:", error);
+    pool = null;
+    db = null;
+  }
+} else {
+  pool = null;
+  db = null;
+}
+
+export { pool, db };
