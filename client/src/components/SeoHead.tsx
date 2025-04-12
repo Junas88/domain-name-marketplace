@@ -17,31 +17,21 @@ export default function SeoHead({ pageKey }: SeoHeadProps) {
   useEffect(() => {
     if (!seoSettings) return;
 
-    // Update title
+    // Update title - critical for SEO
     document.title = seoSettings.title;
 
-    // Update meta tags
+    // Update essential meta tags for Google search ranking
     updateMetaTag('description', seoSettings.metaDescription);
     updateMetaTag('keywords', seoSettings.metaKeywords);
     
-    // Update Open Graph tags
-    if (seoSettings.ogTitle) updateMetaTag('og:title', seoSettings.ogTitle, 'property');
-    if (seoSettings.ogDescription) updateMetaTag('og:description', seoSettings.ogDescription, 'property');
-    if (seoSettings.ogImage) updateMetaTag('og:image', seoSettings.ogImage, 'property');
-    
-    // Update Twitter tags
-    if (seoSettings.twitterTitle) updateMetaTag('twitter:title', seoSettings.twitterTitle, 'property');
-    if (seoSettings.twitterDescription) updateMetaTag('twitter:description', seoSettings.twitterDescription, 'property');
-    if (seoSettings.twitterImage) updateMetaTag('twitter:image', seoSettings.twitterImage, 'property');
-
-    // Update JSON-LD structured data
+    // Update structured data for rich snippets in Google search results
     updateStructuredData(seoSettings.structuredData);
 
-    // Set canonical URL
+    // Set canonical URL - important for avoiding duplicate content issues
     updateCanonicalURL();
 
     return () => {
-      // Clean up JSON-LD when component unmounts
+      // Clean up structured data when component unmounts
       const existingScript = document.getElementById('structured-data-script');
       if (existingScript) {
         existingScript.remove();
@@ -50,16 +40,16 @@ export default function SeoHead({ pageKey }: SeoHeadProps) {
   }, [seoSettings, location]);
 
   // Helper function to update meta tags
-  const updateMetaTag = (name: string, content: string | null, nameAttr: 'name' | 'property' = 'name') => {
+  const updateMetaTag = (name: string, content: string | null) => {
     if (!content) return;
     
-    let metaTag = document.querySelector(`meta[${nameAttr}="${name}"]`);
+    let metaTag = document.querySelector(`meta[name="${name}"]`);
     
     if (metaTag) {
       metaTag.setAttribute('content', content);
     } else {
       metaTag = document.createElement('meta');
-      metaTag.setAttribute(nameAttr, name);
+      metaTag.setAttribute('name', name);
       metaTag.setAttribute('content', content);
       document.head.appendChild(metaTag);
     }

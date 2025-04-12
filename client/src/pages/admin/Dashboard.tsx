@@ -67,12 +67,6 @@ const seoSettingsFormSchema = z.object({
   title: z.string().min(3, "Title must be at least 3 characters"),
   metaDescription: z.string().min(10, "Meta description must be at least 10 characters"),
   metaKeywords: z.string().min(3, "Meta keywords must be at least 3 characters"),
-  ogTitle: z.string().optional(),
-  ogDescription: z.string().optional(),
-  ogImage: z.string().optional(),
-  twitterTitle: z.string().optional(),
-  twitterDescription: z.string().optional(),
-  twitterImage: z.string().optional(),
   structuredData: z.string().optional(),
 });
 
@@ -183,24 +177,12 @@ export default function AdminDashboard() {
       title: editingSeoSettings.title,
       metaDescription: editingSeoSettings.metaDescription,
       metaKeywords: editingSeoSettings.metaKeywords,
-      ogTitle: editingSeoSettings.ogTitle || "",
-      ogDescription: editingSeoSettings.ogDescription || "",
-      ogImage: editingSeoSettings.ogImage || "",
-      twitterTitle: editingSeoSettings.twitterTitle || "",
-      twitterDescription: editingSeoSettings.twitterDescription || "",
-      twitterImage: editingSeoSettings.twitterImage || "",
       structuredData: editingSeoSettings.structuredData || "",
     } : {
       pageKey: "",
       title: "",
       metaDescription: "",
       metaKeywords: "",
-      ogTitle: "",
-      ogDescription: "",
-      ogImage: "",
-      twitterTitle: "",
-      twitterDescription: "",
-      twitterImage: "",
       structuredData: "",
     }
   });
@@ -226,12 +208,6 @@ export default function AdminDashboard() {
         title: editingSeoSettings.title,
         metaDescription: editingSeoSettings.metaDescription,
         metaKeywords: editingSeoSettings.metaKeywords,
-        ogTitle: editingSeoSettings.ogTitle || "",
-        ogDescription: editingSeoSettings.ogDescription || "",
-        ogImage: editingSeoSettings.ogImage || "",
-        twitterTitle: editingSeoSettings.twitterTitle || "",
-        twitterDescription: editingSeoSettings.twitterDescription || "",
-        twitterImage: editingSeoSettings.twitterImage || "",
         structuredData: editingSeoSettings.structuredData || "",
       });
     }
@@ -1493,110 +1469,6 @@ export default function AdminDashboard() {
                             </FormItem>
                           )}
                         />
-                        
-                        <div className="border-t pt-4 mt-4">
-                          <h3 className="text-lg font-medium mb-4">Open Graph Settings (Social Sharing)</h3>
-                          
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <FormField
-                              control={seoSettingsForm.control}
-                              name="ogTitle"
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>OG Title</FormLabel>
-                                  <FormControl>
-                                    <Input placeholder="Title for social sharing" {...field} />
-                                  </FormControl>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
-                            
-                            <FormField
-                              control={seoSettingsForm.control}
-                              name="ogImage"
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>OG Image URL</FormLabel>
-                                  <FormControl>
-                                    <Input placeholder="https://example.com/image.jpg" {...field} />
-                                  </FormControl>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
-                          </div>
-                          
-                          <FormField
-                            control={seoSettingsForm.control}
-                            name="ogDescription"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel>OG Description</FormLabel>
-                                <FormControl>
-                                  <Textarea 
-                                    placeholder="Description for social sharing..." 
-                                    className="resize-none" 
-                                    {...field} 
-                                  />
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-                        </div>
-                        
-                        <div className="border-t pt-4 mt-4">
-                          <h3 className="text-lg font-medium mb-4">Twitter Card Settings</h3>
-                          
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <FormField
-                              control={seoSettingsForm.control}
-                              name="twitterTitle"
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>Twitter Title</FormLabel>
-                                  <FormControl>
-                                    <Input placeholder="Title for Twitter cards" {...field} />
-                                  </FormControl>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
-                            
-                            <FormField
-                              control={seoSettingsForm.control}
-                              name="twitterImage"
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>Twitter Image URL</FormLabel>
-                                  <FormControl>
-                                    <Input placeholder="https://example.com/image.jpg" {...field} />
-                                  </FormControl>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
-                          </div>
-                          
-                          <FormField
-                            control={seoSettingsForm.control}
-                            name="twitterDescription"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel>Twitter Description</FormLabel>
-                                <FormControl>
-                                  <Textarea 
-                                    placeholder="Description for Twitter cards..." 
-                                    className="resize-none" 
-                                    {...field} 
-                                  />
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-                        </div>
                         
                         <FormField
                           control={seoSettingsForm.control}
