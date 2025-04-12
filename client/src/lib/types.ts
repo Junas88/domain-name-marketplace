@@ -61,19 +61,13 @@ export interface EmailSubmission {
   createdAt: string;
 }
 
-// SEO Settings type
+// SEO Settings type - optimized for Google search ranking only
 export interface SeoSettings {
   id: number;
   pageKey: string;
   title: string;
   metaDescription: string;
   metaKeywords: string;
-  ogTitle: string | null;
-  ogDescription: string | null;
-  ogImage: string | null;
-  twitterTitle: string | null;
-  twitterDescription: string | null;
-  twitterImage: string | null;
   structuredData: string | null;
   updatedAt: string;
 }
