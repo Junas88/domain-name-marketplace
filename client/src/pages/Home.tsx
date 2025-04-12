@@ -6,6 +6,7 @@ import Features from "@/components/Features";
 import Reviews from "@/components/Reviews";
 import Footer from "@/components/Footer";
 import OfferModal from "@/components/OfferModal";
+import RecentlySoldDomains from "@/components/RecentlySoldDomains";
 import { Domain } from "@/lib/types";
 
 export default function Home() {
@@ -26,6 +27,9 @@ export default function Home() {
     <div className="min-h-screen flex flex-col">
       <Header />
       <Hero />
+      <div className="container mx-auto px-4 py-6">
+        <RecentlySoldDomains />
+      </div>
       <DomainListing onMakeOffer={handleMakeOffer} />
       <Features />
       <Reviews />
