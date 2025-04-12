@@ -1611,15 +1611,14 @@ async function seedInMemoryStorage(memStorage: MemStorage) {
   console.log("Seeding in-memory storage with sample data...");
   
   // Create many more sample domains for in-memory storage
-  const additionalDomains: InsertDomain[] = [
-    // Original domains from the seed.ts file
+  const additionalDomains = [
+    // Recently sold domains for the carousel
     {
       name: "iptvhd.com",
       description: "Perfect for streaming services or IPTV providers. Short, memorable, and descriptive.",
       price: 2995,
       category: "Entertainment",
       length: 7,
-      viewCount: 0,
       isSold: true
     },
     {
@@ -1628,7 +1627,6 @@ async function seedInMemoryStorage(memStorage: MemStorage) {
       price: 1795,
       category: "Brandable",
       length: 6,
-      viewCount: 0,
       isSold: true
     },
     {
@@ -1637,7 +1635,6 @@ async function seedInMemoryStorage(memStorage: MemStorage) {
       price: 995,
       category: "Business",
       length: 17,
-      viewCount: 0,
       isSold: true
     },
     {
@@ -1646,7 +1643,6 @@ async function seedInMemoryStorage(memStorage: MemStorage) {
       price: 1195,
       category: "Food & Beverage",
       length: 15,
-      viewCount: 0,
       isSold: true
     },
     {
@@ -1655,7 +1651,6 @@ async function seedInMemoryStorage(memStorage: MemStorage) {
       price: 2495,
       category: "Food & Beverage",
       length: 9,
-      viewCount: 0,
       isSold: true
     },
     {
@@ -1664,17 +1659,15 @@ async function seedInMemoryStorage(memStorage: MemStorage) {
       price: 1895,
       category: "Home & Garden",
       length: 15,
-      viewCount: 0,
       isSold: true
     },
-    // Add more domains (20+ domains) with a mix of categories for a rich demonstration
+    // Active domains for sale
     {
       name: "zoneplumbing.com",
       description: "Perfect for plumbing businesses, contractors, or home service providers.",
       price: 3495,
       category: "Home & Garden",
       length: 13,
-      viewCount: 65,
       isSold: false
     },
     {
@@ -1683,7 +1676,6 @@ async function seedInMemoryStorage(memStorage: MemStorage) {
       price: 4995,
       category: "Finance",
       length: 15,
-      viewCount: 47,
       isSold: false
     },
     {
@@ -1692,7 +1684,6 @@ async function seedInMemoryStorage(memStorage: MemStorage) {
       price: 6995,
       category: "Food & Beverage",
       length: 12,
-      viewCount: 120,
       isSold: false
     },
     {
@@ -1701,7 +1692,6 @@ async function seedInMemoryStorage(memStorage: MemStorage) {
       price: 5495,
       category: "Health",
       length: 16,
-      viewCount: 89,
       isSold: false
     },
     {
@@ -1710,7 +1700,6 @@ async function seedInMemoryStorage(memStorage: MemStorage) {
       price: 8995,
       category: "Business",
       length: 10,
-      viewCount: 155,
       isSold: false
     },
     {
@@ -1719,7 +1708,6 @@ async function seedInMemoryStorage(memStorage: MemStorage) {
       price: 2995,
       category: "Travel",
       length: 12,
-      viewCount: 43,
       isSold: false
     },
     {
@@ -1728,7 +1716,6 @@ async function seedInMemoryStorage(memStorage: MemStorage) {
       price: 4495,
       category: "Business",
       length: 17,
-      viewCount: 62,
       isSold: false
     },
     {
@@ -1737,7 +1724,6 @@ async function seedInMemoryStorage(memStorage: MemStorage) {
       price: 3295,
       category: "Pets",
       length: 12,
-      viewCount: 108,
       isSold: false
     },
     {
@@ -1746,7 +1732,6 @@ async function seedInMemoryStorage(memStorage: MemStorage) {
       price: 7995,
       category: "Education",
       length: 15,
-      viewCount: 127,
       isSold: false
     },
     {
@@ -1755,7 +1740,6 @@ async function seedInMemoryStorage(memStorage: MemStorage) {
       price: 3795,
       category: "Arts",
       length: 9,
-      viewCount: 75,
       isSold: false
     },
     {
@@ -1764,7 +1748,6 @@ async function seedInMemoryStorage(memStorage: MemStorage) {
       price: 4295,
       category: "Health",
       length: 12,
-      viewCount: 91,
       isSold: false
     },
     {
@@ -1773,7 +1756,6 @@ async function seedInMemoryStorage(memStorage: MemStorage) {
       price: 9995,
       category: "Health",
       length: 11,
-      viewCount: 144,
       isSold: false
     },
     {
@@ -1782,7 +1764,6 @@ async function seedInMemoryStorage(memStorage: MemStorage) {
       price: 5995,
       category: "Technology",
       length: 11,
-      viewCount: 81,
       isSold: false
     },
     {
@@ -1791,7 +1772,6 @@ async function seedInMemoryStorage(memStorage: MemStorage) {
       price: 12995,
       category: "Events",
       length: 14,
-      viewCount: 203,
       isSold: false
     },
     {
@@ -1800,7 +1780,6 @@ async function seedInMemoryStorage(memStorage: MemStorage) {
       price: 6495,
       category: "Automotive",
       length: 12,
-      viewCount: 97,
       isSold: false
     }
   ];
