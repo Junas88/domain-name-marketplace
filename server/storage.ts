@@ -1967,15 +1967,16 @@ async function seedInMemoryStorage(memStorage: MemStorage) {
     fileSize: 2457600
   });
   
-  // Create the admin user with a plain password to be hashed by the auth system
+  // Create the admin user with a strong password
+  const securePassword = "DomainGuide#2025";
   await memStorage.createUser({
     username: "admin",
-    // Using a plaintext password which will be hashed by the login system
-    password: "admin123",
+    // Using a stronger password with mixed case, numbers, and special characters
+    password: securePassword,
     isAdmin: true
   });
   
-  console.log("Created admin user - Username: admin, Password: admin123");
+  console.log(`Created admin user - Username: admin, Password: ${securePassword}`);
   
   console.log("In-memory database seeded with sample data");
 }
