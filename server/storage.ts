@@ -1611,6 +1611,9 @@ async function seedInMemoryStorage(memStorage: MemStorage) {
   console.log("Seeding in-memory storage with sample data...");
   
   // Create many more sample domains for in-memory storage
+  // We'll add 200+ domains to better match the production database
+  console.log("Seeding a large set of domains for in-memory storage...");
+  
   const additionalDomains = [
     // Recently sold domains for the carousel
     {
@@ -1787,6 +1790,111 @@ async function seedInMemoryStorage(memStorage: MemStorage) {
   // Add all domains to memory storage
   for (const domain of additionalDomains) {
     await memStorage.createDomain(domain);
+  }
+  
+  // Add a large batch of domains from the list for better deployment experience
+  const domainNames = [
+    "24arbitrage.com", "2fgroup.com", "3zly.com", "5gworld.com", "acmai.com", "admoby.com", "adventera.com",
+    "ai-seo.com", "aiagentcompany.com", "aibanned.com", "aicolorist.com", "aicryptoverse.com", "aidestination.com",
+    "aihorses.com", "aihunted.com", "aihustlers.com", "aipixo.com", "airebels.com", "aitextchecker.com", 
+    "aitextlab.com", "ajaxamsterdam.com", "alharir.com", "allgreenplants.com", "analyzeseo.com", "animalio.com",
+    "animextrem.com", "animour.com", "animurals.com", "anotherplumber.com", "antiraid.com", "askjimmy.com",
+    "asofar.com", "atlantaoptometrist.com", "atoservice.com", "augustaprinting.com", "augustatraining.com",
+    "automationmailing.com", "axtoken.com", "babygrok.com", "baseballballs.com", "bergelectronics.com",
+    "betscoin.com", "bigprospect.com", "blurtokens.com", "bobtools.com", "bollsen.com", "bostongraphicdesign.com",
+    "boysly.com", "braincorner.com", "brc21.com", "brelix.com", "bremertonplumber.com", "brinksy.com",
+    "burlingtonestates.com", "carletter.com", "carunlockingservices.com", "catcaves.com", "celatis.com",
+    "celeblab.com", "charlestonfarm.com", "chatgptbots.com", "chatgpttools.com", "cheapcloset.com",
+    "cinematronix.com", "climania.com", "climatiseurs.com", "climatservice.com", "codinggarden.com",
+    "codycodes.com", "coiins.com", "coinhacking.com", "comixai.com", "connectivebusiness.com", "consulens.com",
+    "cryptoinvestai.com", "cyberlabtech.com", "cyphere.com", "dakarinfo.com", "dentalto.com", "desktopgpt.com",
+    "digitalarchiveservices.com", "digitalbusinesspartner.com", "dogeswap.com", "dogtrainingplan.com",
+    "dollarsbot.com", "domusservice.com", "donelec.com", "druckladen.com", "dubaidomain.com", "earnezy.com",
+    "easybank.org", "easymachining.com", "easyvitamin.com", "ecomovil.com", "egyptcomputer.com", "ekonect.com",
+    "ekotoner.com", "elevels.com", "elonai.com", "elonmask.com", "embowed.com", "emergencyvehiclerepair.com",
+    "etherbots.com", "evaflight.com", "explainablexai.com", "extraforma.com", "ezdatarecovery.com",
+    "fairdomain.com", "fastlocks.com", "fastwebsite.net", "firstcold.com", "fiskalia.com", "flatwight.com",
+    "flouss.com", "flyek.com", "fobros.com", "foodqr.com", "freshmasks.com", "frostfan.com", "fullunlock.com",
+    "furnitar.com", "fxanime.com", "galaxycarpetcleaning.com", "galaxyconcept.com", "galaxyvoip.com",
+    "gamefixing.com", "gensparkai.com", "ghayt.com", "globaldigitals.com", "globalopus.com", "globalrulesai.com",
+    "globaltradeinc.com", "goosites.com", "gotravaux.com", "gpsline.com", "gr00t.com", "greenminingservices.com",
+    "greenscreenbox.com", "guideforsuccess.com", "helixcars.com", "hellocryptocoin.com", "helloshoes.com",
+    "herbasale.com", "highchips.com", "homelystore.com", "homeyland.com", "hostego.com", "hrify.com",
+    "humanmachineinterfaces.com", "ichrak.com", "idblocker.com", "idealbebe.com", "idelivery.xyz",
+    "illumicati.com", "immservice.com", "innovaplanet.com", "insourcia.com", "insuremydrone.com",
+    "internetbrain.com", "iprogreen.com", "iptvhd.com", "irenov.com", "israelinside.com", "istitmar.com",
+    "ittisal.com", "jarvice.com", "jayfoundation.com", "kingarab.com", "kinkston.com", "kit4cars.com",
+    "kittentoken.com", "klikprint.com", "laboland.com", "labottegaitaliana.com", "lakome.com", "leonevents.com",
+    "lilyscleaning.com", "littlelogo.com", "luminik.com", "lunarlips.com", "macklan.com", "magimag.com",
+    "maklai.com", "mangagalaxy.com", "mangoseo.com", "marbellaholidayapartments.com", "massango.com",
+    "maxigear.com", "maxisalon.com", "mcshirt.com", "mechvent.com", "meetpulse.com", "megaconsultants.com",
+    "megajukebox.com", "megastickers.com", "megavelo.com", "megopay.com", "melbournehousecleaners.com",
+    "melbourneofficefurniture.com", "memphisdev.com", "mengadgets.com", "metalligence.com", "mimouna.com",
+    "minaexport.com", "miningchain.com", "minisupers.com", "mobildialysis.com", "mokimoki.com",
+    "monarchitecte.com", "mortgagedynamics.com", "movingbusinesses.com", "muralwallpaper.com", "muscada.com",
+    "myaccountingservices.com", "myaitools.com", "mydigitalproduct.com", "myhri.com", "mysolutionist.com",
+    "mystarting.com", "mytechpoint.com", "neokeys.com", "neonmirrors.com", "nftmafia.com", "nhass.com",
+    "notaryloan.com", "novastake.com", "nxtiptv.com", "nycfloor.com", "offiicial.com", "ohmycall.com",
+    "oncopilot.com", "onlinedivorceforms.com", "onlinesmartphone.com", "onlinewritingservices.com",
+    "ontariopropertymanagement.com", "ontariorealestatelawyer.com"
+  ];
+  
+  // Create batches of domains with various categories and price ranges to provide a good selection
+  const categories = ["Technology", "Business", "Health", "Finance", "Education", "Entertainment", "Travel", "Food & Beverage", 
+                     "Automotive", "Fashion", "Real Estate", "Sports", "Home & Garden", "Pets", "Legal", "Arts", "Events"];
+  
+  let counter = 0;
+  
+  for (const domainName of domainNames) {
+    // Skip domains we've already added manually
+    if (domainName === "iptvhd.com" || domainName === "lakome.com" || 
+        domainName === "allgreenplants.com" || domainName === "highchips.com" ||
+        domainName === "ai-seo.com" || domainName === "brinksy.com" || 
+        domainName === "aicolorist.com" || domainName === "dogeswap.com" || 
+        domainName === "votira.com" || domainName === "idealbebe.com" ||
+        domainName === "zoneplumbing.com") {
+      continue;
+    }
+    
+    // Create a unique domain with random properties
+    const category = categories[counter % categories.length];
+    const length = domainName.length;
+    const price = Math.floor(Math.random() * 15000) + 3000; // Random price between 3000 and 18000
+    const isSold = Math.random() < 0.1; // 10% chance of being sold
+    
+    // Create a relevant description based on the domain name
+    let description = "";
+    
+    if (domainName.includes("ai")) {
+      description = "Perfect for AI technology, machine learning, or intelligent automation businesses.";
+    } else if (domainName.includes("crypto") || domainName.includes("coin") || domainName.includes("token")) {
+      description = "Ideal for cryptocurrency, blockchain, or digital token projects.";
+    } else if (domainName.includes("tech") || domainName.includes("digital")) {
+      description = "Great for technology companies, digital services, or IT solutions.";
+    } else if (domainName.includes("web") || domainName.includes("site") || domainName.includes("online")) {
+      description = "Perfect for web development, website services, or online businesses.";
+    } else if (domainName.includes("health") || domainName.includes("med") || domainName.includes("care")) {
+      description = "Ideal for healthcare, medical services, or wellness businesses.";
+    } else if (domainName.includes("eco") || domainName.includes("green")) {
+      description = "Great for eco-friendly, sustainable, or environmental businesses.";
+    } else if (domainName.includes("shop") || domainName.includes("store")) {
+      description = "Perfect for e-commerce, retail businesses, or online stores.";
+    } else if (domainName.includes("game") || domainName.includes("play")) {
+      description = "Ideal for gaming, entertainment, or interactive content businesses.";
+    } else {
+      description = "Versatile, memorable domain name suitable for various business types.";
+    }
+    
+    await memStorage.createDomain({ 
+      name: domainName, 
+      description, 
+      price, 
+      category, 
+      length, 
+      isSold 
+    });
+    
+    counter++;
   }
   
   // Add SEO Settings for major pages

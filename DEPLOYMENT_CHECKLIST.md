@@ -19,10 +19,12 @@ OR alternatively, you can provide individual connection parameters:
 
 ## Important Update - April 2025:
 This application now runs in two modes:
-1. **Database Mode** - When database credentials are available, uses PostgreSQL for data storage
-2. **Fallback Mode** - When no database credentials are provided, falls back to in-memory storage
+1. **Database Mode** - When database credentials are available, uses PostgreSQL for data storage (full 369 domains)
+2. **Fallback Mode** - When no database credentials are provided, falls back to in-memory storage with 200+ sample domains
 
-Note: In fallback mode, data will not persist between application restarts.
+The fallback in-memory storage has been enhanced to include 200+ domains, providing a near-complete experience even without a database connection.
+
+Note: In fallback mode, data will not persist between application restarts, but the application will automatically reseed with the large set of sample domains.
 
 ## How to Add Environment Variables in Replit Deployment
 
@@ -59,5 +61,15 @@ After successful deployment, verify:
 - [ ] Free ebook downloads work correctly
 - [ ] Login to admin dashboard works with credentials above
 - [ ] Admin dashboard displays data correctly
+
+## Performance & Reliability Notes
+
+1. **Domain Count**: In database mode, all 369 domains will be available. In fallback mode, 200+ sample domains will be displayed.
+
+2. **Authentication**: Admin login has been simplified and hardened to work in both modes (credentials: admin/admin123)
+
+3. **Redeployment**: If you need to redeploy, you can use the same settings - all fallback mechanisms will activate automatically if database credentials are not available.
+
+4. **Database Connection**: If the application seems to lose data after restarts or shows only sample data, check if your database connection variables are configured correctly.
 
 For any persistent issues, check the deployment logs for specific error messages.
