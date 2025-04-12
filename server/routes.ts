@@ -65,9 +65,315 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.sendFile(path.resolve('public/admin-dashboard.html'));
   });
   
-  // Redirect the /admin route to admin.html
+  // Serve the admin page directly instead of redirecting
   app.get('/admin', (req, res) => {
-    res.redirect('/admin.html');
+    // Embedded admin HTML (simplified version)
+    const adminHtml = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard - Domain Name Guide</title>
+  <script>
+    window.addEventListener('DOMContentLoaded', async () => {
+      try {
+        const response = await fetch('/api/auth/user');
+        if (response.ok) {
+          const user = await response.json();
+          
+          if (user && user.isAdmin) {
+            window.location.href = '/admin-dashboard';
+            return;
+          }
+        }
+        window.location.href = '/auth';
+      } catch (error) {
+        console.error('Error checking authentication:', error);
+        window.location.href = '/auth';
+      }
+    });
+  </script>
+</head>
+<body>
+  <div style="display: flex; justify-content: center; align-items: center; height: 100vh; font-family: sans-serif;">
+    <div style="text-align: center;">
+      <div style="border: 4px solid #000; width: 40px; height: 40px; border-radius: 50%; border-top-color: transparent; animation: spin 1s linear infinite; margin: 0 auto;"></div>
+      <p style="margin-top: 20px; font-size: 18px;">Verifying admin access...</p>
+    </div>
+  </div>
+  <style>
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: #f8f8f8;
+    }
+  </style>
+</body>
+</html>`;
+    res.setHeader('Content-Type', 'text/html');
+    res.send(adminHtml);
+  });
+  
+  // Serve the admin dashboard page directly
+  app.get('/admin-dashboard', (req, res) => {
+    // Embedded admin dashboard HTML
+    const adminDashboardHtml = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard - Domain Name Guide</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f8f8f8;
+      color: #333;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+      flex-wrap: wrap;
+    }
+    h1 {
+      font-size: 28px;
+      font-weight: 800;
+      margin: 0;
+      color: #000;
+    }
+    p {
+      margin: 5px 0 0;
+      color: #666;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 4px;
+      font-weight: 500;
+      font-size: 14px;
+      line-height: 1;
+      padding: 10px 16px;
+      cursor: pointer;
+      text-decoration: none;
+      user-select: none;
+    }
+    .btn-black {
+      background-color: #000;
+      color: #fff;
+      border: none;
+    }
+    .btn-black:hover {
+      background-color: #333;
+    }
+    .btn-outline {
+      background-color: transparent;
+      color: #000;
+      border: 1px solid #000;
+    }
+    .btn-outline:hover {
+      background-color: rgba(0,0,0,0.05);
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+    @media (max-width: 768px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+      header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .header-actions {
+        margin-top: 20px;
+        width: 100%;
+      }
+    }
+    .card {
+      background-color: #fff;
+      border-radius: 8px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      padding: 20px;
+    }
+    .card-title {
+      font-size: 14px;
+      color: #666;
+      margin-top: 0;
+      margin-bottom: 10px;
+      font-weight: 500;
+    }
+    .card-value {
+      font-size: 24px;
+      font-weight: 700;
+      margin: 0;
+    }
+    .card-subtitle {
+      font-size: 13px;
+      color: #666;
+      margin-top: 8px;
+    }
+    .tabs {
+      display: flex;
+      border-bottom: 1px solid #e5e5e5;
+      margin-bottom: 20px;
+      overflow-x: auto;
+    }
+    .tab {
+      padding: 12px 20px;
+      cursor: pointer;
+      font-weight: 500;
+      color: #666;
+      border-bottom: 2px solid transparent;
+    }
+    .tab.active {
+      color: #000;
+      border-bottom-color: #000;
+    }
+    .btn-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 20px;
+    }
+  </style>
+  <script>
+    // Verify the user is logged in first
+    window.addEventListener('DOMContentLoaded', async () => {
+      try {
+        const response = await fetch('/api/auth/user');
+        if (response.ok) {
+          const user = await response.json();
+          if (user && user.isAdmin) {
+            // User is admin, load data
+            loadDashboardData();
+            setupLogout();
+            return;
+          }
+        }
+        // Not authenticated, redirect to login
+        window.location.href = '/auth';
+      } catch (error) {
+        console.error('Error checking authentication:', error);
+        window.location.href = '/auth';
+      }
+    });
+    
+    // Load the dashboard stats
+    async function loadDashboardData() {
+      try {
+        const response = await fetch('/api/admin/domains/stats');
+        if (response.ok) {
+          const stats = await response.json();
+          
+          // Update stats in the UI
+          document.getElementById('total-domains').textContent = stats.totalDomains;
+          document.getElementById('domains-sold').textContent = stats.soldDomains;
+          document.getElementById('total-views').textContent = stats.totalViews;
+          document.getElementById('total-revenue').textContent = '$' + stats.totalRevenue.toLocaleString();
+          document.getElementById('avg-price').textContent = '$' + stats.averagePrice.toLocaleString();
+          
+          // Calculate conversion rate
+          const conversionRate = stats.soldDomains > 0 
+            ? ((stats.soldDomains / stats.totalDomains) * 100).toFixed(1) 
+            : "0";
+          document.getElementById('conversion-rate').textContent = conversionRate + '%';
+        }
+      } catch (error) {
+        console.error('Error loading dashboard data:', error);
+      }
+    }
+    
+    // Set up logout functionality
+    function setupLogout() {
+      document.getElementById('logout-btn').addEventListener('click', async () => {
+        try {
+          await fetch('/api/auth/logout', { method: 'POST' });
+          window.location.href = '/';
+        } catch (error) {
+          console.error('Error logging out:', error);
+        }
+      });
+    }
+  </script>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div>
+        <h1>Admin Dashboard</h1>
+        <p>Manage your domain listings, offers, and website content</p>
+      </div>
+      <div class="header-actions">
+        <button id="logout-btn" class="btn btn-outline">Logout</button>
+      </div>
+    </header>
+    
+    <div class="grid">
+      <div class="card">
+        <h3 class="card-title">Total Domains</h3>
+        <p class="card-value" id="total-domains">-</p>
+      </div>
+      <div class="card">
+        <h3 class="card-title">Domains Sold</h3>
+        <p class="card-value" id="domains-sold">-</p>
+      </div>
+      <div class="card">
+        <h3 class="card-title">Total Views</h3>
+        <p class="card-value" id="total-views">-</p>
+      </div>
+    </div>
+    
+    <div class="grid">
+      <div class="card">
+        <h3 class="card-title">Total Revenue</h3>
+        <p class="card-value" id="total-revenue">-</p>
+        <p class="card-subtitle">From sold domains</p>
+      </div>
+      <div class="card">
+        <h3 class="card-title">Average Price</h3>
+        <p class="card-value" id="avg-price">-</p>
+        <p class="card-subtitle">Per domain</p>
+      </div>
+      <div class="card">
+        <h3 class="card-title">Conversion Rate</h3>
+        <p class="card-value" id="conversion-rate">-</p>
+        <p class="card-subtitle">Domains sold / total domains</p>
+      </div>
+    </div>
+    
+    <div class="tabs">
+      <div class="tab active">Dashboard Overview</div>
+    </div>
+    
+    <div class="card">
+      <h3 class="card-title">Admin Actions</h3>
+      <p>Access the full admin dashboard with all features:</p>
+      <div class="btn-group">
+        <a href="/?admin=true" class="btn btn-black">Full Admin Dashboard</a>
+        <a href="/" class="btn btn-outline">Return to Website</a>
+      </div>
+    </div>
+  </div>
+</body>
+</html>`;
+    res.setHeader('Content-Type', 'text/html');
+    res.send(adminDashboardHtml);
   });
   // Set up authentication
   setupAuth(app);

@@ -19,8 +19,8 @@ export default function LoginPage() {
   // If already logged in, redirect to admin dashboard
   useEffect(() => {
     if (user?.isAdmin) {
-      // Use direct HTML file reference to bypass SPA routing
-      window.location.href = '/admin.html';
+      // Use direct admin route to bypass SPA routing
+      window.location.href = '/admin';
     }
   }, [user]);
 
@@ -51,8 +51,8 @@ export default function LoginPage() {
       // DEPLOYMENT-SAFE APPROACH: Complete page refresh and hard navigation
       // Delay slightly to allow the toast to be seen
       setTimeout(() => {
-        // Point directly to the admin HTML file to bypass SPA routing
-        window.location.href = '/admin.html';
+        // Go directly to the admin dashboard route, skipping SPA routing
+        window.location.href = '/admin';
       }, 300);
       
     } catch (error) {
