@@ -38,6 +38,7 @@ export interface IStorage {
     priceRange?: string;
     length?: string;
   }): Promise<Domain[]>;
+  getRecentlySoldDomains(limit?: number): Promise<Domain[]>;
   createDomain(domain: InsertDomain): Promise<Domain>;
   updateDomain(id: number, domain: Partial<Domain>): Promise<Domain | undefined>;
   deleteDomain(id: number): Promise<boolean>;
