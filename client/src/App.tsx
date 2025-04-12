@@ -17,7 +17,7 @@ import BuyerProtection from "@/pages/BuyerProtection";
 import EbookPage from "@/pages/EbookPage";
 import EbookSuccess from "@/pages/EbookSuccess";
 import DomainFinderPage from "@/pages/DomainFinderPage";
-import AdminDashboard from "@/pages/admin/Dashboard";
+import AdminPage from "@/pages/admin/AdminPage";
 import LoginPage from "@/pages/auth/LoginPage";
 
 // Enhanced components with SEO metadata
@@ -52,8 +52,8 @@ function Router() {
       <Route path="/ebook" component={EbookWrapper} />
       <Route path="/ebook-success" component={EbookSuccessWrapper} />
       <Route path="/login" component={LoginPage} />
-      <Route path="/admin/dashboard" component={AdminDashboard} />
-      <Route path="/admin" component={AdminDashboard} />
+      <Route path="/admin/dashboard" component={AdminPage} />
+      <Route path="/admin" component={AdminPage} />
       <Route component={NotFoundWrapper} />
     </Switch>
   );

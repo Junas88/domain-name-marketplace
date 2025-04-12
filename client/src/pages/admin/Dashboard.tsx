@@ -102,6 +102,12 @@ export default function AdminDashboard() {
     }
   }, [user, isLoading]);
   
+  // Fetch all domains - IMPORTANT: Keep all hooks at the top level for React's rules of hooks
+  const { data: domains = [], isLoading: isLoadingDomains, refetch: refetchDomains } = useQuery<Domain[]>({
+    queryKey: ['/api/domains'],
+    enabled: !!user?.isAdmin, // Only run query if user is admin
+  });
+  
   // Show loading state
   if (isLoading || isRedirecting) {
     return (
@@ -119,11 +125,6 @@ export default function AdminDashboard() {
     return null;
   }
 
-  // Fetch all domains
-  const { data: domains = [], isLoading: isLoadingDomains, refetch: refetchDomains } = useQuery<Domain[]>({
-    queryKey: ['/api/domains'],
-  });
-
   // Type for domain stats
   interface DomainStats {
     totalDomains: number;
@@ -140,7 +141,12 @@ export default function AdminDashboard() {
     performanceByLength: Array<{ length: number, count: number, averagePrice: number, averageViews: number }>;
   }
 
-  // Fetch domain stats
+  // Interface for offer with domain name included
+  interface OfferWithDomain extends Offer {
+    domainName: string;
+  }
+  
+  // Fetch domain stats - All useQuery hooks MUST be before any conditional returns
   const { data: stats = { 
     totalDomains: 0, 
     soldDomains: 0, 
@@ -156,31 +162,31 @@ export default function AdminDashboard() {
     performanceByLength: []
   }, isLoading: isLoadingStats } = useQuery<DomainStats>({
     queryKey: ['/api/admin/domains/stats'],
+    enabled: !!user?.isAdmin, // Only run query if user is admin
   });
-
-  // Interface for offer with domain name included
-  interface OfferWithDomain extends Offer {
-    domainName: string;
-  }
 
   // Fetch all offers
   const { data: offers = [], isLoading: isLoadingOffers } = useQuery<OfferWithDomain[]>({
     queryKey: ['/api/admin/offers'],
+    enabled: !!user?.isAdmin, // Only run query if user is admin
   });
 
   // Fetch all consultations
   const { data: consultations = [], isLoading: isLoadingConsultations } = useQuery<Consultation[]>({
     queryKey: ['/api/admin/consultations'],
+    enabled: !!user?.isAdmin, // Only run query if user is admin
   });
   
   // Fetch all page content
   const { data: pageContents = [], isLoading: isLoadingPageContents, refetch: refetchPageContents } = useQuery<PageContent[]>({
     queryKey: ['/api/admin/page-contents'],
+    enabled: !!user?.isAdmin, // Only run query if user is admin
   });
   
   // Fetch all SEO settings
   const { data: seoSettings = [], isLoading: isLoadingSeoSettings, refetch: refetchSeoSettings } = useQuery<SeoSettings[]>({
     queryKey: ['/api/admin/seo-settings'],
+    enabled: !!user?.isAdmin, // Only run query if user is admin
   });
 
   // Form for adding/editing page content
