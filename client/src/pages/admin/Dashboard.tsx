@@ -151,6 +151,11 @@ export default function AdminDashboard() {
   const { data: pageContents = [], isLoading: isLoadingPageContents, refetch: refetchPageContents } = useQuery<PageContent[]>({
     queryKey: ['/api/admin/page-contents'],
   });
+  
+  // Fetch all SEO settings
+  const { data: seoSettings = [], isLoading: isLoadingSeoSettings, refetch: refetchSeoSettings } = useQuery<SeoSettings[]>({
+    queryKey: ['/api/admin/seo-settings'],
+  });
 
   // Form for adding/editing page content
   const pageContentForm = useForm<PageContentFormValues>({
@@ -170,6 +175,36 @@ export default function AdminDashboard() {
     }
   });
   
+  // Form for adding/editing SEO settings
+  const seoSettingsForm = useForm<SeoSettingsFormValues>({
+    resolver: zodResolver(seoSettingsFormSchema),
+    defaultValues: editingSeoSettings ? {
+      pageKey: editingSeoSettings.pageKey,
+      title: editingSeoSettings.title,
+      metaDescription: editingSeoSettings.metaDescription,
+      metaKeywords: editingSeoSettings.metaKeywords,
+      ogTitle: editingSeoSettings.ogTitle || "",
+      ogDescription: editingSeoSettings.ogDescription || "",
+      ogImage: editingSeoSettings.ogImage || "",
+      twitterTitle: editingSeoSettings.twitterTitle || "",
+      twitterDescription: editingSeoSettings.twitterDescription || "",
+      twitterImage: editingSeoSettings.twitterImage || "",
+      structuredData: editingSeoSettings.structuredData || "",
+    } : {
+      pageKey: "",
+      title: "",
+      metaDescription: "",
+      metaKeywords: "",
+      ogTitle: "",
+      ogDescription: "",
+      ogImage: "",
+      twitterTitle: "",
+      twitterDescription: "",
+      twitterImage: "",
+      structuredData: "",
+    }
+  });
+  
   // Effect to update pageContentForm when editingPageContent changes
   useEffect(() => {
     if (editingPageContent) {
@@ -182,6 +217,25 @@ export default function AdminDashboard() {
       });
     }
   }, [editingPageContent, pageContentForm]);
+  
+  // Effect to update seoSettingsForm when editingSeoSettings changes
+  useEffect(() => {
+    if (editingSeoSettings) {
+      seoSettingsForm.reset({
+        pageKey: editingSeoSettings.pageKey,
+        title: editingSeoSettings.title,
+        metaDescription: editingSeoSettings.metaDescription,
+        metaKeywords: editingSeoSettings.metaKeywords,
+        ogTitle: editingSeoSettings.ogTitle || "",
+        ogDescription: editingSeoSettings.ogDescription || "",
+        ogImage: editingSeoSettings.ogImage || "",
+        twitterTitle: editingSeoSettings.twitterTitle || "",
+        twitterDescription: editingSeoSettings.twitterDescription || "",
+        twitterImage: editingSeoSettings.twitterImage || "",
+        structuredData: editingSeoSettings.structuredData || "",
+      });
+    }
+  }, [editingSeoSettings, seoSettingsForm]);
   
   // Handle form submission for adding/editing page content
   const onPageContentSubmit = async (data: PageContentFormValues) => {
@@ -368,6 +422,74 @@ export default function AdminDashboard() {
         description: "Failed to mark domain as sold. Please try again.",
         variant: "destructive",
       });
+    }
+  };
+
+  // Handle form submission for adding/editing SEO settings
+  const onSeoSettingsSubmit = async (data: SeoSettingsFormValues) => {
+    try {
+      if (editingSeoSettings) {
+        // Update existing SEO settings
+        await apiRequest(`/api/admin/seo-settings/${editingSeoSettings.pageKey}`, {
+          method: "PATCH",
+          body: JSON.stringify(data),
+        });
+        toast({
+          title: "SEO Settings Updated",
+          description: `SEO settings for ${data.pageKey} have been updated successfully.`,
+        });
+      } else {
+        // Add new SEO settings
+        await apiRequest("/api/admin/seo-settings", {
+          method: "POST",
+          body: JSON.stringify(data),
+        });
+        toast({
+          title: "SEO Settings Added",
+          description: `SEO settings for ${data.pageKey} have been added successfully.`,
+        });
+      }
+      
+      // Invalidate queries to refresh data
+      await queryClient.invalidateQueries({ queryKey: ['/api/admin/seo-settings'] });
+      
+      // Reset form and close dialog
+      seoSettingsForm.reset();
+      setShowSeoSettingsDialog(false);
+      setEditingSeoSettings(null);
+    } catch (error) {
+      console.error("Error saving SEO settings:", error);
+      toast({
+        title: "Error",
+        description: "Failed to save SEO settings. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+  
+  // Handle deleting SEO settings
+  const handleDeleteSeoSettings = async (pageKey: string) => {
+    if (window.confirm("Are you sure you want to delete these SEO settings?")) {
+      try {
+        await apiRequest(`/api/admin/seo-settings/${pageKey}`, {
+          method: "DELETE",
+        });
+        
+        toast({
+          title: "SEO Settings Deleted",
+          description: "The SEO settings have been deleted successfully.",
+        });
+        
+        // Refresh data
+        await queryClient.invalidateQueries({ queryKey: ['/api/admin/seo-settings'] });
+      } catch (error) {
+        console.error("Error deleting SEO settings:", error);
+        toast({
+          title: "Error",
+          description: "Failed to delete SEO settings. Please try again.",
+          variant: "destructive",
+        });
+      }
     }
   };
 
@@ -1245,6 +1367,337 @@ export default function AdminDashboard() {
         {/* EMAIL SUBMISSIONS TAB */}
         <TabsContent value="emails" className="space-y-6">
           <EmailSubmissionsTable />
+        </TabsContent>
+        
+        {/* SEO SETTINGS TAB */}
+        <TabsContent value="seo" className="space-y-6">
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between">
+              <div>
+                <CardTitle>SEO Settings</CardTitle>
+                <CardDescription>Manage SEO metadata for website pages</CardDescription>
+              </div>
+              <div className="flex space-x-2">
+                <Button 
+                  onClick={() => refetchSeoSettings()} 
+                  variant="outline" 
+                  size="icon"
+                  className="border-black"
+                >
+                  <RefreshCw className="h-4 w-4" />
+                </Button>
+                <Dialog open={showSeoSettingsDialog} onOpenChange={setShowSeoSettingsDialog}>
+                  <DialogTrigger asChild>
+                    <Button 
+                      onClick={() => {
+                        setEditingSeoSettings(null);
+                        seoSettingsForm.reset({
+                          pageKey: "",
+                          title: "",
+                          metaDescription: "",
+                          metaKeywords: "",
+                          ogTitle: "",
+                          ogDescription: "",
+                          ogImage: "",
+                          twitterTitle: "",
+                          twitterDescription: "",
+                          twitterImage: "",
+                          structuredData: "",
+                        });
+                      }}
+                      className="bg-black text-white hover:bg-gray-800"
+                    >
+                      <PlusIcon className="h-4 w-4 mr-2" />
+                      Add SEO Settings
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="max-w-2xl">
+                    <DialogHeader>
+                      <DialogTitle>{editingSeoSettings ? "Edit SEO Settings" : "Add New SEO Settings"}</DialogTitle>
+                      <DialogDescription>
+                        Configure SEO metadata for better search engine visibility
+                      </DialogDescription>
+                    </DialogHeader>
+                    <Form {...seoSettingsForm}>
+                      <form onSubmit={seoSettingsForm.handleSubmit(onSeoSettingsSubmit)} className="space-y-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <FormField
+                            control={seoSettingsForm.control}
+                            name="pageKey"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Page Key</FormLabel>
+                                <FormControl>
+                                  <Input placeholder="home" {...field} />
+                                </FormControl>
+                                <FormDescription>
+                                  Unique identifier for the page (e.g., home, about, contact)
+                                </FormDescription>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                          
+                          <FormField
+                            control={seoSettingsForm.control}
+                            name="title"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Title Tag</FormLabel>
+                                <FormControl>
+                                  <Input placeholder="Page Title - Domain Name Guide" {...field} />
+                                </FormControl>
+                                <FormDescription>
+                                  The main title that appears in search results
+                                </FormDescription>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                        </div>
+                        
+                        <FormField
+                          control={seoSettingsForm.control}
+                          name="metaDescription"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Meta Description</FormLabel>
+                              <FormControl>
+                                <Textarea 
+                                  placeholder="Brief description of the page content..." 
+                                  className="resize-none" 
+                                  {...field} 
+                                />
+                              </FormControl>
+                              <FormDescription>
+                                A concise description that appears in search results
+                              </FormDescription>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        
+                        <FormField
+                          control={seoSettingsForm.control}
+                          name="metaKeywords"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Meta Keywords</FormLabel>
+                              <FormControl>
+                                <Input placeholder="domain, marketplace, investment" {...field} />
+                              </FormControl>
+                              <FormDescription>
+                                Comma-separated keywords relevant to the page
+                              </FormDescription>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        
+                        <div className="border-t pt-4 mt-4">
+                          <h3 className="text-lg font-medium mb-4">Open Graph Settings (Social Sharing)</h3>
+                          
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <FormField
+                              control={seoSettingsForm.control}
+                              name="ogTitle"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>OG Title</FormLabel>
+                                  <FormControl>
+                                    <Input placeholder="Title for social sharing" {...field} />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                            
+                            <FormField
+                              control={seoSettingsForm.control}
+                              name="ogImage"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>OG Image URL</FormLabel>
+                                  <FormControl>
+                                    <Input placeholder="https://example.com/image.jpg" {...field} />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                          </div>
+                          
+                          <FormField
+                            control={seoSettingsForm.control}
+                            name="ogDescription"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>OG Description</FormLabel>
+                                <FormControl>
+                                  <Textarea 
+                                    placeholder="Description for social sharing..." 
+                                    className="resize-none" 
+                                    {...field} 
+                                  />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                        </div>
+                        
+                        <div className="border-t pt-4 mt-4">
+                          <h3 className="text-lg font-medium mb-4">Twitter Card Settings</h3>
+                          
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <FormField
+                              control={seoSettingsForm.control}
+                              name="twitterTitle"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Twitter Title</FormLabel>
+                                  <FormControl>
+                                    <Input placeholder="Title for Twitter cards" {...field} />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                            
+                            <FormField
+                              control={seoSettingsForm.control}
+                              name="twitterImage"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Twitter Image URL</FormLabel>
+                                  <FormControl>
+                                    <Input placeholder="https://example.com/image.jpg" {...field} />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                          </div>
+                          
+                          <FormField
+                            control={seoSettingsForm.control}
+                            name="twitterDescription"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Twitter Description</FormLabel>
+                                <FormControl>
+                                  <Textarea 
+                                    placeholder="Description for Twitter cards..." 
+                                    className="resize-none" 
+                                    {...field} 
+                                  />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                        </div>
+                        
+                        <FormField
+                          control={seoSettingsForm.control}
+                          name="structuredData"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Structured Data JSON-LD</FormLabel>
+                              <FormControl>
+                                <Textarea 
+                                  placeholder='{"@context": "https://schema.org", "@type": "WebPage", ...}' 
+                                  className="h-32 font-mono text-sm" 
+                                  {...field} 
+                                />
+                              </FormControl>
+                              <FormDescription>
+                                Advanced: JSON-LD structured data for rich results
+                              </FormDescription>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        
+                        <div className="flex justify-end space-x-2 pt-4">
+                          <Button 
+                            type="button" 
+                            variant="outline" 
+                            onClick={() => {
+                              setShowSeoSettingsDialog(false);
+                              setEditingSeoSettings(null);
+                            }}
+                          >
+                            Cancel
+                          </Button>
+                          <Button 
+                            type="submit" 
+                            className="bg-black text-white hover:bg-gray-800"
+                          >
+                            {editingSeoSettings ? "Update SEO Settings" : "Save SEO Settings"}
+                          </Button>
+                        </div>
+                      </form>
+                    </Form>
+                  </DialogContent>
+                </Dialog>
+              </div>
+            </CardHeader>
+            <CardContent>
+              {isLoadingSeoSettings ? (
+                <div className="text-center py-4">Loading SEO settings...</div>
+              ) : seoSettings.length === 0 ? (
+                <div className="text-center py-4">No SEO settings found. Add some to optimize your pages!</div>
+              ) : (
+                <div className="overflow-x-auto">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Page Key</TableHead>
+                        <TableHead>Title</TableHead>
+                        <TableHead>Meta Description</TableHead>
+                        <TableHead>Last Updated</TableHead>
+                        <TableHead className="text-right">Actions</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {seoSettings.map((seo) => (
+                        <TableRow key={seo.id}>
+                          <TableCell className="font-medium">{seo.pageKey}</TableCell>
+                          <TableCell className="max-w-xs truncate">{seo.title}</TableCell>
+                          <TableCell className="max-w-xs truncate">{seo.metaDescription}</TableCell>
+                          <TableCell>{formatDistanceToNow(new Date(seo.updatedAt), { addSuffix: true })}</TableCell>
+                          <TableCell className="text-right">
+                            <div className="flex justify-end space-x-2">
+                              <Button
+                                variant="outline"
+                                size="icon"
+                                onClick={() => {
+                                  setEditingSeoSettings(seo);
+                                  setShowSeoSettingsDialog(true);
+                                }}
+                                title="Edit SEO Settings"
+                              >
+                                <PenIcon className="h-4 w-4" />
+                              </Button>
+                              <Button
+                                variant="outline"
+                                size="icon"
+                                onClick={() => handleDeleteSeoSettings(seo.pageKey)}
+                                title="Delete SEO Settings"
+                              >
+                                <TrashIcon className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+              )}
+            </CardContent>
+          </Card>
         </TabsContent>
       </Tabs>
     </div>
