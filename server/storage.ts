@@ -1365,7 +1365,7 @@ export class DatabaseStorage implements IStorage {
   async getAllEmailSubmissions(): Promise<EmailSubmission[]> {
     return await db.select()
       .from(emailSubmissions)
-      .orderBy(desc(emailSubmissions.createdAt));
+      .orderBy(desc(emailSubmissions.downloadedAt));
   }
 }
 
