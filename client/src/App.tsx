@@ -52,12 +52,9 @@ function Router() {
       <Route path="/ebook" component={EbookWrapper} />
       <Route path="/ebook-success" component={EbookSuccessWrapper} />
       <Route path="/login" component={LoginPage} />
-      {/* Support multiple admin path formats for various deployment environments */}
-      <Route path="/admin/dashboard" component={AdminPage} />
+      {/* Admin routes */}
       <Route path="/admin" component={AdminPage} />
       <Route path="/dashboard" component={AdminPage} />
-      <Route path="/admin/index.html" component={AdminPage} />
-      <Route path="/dashboard/index.html" component={AdminPage} />
       <Route component={NotFoundWrapper} />
     </Switch>
   );
