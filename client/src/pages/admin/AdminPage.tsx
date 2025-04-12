@@ -605,34 +605,15 @@ export default function AdminPage() {
         </Card>
       </div>
       
-      <div className="mb-6">
-        <Card>
-          <CardHeader>
-            <CardTitle>Domain Categories Distribution</CardTitle>
-            <CardDescription>Breakdown of domains by category</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
-              {Object.entries(stats.domainsByCategory || {}).map(([category, count]) => (
-                <div key={category} className="flex flex-col p-3 border rounded-md">
-                  <span className="text-sm font-medium text-gray-500 capitalize">{category}</span>
-                  <span className="text-xl font-bold mt-1">{count}</span>
-                  <span className="text-xs text-gray-500 mt-1">
-                    {stats.totalDomains > 0 ? ((count as number / stats.totalDomains) * 100).toFixed(1) : "0"}%
-                  </span>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+
 
       <Tabs defaultValue="domains" value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="grid w-full grid-cols-7 mb-6">
+        <TabsList className="grid w-full grid-cols-8 mb-6">
           <TabsTrigger value="domains">Domains</TabsTrigger>
           <TabsTrigger value="offers">Offers</TabsTrigger>
           <TabsTrigger value="consultations">Consultations</TabsTrigger>
           <TabsTrigger value="content">Page Content</TabsTrigger>
+          <TabsTrigger value="site">Website Editor</TabsTrigger>
           <TabsTrigger value="emails">Email Submissions</TabsTrigger>
           <TabsTrigger value="seo">SEO Settings</TabsTrigger>
           <TabsTrigger value="ebooks">Ebook Files</TabsTrigger>
@@ -897,6 +878,172 @@ export default function AdminPage() {
                 </div>
               </CardContent>
             </Card>
+          </div>
+        </TabsContent>
+
+        {/* WEBSITE EDITOR TAB */}
+        <TabsContent value="site" className="space-y-6">
+          <div className="flex justify-between items-center">
+            <h2 className="text-xl font-bold">Complete Website Editor</h2>
+            <Button variant="outline">
+              <EyeIcon className="h-4 w-4 mr-2" />
+              Preview Site
+            </Button>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div className="md:col-span-1">
+              <Card>
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-md">Pages</CardTitle>
+                </CardHeader>
+                <CardContent className="p-0">
+                  <div className="flex flex-col">
+                    <Button variant="ghost" className="justify-start rounded-none py-2 px-4 font-normal border-b border-gray-100">
+                      Home Page
+                    </Button>
+                    <Button variant="ghost" className="justify-start rounded-none py-2 px-4 font-normal border-b border-gray-100">
+                      About Us
+                    </Button>
+                    <Button variant="ghost" className="justify-start rounded-none py-2 px-4 font-normal border-b border-gray-100">
+                      Guide Page
+                    </Button>
+                    <Button variant="ghost" className="justify-start rounded-none py-2 px-4 font-normal border-b border-gray-100">
+                      Contact Us
+                    </Button>
+                    <Button variant="ghost" className="justify-start rounded-none py-2 px-4 font-normal text-primary">
+                      + Add New Page
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+              
+              <Card className="mt-4">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-md">Components</CardTitle>
+                </CardHeader>
+                <CardContent className="p-0">
+                  <div className="flex flex-col">
+                    <Button variant="ghost" className="justify-start rounded-none py-2 px-4 font-normal border-b border-gray-100">
+                      Header
+                    </Button>
+                    <Button variant="ghost" className="justify-start rounded-none py-2 px-4 font-normal border-b border-gray-100">
+                      Hero Section
+                    </Button>
+                    <Button variant="ghost" className="justify-start rounded-none py-2 px-4 font-normal border-b border-gray-100">
+                      Recently Sold
+                    </Button>
+                    <Button variant="ghost" className="justify-start rounded-none py-2 px-4 font-normal border-b border-gray-100">
+                      Features Section
+                    </Button>
+                    <Button variant="ghost" className="justify-start rounded-none py-2 px-4 font-normal border-b border-gray-100">
+                      Footer
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+            
+            <div className="md:col-span-3">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Home Page Editor</CardTitle>
+                  <CardDescription>Edit all sections of your home page</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-6">
+                    <div>
+                      <h3 className="font-medium mb-2">Hero Section</h3>
+                      <div className="space-y-3">
+                        <div>
+                          <label className="text-sm font-medium">Heading</label>
+                          <Input 
+                            defaultValue="Find The Perfect Domain Name For Your Business" 
+                            className="mt-1"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-sm font-medium">Subheading</label>
+                          <Input 
+                            defaultValue="Premium domains for startups and established businesses" 
+                            className="mt-1"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-sm font-medium">Button Text</label>
+                          <Input 
+                            defaultValue="Browse Domains" 
+                            className="mt-1"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-sm font-medium">Background Color</label>
+                          <div className="flex items-center mt-1 space-x-2">
+                            <div className="w-6 h-6 bg-black rounded"></div>
+                            <Input defaultValue="#000000" className="w-32" />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div>
+                      <h3 className="font-medium mb-2">Features Section</h3>
+                      <div className="space-y-3">
+                        <div>
+                          <label className="text-sm font-medium">Section Title</label>
+                          <Input 
+                            defaultValue="Why Choose DomainNameGuide" 
+                            className="mt-1"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-sm font-medium">Feature 1 Title</label>
+                          <Input 
+                            defaultValue="Premium Domains" 
+                            className="mt-1"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-sm font-medium">Feature 1 Description</label>
+                          <Textarea 
+                            defaultValue="Handpicked premium domains ideal for businesses looking to establish a strong online presence."
+                            className="mt-1"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div>
+                      <h3 className="font-medium mb-2">Recently Sold Section</h3>
+                      <div className="space-y-3">
+                        <div>
+                          <label className="text-sm font-medium">Section Title</label>
+                          <Input 
+                            defaultValue="Gone Fast – See What's Already Sold" 
+                            className="mt-1"
+                          />
+                        </div>
+                        <div className="flex justify-between">
+                          <Button variant="outline" size="sm">
+                            <PenIcon className="h-4 w-4 mr-2" />
+                            Edit Carousel Settings
+                          </Button>
+                          <Button variant="outline" size="sm">
+                            <EyeIcon className="h-4 w-4 mr-2" />
+                            Preview Carousel
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex justify-end mt-6">
+                    <Button className="bg-black hover:bg-gray-800">
+                      Save All Changes
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
           </div>
         </TabsContent>
 
