@@ -67,6 +67,13 @@ export interface IStorage {
   // Email Submissions methods for ebook downloads
   createEmailSubmission(submission: InsertEmailSubmission): Promise<EmailSubmission>;
   getAllEmailSubmissions(): Promise<EmailSubmission[]>;
+  
+  // SEO Settings methods
+  getAllSeoSettings(): Promise<SeoSettings[]>;
+  getSeoSettingByPageKey(pageKey: string): Promise<SeoSettings | undefined>;
+  createSeoSetting(seoSetting: InsertSeoSettings): Promise<SeoSettings>;
+  updateSeoSetting(pageKey: string, updates: Partial<InsertSeoSettings>): Promise<SeoSettings | undefined>;
+  deleteSeoSetting(pageKey: string): Promise<boolean>;
 }
 
 export class MemStorage implements IStorage {
@@ -1455,6 +1462,41 @@ export class DatabaseStorage implements IStorage {
     return await db.select()
       .from(emailSubmissions)
       .orderBy(desc(emailSubmissions.downloadedAt));
+  }
+
+  // SEO Settings methods
+  async getAllSeoSettings(): Promise<SeoSettings[]> {
+    return await db.select()
+      .from(seoSettings)
+      .orderBy(seoSettings.pageKey);
+  }
+
+  async getSeoSettingByPageKey(pageKey: string): Promise<SeoSettings | undefined> {
+    const [settings] = await db.select()
+      .from(seoSettings)
+      .where(eq(seoSettings.pageKey, pageKey));
+    return settings;
+  }
+
+  async createSeoSetting(setting: InsertSeoSettings): Promise<SeoSettings> {
+    const [newSetting] = await db.insert(seoSettings)
+      .values(setting)
+      .returning();
+    return newSetting;
+  }
+
+  async updateSeoSetting(pageKey: string, updates: Partial<InsertSeoSettings>): Promise<SeoSettings | undefined> {
+    const [updatedSetting] = await db.update(seoSettings)
+      .set(updates)
+      .where(eq(seoSettings.pageKey, pageKey))
+      .returning();
+    return updatedSetting;
+  }
+
+  async deleteSeoSetting(pageKey: string): Promise<boolean> {
+    await db.delete(seoSettings)
+      .where(eq(seoSettings.pageKey, pageKey));
+    return true;
   }
 }
 

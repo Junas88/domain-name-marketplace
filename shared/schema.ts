@@ -157,3 +157,37 @@ export const insertEmailSubmissionSchema = createInsertSchema(emailSubmissions).
 
 export type InsertEmailSubmission = z.infer<typeof insertEmailSubmissionSchema>;
 export type EmailSubmission = typeof emailSubmissions.$inferSelect;
+
+// SEO Settings table
+export const seoSettings = pgTable("seo_settings", {
+  id: serial("id").primaryKey(),
+  pageKey: text("page_key").notNull().unique(),
+  title: text("title").notNull(),
+  metaDescription: text("meta_description").notNull(),
+  metaKeywords: text("meta_keywords").notNull(),
+  ogTitle: text("og_title"),
+  ogDescription: text("og_description"),
+  ogImage: text("og_image"),
+  twitterTitle: text("twitter_title"),
+  twitterDescription: text("twitter_description"),
+  twitterImage: text("twitter_image"),
+  structuredData: json("structured_data"),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const insertSeoSettingsSchema = createInsertSchema(seoSettings).pick({
+  pageKey: true,
+  title: true,
+  metaDescription: true,
+  metaKeywords: true,
+  ogTitle: true,
+  ogDescription: true,
+  ogImage: true,
+  twitterTitle: true,
+  twitterDescription: true,
+  twitterImage: true,
+  structuredData: true,
+});
+
+export type InsertSeoSettings = z.infer<typeof insertSeoSettingsSchema>;
+export type SeoSettings = typeof seoSettings.$inferSelect;
