@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { AuthProvider } from "@/hooks/use-auth";
 import { ProtectedRoute } from "@/lib/protected-route";
 import { ScrollManager } from "@/components/ScrollManager";
+import SeoPageWrapper from "@/components/SeoPageWrapper";
 import NotFound from "@/pages/not-found";
 import Home from "@/pages/Home";
 import Contact from "@/pages/Contact";
@@ -20,24 +21,38 @@ import DomainFinderPage from "@/pages/DomainFinderPage";
 import AdminDashboard from "@/pages/admin/Dashboard";
 import LoginPage from "@/pages/auth/LoginPage";
 
+// Enhanced components with SEO metadata
+const HomePage = () => <SeoPageWrapper pageKey="home"><Home /></SeoPageWrapper>;
+const GuidePage = () => <SeoPageWrapper pageKey="guide"><Guide /></SeoPageWrapper>;
+const ContactPage = () => <SeoPageWrapper pageKey="contact"><Contact /></SeoPageWrapper>;
+const FAQsPage = () => <SeoPageWrapper pageKey="faqs"><FAQs /></SeoPageWrapper>;
+const HowItWorksPage = () => <SeoPageWrapper pageKey="how-it-works"><HowItWorks /></SeoPageWrapper>;
+const DomainValuationPage = () => <SeoPageWrapper pageKey="domain-valuation"><DomainValuation /></SeoPageWrapper>;
+const SellingStrategyPage = () => <SeoPageWrapper pageKey="selling-strategy"><SellingStrategy /></SeoPageWrapper>;
+const BuyerProtectionPage = () => <SeoPageWrapper pageKey="buyer-protection"><BuyerProtection /></SeoPageWrapper>;
+const DomainFinderWrapper = () => <SeoPageWrapper pageKey="domain-finder"><DomainFinderPage /></SeoPageWrapper>;
+const EbookWrapper = () => <SeoPageWrapper pageKey="ebook"><EbookPage /></SeoPageWrapper>;
+const EbookSuccessWrapper = () => <SeoPageWrapper pageKey="ebook-success"><EbookSuccess /></SeoPageWrapper>;
+const NotFoundWrapper = () => <SeoPageWrapper pageKey="not-found"><NotFound /></SeoPageWrapper>;
+
 function Router() {
   return (
     <Switch>
-      <Route path="/" component={Home} />
-      <Route path="/guide" component={Guide} />
-      <Route path="/contact" component={Contact} />
-      <Route path="/faqs" component={FAQs} />
-      <Route path="/how-it-works" component={HowItWorks} />
-      <Route path="/domain-valuation" component={DomainValuation} />
-      <Route path="/selling-strategy" component={SellingStrategy} />
-      <Route path="/buyer-protection" component={BuyerProtection} />
-      <Route path="/domain-finder" component={DomainFinderPage} />
-      <Route path="/ebook" component={EbookPage} />
-      <Route path="/ebook-success" component={EbookSuccess} />
+      <Route path="/" component={HomePage} />
+      <Route path="/guide" component={GuidePage} />
+      <Route path="/contact" component={ContactPage} />
+      <Route path="/faqs" component={FAQsPage} />
+      <Route path="/how-it-works" component={HowItWorksPage} />
+      <Route path="/domain-valuation" component={DomainValuationPage} />
+      <Route path="/selling-strategy" component={SellingStrategyPage} />
+      <Route path="/buyer-protection" component={BuyerProtectionPage} />
+      <Route path="/domain-finder" component={DomainFinderWrapper} />
+      <Route path="/ebook" component={EbookWrapper} />
+      <Route path="/ebook-success" component={EbookSuccessWrapper} />
       <Route path="/login" component={LoginPage} />
       <ProtectedRoute path="/admin/dashboard" component={AdminDashboard} />
       <ProtectedRoute path="/admin" component={AdminDashboard} />
-      <Route component={NotFound} />
+      <Route component={NotFoundWrapper} />
     </Switch>
   );
 }
