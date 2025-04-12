@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
+import { getAdminPath } from "@/lib/admin-path";
 
 export default function LoginPage() {
   const [username, setUsername] = useState("");
@@ -18,7 +19,8 @@ export default function LoginPage() {
   // If already logged in, redirect to admin dashboard
   useEffect(() => {
     if (user?.isAdmin) {
-      navigate("/dashboard");
+      // Use utility to get the correct admin path based on environment
+      navigate(getAdminPath());
     }
   }, [user, navigate]);
 
@@ -46,11 +48,11 @@ export default function LoginPage() {
         description: "Redirecting to admin dashboard"
       });
       
-      // DIRECT APPROACH: Hardcode the dashboard URL that works in production
+      // DEPLOYMENT-SAFE APPROACH: Complete page refresh and hard navigation
       // Delay slightly to allow the toast to be seen
       setTimeout(() => {
-        // Force a full page reload to reset state to the dashboard
-        window.location.href = '/dashboard';
+        // Get the correct admin path and force a full page reload
+        window.location.href = getAdminPath();
       }, 300);
       
     } catch (error) {

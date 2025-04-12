@@ -538,10 +538,9 @@ export default function AdminPage() {
           variant="outline" 
           className="mt-4 md:mt-0 border-black" 
           onClick={() => {
-            // Simple direct approach - logout and refresh page
             logoutMutation.mutate(undefined, {
               onSuccess: () => {
-                window.location.href = '/';
+                navigate('/');
               }
             });
           }}
