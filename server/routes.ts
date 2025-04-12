@@ -11,7 +11,6 @@ import {
   insertSeoSettingsSchema
 } from "@shared/schema";
 import { z } from "zod";
-import Stripe from "stripe";
 import multer from 'multer';
 import path from 'path';
 import fs from 'fs-extra';
@@ -54,15 +53,7 @@ const upload = multer({
 // Helper function to check if we're in a deployment environment
 const isDeployment = process.env.REPL_DEPLOYMENT === 'true';
 
-if (!process.env.STRIPE_SECRET_KEY) {
-  if (isDeployment) {
-    console.error("DEPLOYMENT ERROR: STRIPE_SECRET_KEY must be set in the deployment environment");
-    throw new Error('STRIPE_SECRET_KEY not configured for deployment. Please add STRIPE_SECRET_KEY to your deployment environment variables.');
-  } else {
-    throw new Error('Missing required Stripe secret: STRIPE_SECRET_KEY');
-  }
-}
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+// Stripe functionality has been removed
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Set up authentication
@@ -685,42 +676,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
-  // Verify purchase and get download link
-  app.post("/api/verify-purchase/:pageKey", async (req, res) => {
+  // Direct download of ebooks without payment
+  app.post("/api/request-download/:pageKey", async (req, res) => {
     try {
-      const { paymentIntentId, sessionId } = req.body;
-      
-      // Check if we have a session ID (direct checkout)
-      if (sessionId) {
-        const session = await stripe.checkout.sessions.retrieve(sessionId);
-        if (session.payment_status === 'paid' && session.metadata?.pageKey === req.params.pageKey) {
-          const pageContent = await storage.getPageContent(req.params.pageKey);
-          if (!pageContent || !pageContent.filePath) {
-            return res.status(404).json({ message: "File not found" });
-          }
-          
-          const downloadUrl = `/api/page-contents/${req.params.pageKey}/download?paymentVerified=true`;
-          return res.json({
-            success: true,
-            downloadUrl
-          });
-        } else {
-          return res.status(400).json({ message: "Invalid payment session" });
-        }
-      }
-      
-      // Otherwise check for payment intent ID
-      if (!paymentIntentId) {
-        return res.status(400).json({ message: "Payment intent ID or session ID is required" });
-      }
-      
-      // Verify the payment intent with Stripe
-      const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
-      
-      if (paymentIntent.status !== 'succeeded') {
-        return res.status(400).json({ message: "Payment has not been completed" });
-      }
-      
       const pageKey = req.params.pageKey;
       const pageContent = await storage.getPageContent(pageKey);
       
@@ -733,97 +691,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "No file associated with this content" });
       }
       
-      // Generate download URL with payment verification
-      const downloadUrl = `/api/page-contents/${pageKey}/download?paymentVerified=true`;
+      // Generate download URL - no payment verification needed anymore
+      const downloadUrl = `/api/page-contents/${pageKey}/download`;
       
       res.json({
         success: true,
         downloadUrl
       });
     } catch (error: any) {
-      console.error("Error verifying purchase:", error);
-      res.status(500).json({ message: "Failed to verify purchase: " + error.message });
-    }
-  });
-
-  // Stripe payment routes
-  app.post("/api/create-payment-intent", async (req, res) => {
-    try {
-      const { amount, pageKey } = req.body;
-      
-      let finalAmount = amount;
-      
-      // If a pageKey is provided, use the price from that page content
-      if (pageKey) {
-        const pageContent = await storage.getPageContent(pageKey);
-        if (pageContent && pageContent.price) {
-          finalAmount = pageContent.price;
-        }
-      }
-      
-      // For amount coming from the client, we need to be careful as it might already be in cents
-      const amountInCents = pageKey ? Math.round(finalAmount * 100) : finalAmount;
-      
-      const paymentIntent = await stripe.paymentIntents.create({
-        amount: amountInCents,
-        currency: "usd",
-        metadata: {
-          pageKey: pageKey || '',
-          type: pageKey ? 'ebook_purchase' : 'regular_payment'
-        }
-      });
-      
-      res.json({ clientSecret: paymentIntent.client_secret });
-    } catch (error: any) {
-      console.error("Error creating payment intent:", error);
-      res.status(500).json({ message: "Error creating payment intent: " + error.message });
-    }
-  });
-  
-  // Create a direct Stripe checkout session for ebooks
-  app.post("/api/create-checkout-session", async (req, res) => {
-    try {
-      const { pageKey, successUrl, cancelUrl } = req.body;
-      
-      if (!pageKey) {
-        return res.status(400).json({ message: "pageKey is required" });
-      }
-      
-      // Get the page content to determine the price
-      const pageContent = await storage.getPageContent(pageKey);
-      if (!pageContent || !pageContent.price) {
-        return res.status(404).json({ message: "Page content not found or has no price" });
-      }
-      
-      // Create a Stripe checkout session
-      const session = await stripe.checkout.sessions.create({
-        payment_method_types: ['card'],
-        line_items: [
-          {
-            price_data: {
-              currency: 'usd',
-              product_data: {
-                name: pageContent.title || 'Ebook Purchase',
-                description: pageContent.metaDescription || 'Digital download',
-              },
-              unit_amount: Math.round(pageContent.price * 100), // Convert to cents
-            },
-            quantity: 1,
-          },
-        ],
-        mode: 'payment',
-        success_url: successUrl || `${req.headers.origin || ''}/ebook-success?pageKey=${pageKey}&session_id={CHECKOUT_SESSION_ID}`,
-        cancel_url: cancelUrl || `${req.headers.origin || ''}/ebook?pageKey=${pageKey}`,
-        metadata: {
-          pageKey: pageKey,
-          type: 'ebook_purchase'
-        }
-      });
-      
-      res.json({ url: session.url });
-    } catch (error: any) {
-      console.error("Error creating checkout session:", error);
-      res.status(500).json({ message: "Error creating checkout session: " + error.message });
+      console.error("Error processing download request:", error);
+      res.status(500).json({ message: "Failed to process download request: " + error.message });
     }
   });
 
