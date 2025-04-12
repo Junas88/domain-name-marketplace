@@ -50,7 +50,7 @@ export default function SimpleLoginPage() {
         });
         navigate("/simple-admin");
       },
-      onError: (error) => {
+      onError: (error: any) => {
         toast({
           title: "Login failed",
           description: error.message || "Invalid username or password",

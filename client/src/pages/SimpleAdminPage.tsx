@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { useLocation } from "wouter";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -561,14 +560,14 @@ export default function SimpleAdminPage() {
                                 setShowDomainForm(true);
                               }}
                             >
-                              <PenIcon className="h-4 w-4" />
+                              <Pencil className="h-4 w-4" />
                             </Button>
                             <Button 
                               variant="outline" 
                               size="sm"
                               onClick={() => handleDeleteDomain(domain.id)}
                             >
-                              <TrashIcon className="h-4 w-4" />
+                              <Trash className="h-4 w-4" />
                             </Button>
                           </div>
                         </TableCell>
@@ -726,14 +725,14 @@ export default function SimpleAdminPage() {
                                 setShowContentForm(true);
                               }}
                             >
-                              <PenIcon className="h-4 w-4" />
+                              <Pencil className="h-4 w-4" />
                             </Button>
                             <Button 
                               variant="outline" 
                               size="sm"
                               onClick={() => handleDeletePageContent(pageContent.pageKey)}
                             >
-                              <TrashIcon className="h-4 w-4" />
+                              <Trash className="h-4 w-4" />
                             </Button>
                           </div>
                         </TableCell>
