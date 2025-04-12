@@ -85,7 +85,7 @@ export default function DomainFinder() {
           <div className="flex flex-col md:flex-row gap-12">
             {/* Domain Finder content */}
             <div className="w-full">
-              <h2 id="domain-finder-heading" className="text-4xl font-bold mb-8 text-center md:text-left">Free Domain Name Consultation</h2>
+              <h2 id="domain-finder-heading" className="text-4xl font-black mb-8 text-center md:text-left">Free Domain Name Consultation</h2>
               <p className="text-neutral-700 mb-8 text-lg">
                 Not sure which domain is right for your business? Our domain experts can help you find the perfect domain name that fits your brand and business goals. We specialize in premium domain acquisition, brand-matching domains, and industry-specific domain consultations.
               </p>
