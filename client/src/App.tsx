@@ -52,15 +52,14 @@ function Router() {
       <Route path="/domain-finder" component={DomainFinderWrapper} />
       <Route path="/ebook" component={EbookWrapper} />
       <Route path="/ebook-success" component={EbookSuccessWrapper} />
+      <Route path="/auth" component={LoginPage} />
       <Route path="/login" component={LoginPage} />
-      {/* Use direct component for stable paths */}
+      {/* ALL admin routes should use the full AdminPage component */}
       <Route path="/admin" component={AdminPage} />
-      
-      {/* Use the bridge component for potentially problematic paths in production */}
-      <Route path="/admin/dashboard" component={AdminDashboard} />
-      <Route path="/dashboard" component={AdminDashboard} />
-      <Route path="/admin/index.html" component={AdminDashboard} />
-      <Route path="/dashboard/index.html" component={AdminDashboard} />
+      <Route path="/admin/dashboard" component={AdminPage} />
+      <Route path="/dashboard" component={AdminPage} />
+      <Route path="/admin/index.html" component={AdminPage} />
+      <Route path="/dashboard/index.html" component={AdminPage} />
       <Route component={NotFoundWrapper} />
     </Switch>
   );
