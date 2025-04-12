@@ -54,6 +54,7 @@ function Router() {
       <Route path="/login" component={LoginPage} />
       <Route path="/admin/dashboard" component={AdminPage} />
       <Route path="/admin" component={AdminPage} />
+      <Route path="/dashboard" component={AdminPage} />
       <Route component={NotFoundWrapper} />
     </Switch>
   );

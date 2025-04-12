@@ -88,10 +88,10 @@ export default function AdminPage() {
       setIsRedirecting(true);
       
       setTimeout(() => {
-        window.location.href = "/login";
+        navigate("/login");
       }, 300);
     }
-  }, [user, isLoading]);
+  }, [user, isLoading, navigate]);
   
   // Define stats type
   type DomainStats = {
