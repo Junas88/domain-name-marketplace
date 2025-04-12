@@ -40,16 +40,16 @@ export default function RecentlySoldDomains() {
 
   if (isLoading) {
     return (
-      <div className="mb-8">
-        <h2 className="text-center text-4xl font-bold mb-12">Premium Domains Sold</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="mb-4">
+        <h2 className="text-center text-3xl font-bold mb-6">Premium Domains Sold</h2>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {[1, 2, 3].map((i) => (
-            <div key={i} className="p-3">
-              <div className="overflow-hidden border border-white/20 rounded-xl bg-gradient-to-b from-black/60 to-black/40 backdrop-blur-sm">
-                <div className="p-8 flex flex-col items-center justify-center">
-                  <Skeleton className="h-10 w-4/5 bg-white/10 mb-4" />
-                  <Skeleton className="h-12 w-2/3 bg-white/10 my-4" />
-                  <Skeleton className="h-6 w-1/4 bg-white/10 mt-2 rounded-full" />
+            <div key={i} className="p-2">
+              <div className="overflow-hidden border border-white/20 rounded-lg bg-gradient-to-b from-black/60 to-black/40 backdrop-blur-sm">
+                <div className="p-5 flex flex-col items-center justify-center">
+                  <Skeleton className="h-7 w-4/5 bg-white/10 mb-2" />
+                  <Skeleton className="h-8 w-2/3 bg-white/10 my-2" />
+                  <Skeleton className="h-4 w-1/4 bg-white/10 mt-1 rounded-full" />
                 </div>
               </div>
             </div>
@@ -67,10 +67,10 @@ export default function RecentlySoldDomains() {
     if (Array.isArray(domains)) {
       return domains.map((domain) => (
         <CarouselItem key={domain.id}>
-          <div className="p-3">
-            <div className="overflow-hidden border border-white/20 rounded-xl bg-gradient-to-b from-black/60 to-black/40 backdrop-blur-sm hover:border-white/40 transition-all">
-              <div className="p-8 flex flex-col items-center justify-center">
-                <h3 className="text-2xl md:text-3xl font-bold mb-4 text-white text-center">
+          <div className="p-2">
+            <div className="overflow-hidden border border-white/20 rounded-lg bg-gradient-to-b from-black/60 to-black/40 backdrop-blur-sm hover:border-white/40 transition-all">
+              <div className="p-5 flex flex-col items-center justify-center">
+                <h3 className="text-xl md:text-2xl font-bold mb-2 text-white text-center">
                   <a 
                     href={`https://${domain.name}`} 
                     target="_blank"
@@ -78,15 +78,15 @@ export default function RecentlySoldDomains() {
                     className="hover:text-gray-300 transition-colors inline-flex items-center"
                   >
                     {domain.name}
-                    <ExternalLink className="ml-2 h-5 w-5" />
+                    <ExternalLink className="ml-1 h-4 w-4" />
                   </a>
                 </h3>
                 
-                <div className="font-bold text-3xl md:text-4xl text-white mt-2 mb-4">
+                <div className="font-bold text-2xl md:text-3xl text-white mt-1 mb-2">
                   {formatCurrency(domain.price)}
                 </div>
                 
-                <div className="text-sm uppercase tracking-widest font-semibold text-emerald-400 mt-2 border border-emerald-400/30 px-3 py-1 rounded-full">
+                <div className="text-xs uppercase tracking-widest font-semibold text-emerald-400 mt-1 border border-emerald-400/30 px-2 py-0.5 rounded-full">
                   SOLD
                 </div>
               </div>
@@ -99,14 +99,14 @@ export default function RecentlySoldDomains() {
   };
 
   return (
-    <div className="mb-8">
-      <h2 className="text-center text-4xl font-bold mb-12">Premium Domains Sold</h2>
+    <div className="mb-4">
+      <h2 className="text-center text-3xl font-bold mb-6">Premium Domains Sold</h2>
       <Carousel className="mx-auto max-w-6xl">
         <CarouselContent>
           {carouselItems()}
         </CarouselContent>
-        <CarouselPrevious className="bg-white/10 hover:bg-white/20 text-white border-none" />
-        <CarouselNext className="bg-white/10 hover:bg-white/20 text-white border-none" />
+        <CarouselPrevious className="bg-white/10 hover:bg-white/20 text-white border-none -left-2 h-8 w-8" />
+        <CarouselNext className="bg-white/10 hover:bg-white/20 text-white border-none -right-2 h-8 w-8" />
       </Carousel>
     </div>
   );

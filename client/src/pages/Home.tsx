@@ -28,7 +28,7 @@ export default function Home() {
       <Header />
       <Hero />
       <DomainListing onMakeOffer={handleMakeOffer} />
-      <div className="bg-black text-white py-16">
+      <div className="bg-black text-white py-10">
         <div className="container mx-auto px-4">
           <RecentlySoldDomains />
         </div>
