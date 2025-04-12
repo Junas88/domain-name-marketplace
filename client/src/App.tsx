@@ -54,12 +54,38 @@ function Router() {
       <Route path="/ebook-success" component={EbookSuccessWrapper} />
       <Route path="/auth" component={LoginPage} />
       <Route path="/login" component={LoginPage} />
-      {/* Use static component for problematic admin paths */}
-      <Route path="/admin" component={AdminPage} />
-      <Route path="/admin/dashboard" component={SimpleAdminDashboard} />
-      <Route path="/dashboard" component={SimpleAdminDashboard} />
-      <Route path="/admin/index.html" component={SimpleAdminDashboard} />
-      <Route path="/dashboard/index.html" component={SimpleAdminDashboard} />
+      {/* IMPORTANT: For all admin routes, use window.location hard redirect */}
+      <Route path="/admin">
+        {() => {
+          if (typeof window !== 'undefined') {
+            // Force a full page reload by setting window.location directly
+            window.location.href = '/admin.html';
+            return null;
+          }
+          return <div>Redirecting...</div>;
+        }}
+      </Route>
+      
+      {/* These routes should never be used directly in SPA mode */}
+      <Route path="/admin/dashboard">
+        {() => {
+          if (typeof window !== 'undefined') {
+            window.location.href = '/admin.html';
+            return null;
+          }
+          return <div>Redirecting...</div>;
+        }}
+      </Route>
+      
+      <Route path="/dashboard">
+        {() => {
+          if (typeof window !== 'undefined') {
+            window.location.href = '/admin.html';
+            return null;
+          }
+          return <div>Redirecting...</div>;
+        }}
+      </Route>
       <Route component={NotFoundWrapper} />
     </Switch>
   );

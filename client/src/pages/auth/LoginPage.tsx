@@ -19,10 +19,10 @@ export default function LoginPage() {
   // If already logged in, redirect to admin dashboard
   useEffect(() => {
     if (user?.isAdmin) {
-      // Always use the simplest path for consistency
-      navigate('/admin');
+      // Use direct HTML file reference to bypass SPA routing
+      window.location.href = '/admin.html';
     }
-  }, [user, navigate]);
+  }, [user]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -51,8 +51,8 @@ export default function LoginPage() {
       // DEPLOYMENT-SAFE APPROACH: Complete page refresh and hard navigation
       // Delay slightly to allow the toast to be seen
       setTimeout(() => {
-        // Use the simplest path that works in all environments
-        window.location.href = '/admin';
+        // Point directly to the admin HTML file to bypass SPA routing
+        window.location.href = '/admin.html';
       }, 300);
       
     } catch (error) {
