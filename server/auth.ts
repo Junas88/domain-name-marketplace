@@ -31,6 +31,13 @@ async function comparePasswords(supplied: string, stored: string) {
 }
 
 export function setupAuth(app: Express) {
+  // Add a dedicated API endpoint for auth status check
+  app.get("/api/auth/user", (req, res) => {
+    if (!req.isAuthenticated()) {
+      return res.status(401).json({ message: "Not authenticated" });
+    }
+    res.json(req.user);
+  });
   const sessionSettings: session.SessionOptions = {
     secret: process.env.SESSION_SECRET || "takemyname-secret-key",
     resave: false,
@@ -116,17 +123,7 @@ export function setupAuth(app: Express) {
     });
   });
 
-  app.get("/api/auth/user", (req, res) => {
-    if (!req.isAuthenticated()) {
-      return res.status(401).json({ message: "Not authenticated" });
-    }
-    const user = req.user as Express.User;
-    return res.status(200).json({
-      id: user.id,
-      username: user.username,
-      isAdmin: user.isAdmin
-    });
-  });
+  // User info and authentication status is handled by the endpoint defined above
 
   // Middleware to check if user is admin
   app.use("/api/admin/*", (req, res, next) => {

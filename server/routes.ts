@@ -56,6 +56,19 @@ const isDeployment = process.env.REPL_DEPLOYMENT === 'true';
 // Stripe functionality has been removed
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Serve static admin HTML files
+  app.get('/admin.html', (req, res) => {
+    res.sendFile(path.resolve('public/admin.html'));
+  });
+  
+  app.get('/admin-dashboard.html', (req, res) => {
+    res.sendFile(path.resolve('public/admin-dashboard.html'));
+  });
+  
+  // Redirect the /admin route to admin.html
+  app.get('/admin', (req, res) => {
+    res.redirect('/admin.html');
+  });
   // Set up authentication
   setupAuth(app);
   
