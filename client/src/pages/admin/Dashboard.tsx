@@ -15,7 +15,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/use-auth";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { z } from "zod";
-import { BarChart, Bar, XAxis, YAxis, Tooltip as RechartsTooltip, ResponsiveContainer } from "recharts";
+import { BarChart, Bar, XAxis, YAxis, Tooltip as RechartsTooltip, ResponsiveContainer, Legend, CartesianGrid } from "recharts";
 import { 
   Table, 
   TableBody, 
@@ -84,10 +84,31 @@ export default function AdminDashboard() {
     soldDomains: number;
     totalViews: number;
     domainsByCategory: Record<string, number>;
+    totalRevenue: number;
+    averagePrice: number;
+    averageViews: number;
+    mostViewedDomains: Array<{ id: number, name: string, viewCount: number, price: number }>;
+    revenueByCategory: Record<string, number>;
+    averagePriceByCategory: Record<string, number>;
+    conversionRate: number;
+    performanceByLength: Array<{ length: number, count: number, averagePrice: number, averageViews: number }>;
   }
 
   // Fetch domain stats
-  const { data: stats = { totalDomains: 0, soldDomains: 0, totalViews: 0, domainsByCategory: {} }, isLoading: isLoadingStats } = useQuery<DomainStats>({
+  const { data: stats = { 
+    totalDomains: 0, 
+    soldDomains: 0, 
+    totalViews: 0, 
+    domainsByCategory: {},
+    totalRevenue: 0,
+    averagePrice: 0,
+    averageViews: 0,
+    mostViewedDomains: [],
+    revenueByCategory: {},
+    averagePriceByCategory: {},
+    conversionRate: 0,
+    performanceByLength: []
+  }, isLoading: isLoadingStats } = useQuery<DomainStats>({
     queryKey: ['/api/admin/domains/stats'],
   });
 
@@ -360,8 +381,9 @@ export default function AdminDashboard() {
       </header>
 
       <Tabs defaultValue="domains" value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="grid w-full grid-cols-5 mb-6">
+        <TabsList className="grid w-full grid-cols-6 mb-6">
           <TabsTrigger value="domains">Domains</TabsTrigger>
+          <TabsTrigger value="analytics">Analytics</TabsTrigger>
           <TabsTrigger value="offers">Offers</TabsTrigger>
           <TabsTrigger value="consultations">Consultations</TabsTrigger>
           <TabsTrigger value="content">Page Content</TabsTrigger>
@@ -650,6 +672,137 @@ export default function AdminDashboard() {
                   </Table>
                 </div>
               )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+        
+        {/* ANALYTICS TAB */}
+        <TabsContent value="analytics" className="space-y-6">
+          {/* Revenue and Conversion Metrics */}
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <Card>
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm font-medium text-gray-500">Total Revenue</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-3xl font-bold">${stats.totalRevenue.toLocaleString()}</div>
+                <p className="text-sm text-gray-500 mt-1">From sold domains</p>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm font-medium text-gray-500">Average Price</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-3xl font-bold">${Math.round(stats.averagePrice).toLocaleString()}</div>
+                <p className="text-sm text-gray-500 mt-1">Per domain</p>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm font-medium text-gray-500">Conversion Rate</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-3xl font-bold">{stats.conversionRate.toFixed(1)}%</div>
+                <p className="text-sm text-gray-500 mt-1">Domains sold / total domains</p>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm font-medium text-gray-500">Average Views</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-3xl font-bold">{stats.averageViews.toFixed(1)}</div>
+                <p className="text-sm text-gray-500 mt-1">Per domain</p>
+              </CardContent>
+            </Card>
+          </div>
+          
+          {/* Top Performing Domains */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Most Viewed Domains</CardTitle>
+              <CardDescription>Your most popular domain listings by number of views</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Domain Name</TableHead>
+                      <TableHead>Views</TableHead>
+                      <TableHead>Price</TableHead>
+                      <TableHead>Interest Rate</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {stats.mostViewedDomains.map((domain) => (
+                      <TableRow key={domain.id}>
+                        <TableCell className="font-medium">{domain.name}</TableCell>
+                        <TableCell>{domain.viewCount}</TableCell>
+                        <TableCell>${domain.price.toLocaleString()}</TableCell>
+                        <TableCell>
+                          {(domain.viewCount / (stats.totalViews || 1) * 100).toFixed(1)}%
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            </CardContent>
+          </Card>
+          
+          {/* Performance By Length */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Domain Performance by Length</CardTitle>
+              <CardDescription>Analysis of domain metrics grouped by character length</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="h-80">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={stats.performanceByLength}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="length" label={{value: 'Domain Length (characters)', position: 'insideBottom', offset: -5}} />
+                    <YAxis yAxisId="left" orientation="left" stroke="#000000" label={{value: 'Number of Domains', angle: -90, position: 'insideLeft'}} />
+                    <YAxis yAxisId="right" orientation="right" stroke="#888888" label={{value: 'Average Price ($)', angle: -90, position: 'insideRight'}} />
+                    <RechartsTooltip />
+                    <Legend verticalAlign="top" height={36} />
+                    <Bar yAxisId="left" dataKey="count" name="Number of Domains" fill="#000000" />
+                    <Bar yAxisId="right" dataKey="averagePrice" name="Average Price ($)" fill="#888888" />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            </CardContent>
+          </Card>
+          
+          {/* Category Revenue Analysis */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Revenue by Category</CardTitle>
+              <CardDescription>How different domain categories contribute to revenue</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="h-80">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart 
+                    data={Object.entries(stats.revenueByCategory).map(([category, revenue]) => ({
+                      category,
+                      revenue,
+                      avgPrice: stats.averagePriceByCategory[category] || 0
+                    }))}
+                  >
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="category" />
+                    <YAxis yAxisId="left" orientation="left" stroke="#000000" label={{value: 'Total Revenue ($)', angle: -90, position: 'insideLeft'}} />
+                    <YAxis yAxisId="right" orientation="right" stroke="#888888" label={{value: 'Average Price ($)', angle: -90, position: 'insideRight'}} />
+                    <RechartsTooltip />
+                    <Legend verticalAlign="top" height={36} />
+                    <Bar yAxisId="left" dataKey="revenue" name="Total Revenue" fill="#000000" />
+                    <Bar yAxisId="right" dataKey="avgPrice" name="Average Price" fill="#888888" />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
             </CardContent>
           </Card>
         </TabsContent>
