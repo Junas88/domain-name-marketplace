@@ -1180,12 +1180,6 @@ export class MemStorage implements IStorage {
       title: seoSetting.title,
       metaDescription: seoSetting.metaDescription,
       metaKeywords: seoSetting.metaKeywords,
-      ogTitle: seoSetting.ogTitle || null,
-      ogDescription: seoSetting.ogDescription || null,
-      ogImage: seoSetting.ogImage || null,
-      twitterTitle: seoSetting.twitterTitle || null,
-      twitterDescription: seoSetting.twitterDescription || null,
-      twitterImage: seoSetting.twitterImage || null,
       structuredData: seoSetting.structuredData || null,
       updatedAt: new Date()
     };

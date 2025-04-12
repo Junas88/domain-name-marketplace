@@ -625,6 +625,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ message: "Failed to delete page content" });
     }
   });
+  
+  // SEO SETTINGS API ROUTES - Added to handle metadata for Google search ranking optimization
 
   // Download file from a page content
   app.get("/api/page-contents/:pageKey/download", async (req, res) => {
