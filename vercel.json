@@ -2,6 +2,14 @@
   "version": 2,
   "routes": [
     {
+      "src": "/admin-fallback/.*",
+      "dest": "/index.html"
+    },
+    {
+      "src": "/admin-fallback",
+      "dest": "/index.html"
+    },
+    {
       "src": "/admin/.*",
       "dest": "/admin"
     },
