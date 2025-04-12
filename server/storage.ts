@@ -10,6 +10,7 @@ import {
 } from "@shared/schema";
 import session from "express-session";
 import createMemoryStore from "memorystore";
+// Use optional chaining to prevent errors when db or pool is null
 import { db, pool } from "./db";
 import { eq, desc, count, sum, avg, and, like, or, not, gt, lt, between } from "drizzle-orm";
 import connectPgSimple from "connect-pg-simple";
@@ -1233,10 +1234,25 @@ export class DatabaseStorage implements IStorage {
   public sessionStore: session.Store;
 
   constructor() {
-    this.sessionStore = new PostgresStore({
-      pool,
-      createTableIfMissing: true
-    });
+    // If pool is available, use PostgreSQL session store, otherwise fallback to memory store
+    if (pool) {
+      try {
+        this.sessionStore = new PostgresStore({
+          pool,
+          createTableIfMissing: true
+        });
+      } catch (error) {
+        console.warn("Failed to create PostgreSQL session store, falling back to memory store", error);
+        this.sessionStore = new MemoryStore({
+          checkPeriod: 86400000 // prune expired entries every 24h
+        });
+      }
+    } else {
+      // Fallback to memory store if pool is not available
+      this.sessionStore = new MemoryStore({
+        checkPeriod: 86400000 // prune expired entries every 24h
+      });
+    }
   }
 
   async getUser(id: number): Promise<User | undefined> {
@@ -1582,5 +1598,20 @@ export class DatabaseStorage implements IStorage {
   }
 }
 
-// Change to database storage
-export const storage = new DatabaseStorage();
+// Helper function to check if database is available
+const isDatabaseAvailable = () => {
+  return !!db;
+}
+
+// Choose the appropriate storage implementation based on database availability
+let storage: IStorage;
+
+if (isDatabaseAvailable()) {
+  console.log("Using database storage");
+  storage = new DatabaseStorage();
+} else {
+  console.log("Database not available, using in-memory storage");
+  storage = new MemStorage();
+}
+
+export { storage };

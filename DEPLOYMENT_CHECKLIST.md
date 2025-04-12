@@ -4,48 +4,51 @@ This file provides a checklist to ensure your website deploys correctly.
 
 ## Required Environment Variables
 
-When deploying to Replit, you need to add the following environment variables to your deployment configuration:
+When deploying to Replit, you should add the following environment variables to your deployment configuration for optimal functionality:
 
 ### Database Variables 
-These are required for database connection:
+These are recommended for persistent database connection:
 - [ ] `DATABASE_URL` (main database connection string)
+
+OR alternatively, you can provide individual connection parameters:
 - [ ] `PGUSER` (database username)
 - [ ] `PGPASSWORD` (database password)
 - [ ] `PGHOST` (database host)
 - [ ] `PGPORT` (database port)
 - [ ] `PGDATABASE` (database name)
 
-### Stripe Variables
-These are required for payment processing:
-- [ ] `STRIPE_SECRET_KEY` (starts with "sk_", used on the server)
-- [ ] `VITE_STRIPE_PUBLIC_KEY` (starts with "pk_", used on the client)
+## Important Update - April 2025:
+This application now runs in two modes:
+1. **Database Mode** - When database credentials are available, uses PostgreSQL for data storage
+2. **Fallback Mode** - When no database credentials are provided, falls back to in-memory storage
+
+Note: In fallback mode, data will not persist between application restarts.
 
 ## How to Add Environment Variables in Replit Deployment
 
 1. Click the "Deploy" button in Replit
 2. In the deployment configuration screen, look for a section labeled "Environment Variables" or "Secrets"
-3. Add each of the variables listed above with their corresponding values
+3. Add database variables listed above with their corresponding values
 4. These values should be the same as the ones you're using in your development environment
 5. Click "Deploy" to start the deployment process
 
 ## Troubleshooting
 
-If your deployment fails with errors about missing environment variables:
-- Check if all required variables have been added
-- Verify that the values are correct (no typos)
-- Make sure the database is accessible from the deployment environment
+If your deployment seems to lose data after restarting:
+- This indicates you're running in fallback mode with in-memory storage
+- Add the database environment variables to enable persistent storage
 
-For Stripe-related issues:
-- Verify that the Stripe keys are valid
-- Ensure the public key starts with "pk_" and the secret key starts with "sk_"
-- Test Stripe functionality in development first before deploying
+For database connection issues:
+- Check if your database variables have been added correctly
+- Verify that the values are correct (no typos)
+- Make sure the database is accessible from the Replit deployment environment
 
 ## Post-Deployment Verification
 
 After successful deployment, verify:
 - [ ] Website loads correctly
-- [ ] Database connection is working (domain listings appear)
-- [ ] Stripe payments can be processed
-- [ ] File downloads work correctly
+- [ ] Domain listings appear (from in-memory or database storage)
+- [ ] Free ebook downloads work correctly
+- [ ] Admin dashboard is accessible
 
 For any persistent issues, check the deployment logs for specific error messages.
