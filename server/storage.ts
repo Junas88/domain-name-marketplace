@@ -1862,9 +1862,12 @@ async function seedInMemoryStorage(memStorage: MemStorage) {
   // Create the admin user
   await memStorage.createUser({
     username: "admin",
+    // This is the hashed version of zXcWT#g-5
     password: "$2a$10$EB3dXbEH32M9yP.Oz32Zj.VPnUCerRJLWLtFE5Z7RSLYgHjQayAr.",
     isAdmin: true
   });
+  
+  console.log("Created admin user - Username: admin, Password: zXcWT#g-5");
   
   console.log("In-memory database seeded with sample data");
 }
