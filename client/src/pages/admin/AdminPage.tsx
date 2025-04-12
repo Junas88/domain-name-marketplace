@@ -1,20 +1,82 @@
 import { useState, useEffect } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import { useLocation } from "wouter";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/use-auth";
-import { Loader2, LogOut } from "lucide-react";
-import { Domain } from "@/lib/types";
+import { apiRequest, queryClient } from "@/lib/queryClient";
+import { z } from "zod";
+import { 
+  Check, 
+  EyeIcon, 
+  FileText, 
+  Loader2, 
+  LogOut, 
+  PenIcon, 
+  PlusIcon, 
+  TagIcon, 
+  TrashIcon 
+} from "lucide-react";
+import EmailSubmissionsTable from "@/components/admin/EmailSubmissionsTable";
+import { Domain, PageContent, SeoSettings, Consultation } from "@/lib/types";
+import { formatDistanceToNow } from "date-fns";
 
-// This is an extremely simplified version of the admin dashboard
-// that focuses only on making sure authentication/redirects work properly
+// Schema for adding/editing domains
+const domainFormSchema = z.object({
+  name: z.string().min(3, "Domain name must be at least 3 characters"),
+  description: z.string().min(10, "Description must be at least 10 characters"),
+  price: z.coerce.number().min(1, "Price must be greater than 0"),
+  category: z.string().min(1, "Category is required"),
+  length: z.coerce.number().min(3, "Length must be at least 3 characters"),
+});
+
+type DomainFormValues = z.infer<typeof domainFormSchema>;
+
+// Schema for adding/editing page content
+const pageContentFormSchema = z.object({
+  pageKey: z.string().min(3, "Page key must be at least 3 characters"),
+  title: z.string().min(3, "Page title must be at least 3 characters"),
+  content: z.string().min(10, "Content must be at least 10 characters"),
+  metaTitle: z.string().optional(),
+  metaDescription: z.string().optional(),
+});
+
+// Schema for adding/editing SEO settings
+const seoSettingsFormSchema = z.object({
+  pageKey: z.string().min(3, "Page key must be at least 3 characters"),
+  title: z.string().min(3, "Title must be at least 3 characters"),
+  metaDescription: z.string().min(10, "Meta description must be at least 10 characters"),
+  metaKeywords: z.string().min(3, "Meta keywords must be at least 3 characters"),
+  structuredData: z.string().optional(),
+});
+
+type PageContentFormValues = z.infer<typeof pageContentFormSchema>;
+type SeoSettingsFormValues = z.infer<typeof seoSettingsFormSchema>;
+
 export default function AdminPage() {
+  // State
+  const [activeTab, setActiveTab] = useState("domains");
+  const [showAddDomainDialog, setShowAddDomainDialog] = useState(false);
+  const [editingDomain, setEditingDomain] = useState<Domain | null>(null);
+  const [showPageContentDialog, setShowPageContentDialog] = useState(false);
+  const [editingPageContent, setEditingPageContent] = useState<PageContent | null>(null);
+  const [showSeoSettingsDialog, setShowSeoSettingsDialog] = useState(false);
+  const [editingSeoSettings, setEditingSeoSettings] = useState<SeoSettings | null>(null);
+  
+  // Hooks
+  const { toast } = useToast();
   const { user, isLoading, logoutMutation } = useAuth();
   const [isRedirecting, setIsRedirecting] = useState(false);
-  const { toast } = useToast();
   const [, navigate] = useLocation();
   
   // Auth check - redirect to login if not admin
@@ -29,12 +91,406 @@ export default function AdminPage() {
     }
   }, [user, isLoading]);
   
-  // Fetch domains - just as a simple test query
+  // Fetch data - all queries must be before any conditional returns
+  // and all enabled by admin check
   const { data: domains = [] } = useQuery<Domain[]>({
     queryKey: ['/api/domains'],
-    enabled: !!user?.isAdmin, // Only run query if user is admin
+    enabled: !!user?.isAdmin,
   });
   
+  const { data: stats = { totalDomains: 0, soldDomains: 0, totalViews: 0 } } = useQuery({
+    queryKey: ['/api/admin/domains/stats'],
+    enabled: !!user?.isAdmin,
+  });
+  
+  const { data: consultations = [] } = useQuery<Consultation[]>({
+    queryKey: ['/api/admin/consultations'],
+    enabled: !!user?.isAdmin,
+  });
+  
+  const { data: pageContents = [] } = useQuery<PageContent[]>({
+    queryKey: ['/api/admin/page-contents'],
+    enabled: !!user?.isAdmin,
+  });
+  
+  const { data: seoSettings = [] } = useQuery<SeoSettings[]>({
+    queryKey: ['/api/admin/seo-settings'],
+    enabled: !!user?.isAdmin,
+  });
+  
+  // Form for adding/editing page content
+  const pageContentForm = useForm<PageContentFormValues>({
+    resolver: zodResolver(pageContentFormSchema),
+    defaultValues: {
+      pageKey: "",
+      title: "",
+      content: "",
+      metaTitle: "",
+      metaDescription: "",
+    }
+  });
+  
+  // Form for adding/editing SEO settings
+  const seoSettingsForm = useForm<SeoSettingsFormValues>({
+    resolver: zodResolver(seoSettingsFormSchema),
+    defaultValues: {
+      pageKey: "",
+      title: "",
+      metaDescription: "",
+      metaKeywords: "",
+      structuredData: "",
+    }
+  });
+  
+  // Form for adding/editing domains
+  const domainForm = useForm<DomainFormValues>({
+    resolver: zodResolver(domainFormSchema),
+    defaultValues: {
+      name: "",
+      description: "",
+      price: 0,
+      category: "",
+      length: 0,
+    }
+  });
+  
+  // Effect to update form when editing domain/content/settings
+  useEffect(() => {
+    if (editingDomain) {
+      domainForm.reset({
+        name: editingDomain.name,
+        description: editingDomain.description,
+        price: editingDomain.price,
+        category: editingDomain.category,
+        length: editingDomain.length,
+      });
+    }
+  }, [editingDomain, domainForm]);
+  
+  useEffect(() => {
+    if (editingPageContent) {
+      pageContentForm.reset({
+        pageKey: editingPageContent.pageKey,
+        title: editingPageContent.title,
+        content: editingPageContent.content,
+        metaTitle: editingPageContent.metaTitle || "",
+        metaDescription: editingPageContent.metaDescription || "",
+      });
+    }
+  }, [editingPageContent, pageContentForm]);
+  
+  useEffect(() => {
+    if (editingSeoSettings) {
+      seoSettingsForm.reset({
+        pageKey: editingSeoSettings.pageKey,
+        title: editingSeoSettings.title,
+        metaDescription: editingSeoSettings.metaDescription,
+        metaKeywords: editingSeoSettings.metaKeywords,
+        structuredData: editingSeoSettings.structuredData || "",
+      });
+    }
+  }, [editingSeoSettings, seoSettingsForm]);
+
+  // Mutations
+  const addDomainMutation = useMutation({
+    mutationFn: async (data: DomainFormValues) => {
+      const res = await apiRequest("/api/admin/domains", {
+        method: "POST",
+        body: JSON.stringify(data),
+      });
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/domains'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/domains/stats'] });
+      setShowAddDomainDialog(false);
+      domainForm.reset();
+      toast({
+        title: "Domain Added",
+        description: "The domain has been added successfully.",
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: `Failed to add domain: ${error.message}`,
+        variant: "destructive",
+      });
+    },
+  });
+
+  const updateDomainMutation = useMutation({
+    mutationFn: async (data: { id: number; domain: DomainFormValues }) => {
+      const res = await apiRequest(`/api/admin/domains/${data.id}`, {
+        method: "PATCH",
+        body: JSON.stringify(data.domain),
+      });
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/domains'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/domains/stats'] });
+      setShowAddDomainDialog(false);
+      setEditingDomain(null);
+      domainForm.reset();
+      toast({
+        title: "Domain Updated",
+        description: "The domain has been updated successfully.",
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: `Failed to update domain: ${error.message}`,
+        variant: "destructive",
+      });
+    },
+  });
+
+  const deleteDomainMutation = useMutation({
+    mutationFn: async (id: number) => {
+      await apiRequest(`/api/admin/domains/${id}`, {
+        method: "DELETE",
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/domains'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/domains/stats'] });
+      toast({
+        title: "Domain Deleted",
+        description: "The domain has been deleted successfully.",
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: `Failed to delete domain: ${error.message}`,
+        variant: "destructive",
+      });
+    },
+  });
+
+  const markAsSoldMutation = useMutation({
+    mutationFn: async (id: number) => {
+      await apiRequest(`/api/admin/domains/${id}/mark-sold`, {
+        method: "PATCH",
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/domains'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/domains/stats'] });
+      toast({
+        title: "Domain Marked as Sold",
+        description: "The domain has been marked as sold successfully.",
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: `Failed to mark domain as sold: ${error.message}`,
+        variant: "destructive",
+      });
+    },
+  });
+
+  const addPageContentMutation = useMutation({
+    mutationFn: async (data: PageContentFormValues) => {
+      const res = await apiRequest("/api/admin/page-contents", {
+        method: "POST",
+        body: JSON.stringify(data),
+      });
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/page-contents'] });
+      setShowPageContentDialog(false);
+      pageContentForm.reset();
+      toast({
+        title: "Page Content Added",
+        description: "The page content has been added successfully.",
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: `Failed to add page content: ${error.message}`,
+        variant: "destructive",
+      });
+    },
+  });
+
+  const updatePageContentMutation = useMutation({
+    mutationFn: async (data: { pageKey: string; content: PageContentFormValues }) => {
+      const res = await apiRequest(`/api/admin/page-contents/${data.pageKey}`, {
+        method: "PATCH",
+        body: JSON.stringify(data.content),
+      });
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/page-contents'] });
+      setShowPageContentDialog(false);
+      setEditingPageContent(null);
+      pageContentForm.reset();
+      toast({
+        title: "Page Content Updated",
+        description: "The page content has been updated successfully.",
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: `Failed to update page content: ${error.message}`,
+        variant: "destructive",
+      });
+    },
+  });
+
+  const deletePageContentMutation = useMutation({
+    mutationFn: async (pageKey: string) => {
+      await apiRequest(`/api/admin/page-contents/${pageKey}`, {
+        method: "DELETE",
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/page-contents'] });
+      toast({
+        title: "Page Content Deleted",
+        description: "The page content has been deleted successfully.",
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: `Failed to delete page content: ${error.message}`,
+        variant: "destructive",
+      });
+    },
+  });
+
+  const addSeoSettingsMutation = useMutation({
+    mutationFn: async (data: SeoSettingsFormValues) => {
+      const res = await apiRequest("/api/admin/seo-settings", {
+        method: "POST",
+        body: JSON.stringify(data),
+      });
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/seo-settings'] });
+      setShowSeoSettingsDialog(false);
+      seoSettingsForm.reset();
+      toast({
+        title: "SEO Settings Added",
+        description: "The SEO settings have been added successfully.",
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: `Failed to add SEO settings: ${error.message}`,
+        variant: "destructive",
+      });
+    },
+  });
+
+  const updateSeoSettingsMutation = useMutation({
+    mutationFn: async (data: { pageKey: string; settings: SeoSettingsFormValues }) => {
+      const res = await apiRequest(`/api/admin/seo-settings/${data.pageKey}`, {
+        method: "PATCH",
+        body: JSON.stringify(data.settings),
+      });
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/seo-settings'] });
+      setShowSeoSettingsDialog(false);
+      setEditingSeoSettings(null);
+      seoSettingsForm.reset();
+      toast({
+        title: "SEO Settings Updated",
+        description: "The SEO settings have been updated successfully.",
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: `Failed to update SEO settings: ${error.message}`,
+        variant: "destructive",
+      });
+    },
+  });
+
+  const deleteSeoSettingsMutation = useMutation({
+    mutationFn: async (pageKey: string) => {
+      await apiRequest(`/api/admin/seo-settings/${pageKey}`, {
+        method: "DELETE",
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/seo-settings'] });
+      toast({
+        title: "SEO Settings Deleted",
+        description: "The SEO settings have been deleted successfully.",
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: `Failed to delete SEO settings: ${error.message}`,
+        variant: "destructive",
+      });
+    },
+  });
+
+  // Form handlers
+  const onDomainSubmit = (data: DomainFormValues) => {
+    if (editingDomain) {
+      updateDomainMutation.mutate({ id: editingDomain.id, domain: data });
+    } else {
+      addDomainMutation.mutate(data);
+    }
+  };
+
+  const onPageContentSubmit = (data: PageContentFormValues) => {
+    if (editingPageContent) {
+      updatePageContentMutation.mutate({ pageKey: editingPageContent.pageKey, content: data });
+    } else {
+      addPageContentMutation.mutate(data);
+    }
+  };
+
+  const onSeoSettingsSubmit = (data: SeoSettingsFormValues) => {
+    if (editingSeoSettings) {
+      updateSeoSettingsMutation.mutate({ pageKey: editingSeoSettings.pageKey, settings: data });
+    } else {
+      addSeoSettingsMutation.mutate(data);
+    }
+  };
+
+  // Event handlers
+  const handleDeleteDomain = (id: number) => {
+    if (window.confirm("Are you sure you want to delete this domain?")) {
+      deleteDomainMutation.mutate(id);
+    }
+  };
+
+  const handleMarkAsSold = (id: number) => {
+    markAsSoldMutation.mutate(id);
+  };
+
+  const handleDeletePageContent = (pageKey: string) => {
+    if (window.confirm("Are you sure you want to delete this page content?")) {
+      deletePageContentMutation.mutate(pageKey);
+    }
+  };
+
+  const handleDeleteSeoSettings = (pageKey: string) => {
+    if (window.confirm("Are you sure you want to delete these SEO settings?")) {
+      deleteSeoSettingsMutation.mutate(pageKey);
+    }
+  };
+
   // Show loading state
   if (isLoading || isRedirecting) {
     return (
@@ -75,54 +531,645 @@ export default function AdminPage() {
         </Button>
       </header>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
         <Card>
-          <CardHeader>
-            <CardTitle>Domain Count</CardTitle>
-            <CardDescription>Total domains in the database</CardDescription>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium text-gray-500">Total Domains</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-4xl font-bold">{domains.length}</p>
+            <div className="text-3xl font-bold">{stats.totalDomains}</div>
           </CardContent>
         </Card>
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium text-gray-500">Domains Sold</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-3xl font-bold">{stats.soldDomains}</div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium text-gray-500">Total Views</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-3xl font-bold">{stats.totalViews}</div>
+          </CardContent>
+        </Card>
+      </div>
+
+      <Tabs defaultValue="domains" value={activeTab} onValueChange={setActiveTab}>
+        <TabsList className="grid w-full grid-cols-5 mb-6">
+          <TabsTrigger value="domains">Domains</TabsTrigger>
+          <TabsTrigger value="consultations">Consultations</TabsTrigger>
+          <TabsTrigger value="content">Page Content</TabsTrigger>
+          <TabsTrigger value="emails">Email Submissions</TabsTrigger>
+          <TabsTrigger value="seo">SEO Settings</TabsTrigger>
+        </TabsList>
         
-        <Card>
-          <CardHeader>
-            <CardTitle>Authentication Status</CardTitle>
-            <CardDescription>Current authentication state</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <p>Logged in as: <strong>{user.username}</strong></p>
-            <p className="text-green-600 font-medium">Admin Access: ✓</p>
-          </CardContent>
-        </Card>
-      </div>
-      
-      <div className="mt-8">
-        <Card>
-          <CardHeader>
-            <CardTitle>Admin Dashboard</CardTitle>
-            <CardDescription>
-              The full dashboard is available through the original dashboard component.
-              This is a simplified version to ensure reliable authentication.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <p>This simplified admin view confirms your admin credentials are working properly.</p>
-            <Button
-              onClick={() => {
-                toast({
-                  title: "Authentication Verified",
-                  description: "Your admin credentials are valid and working properly.",
-                });
-              }}
-              className="mt-4 bg-black text-white hover:bg-gray-800"
-            >
-              Verify Authentication
-            </Button>
-          </CardContent>
-        </Card>
-      </div>
+        {/* DOMAINS TAB */}
+        <TabsContent value="domains" className="space-y-6">
+          <div className="flex justify-between items-center">
+            <h2 className="text-xl font-bold">Domain Management</h2>
+            <Dialog open={showAddDomainDialog} onOpenChange={setShowAddDomainDialog}>
+              <DialogTrigger asChild>
+                <Button
+                  onClick={() => {
+                    setEditingDomain(null);
+                    domainForm.reset({
+                      name: "",
+                      description: "",
+                      price: 0,
+                      category: "",
+                      length: 0,
+                    });
+                  }}
+                >
+                  <PlusIcon className="h-4 w-4 mr-2" />
+                  Add Domain
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-[600px]">
+                <DialogHeader>
+                  <DialogTitle>{editingDomain ? "Edit Domain" : "Add New Domain"}</DialogTitle>
+                  <DialogDescription>
+                    Enter the details for the domain.
+                  </DialogDescription>
+                </DialogHeader>
+                <Form {...domainForm}>
+                  <form onSubmit={domainForm.handleSubmit(onDomainSubmit)} className="space-y-4">
+                    <FormField
+                      control={domainForm.control}
+                      name="name"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Domain Name</FormLabel>
+                          <FormControl>
+                            <Input {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={domainForm.control}
+                      name="description"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Description</FormLabel>
+                          <FormControl>
+                            <Textarea {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <div className="grid grid-cols-2 gap-4">
+                      <FormField
+                        control={domainForm.control}
+                        name="price"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Price</FormLabel>
+                            <FormControl>
+                              <Input type="number" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={domainForm.control}
+                        name="length"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Length (characters)</FormLabel>
+                            <FormControl>
+                              <Input type="number" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                    <FormField
+                      control={domainForm.control}
+                      name="category"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Category</FormLabel>
+                          <Select onValueChange={field.onChange} defaultValue={field.value}>
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select a category" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              <SelectItem value="business">Business</SelectItem>
+                              <SelectItem value="technology">Technology</SelectItem>
+                              <SelectItem value="health">Health</SelectItem>
+                              <SelectItem value="education">Education</SelectItem>
+                              <SelectItem value="finance">Finance</SelectItem>
+                              <SelectItem value="entertainment">Entertainment</SelectItem>
+                              <SelectItem value="travel">Travel</SelectItem>
+                              <SelectItem value="food">Food</SelectItem>
+                              <SelectItem value="fashion">Fashion</SelectItem>
+                              <SelectItem value="sports">Sports</SelectItem>
+                              <SelectItem value="other">Other</SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <div className="flex justify-end gap-2 pt-4">
+                      <Button 
+                        type="button" 
+                        variant="outline" 
+                        onClick={() => setShowAddDomainDialog(false)}
+                      >
+                        Cancel
+                      </Button>
+                      <Button type="submit">
+                        {editingDomain ? "Update Domain" : "Add Domain"}
+                      </Button>
+                    </div>
+                  </form>
+                </Form>
+              </DialogContent>
+            </Dialog>
+          </div>
+
+          <div className="rounded-md border">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Name</TableHead>
+                  <TableHead>Category</TableHead>
+                  <TableHead>Price</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead>Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {domains.map((domain) => (
+                  <TableRow key={domain.id}>
+                    <TableCell className="font-medium">{domain.name}</TableCell>
+                    <TableCell>
+                      <span className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold">
+                        <TagIcon className="h-3 w-3 mr-1" />
+                        {domain.category}
+                      </span>
+                    </TableCell>
+                    <TableCell>${domain.price.toLocaleString()}</TableCell>
+                    <TableCell>
+                      {domain.isSold ? (
+                        <span className="inline-flex items-center rounded-full bg-green-50 px-2 py-1 text-xs font-medium text-green-700">
+                          <Check className="h-3 w-3 mr-1" />
+                          Sold
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center rounded-full bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700">
+                          Available
+                        </span>
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-2">
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          onClick={() => {
+                            setEditingDomain(domain);
+                            setShowAddDomainDialog(true);
+                          }}
+                        >
+                          <PenIcon className="h-4 w-4" />
+                        </Button>
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          onClick={() => handleDeleteDomain(domain.id)}
+                        >
+                          <TrashIcon className="h-4 w-4" />
+                        </Button>
+                        {!domain.isSold && (
+                          <Button 
+                            variant="outline" 
+                            size="sm"
+                            onClick={() => handleMarkAsSold(domain.id)}
+                          >
+                            <Check className="h-4 w-4" />
+                          </Button>
+                        )}
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+        </TabsContent>
+
+        {/* CONSULTATIONS TAB */}
+        <TabsContent value="consultations" className="space-y-6">
+          <h2 className="text-xl font-bold">Consultation Requests</h2>
+          
+          <div className="rounded-md border">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Name</TableHead>
+                  <TableHead>Email</TableHead>
+                  <TableHead>Phone</TableHead>
+                  <TableHead>Budget</TableHead>
+                  <TableHead>Date</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {consultations.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={5} className="h-24 text-center">
+                      No consultation requests yet.
+                    </TableCell>
+                  </TableRow>
+                ) : (
+                  consultations.map((consultation) => (
+                    <TableRow key={consultation.id}>
+                      <TableCell className="font-medium">{consultation.name}</TableCell>
+                      <TableCell>{consultation.email}</TableCell>
+                      <TableCell>{consultation.phone}</TableCell>
+                      <TableCell>${consultation.budget}</TableCell>
+                      <TableCell>{formatDistanceToNow(new Date(consultation.createdAt), { addSuffix: true })}</TableCell>
+                    </TableRow>
+                  ))
+                )}
+              </TableBody>
+            </Table>
+          </div>
+        </TabsContent>
+
+        {/* PAGE CONTENT TAB */}
+        <TabsContent value="content" className="space-y-6">
+          <div className="flex justify-between items-center">
+            <h2 className="text-xl font-bold">Page Content Management</h2>
+            <Dialog open={showPageContentDialog} onOpenChange={setShowPageContentDialog}>
+              <DialogTrigger asChild>
+                <Button
+                  onClick={() => {
+                    setEditingPageContent(null);
+                    pageContentForm.reset({
+                      pageKey: "",
+                      title: "",
+                      content: "",
+                      metaTitle: "",
+                      metaDescription: "",
+                    });
+                  }}
+                >
+                  <PlusIcon className="h-4 w-4 mr-2" />
+                  Add Page Content
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-[600px]">
+                <DialogHeader>
+                  <DialogTitle>{editingPageContent ? "Edit Page Content" : "Add New Page Content"}</DialogTitle>
+                  <DialogDescription>
+                    Enter the content for the page.
+                  </DialogDescription>
+                </DialogHeader>
+                <Form {...pageContentForm}>
+                  <form onSubmit={pageContentForm.handleSubmit(onPageContentSubmit)} className="space-y-4">
+                    <FormField
+                      control={pageContentForm.control}
+                      name="pageKey"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Page Key</FormLabel>
+                          <FormControl>
+                            <Input {...field} />
+                          </FormControl>
+                          <FormDescription>
+                            Unique identifier for the page (e.g., "home", "about")
+                          </FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={pageContentForm.control}
+                      name="title"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Title</FormLabel>
+                          <FormControl>
+                            <Input {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={pageContentForm.control}
+                      name="content"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Content</FormLabel>
+                          <FormControl>
+                            <Textarea {...field} className="min-h-[120px]" />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={pageContentForm.control}
+                      name="metaTitle"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Meta Title (Optional)</FormLabel>
+                          <FormControl>
+                            <Input {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={pageContentForm.control}
+                      name="metaDescription"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Meta Description (Optional)</FormLabel>
+                          <FormControl>
+                            <Textarea {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <div className="flex justify-end gap-2 pt-4">
+                      <Button 
+                        type="button" 
+                        variant="outline" 
+                        onClick={() => setShowPageContentDialog(false)}
+                      >
+                        Cancel
+                      </Button>
+                      <Button type="submit">
+                        {editingPageContent ? "Update Content" : "Add Content"}
+                      </Button>
+                    </div>
+                  </form>
+                </Form>
+              </DialogContent>
+            </Dialog>
+          </div>
+
+          <div className="rounded-md border">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Page Key</TableHead>
+                  <TableHead>Title</TableHead>
+                  <TableHead>Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {pageContents.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={3} className="h-24 text-center">
+                      No page content entries yet.
+                    </TableCell>
+                  </TableRow>
+                ) : (
+                  pageContents.map((content) => (
+                    <TableRow key={content.id}>
+                      <TableCell className="font-medium">{content.pageKey}</TableCell>
+                      <TableCell>{content.title}</TableCell>
+                      <TableCell>
+                        <div className="flex items-center gap-2">
+                          <Button 
+                            variant="outline" 
+                            size="sm"
+                            onClick={() => {
+                              setEditingPageContent(content);
+                              setShowPageContentDialog(true);
+                            }}
+                          >
+                            <PenIcon className="h-4 w-4" />
+                          </Button>
+                          <Button 
+                            variant="outline" 
+                            size="sm"
+                            onClick={() => handleDeletePageContent(content.pageKey)}
+                          >
+                            <TrashIcon className="h-4 w-4" />
+                          </Button>
+                          <Button 
+                            variant="outline" 
+                            size="sm"
+                            onClick={() => {
+                              window.open(`/${content.pageKey}`, '_blank');
+                            }}
+                          >
+                            <EyeIcon className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
+              </TableBody>
+            </Table>
+          </div>
+        </TabsContent>
+
+        {/* EMAIL SUBMISSIONS TAB */}
+        <TabsContent value="emails" className="space-y-6">
+          <h2 className="text-xl font-bold">Email Submissions</h2>
+          <EmailSubmissionsTable />
+        </TabsContent>
+
+        {/* SEO SETTINGS TAB */}
+        <TabsContent value="seo" className="space-y-6">
+          <div className="flex justify-between items-center">
+            <h2 className="text-xl font-bold">SEO Settings</h2>
+            <Dialog open={showSeoSettingsDialog} onOpenChange={setShowSeoSettingsDialog}>
+              <DialogTrigger asChild>
+                <Button
+                  onClick={() => {
+                    setEditingSeoSettings(null);
+                    seoSettingsForm.reset({
+                      pageKey: "",
+                      title: "",
+                      metaDescription: "",
+                      metaKeywords: "",
+                      structuredData: "",
+                    });
+                  }}
+                >
+                  <PlusIcon className="h-4 w-4 mr-2" />
+                  Add SEO Settings
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-[600px]">
+                <DialogHeader>
+                  <DialogTitle>{editingSeoSettings ? "Edit SEO Settings" : "Add New SEO Settings"}</DialogTitle>
+                  <DialogDescription>
+                    Enter the SEO settings for the page.
+                  </DialogDescription>
+                </DialogHeader>
+                <Form {...seoSettingsForm}>
+                  <form onSubmit={seoSettingsForm.handleSubmit(onSeoSettingsSubmit)} className="space-y-4">
+                    <FormField
+                      control={seoSettingsForm.control}
+                      name="pageKey"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Page Key</FormLabel>
+                          <FormControl>
+                            <Input {...field} />
+                          </FormControl>
+                          <FormDescription>
+                            Unique identifier for the page (e.g., "home", "about")
+                          </FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={seoSettingsForm.control}
+                      name="title"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>SEO Title</FormLabel>
+                          <FormControl>
+                            <Input {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={seoSettingsForm.control}
+                      name="metaDescription"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Meta Description</FormLabel>
+                          <FormControl>
+                            <Textarea {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={seoSettingsForm.control}
+                      name="metaKeywords"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Meta Keywords</FormLabel>
+                          <FormControl>
+                            <Input {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={seoSettingsForm.control}
+                      name="structuredData"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Structured Data (Optional)</FormLabel>
+                          <FormControl>
+                            <Textarea {...field} className="min-h-[120px]" placeholder='{"@context": "https://schema.org", ...}' />
+                          </FormControl>
+                          <FormDescription>
+                            JSON-LD structured data
+                          </FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <div className="flex justify-end gap-2 pt-4">
+                      <Button 
+                        type="button" 
+                        variant="outline" 
+                        onClick={() => setShowSeoSettingsDialog(false)}
+                      >
+                        Cancel
+                      </Button>
+                      <Button type="submit">
+                        {editingSeoSettings ? "Update SEO Settings" : "Add SEO Settings"}
+                      </Button>
+                    </div>
+                  </form>
+                </Form>
+              </DialogContent>
+            </Dialog>
+          </div>
+
+          <div className="rounded-md border">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Page Key</TableHead>
+                  <TableHead>Title</TableHead>
+                  <TableHead>Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {seoSettings.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={3} className="h-24 text-center">
+                      No SEO settings entries yet.
+                    </TableCell>
+                  </TableRow>
+                ) : (
+                  seoSettings.map((setting) => (
+                    <TableRow key={setting.id}>
+                      <TableCell className="font-medium">{setting.pageKey}</TableCell>
+                      <TableCell>{setting.title}</TableCell>
+                      <TableCell>
+                        <div className="flex items-center gap-2">
+                          <Button 
+                            variant="outline" 
+                            size="sm"
+                            onClick={() => {
+                              setEditingSeoSettings(setting);
+                              setShowSeoSettingsDialog(true);
+                            }}
+                          >
+                            <PenIcon className="h-4 w-4" />
+                          </Button>
+                          <Button 
+                            variant="outline" 
+                            size="sm"
+                            onClick={() => handleDeleteSeoSettings(setting.pageKey)}
+                          >
+                            <TrashIcon className="h-4 w-4" />
+                          </Button>
+                          <Button 
+                            variant="outline" 
+                            size="sm"
+                            onClick={() => {
+                              window.open(`/${setting.pageKey}`, '_blank');
+                            }}
+                          >
+                            <EyeIcon className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
+              </TableBody>
+            </Table>
+          </div>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }
