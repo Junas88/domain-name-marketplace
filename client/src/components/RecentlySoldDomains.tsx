@@ -41,18 +41,15 @@ export default function RecentlySoldDomains() {
   if (isLoading) {
     return (
       <div className="mb-8">
-        <h2 className="text-center text-3xl font-bold mb-8">Recently Sold Domains</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <h2 className="text-center text-4xl font-bold mb-12">Premium Domains Sold</h2>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {[1, 2, 3].map((i) => (
-            <div key={i} className="p-1">
-              <div className="overflow-hidden border border-white/20 rounded-lg bg-black/40 backdrop-blur-sm">
-                <div className="p-6">
-                  <div className="flex flex-col items-center space-y-4">
-                    <Skeleton className="h-8 w-3/4 bg-white/10" />
-                    <Skeleton className="h-6 w-1/3 bg-white/10" />
-                    <Skeleton className="h-8 w-1/2 bg-white/10" />
-                    <Skeleton className="h-4 w-1/4 bg-white/10" />
-                  </div>
+            <div key={i} className="p-3">
+              <div className="overflow-hidden border border-white/20 rounded-xl bg-gradient-to-b from-black/60 to-black/40 backdrop-blur-sm">
+                <div className="p-8 flex flex-col items-center justify-center">
+                  <Skeleton className="h-10 w-4/5 bg-white/10 mb-4" />
+                  <Skeleton className="h-12 w-2/3 bg-white/10 my-4" />
+                  <Skeleton className="h-6 w-1/4 bg-white/10 mt-2 rounded-full" />
                 </div>
               </div>
             </div>
@@ -70,32 +67,27 @@ export default function RecentlySoldDomains() {
     if (Array.isArray(domains)) {
       return domains.map((domain) => (
         <CarouselItem key={domain.id}>
-          <div className="p-1">
-            <div className="overflow-hidden border border-white/20 rounded-lg bg-black/40 backdrop-blur-sm">
-              <div className="p-6">
-                <div className="flex flex-col items-center space-y-4">
-                  <div className="w-full text-center">
-                    <h3 className="text-xl font-bold mb-2 truncate hover:text-clip text-white">
-                      <a 
-                        href={`https://${domain.name}`} 
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center justify-center hover:text-gray-300 transition-colors"
-                      >
-                        {domain.name}
-                        <ExternalLink className="ml-1 h-4 w-4" />
-                      </a>
-                    </h3>
-                    <Badge className={`${getCategoryColor(domain.category)} text-white`}>
-                      {domain.category}
-                    </Badge>
-                  </div>
-                  <div className="font-semibold text-2xl text-white">
-                    {formatCurrency(domain.price)}
-                  </div>
-                  <div className="text-xs uppercase tracking-wide text-gray-400">
-                    SOLD
-                  </div>
+          <div className="p-3">
+            <div className="overflow-hidden border border-white/20 rounded-xl bg-gradient-to-b from-black/60 to-black/40 backdrop-blur-sm hover:border-white/40 transition-all">
+              <div className="p-8 flex flex-col items-center justify-center">
+                <h3 className="text-2xl md:text-3xl font-bold mb-4 text-white text-center">
+                  <a 
+                    href={`https://${domain.name}`} 
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="hover:text-gray-300 transition-colors inline-flex items-center"
+                  >
+                    {domain.name}
+                    <ExternalLink className="ml-2 h-5 w-5" />
+                  </a>
+                </h3>
+                
+                <div className="font-bold text-3xl md:text-4xl text-white mt-2 mb-4">
+                  {formatCurrency(domain.price)}
+                </div>
+                
+                <div className="text-sm uppercase tracking-widest font-semibold text-emerald-400 mt-2 border border-emerald-400/30 px-3 py-1 rounded-full">
+                  SOLD
                 </div>
               </div>
             </div>
@@ -108,8 +100,8 @@ export default function RecentlySoldDomains() {
 
   return (
     <div className="mb-8">
-      <h2 className="text-center text-3xl font-bold mb-8">Recently Sold Domains</h2>
-      <Carousel className="mx-auto">
+      <h2 className="text-center text-4xl font-bold mb-12">Premium Domains Sold</h2>
+      <Carousel className="mx-auto max-w-6xl">
         <CarouselContent>
           {carouselItems()}
         </CarouselContent>
