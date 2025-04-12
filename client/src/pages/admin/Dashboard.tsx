@@ -1372,12 +1372,6 @@ export default function AdminDashboard() {
                           title: "",
                           metaDescription: "",
                           metaKeywords: "",
-                          ogTitle: "",
-                          ogDescription: "",
-                          ogImage: "",
-                          twitterTitle: "",
-                          twitterDescription: "",
-                          twitterImage: "",
                           structuredData: "",
                         });
                       }}
