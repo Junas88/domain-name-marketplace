@@ -1308,7 +1308,7 @@ export default function AdminDashboard() {
                                       <>
                                         <div className="text-sm font-medium mt-4">Attached File:</div>
                                         <div className="text-sm bg-gray-100 p-2 rounded">
-                                          {pageContent.fileName} ({pageContent.fileType})
+                                          {pageContent.fileName}
                                           {pageContent.fileSize && <span className="ml-2">({(pageContent.fileSize / 1024 / 1024).toFixed(2)} MB)</span>}
                                         </div>
                                       </>

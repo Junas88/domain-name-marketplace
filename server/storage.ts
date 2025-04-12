@@ -1161,16 +1161,16 @@ export class MemStorage implements IStorage {
   
   // SEO Settings methods
   async getAllSeoSettings(): Promise<SeoSettings[]> {
-    return Array.from(this.seoSettings.values());
+    // Convert Map to array safely
+    const settingsArray: SeoSettings[] = [];
+    this.seoSettings.forEach((value) => {
+      settingsArray.push(value);
+    });
+    return settingsArray;
   }
 
   async getSeoSettingByPageKey(pageKey: string): Promise<SeoSettings | undefined> {
-    for (const seoSetting of this.seoSettings.values()) {
-      if (seoSetting.pageKey === pageKey) {
-        return seoSetting;
-      }
-    }
-    return undefined;
+    return this.seoSettings.get(pageKey);
   }
 
   async createSeoSetting(seoSetting: InsertSeoSettings): Promise<SeoSettings> {
