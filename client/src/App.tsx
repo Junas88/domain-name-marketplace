@@ -17,9 +17,7 @@ import BuyerProtection from "@/pages/BuyerProtection";
 import EbookPage from "@/pages/EbookPage";
 import EbookSuccess from "@/pages/EbookSuccess";
 import DomainFinderPage from "@/pages/DomainFinderPage";
-import AdminPage from "@/pages/admin/AdminPage";
-import BasicAdminFallback from "@/pages/admin/BasicAdminFallback";
-import LoginPage from "@/pages/auth/LoginPage";
+// Admin pages and login page removed as requested
 
 // Enhanced components with SEO metadata
 const HomePage = () => <SeoPageWrapper pageKey="home"><Home /></SeoPageWrapper>;
@@ -35,7 +33,7 @@ const EbookWrapper = () => <SeoPageWrapper pageKey="ebook"><EbookPage /></SeoPag
 const EbookSuccessWrapper = () => <SeoPageWrapper pageKey="ebook-success"><EbookSuccess /></SeoPageWrapper>;
 const NotFoundWrapper = () => <SeoPageWrapper pageKey="not-found"><NotFound /></SeoPageWrapper>;
 
-// Auth checking for admin dashboard is handled by the dashboard component itself
+// Main site routes
 
 // Normal router for all pages
 function Router() {
@@ -52,12 +50,7 @@ function Router() {
       <Route path="/domain-finder" component={DomainFinderWrapper} />
       <Route path="/ebook" component={EbookWrapper} />
       <Route path="/ebook-success" component={EbookSuccessWrapper} />
-      <Route path="/login" component={LoginPage} />
-      {/* Simple, consistent admin routing */}
-      <Route path="/admin" component={AdminPage} />
-      <Route path="/admin/dashboard" component={AdminPage} />
-      <Route path="/dashboard" component={AdminPage} />
-      <Route path="/admin-fallback" component={BasicAdminFallback} />
+      {/* Not found fallback */}
       <Route component={NotFoundWrapper} />
     </Switch>
   );
