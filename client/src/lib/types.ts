@@ -1,77 +1,79 @@
+// Domain type
 export interface Domain {
   id: number;
   name: string;
   description: string;
   price: number;
   category: string;
+  isSold: boolean;
   length: number;
-  isSold?: boolean;
-  viewCount?: number;
+  viewCount: number;
+  createdAt: string;
+  updatedAt: string;
 }
 
+// Offer type
 export interface Offer {
   id: number;
   domainId: number;
-  amount: number;
   name: string;
   email: string;
-  message?: string;
-  createdAt: Date;
+  price: number;
+  message: string;
+  createdAt: string;
 }
 
+// Consultation type
 export interface Consultation {
   id: number;
   name: string;
   email: string;
+  phone: string;
   industry: string;
-  message: string;
   budget: string;
-  createdAt: Date;
-}
-
-export interface DomainFilters {
-  category?: string;
-  priceRange?: string;
-  length?: string;
-}
-
-export interface OfferFormData {
-  domainId: number;
-  amount: number;
-  name: string;
-  email: string;
-  message?: string;
-}
-
-export interface ConsultationFormData {
-  name: string;
-  email: string;
-  industry: string;
   message: string;
-  budget: string;
+  createdAt: string;
 }
 
+// Page Content type
 export interface PageContent {
   id: number;
   pageKey: string;
   title: string;
   content: string;
-  metaTitle?: string | null;
-  metaDescription?: string | null;
-  price?: number | null;
-  isPurchaseRequired?: boolean | null;
-  filePath?: string | null;
-  fileName?: string | null;
-  fileType?: string | null;
-  fileSize?: number | null;
-  createdAt: Date;
-  updatedAt: Date;
-}
-
-export interface PageContentFormData {
-  pageKey: string;
-  title: string;
-  content: string;
   metaTitle?: string;
   metaDescription?: string;
+  sections?: any[];
+  filePath?: string;
+  fileName?: string;
+  fileSize?: number;
+  isPurchaseRequired?: boolean;
+  price?: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+// Email Submission type
+export interface EmailSubmission {
+  id: number;
+  email: string;
+  source: string;
+  createdAt: string;
+}
+
+// SEO Settings type
+export interface SeoSettings {
+  id: number;
+  pageKey: string;
+  title: string;
+  metaDescription: string;
+  metaKeywords: string;
+  ogTitle: string | null;
+  ogDescription: string | null;
+  ogImage: string | null;
+  twitterTitle: string | null;
+  twitterDescription: string | null;
+  twitterImage: string | null;
+  structuredData: string | null;
+  updatedAt: string;
 }

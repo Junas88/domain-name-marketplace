@@ -38,7 +38,7 @@ import {
 } from "lucide-react";
 import FileUploader from "@/components/admin/FileUploader";
 import EmailSubmissionsTable from "@/components/admin/EmailSubmissionsTable";
-import { Domain, Offer, Consultation, PageContent } from "@/lib/types";
+import { Domain, Offer, Consultation, PageContent, SeoSettings } from "@/lib/types";
 import { formatDistanceToNow } from "date-fns";
 
 // Schema for adding/editing domains
@@ -61,7 +61,25 @@ const pageContentFormSchema = z.object({
   metaDescription: z.string().optional(),
 });
 
+// Schema for adding/editing SEO settings
+const seoSettingsFormSchema = z.object({
+  pageKey: z.string().min(3, "Page key must be at least 3 characters"),
+  title: z.string().min(3, "Title must be at least 3 characters"),
+  metaDescription: z.string().min(10, "Meta description must be at least 10 characters"),
+  metaKeywords: z.string().min(3, "Meta keywords must be at least 3 characters"),
+  ogTitle: z.string().optional(),
+  ogDescription: z.string().optional(),
+  ogImage: z.string().optional(),
+  twitterTitle: z.string().optional(),
+  twitterDescription: z.string().optional(),
+  twitterImage: z.string().optional(),
+  structuredData: z.string().optional(),
+});
+
 type PageContentFormValues = z.infer<typeof pageContentFormSchema>;
+
+// Type for SEO settings form values
+type SeoSettingsFormValues = z.infer<typeof seoSettingsFormSchema>;
 
 export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState("domains");
@@ -69,6 +87,8 @@ export default function AdminDashboard() {
   const [editingDomain, setEditingDomain] = useState<null | any>(null);
   const [showPageContentDialog, setShowPageContentDialog] = useState(false);
   const [editingPageContent, setEditingPageContent] = useState<null | PageContent>(null);
+  const [showSeoSettingsDialog, setShowSeoSettingsDialog] = useState(false);
+  const [editingSeoSettings, setEditingSeoSettings] = useState<null | SeoSettings>(null);
   const { toast } = useToast();
   const { logoutMutation } = useAuth();
   const [, navigate] = useLocation();
@@ -381,13 +401,14 @@ export default function AdminDashboard() {
       </header>
 
       <Tabs defaultValue="domains" value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="grid w-full grid-cols-6 mb-6">
+        <TabsList className="grid w-full grid-cols-7 mb-6">
           <TabsTrigger value="domains">Domains</TabsTrigger>
           <TabsTrigger value="analytics">Analytics</TabsTrigger>
           <TabsTrigger value="offers">Offers</TabsTrigger>
           <TabsTrigger value="consultations">Consultations</TabsTrigger>
           <TabsTrigger value="content">Page Content</TabsTrigger>
           <TabsTrigger value="emails">Email Submissions</TabsTrigger>
+          <TabsTrigger value="seo">SEO Settings</TabsTrigger>
         </TabsList>
         
         {/* DOMAINS TAB */}
