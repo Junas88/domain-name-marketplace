@@ -35,16 +35,25 @@ export default function LoginPage() {
     }
     
     try {
-      await loginMutation.mutateAsync({ username, password });
+      console.log("Attempting login with credentials...");
       
-      // Add a delay before navigation to ensure state is updated
+      // Use mutateAsync to wait for the login to complete
+      const userData = await loginMutation.mutateAsync({ username, password });
+      console.log("Login successful, user data:", userData);
+      
+      // Add a delay before navigation to ensure the auth state is updated
       setTimeout(() => {
+        console.log("Redirecting to admin dashboard...");
         navigate("/admin/dashboard");
-        console.log("Navigating to admin dashboard after successful login");
-      }, 500);
+      }, 800);
       
     } catch (error) {
       console.error("Login error:", error);
+      toast({
+        title: "Login failed",
+        description: "Please check your username and password",
+        variant: "destructive"
+      });
     }
   };
 

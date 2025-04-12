@@ -1,9 +1,8 @@
-import { Switch, Route } from "wouter";
+import { Switch, Route, useLocation } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
-import { AuthProvider } from "@/hooks/use-auth";
-import { ProtectedRoute } from "@/lib/protected-route";
+import { AuthProvider, useAuth } from "@/hooks/use-auth";
 import { ScrollManager } from "@/components/ScrollManager";
 import SeoPageWrapper from "@/components/SeoPageWrapper";
 import NotFound from "@/pages/not-found";
@@ -20,6 +19,7 @@ import EbookSuccess from "@/pages/EbookSuccess";
 import DomainFinderPage from "@/pages/DomainFinderPage";
 import AdminDashboard from "@/pages/admin/Dashboard";
 import LoginPage from "@/pages/auth/LoginPage";
+import { Loader2 } from "lucide-react";
 
 // Enhanced components with SEO metadata
 const HomePage = () => <SeoPageWrapper pageKey="home"><Home /></SeoPageWrapper>;
@@ -34,6 +34,27 @@ const DomainFinderWrapper = () => <SeoPageWrapper pageKey="domain-finder"><Domai
 const EbookWrapper = () => <SeoPageWrapper pageKey="ebook"><EbookPage /></SeoPageWrapper>;
 const EbookSuccessWrapper = () => <SeoPageWrapper pageKey="ebook-success"><EbookSuccess /></SeoPageWrapper>;
 const NotFoundWrapper = () => <SeoPageWrapper pageKey="not-found"><NotFound /></SeoPageWrapper>;
+
+// Simplified protected route component 
+function AdminRoute() {
+  const { user, isLoading } = useAuth();
+  const [, navigate] = useLocation();
+  
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <Loader2 className="h-8 w-8 animate-spin text-border" />
+      </div>
+    );
+  }
+  
+  if (!user || !user.isAdmin) {
+    navigate("/login");
+    return null;
+  }
+  
+  return <AdminDashboard />;
+}
 
 function Router() {
   return (
@@ -50,8 +71,9 @@ function Router() {
       <Route path="/ebook" component={EbookWrapper} />
       <Route path="/ebook-success" component={EbookSuccessWrapper} />
       <Route path="/login" component={LoginPage} />
-      <ProtectedRoute path="/admin/dashboard" component={AdminDashboard} />
-      <ProtectedRoute path="/admin" component={AdminDashboard} />
+      {/* Simplified admin routes */}
+      <Route path="/admin/dashboard" component={AdminRoute} />
+      <Route path="/admin" component={AdminRoute} />
       <Route component={NotFoundWrapper} />
     </Switch>
   );
