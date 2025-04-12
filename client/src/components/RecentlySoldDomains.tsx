@@ -41,7 +41,7 @@ export default function RecentlySoldDomains() {
   if (isLoading) {
     return (
       <div className="mb-4">
-        <h2 className="text-center text-3xl font-bold mb-6">Premium Domains Sold</h2>
+        <h2 className="text-center text-3xl font-bold mb-6">Our Latest Domain Sales</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {[1, 2, 3].map((i) => (
             <div key={i} className="p-2">
@@ -100,13 +100,13 @@ export default function RecentlySoldDomains() {
 
   return (
     <div className="mb-4">
-      <h2 className="text-center text-3xl font-bold mb-6">Premium Domains Sold</h2>
+      <h2 className="text-center text-3xl font-bold mb-6">Our Latest Domain Sales</h2>
       <Carousel className="mx-auto max-w-6xl">
         <CarouselContent>
           {carouselItems()}
         </CarouselContent>
-        <CarouselPrevious className="bg-gray-100 hover:bg-gray-200 text-gray-800 border border-gray-200 -left-2 h-8 w-8 shadow-sm" />
-        <CarouselNext className="bg-gray-100 hover:bg-gray-200 text-gray-800 border border-gray-200 -right-2 h-8 w-8 shadow-sm" />
+        <CarouselPrevious className="bg-black hover:bg-gray-900 text-white border-none -left-2 h-8 w-8 shadow-sm" />
+        <CarouselNext className="bg-black hover:bg-gray-900 text-white border-none -right-2 h-8 w-8 shadow-sm" />
       </Carousel>
     </div>
   );
