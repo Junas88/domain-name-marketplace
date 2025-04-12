@@ -1,16 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <!-- Production path fix - must be first -->
-    <script src="/prodfix.js"></script>
-    
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1" />
     <title>DOMAIN NAME GUIDE - Premium Domain Marketplace | Buy, Sell and Find the Perfect Domain Name</title>
     <meta name="description" content="DOMAIN NAME GUIDE is a premier domain marketplace for buying and selling premium domain names. Find the perfect domain for your business with BIN pricing or make an offer. Domain consultation services available." />
     <meta name="keywords" content="domain marketplace, buy domains, sell domains, premium domains, domain names for sale, domain broker, domain consultation, domain finder, domain name valuation, BIN domains, domain negotiation, startup domains, business domains, tech domains" />
-    <!-- For static site hosting with HTML5 routing -->
-    <base href="/" />
     
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website" />
@@ -31,9 +26,10 @@
     
     <!-- Favicon -->
     <link rel="icon" href="/favicon.svg" type="image/svg+xml">
-    <link rel="mask-icon" href="/favicon.svg" color="#000000">
+    <link rel="icon" href="/favicon-text.svg" type="image/svg+xml">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
     <link rel="shortcut icon" href="/favicon.ico">
-    <meta name="theme-color" content="#000000">
     
     <!-- Structured Data for SEO -->
     <script type="application/ld+json">
@@ -55,8 +51,6 @@
   </head>
   <body>
     <div id="root"></div>
-    <!-- Admin path fix for all environments - loads before React for faster path correction -->
-    <script src="/admin-path-fix.js"></script>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

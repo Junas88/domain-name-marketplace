@@ -46,7 +46,19 @@ export default function Header() {
             <Link href="/contact" className="text-neutral-800 hover:text-black font-medium">
               Contact
             </Link>
-            {/* Admin and login links removed */}
+            {user?.isAdmin ? (
+              <Link href="/admin/dashboard">
+                <Button variant="outline" className="ml-2 border-black hover:bg-black hover:text-white">
+                  Admin Dashboard
+                </Button>
+              </Link>
+            ) : (
+              <Link href="/login">
+                <Button variant="outline" className="ml-2 border-black hover:bg-black hover:text-white">
+                  Login
+                </Button>
+              </Link>
+            )}
           </nav>
 
           {/* Navigation - Mobile */}
@@ -101,7 +113,23 @@ export default function Header() {
               >
                 Contact
               </Link>
-              {/* Admin and login links removed from mobile menu */}
+              {user?.isAdmin ? (
+                <Link 
+                  href="/admin/dashboard" 
+                  className="block px-3 py-2 mt-4 text-center bg-black text-white rounded-md hover:bg-neutral-800"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  Admin Dashboard
+                </Link>
+              ) : (
+                <Link 
+                  href="/login" 
+                  className="block px-3 py-2 mt-4 text-center bg-black text-white rounded-md hover:bg-neutral-800"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  Login
+                </Link>
+              )}
             </div>
           </div>
         )}

@@ -3,6 +3,7 @@ import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { AuthProvider } from "@/hooks/use-auth";
+import { ProtectedRoute } from "@/lib/protected-route";
 import { ScrollManager } from "@/components/ScrollManager";
 import SeoPageWrapper from "@/components/SeoPageWrapper";
 import NotFound from "@/pages/not-found";
@@ -17,9 +18,8 @@ import BuyerProtection from "@/pages/BuyerProtection";
 import EbookPage from "@/pages/EbookPage";
 import EbookSuccess from "@/pages/EbookSuccess";
 import DomainFinderPage from "@/pages/DomainFinderPage";
-// Simple admin components
-import SimpleAdminPage from "@/pages/SimpleAdminPage";
-import SimpleLoginPage from "@/pages/SimpleLoginPage";
+import AdminDashboard from "@/pages/admin/Dashboard";
+import LoginPage from "@/pages/auth/LoginPage";
 
 // Enhanced components with SEO metadata
 const HomePage = () => <SeoPageWrapper pageKey="home"><Home /></SeoPageWrapper>;
@@ -35,9 +35,6 @@ const EbookWrapper = () => <SeoPageWrapper pageKey="ebook"><EbookPage /></SeoPag
 const EbookSuccessWrapper = () => <SeoPageWrapper pageKey="ebook-success"><EbookSuccess /></SeoPageWrapper>;
 const NotFoundWrapper = () => <SeoPageWrapper pageKey="not-found"><NotFound /></SeoPageWrapper>;
 
-// Main site routes
-
-// Normal router for all pages
 function Router() {
   return (
     <Switch>
@@ -52,9 +49,9 @@ function Router() {
       <Route path="/domain-finder" component={DomainFinderWrapper} />
       <Route path="/ebook" component={EbookWrapper} />
       <Route path="/ebook-success" component={EbookSuccessWrapper} />
-      {/* Simple admin routes */}
-      <Route path="/simple-login" component={SimpleLoginPage} />
-      <Route path="/simple-admin" component={SimpleAdminPage} />
+      <Route path="/login" component={LoginPage} />
+      <ProtectedRoute path="/admin/dashboard" component={AdminDashboard} />
+      <ProtectedRoute path="/admin" component={AdminDashboard} />
       <Route component={NotFoundWrapper} />
     </Switch>
   );

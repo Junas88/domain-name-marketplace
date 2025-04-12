@@ -29,7 +29,6 @@ import {
   EyeIcon,
   FileText,
   FileUp,
-  Loader2,
   LogOut,
   PenIcon,
   PlusIcon,
@@ -85,45 +84,13 @@ export default function AdminDashboard() {
   const [showSeoSettingsDialog, setShowSeoSettingsDialog] = useState(false);
   const [editingSeoSettings, setEditingSeoSettings] = useState<null | SeoSettings>(null);
   const { toast } = useToast();
-  const { user, isLoading, logoutMutation } = useAuth();
+  const { logoutMutation } = useAuth();
   const [, navigate] = useLocation();
-  const [isRedirecting, setIsRedirecting] = useState(false);
-  
-  // Authentication check - redirect to login if not admin
-  useEffect(() => {
-    if (!isLoading && (!user || !user.isAdmin)) {
-      console.log("Not authenticated as admin, redirecting to login page");
-      setIsRedirecting(true);
-      
-      setTimeout(() => {
-        // Use window.location for a hard redirect to ensure clean state
-        window.location.href = "/login";
-      }, 300);
-    }
-  }, [user, isLoading]);
-  
-  // Fetch all domains - IMPORTANT: Keep all hooks at the top level for React's rules of hooks
+
+  // Fetch all domains
   const { data: domains = [], isLoading: isLoadingDomains, refetch: refetchDomains } = useQuery<Domain[]>({
     queryKey: ['/api/domains'],
-    enabled: !!user?.isAdmin, // Only run query if user is admin
   });
-  
-  // Show loading state
-  if (isLoading || isRedirecting) {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-screen">
-        <Loader2 className="h-8 w-8 animate-spin text-black mb-4" />
-        <p className="text-lg font-medium">
-          {isRedirecting ? "Redirecting to login..." : "Loading dashboard..."}
-        </p>
-      </div>
-    );
-  }
-  
-  // Don't render anything if not admin
-  if (!user?.isAdmin) {
-    return null;
-  }
 
   // Type for domain stats
   interface DomainStats {
@@ -141,12 +108,7 @@ export default function AdminDashboard() {
     performanceByLength: Array<{ length: number, count: number, averagePrice: number, averageViews: number }>;
   }
 
-  // Interface for offer with domain name included
-  interface OfferWithDomain extends Offer {
-    domainName: string;
-  }
-  
-  // Fetch domain stats - All useQuery hooks MUST be before any conditional returns
+  // Fetch domain stats
   const { data: stats = { 
     totalDomains: 0, 
     soldDomains: 0, 
@@ -162,31 +124,31 @@ export default function AdminDashboard() {
     performanceByLength: []
   }, isLoading: isLoadingStats } = useQuery<DomainStats>({
     queryKey: ['/api/admin/domains/stats'],
-    enabled: !!user?.isAdmin, // Only run query if user is admin
   });
+
+  // Interface for offer with domain name included
+  interface OfferWithDomain extends Offer {
+    domainName: string;
+  }
 
   // Fetch all offers
   const { data: offers = [], isLoading: isLoadingOffers } = useQuery<OfferWithDomain[]>({
     queryKey: ['/api/admin/offers'],
-    enabled: !!user?.isAdmin, // Only run query if user is admin
   });
 
   // Fetch all consultations
   const { data: consultations = [], isLoading: isLoadingConsultations } = useQuery<Consultation[]>({
     queryKey: ['/api/admin/consultations'],
-    enabled: !!user?.isAdmin, // Only run query if user is admin
   });
   
   // Fetch all page content
   const { data: pageContents = [], isLoading: isLoadingPageContents, refetch: refetchPageContents } = useQuery<PageContent[]>({
     queryKey: ['/api/admin/page-contents'],
-    enabled: !!user?.isAdmin, // Only run query if user is admin
   });
   
   // Fetch all SEO settings
   const { data: seoSettings = [], isLoading: isLoadingSeoSettings, refetch: refetchSeoSettings } = useQuery<SeoSettings[]>({
     queryKey: ['/api/admin/seo-settings'],
-    enabled: !!user?.isAdmin, // Only run query if user is admin
   });
 
   // Form for adding/editing page content

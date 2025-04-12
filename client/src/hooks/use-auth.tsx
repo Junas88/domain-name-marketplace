@@ -2,103 +2,77 @@ import { createContext, ReactNode, useContext } from "react";
 import {
   useQuery,
   useMutation,
+  UseMutationResult,
 } from "@tanstack/react-query";
-import { apiRequest, queryClient } from "@/lib/queryClient";
+import { User as SelectUser } from "@shared/schema";
+import { getQueryFn, apiRequest, queryClient } from "../lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 
-// Define User type
-interface User {
-  id: number;
-  username: string;
-  isAdmin: boolean;
-}
-
-// Define auth context type
-interface AuthContextType {
-  user: User | null;
-  isLoading: boolean;
-  error: Error | null;
-  loginMutation: any;
-  logoutMutation: any;
-}
-
-// Login data type
-interface LoginData {
+type LoginData = {
   username: string;
   password: string;
+};
+
+interface AuthContextType {
+  user: SelectUser | null;
+  isLoading: boolean;
+  error: Error | null;
+  loginMutation: UseMutationResult<SelectUser, Error, LoginData>;
+  logoutMutation: UseMutationResult<void, Error, void>;
+  registerMutation?: UseMutationResult<SelectUser, Error, any>;
 }
 
-// Create auth context
-export const AuthContext = createContext<AuthContextType | null>(null);
+const AuthContext = createContext<AuthContextType | null>(null);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const { toast } = useToast();
-  
-  // Get current user
   const {
     data: user,
     error,
     isLoading,
-  } = useQuery<User | null>({
+  } = useQuery<SelectUser | null, Error>({
     queryKey: ["/api/auth/user"],
-    queryFn: async () => {
-      try {
-        const res = await fetch("/api/auth/user");
-        if (!res.ok) {
-          if (res.status === 401) {
-            return null;
-          }
-          throw new Error("Failed to fetch user");
-        }
-        return await res.json();
-      } catch (error) {
-        console.error("Error fetching user:", error);
-        return null;
-      }
-    },
+    queryFn: getQueryFn({ on401: "returnNull" }),
   });
 
-  // Login mutation
   const loginMutation = useMutation({
     mutationFn: async (credentials: LoginData) => {
-      const res = await fetch("/api/auth/login", {
+      const res = await apiRequest("/api/auth/login", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(credentials),
+        body: JSON.stringify(credentials)
       });
-      
-      if (!res.ok) {
-        const error = await res.json();
-        throw new Error(error.message || "Login failed");
-      }
-      
       return await res.json();
     },
-    onSuccess: (user: User) => {
-      queryClient.setQueryData(["/api/auth/user"], user);
+    onSuccess: (userData: SelectUser) => {
+      queryClient.setQueryData(["/api/auth/user"], userData);
+      toast({
+        title: "Login successful",
+        description: "Welcome back!",
+      });
     },
     onError: (error: Error) => {
       toast({
         title: "Login failed",
-        description: error.message || "Invalid username or password",
+        description: error.message,
         variant: "destructive",
       });
     },
   });
 
-  // Logout mutation
   const logoutMutation = useMutation({
     mutationFn: async () => {
-      await fetch("/api/auth/logout", {
-        method: "POST",
+      await apiRequest("/api/auth/logout", {
+        method: "POST"
       });
     },
     onSuccess: () => {
       queryClient.setQueryData(["/api/auth/user"], null);
+      toast({
+        title: "Logged out",
+        description: "You have been logged out successfully",
+      });
     },
-    onError: (error: any) => {
+    onError: (error: Error) => {
       toast({
         title: "Logout failed",
         description: error.message,
@@ -110,9 +84,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   return (
     <AuthContext.Provider
       value={{
-        user: user || null,
+        user: user ?? null,
         isLoading,
-        error: error as Error | null,
+        error,
         loginMutation,
         logoutMutation,
       }}

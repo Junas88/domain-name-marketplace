@@ -60,9 +60,9 @@ export function setupAuth(app: Express) {
           return done(null, false);
         }
         
-        // Special case for in-memory database with specific admin password
-        if (username === 'admin' && (password === 'admin123' || password === 'DomainGuide#2025')) {
-          console.log('Admin login successful using direct password match');
+        // Special case for in-memory database when admin123 is the password
+        if (username === 'admin' && password === 'admin123') {
+          console.log('Admin login successful using simple password match');
           return done(null, user);
         }
         
@@ -146,14 +146,12 @@ export function setupAuth(app: Express) {
   (async () => {
     const adminUser = await storage.getUserByUsername("admin");
     if (!adminUser) {
-      // Using a strong password with mixed case, numbers, and special characters
-      const securePassword = "DomainGuide#2025";
       await storage.createUser({
         username: "admin",
-        password: await hashPassword(securePassword),
+        password: await hashPassword("admin123"),
         isAdmin: true
       });
-      console.log(`Admin user created - Username: admin, Password: ${securePassword}`);
+      console.log("Admin user created - Username: admin, Password: admin123");
     }
   })();
 }

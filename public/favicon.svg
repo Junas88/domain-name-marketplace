@@ -1,8 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <!-- Black square background -->
-  <rect width="32" height="32" fill="black"/>
-  <!-- Stylized "D" letter in white -->
-  <path d="M9 8H17C18.5913 8 20.1174 8.63214 21.2426 9.75736C22.3679 10.8826 23 12.4087 23 14C23 15.5913 22.3679 17.1174 21.2426 18.2426C20.1174 19.3679 18.5913 20 17 20H12V24H9V8Z" fill="white"/>
-  <!-- Inner cutout to create the "D" shape -->
-  <path d="M12 11V17H17C17.7956 17 18.5587 16.6839 19.1213 16.1213C19.6839 15.5587 20 14.7956 20 14C20 13.2044 19.6839 12.4413 19.1213 11.8787C18.5587 11.3161 17.7956 11 17 11H12Z" fill="black"/>
+  <rect width="32" height="32" rx="4" fill="black"/>
+  <path d="M7 8H11.5C13.8333 8 15 9.16667 15 11.5V20.5C15 22.8333 13.8333 24 11.5 24H7V8ZM9 10V22H11.5C12.5 22 13 21.5 13 20.5V11.5C13 10.5 12.5 10 11.5 10H9Z" fill="white"/>
+  <path d="M16 8H19L21.5 17.5H21.6L24.1 8H27L23 24H20L16 8Z" fill="white"/>
+  <path d="M7 24H25" stroke="white" stroke-width="2" stroke-linecap="round"/>
 </svg>

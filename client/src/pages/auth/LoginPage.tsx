@@ -18,8 +18,7 @@ export default function LoginPage() {
   // If already logged in, redirect to admin dashboard
   useEffect(() => {
     if (user?.isAdmin) {
-      // Always use the simplest path for consistency
-      navigate('/admin');
+      navigate("/admin/dashboard");
     }
   }, [user, navigate]);
 
@@ -35,33 +34,14 @@ export default function LoginPage() {
       return;
     }
     
-    try {
-      console.log("Attempting login with credentials...");
-      
-      // Use mutateAsync to wait for the login to complete
-      const userData = await loginMutation.mutateAsync({ username, password });
-      console.log("Login successful, user data:", userData);
-      
-      toast({
-        title: "Login successful",
-        description: "Redirecting to admin dashboard"
-      });
-      
-      // DEPLOYMENT-SAFE APPROACH: Complete page refresh and hard navigation
-      // Delay slightly to allow the toast to be seen
-      setTimeout(() => {
-        // Use the simplest path that works in all environments
-        window.location.href = '/admin';
-      }, 300);
-      
-    } catch (error) {
-      console.error("Login error:", error);
-      toast({
-        title: "Login failed",
-        description: "Please check your username and password (admin/DomainGuide#2025)",
-        variant: "destructive"
-      });
-    }
+    loginMutation.mutate(
+      { username, password },
+      {
+        onSuccess: () => {
+          navigate("/admin/dashboard");
+        }
+      }
+    );
   };
 
   return (
