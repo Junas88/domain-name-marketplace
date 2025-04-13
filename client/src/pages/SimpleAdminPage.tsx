@@ -1220,44 +1220,106 @@ export default function SimpleAdminPage() {
         <TabsContent value="ebooks" className="space-y-4">
           <div className="flex justify-between items-center">
             <h2 className="text-xl font-bold text-black">Ebook Files</h2>
-            <Button>
-              <Upload className="h-4 w-4 mr-2" />
-              Upload Ebook
-            </Button>
+            <div>
+              <input
+                type="file"
+                accept="application/pdf"
+                id="ebook-upload"
+                className="hidden"
+                onChange={handleEbookUpload}
+                ref={(input) => setFileInputRef(input)}
+              />
+              <Button 
+                onClick={() => fileInputRef?.click()}
+                disabled={uploadingFile}
+              >
+                {uploadingFile ? (
+                  <>
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    Uploading...
+                  </>
+                ) : (
+                  <>
+                    <Upload className="h-4 w-4 mr-2" />
+                    Upload Ebook
+                  </>
+                )}
+              </Button>
+            </div>
           </div>
           
           <div className="space-y-4">
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle>Domain Name Guide</CardTitle>
-                <CardDescription>
-                  The complete guide to domain name acquisition and investment
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="flex justify-between items-center">
-                  <div>
-                    <p className="text-sm text-gray-500">
-                      Format: PDF | Size: 2.4 MB | Version: 1.0
-                    </p>
-                    <p className="text-sm mt-1">Downloads: {emailSubmissions.length}</p>
+            {ebookInfo ? (
+              <Card>
+                <CardHeader className="pb-2">
+                  <CardTitle>Domain Name Guide</CardTitle>
+                  <CardDescription>
+                    The complete guide to domain name acquisition and investment
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  {ebookInfo.exists ? (
+                    <div className="flex justify-between items-center">
+                      <div>
+                        <p className="text-sm text-gray-500">
+                          Format: PDF | Size: {ebookInfo.fileSize || '0'} MB | Filename: {ebookInfo.fileName || 'Domain Name Guide.pdf'}
+                        </p>
+                        <p className="text-sm mt-1">Downloads: {ebookInfo.downloadCount || 0}</p>
+                      </div>
+                      <div className="flex space-x-2">
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          onClick={() => window.open('/api/direct-download/ebook', '_blank')}
+                        >
+                          <Eye className="h-4 w-4 mr-2" />
+                          Preview
+                        </Button>
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          onClick={() => fileInputRef?.click()}
+                        >
+                          <FileText className="h-4 w-4 mr-2" />
+                          Replace
+                        </Button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="py-3">
+                      <div className="flex items-center justify-center mb-4">
+                        <AlertTriangle className="h-10 w-10 text-yellow-500" />
+                      </div>
+                      <p className="text-center text-sm text-gray-600 mb-4">
+                        No ebook file has been uploaded yet. Upload a PDF file to make it available for download.
+                      </p>
+                      <div className="flex justify-center">
+                        <Button
+                          variant="outline"
+                          onClick={() => fileInputRef?.click()}
+                          disabled={uploadingFile}
+                        >
+                          <Upload className="h-4 w-4 mr-2" />
+                          Upload PDF File
+                        </Button>
+                      </div>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            ) : (
+              <Card>
+                <CardContent className="pt-6">
+                  <div className="flex justify-center py-8">
+                    <Loader2 className="h-8 w-8 animate-spin text-gray-300" />
                   </div>
-                  <div className="flex space-x-2">
-                    <Button variant="outline" size="sm">
-                      <Eye className="h-4 w-4 mr-2" />
-                      Preview
-                    </Button>
-                    <Button variant="outline" size="sm">
-                      <FileText className="h-4 w-4 mr-2" />
-                      Replace
-                    </Button>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
+            )}
             
             <div className="text-center text-sm text-gray-500 italic mt-4">
-              Upload additional ebooks using the button above
+              <p>The ebook will be available for download on the Domain Guide page</p>
+              <p className="mt-1">Uploading a new file will replace the existing one</p>
             </div>
           </div>
         </TabsContent>

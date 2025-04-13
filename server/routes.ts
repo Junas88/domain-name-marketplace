@@ -902,7 +902,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
             content: ebookContent.content,
             filePath: targetPath,
             fileName: req.file.originalname,
-            fileSize: fileSizeMB
+            fileSize: parseFloat(fileSizeMB)
           });
         } else {
           await storage.createPageContent({
@@ -911,7 +911,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
             content: '<p>The complete guide to domain name acquisition and investment</p>',
             filePath: targetPath,
             fileName: req.file.originalname,
-            fileSize: fileSizeMB
+            fileSize: parseFloat(fileSizeMB)
           });
         }
         
@@ -924,9 +924,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
           }
         });
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error handling ebook upload:', error);
-      res.status(500).json({ error: error.message });
+      res.status(500).json({ error: error?.message || 'Unknown error uploading ebook' });
     }
   });
   
@@ -957,9 +957,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         fileSize: ebookContent.fileSize || '0',
         downloadCount: await storage.getAllEmailSubmissions().then(submissions => submissions.length)
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error getting ebook info:', error);
-      res.status(500).json({ error: error.message });
+      res.status(500).json({ error: error?.message || 'Unknown error retrieving ebook info' });
     }
   });
 
