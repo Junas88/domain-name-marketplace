@@ -70,6 +70,7 @@ export default function SimpleAdminPage() {
   const [editingDomain, setEditingDomain] = useState<Domain | null>(null);
   const [contentDialogOpen, setContentDialogOpen] = useState(false);
   const [editingContent, setEditingContent] = useState<PageContent | null>(null);
+  const [dialogTitle, setDialogTitle] = useState("Edit Content");
   const [seoDialogOpen, setSeoDialogOpen] = useState(false);
   const [editingSeo, setEditingSeo] = useState<SeoSettings | null>(null);
   const [confirmDeleteDialogOpen, setConfirmDeleteDialogOpen] = useState(false);
@@ -1016,7 +1017,7 @@ export default function SimpleAdminPage() {
           <Dialog open={contentDialogOpen} onOpenChange={setContentDialogOpen}>
             <DialogContent className="sm:max-w-[700px]">
               <DialogHeader>
-                <DialogTitle>Edit Page Content</DialogTitle>
+                <DialogTitle>{dialogTitle}</DialogTitle>
                 <DialogDescription>
                   Update the content for this page.
                 </DialogDescription>
