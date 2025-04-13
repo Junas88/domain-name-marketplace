@@ -414,13 +414,23 @@ export default function SimpleAdminPage() {
       // Invalidate admin page contents cache
       queryClient.invalidateQueries({ queryKey: ['/api/admin/page-contents'] });
       
-      // Force invalidate ALL page content queries to ensure the frontend is updated
-      queryClient.invalidateQueries({ queryKey: ['/api/page-contents'] });
-      
-      // Invalidate the specific page key for this content
-      if (data && data.pageKey) {
+      // Special handling for contact pages - cross-invalidate both contact and contact-info
+      if (data && data.pageKey === 'contact') {
+        console.log("Contact page updated - invalidating both contact and contact-info");
+        queryClient.invalidateQueries({ queryKey: [`/api/page-contents/contact`] });
+        queryClient.invalidateQueries({ queryKey: [`/api/page-contents/contact-info`] });
+      } else if (data && data.pageKey === 'contact-info') {
+        console.log("Contact info updated - invalidating both contact and contact-info");
+        queryClient.invalidateQueries({ queryKey: [`/api/page-contents/contact`] });
+        queryClient.invalidateQueries({ queryKey: [`/api/page-contents/contact-info`] });
+      } else if (data && data.pageKey) {
+        // For other pages, invalidate the specific page content
+        console.log(`Invalidating page content: ${data.pageKey}`);
         queryClient.invalidateQueries({ queryKey: [`/api/page-contents/${data.pageKey}`] });
       }
+      
+      // Force invalidate ALL page content queries to ensure the frontend is updated
+      queryClient.invalidateQueries({ queryKey: ['/api/page-contents'] });
       
       // Invalidate related queries that might be affected
       queryClient.invalidateQueries({ queryKey: ['/api/seo-settings'] });
@@ -569,14 +579,33 @@ export default function SimpleAdminPage() {
       // Invalidate both admin and public endpoints
       queryClient.invalidateQueries({ queryKey: ['/api/admin/page-contents'] });
       
-      // Invalidate the public API for this specific page content
-      queryClient.invalidateQueries({ queryKey: [`/api/page-contents/${data.pageKey}`] });
+      // Special handling for contact pages - cross-invalidate both contact and contact-info
+      if (data && data.pageKey === 'contact') {
+        console.log("Contact page created - invalidating both contact and contact-info");
+        queryClient.invalidateQueries({ queryKey: [`/api/page-contents/contact`] });
+        queryClient.invalidateQueries({ queryKey: [`/api/page-contents/contact-info`] });
+      } else if (data && data.pageKey === 'contact-info') {
+        console.log("Contact info created - invalidating both contact and contact-info");
+        queryClient.invalidateQueries({ queryKey: [`/api/page-contents/contact`] });
+        queryClient.invalidateQueries({ queryKey: [`/api/page-contents/contact-info`] });
+      } else if (data && data.pageKey) {
+        // For other pages, invalidate the specific page content
+        console.log(`Invalidating page content: ${data.pageKey}`);
+        queryClient.invalidateQueries({ queryKey: [`/api/page-contents/${data.pageKey}`] });
+      }
       
       // Also invalidate any general routes that might include this content
       queryClient.invalidateQueries({ queryKey: ['/api/page-contents'] });
       queryClient.invalidateQueries({ queryKey: ['/api/seo-settings'] });
       
+      // Hard refetch contents
       refetchContents();
+      
+      // Force a window reload after a short delay to ensure fresh data on the frontend
+      setTimeout(() => {
+        console.log("Forcing refetch of all queries after content creation");
+        queryClient.refetchQueries({ type: 'all' });
+      }, 500);
     },
     onError: (error: Error) => {
       toast({
