@@ -5,10 +5,15 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { 
   LogOut, Loader2, Plus, Pencil, Trash, Check, Tag, 
-  CirclePlus, CircleCheck, Upload, Search
+  CircleCheck, Upload, Search, Download, File, Save,
+  AlertTriangle, Eye, X, FileText, ExternalLink
 } from "lucide-react";
-import { Domain, PageContent, SeoSettings, Consultation, EmailSubmission, Offer } from "@shared/schema";
-import { useQuery } from "@tanstack/react-query";
+import { 
+  Domain, PageContent, SeoSettings, Consultation, 
+  EmailSubmission, Offer, InsertDomain, InsertPageContent,
+  InsertSeoSettings
+} from "@shared/schema";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import {
   Table,
   TableBody,
@@ -18,11 +23,58 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Separator } from "@/components/ui/separator";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogClose,
+} from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { useToast } from "@/hooks/use-toast";
+import { queryClient, apiRequest } from "@/lib/queryClient";
+import { Badge } from "@/components/ui/badge";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 export default function SimpleAdminPage() {
   const { user, isLoading, logoutMutation } = useAuth();
   const [activeTab, setActiveTab] = useState("domains");
   const [isRedirecting, setIsRedirecting] = useState(false);
+  const { toast } = useToast();
+  
+  // States for dialogs and editing
+  const [domainDialogOpen, setDomainDialogOpen] = useState(false);
+  const [editingDomain, setEditingDomain] = useState<Domain | null>(null);
+  const [contentDialogOpen, setContentDialogOpen] = useState(false);
+  const [editingContent, setEditingContent] = useState<PageContent | null>(null);
+  const [seoDialogOpen, setSeoDialogOpen] = useState(false);
+  const [editingSeo, setEditingSeo] = useState<SeoSettings | null>(null);
+  const [confirmDeleteDialogOpen, setConfirmDeleteDialogOpen] = useState(false);
+  const [itemToDelete, setItemToDelete] = useState<{id: number, type: string} | null>(null);
+  const [csvData, setCsvData] = useState("");
   
   // Simple admin check with redirect
   useEffect(() => {
@@ -40,19 +92,19 @@ export default function SimpleAdminPage() {
   const isAdmin = !!user?.isAdmin;
   
   // Domain data query
-  const { data: domains = [] } = useQuery<Domain[]>({
+  const { data: domains = [], refetch: refetchDomains } = useQuery<Domain[]>({
     queryKey: ['/api/domains'],
     enabled: isAdmin,
   });
   
   // Page content query
-  const { data: pageContents = [] } = useQuery<PageContent[]>({
+  const { data: pageContents = [], refetch: refetchContents } = useQuery<PageContent[]>({
     queryKey: ['/api/admin/page-contents'],
     enabled: isAdmin,
   });
   
   // SEO settings query
-  const { data: seoSettings = [] } = useQuery<SeoSettings[]>({
+  const { data: seoSettings = [], refetch: refetchSeo } = useQuery<SeoSettings[]>({
     queryKey: ['/api/admin/seo-settings'],
     enabled: isAdmin,
   });
@@ -69,10 +121,221 @@ export default function SimpleAdminPage() {
     enabled: isAdmin,
   });
   
-  // Offers query (currently empty but prepared for future)
+  // Offers query
   const { data: offers = [] } = useQuery<Offer[]>({
     queryKey: ['/api/admin/offers'],
     enabled: isAdmin,
+  });
+  
+  // Domain form schema
+  const domainFormSchema = z.object({
+    name: z.string().min(3, "Domain name must be at least 3 characters"),
+    description: z.string().min(10, "Description is required"),
+    price: z.coerce.number().min(1, "Price is required"),
+    category: z.string().min(1, "Category is required"),
+    length: z.coerce.number().min(1, "Length is required"),
+    isSold: z.boolean().default(false),
+  });
+  
+  // Page content form schema
+  const contentFormSchema = z.object({
+    pageKey: z.string().min(1, "Page key is required"),
+    title: z.string().min(1, "Title is required"),
+    content: z.string().min(1, "Content is required"),
+    metaTitle: z.string().optional(),
+    metaDescription: z.string().optional(),
+  });
+  
+  // SEO settings form schema
+  const seoFormSchema = z.object({
+    pageKey: z.string().min(1, "Page key is required"),
+    title: z.string().min(1, "Title is required"),
+    metaDescription: z.string().min(1, "Meta description is required"),
+    metaKeywords: z.string().min(1, "Meta keywords are required"),
+  });
+  
+  // Domain form
+  const domainForm = useForm<z.infer<typeof domainFormSchema>>({
+    resolver: zodResolver(domainFormSchema),
+    defaultValues: {
+      name: "",
+      description: "",
+      price: 0,
+      category: "",
+      length: 0,
+      isSold: false,
+    },
+  });
+  
+  // Content form
+  const contentForm = useForm<z.infer<typeof contentFormSchema>>({
+    resolver: zodResolver(contentFormSchema),
+    defaultValues: {
+      pageKey: "",
+      title: "",
+      content: "",
+      metaTitle: "",
+      metaDescription: "",
+    },
+  });
+  
+  // SEO form
+  const seoForm = useForm<z.infer<typeof seoFormSchema>>({
+    resolver: zodResolver(seoFormSchema),
+    defaultValues: {
+      pageKey: "",
+      title: "",
+      metaDescription: "",
+      metaKeywords: "",
+    },
+  });
+  
+  // Domain mutations
+  const createDomainMutation = useMutation({
+    mutationFn: async (data: InsertDomain) => {
+      const res = await apiRequest("POST", "/api/admin/domains", data);
+      return await res.json();
+    },
+    onSuccess: () => {
+      toast({
+        title: "Success",
+        description: "Domain created successfully",
+      });
+      setDomainDialogOpen(false);
+      domainForm.reset();
+      queryClient.invalidateQueries({ queryKey: ['/api/domains'] });
+      refetchDomains();
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Error",
+        description: `Failed to create domain: ${error.message}`,
+        variant: "destructive",
+      });
+    },
+  });
+  
+  const updateDomainMutation = useMutation({
+    mutationFn: async (data: Domain) => {
+      const res = await apiRequest("PATCH", `/api/admin/domains/${data.id}`, data);
+      return await res.json();
+    },
+    onSuccess: () => {
+      toast({
+        title: "Success",
+        description: "Domain updated successfully",
+      });
+      setDomainDialogOpen(false);
+      domainForm.reset();
+      setEditingDomain(null);
+      queryClient.invalidateQueries({ queryKey: ['/api/domains'] });
+      refetchDomains();
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Error",
+        description: `Failed to update domain: ${error.message}`,
+        variant: "destructive",
+      });
+    },
+  });
+  
+  const deleteDomainMutation = useMutation({
+    mutationFn: async (id: number) => {
+      const res = await apiRequest("DELETE", `/api/admin/domains/${id}`);
+      return await res.json();
+    },
+    onSuccess: () => {
+      toast({
+        title: "Success",
+        description: "Domain deleted successfully",
+      });
+      setConfirmDeleteDialogOpen(false);
+      setItemToDelete(null);
+      queryClient.invalidateQueries({ queryKey: ['/api/domains'] });
+      refetchDomains();
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Error",
+        description: `Failed to delete domain: ${error.message}`,
+        variant: "destructive",
+      });
+    },
+  });
+  
+  const markAsSoldMutation = useMutation({
+    mutationFn: async (id: number) => {
+      const res = await apiRequest("PATCH", `/api/admin/domains/${id}/mark-sold`, {});
+      return await res.json();
+    },
+    onSuccess: () => {
+      toast({
+        title: "Success",
+        description: "Domain marked as sold",
+      });
+      queryClient.invalidateQueries({ queryKey: ['/api/domains'] });
+      refetchDomains();
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Error",
+        description: `Failed to mark domain as sold: ${error.message}`,
+        variant: "destructive",
+      });
+    },
+  });
+  
+  // Content mutations
+  const updateContentMutation = useMutation({
+    mutationFn: async (data: { pageKey: string, content: Partial<InsertPageContent> }) => {
+      const res = await apiRequest("PATCH", `/api/admin/page-contents/${data.pageKey}`, data.content);
+      return await res.json();
+    },
+    onSuccess: () => {
+      toast({
+        title: "Success",
+        description: "Page content updated successfully",
+      });
+      setContentDialogOpen(false);
+      contentForm.reset();
+      setEditingContent(null);
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/page-contents'] });
+      refetchContents();
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Error",
+        description: `Failed to update content: ${error.message}`,
+        variant: "destructive",
+      });
+    },
+  });
+  
+  // SEO mutations
+  const updateSeoMutation = useMutation({
+    mutationFn: async (data: { pageKey: string, seo: Partial<InsertSeoSettings> }) => {
+      const res = await apiRequest("PATCH", `/api/admin/seo-settings/${data.pageKey}`, data.seo);
+      return await res.json();
+    },
+    onSuccess: () => {
+      toast({
+        title: "Success",
+        description: "SEO settings updated successfully",
+      });
+      setSeoDialogOpen(false);
+      seoForm.reset();
+      setEditingSeo(null);
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/seo-settings'] });
+      refetchSeo();
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Error",
+        description: `Failed to update SEO settings: ${error.message}`,
+        variant: "destructive",
+      });
+    },
   });
   
   // Count stats directly from domains array
@@ -90,7 +353,137 @@ export default function SimpleAdminPage() {
   const conversionRate = totalDomains > 0 
     ? (soldDomains / totalDomains) * 100
     : 0;
+  
+  // Domain Form Submit
+  const onDomainSubmit = (values: z.infer<typeof domainFormSchema>) => {
+    if (editingDomain) {
+      updateDomainMutation.mutate({
+        ...editingDomain,
+        ...values,
+      });
+    } else {
+      createDomainMutation.mutate(values);
+    }
+  };
+  
+  // Content Form Submit
+  const onContentSubmit = (values: z.infer<typeof contentFormSchema>) => {
+    if (editingContent) {
+      updateContentMutation.mutate({
+        pageKey: editingContent.pageKey,
+        content: values,
+      });
+    }
+  };
+  
+  // SEO Form Submit
+  const onSeoSubmit = (values: z.infer<typeof seoFormSchema>) => {
+    if (editingSeo) {
+      updateSeoMutation.mutate({
+        pageKey: editingSeo.pageKey,
+        seo: values,
+      });
+    }
+  };
+  
+  // Handle editing domain
+  const handleEditDomain = (domain: Domain) => {
+    setEditingDomain(domain);
+    domainForm.reset({
+      name: domain.name,
+      description: domain.description,
+      price: domain.price,
+      category: domain.category,
+      length: domain.length,
+      isSold: domain.isSold,
+    });
+    setDomainDialogOpen(true);
+  };
+  
+  // Handle editing content
+  const handleEditContent = (content: PageContent) => {
+    setEditingContent(content);
+    contentForm.reset({
+      pageKey: content.pageKey,
+      title: content.title,
+      content: content.content,
+      metaTitle: content.metaTitle || "",
+      metaDescription: content.metaDescription || "",
+    });
+    setContentDialogOpen(true);
+  };
+  
+  // Handle editing SEO
+  const handleEditSeo = (seo: SeoSettings) => {
+    setEditingSeo(seo);
+    seoForm.reset({
+      pageKey: seo.pageKey,
+      title: seo.title,
+      metaDescription: seo.metaDescription,
+      metaKeywords: seo.metaKeywords,
+    });
+    setSeoDialogOpen(true);
+  };
+  
+  // Handle delete confirmation
+  const handleDeleteConfirm = (id: number, type: string) => {
+    setItemToDelete({ id, type });
+    setConfirmDeleteDialogOpen(true);
+  };
+  
+  // Execute delete
+  const executeDelete = () => {
+    if (!itemToDelete) return;
     
+    if (itemToDelete.type === 'domain') {
+      deleteDomainMutation.mutate(itemToDelete.id);
+    }
+    // Can add other delete types here in the future
+  };
+  
+  // Export email submissions to CSV
+  const exportEmailsToCSV = () => {
+    if (emailSubmissions.length === 0) {
+      toast({
+        title: "No data",
+        description: "There are no email submissions to export",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    const headers = ["Email", "Source", "Date"];
+    const csvRows = [
+      headers.join(","),
+      ...emailSubmissions.map(sub => {
+        return [
+          sub.email,
+          sub.source,
+          new Date(sub.downloadedAt).toLocaleDateString()
+        ].join(",");
+      })
+    ];
+    
+    const csvString = csvRows.join("\n");
+    setCsvData(csvString);
+    
+    // Create download link
+    const blob = new Blob([csvString], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.setAttribute('hidden', '');
+    a.setAttribute('href', url);
+    a.setAttribute('download', 'email_submissions.csv');
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    
+    toast({
+      title: "Export complete",
+      description: "Email submissions have been exported to CSV",
+    });
+  };
+  
   // Logout handler
   const handleLogout = () => {
     logoutMutation.mutate(undefined, {
@@ -211,7 +604,18 @@ export default function SimpleAdminPage() {
         <TabsContent value="domains" className="space-y-4">
           <div className="flex justify-between items-center">
             <h2 className="text-xl font-bold text-black">Domain Management</h2>
-            <Button>
+            <Button onClick={() => {
+              setEditingDomain(null);
+              domainForm.reset({
+                name: "",
+                description: "",
+                price: 0,
+                category: "",
+                length: 0,
+                isSold: false,
+              });
+              setDomainDialogOpen(true);
+            }}>
               <Plus className="h-4 w-4 mr-2" />
               Add Domain
             </Button>
@@ -253,14 +657,29 @@ export default function SimpleAdminPage() {
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center space-x-2">
-                        <Button variant="ghost" size="icon" className="h-8 w-8">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8"
+                          onClick={() => handleEditDomain(domain)}
+                        >
                           <Pencil className="h-4 w-4" />
                         </Button>
-                        <Button variant="ghost" size="icon" className="h-8 w-8">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8"
+                          onClick={() => handleDeleteConfirm(domain.id, 'domain')}
+                        >
                           <Trash className="h-4 w-4" />
                         </Button>
                         {!domain.isSold && (
-                          <Button variant="ghost" size="icon" className="h-8 w-8">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8"
+                            onClick={() => markAsSoldMutation.mutate(domain.id)}
+                          >
                             <Check className="h-4 w-4" />
                           </Button>
                         )}
@@ -278,6 +697,147 @@ export default function SimpleAdminPage() {
               </TableBody>
             </Table>
           </div>
+          
+          {/* Domain Edit/Add Dialog */}
+          <Dialog open={domainDialogOpen} onOpenChange={setDomainDialogOpen}>
+            <DialogContent className="sm:max-w-[600px]">
+              <DialogHeader>
+                <DialogTitle>{editingDomain ? "Edit Domain" : "Add New Domain"}</DialogTitle>
+                <DialogDescription>
+                  Enter the details for the domain.
+                </DialogDescription>
+              </DialogHeader>
+              <Form {...domainForm}>
+                <form onSubmit={domainForm.handleSubmit(onDomainSubmit)} className="space-y-4">
+                  <FormField
+                    control={domainForm.control}
+                    name="name"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Domain Name</FormLabel>
+                        <FormControl>
+                          <Input placeholder="example.com" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={domainForm.control}
+                    name="description"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Description</FormLabel>
+                        <FormControl>
+                          <Textarea
+                            placeholder="A great domain for..."
+                            {...field}
+                            rows={3}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <div className="grid grid-cols-2 gap-4">
+                    <FormField
+                      control={domainForm.control}
+                      name="price"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Price ($)</FormLabel>
+                          <FormControl>
+                            <Input
+                              type="number"
+                              placeholder="1999"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={domainForm.control}
+                      name="length"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Length (characters)</FormLabel>
+                          <FormControl>
+                            <Input
+                              type="number"
+                              placeholder="10"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                  <FormField
+                    control={domainForm.control}
+                    name="category"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Category</FormLabel>
+                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select a category" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="business">Business</SelectItem>
+                            <SelectItem value="technology">Technology</SelectItem>
+                            <SelectItem value="health">Health</SelectItem>
+                            <SelectItem value="education">Education</SelectItem>
+                            <SelectItem value="finance">Finance</SelectItem>
+                            <SelectItem value="entertainment">Entertainment</SelectItem>
+                            <SelectItem value="travel">Travel</SelectItem>
+                            <SelectItem value="food">Food</SelectItem>
+                            <SelectItem value="fashion">Fashion</SelectItem>
+                            <SelectItem value="sports">Sports</SelectItem>
+                            <SelectItem value="other">Other</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  {editingDomain && (
+                    <FormField
+                      control={domainForm.control}
+                      name="isSold"
+                      render={({ field }) => (
+                        <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
+                          <FormControl>
+                            <input
+                              type="checkbox"
+                              checked={field.value}
+                              onChange={field.onChange}
+                              className="h-4 w-4 mt-1"
+                            />
+                          </FormControl>
+                          <div className="space-y-1 leading-none">
+                            <FormLabel>Mark as sold</FormLabel>
+                            <FormDescription>
+                              This domain will be displayed as sold and unavailable for purchase.
+                            </FormDescription>
+                          </div>
+                        </FormItem>
+                      )}
+                    />
+                  )}
+                  <DialogFooter>
+                    <Button type="submit">
+                      {editingDomain ? "Update Domain" : "Add Domain"}
+                    </Button>
+                  </DialogFooter>
+                </form>
+              </Form>
+            </DialogContent>
+          </Dialog>
         </TabsContent>
         
         {/* OFFERS TAB */}
@@ -297,6 +857,20 @@ export default function SimpleAdminPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
+                {offers.map((offer) => (
+                  <TableRow key={offer.id}>
+                    <TableCell className="font-medium">
+                      {domains.find(d => d.id === offer.domainId)?.name || `Domain #${offer.domainId}`}
+                    </TableCell>
+                    <TableCell>${offer.amount.toLocaleString()}</TableCell>
+                    <TableCell>{offer.name}</TableCell>
+                    <TableCell>{offer.email}</TableCell>
+                    <TableCell>
+                      <Badge variant="outline">New</Badge>
+                    </TableCell>
+                    <TableCell>{new Date(offer.createdAt).toLocaleDateString()}</TableCell>
+                  </TableRow>
+                ))}
                 {offers.length === 0 && (
                   <TableRow>
                     <TableCell colSpan={6} className="h-24 text-center">
@@ -319,7 +893,7 @@ export default function SimpleAdminPage() {
                 <TableRow>
                   <TableHead>Name</TableHead>
                   <TableHead>Email</TableHead>
-                  <TableHead>Business Type</TableHead>
+                  <TableHead>Industry</TableHead>
                   <TableHead>Budget</TableHead>
                   <TableHead>Date</TableHead>
                 </TableRow>
@@ -329,8 +903,8 @@ export default function SimpleAdminPage() {
                   <TableRow key={consultation.id}>
                     <TableCell className="font-medium">{consultation.name}</TableCell>
                     <TableCell>{consultation.email}</TableCell>
-                    <TableCell>{consultation.businessType}</TableCell>
-                    <TableCell>${consultation.budget}</TableCell>
+                    <TableCell>{consultation.industry}</TableCell>
+                    <TableCell>{consultation.budget}</TableCell>
                     <TableCell>{new Date(consultation.createdAt).toLocaleDateString()}</TableCell>
                   </TableRow>
                 ))}
@@ -365,9 +939,13 @@ export default function SimpleAdminPage() {
                   <TableRow key={content.id}>
                     <TableCell className="font-medium">{content.pageKey}</TableCell>
                     <TableCell>{content.title}</TableCell>
-                    <TableCell>{new Date(content.updatedAt || content.createdAt).toLocaleDateString()}</TableCell>
+                    <TableCell>{new Date(content.updatedAt).toLocaleDateString()}</TableCell>
                     <TableCell>
-                      <Button variant="ghost" size="sm">
+                      <Button 
+                        variant="ghost" 
+                        size="sm"
+                        onClick={() => handleEditContent(content)}
+                      >
                         <Pencil className="h-4 w-4 mr-2" />
                         Edit
                       </Button>
@@ -384,13 +962,70 @@ export default function SimpleAdminPage() {
               </TableBody>
             </Table>
           </div>
+          
+          {/* Page Content Edit Dialog */}
+          <Dialog open={contentDialogOpen} onOpenChange={setContentDialogOpen}>
+            <DialogContent className="sm:max-w-[700px]">
+              <DialogHeader>
+                <DialogTitle>Edit Page Content</DialogTitle>
+                <DialogDescription>
+                  Update the content for this page.
+                </DialogDescription>
+              </DialogHeader>
+              <Form {...contentForm}>
+                <form onSubmit={contentForm.handleSubmit(onContentSubmit)} className="space-y-4">
+                  <FormField
+                    control={contentForm.control}
+                    name="title"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Page Title</FormLabel>
+                        <FormControl>
+                          <Input {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={contentForm.control}
+                    name="content"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Content</FormLabel>
+                        <FormControl>
+                          <Textarea
+                            {...field}
+                            rows={10}
+                            className="font-mono text-sm"
+                          />
+                        </FormControl>
+                        <FormDescription>
+                          HTML content for the page.
+                        </FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <DialogFooter>
+                    <Button type="submit">
+                      Update Content
+                    </Button>
+                  </DialogFooter>
+                </form>
+              </Form>
+            </DialogContent>
+          </Dialog>
         </TabsContent>
         
         {/* WEBSITE EDITOR TAB */}
         <TabsContent value="website" className="space-y-4">
           <div className="flex justify-between items-center">
             <h2 className="text-xl font-bold text-black">Website Editor</h2>
-            <Button variant="outline">Preview Site</Button>
+            <Button variant="outline" onClick={() => window.open('/', '_blank')}>
+              <Eye className="h-4 w-4 mr-2" />
+              Preview Site
+            </Button>
           </div>
           
           <Tabs defaultValue="homepage" className="w-full">
@@ -416,7 +1051,17 @@ export default function SimpleAdminPage() {
                       <p className="text-sm text-gray-500">
                         Edit your main hero banner, headline and call-to-action
                       </p>
-                      <Button variant="outline" size="sm" className="mt-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="mt-2"
+                        onClick={() => {
+                          const content = pageContents.find(c => c.pageKey === 'home');
+                          if (content) {
+                            handleEditContent(content);
+                          }
+                        }}
+                      >
                         <Pencil className="h-3 w-3 mr-2" />
                         Edit Section
                       </Button>
@@ -427,9 +1072,14 @@ export default function SimpleAdminPage() {
                       <p className="text-sm text-gray-500">
                         Choose which domains to highlight on your homepage
                       </p>
-                      <Button variant="outline" size="sm" className="mt-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="mt-2"
+                        onClick={() => setActiveTab("domains")}
+                      >
                         <Pencil className="h-3 w-3 mr-2" />
-                        Edit Section
+                        Manage Domains
                       </Button>
                     </div>
                     
@@ -438,7 +1088,17 @@ export default function SimpleAdminPage() {
                       <p className="text-sm text-gray-500">
                         Update the value proposition and benefits of your service
                       </p>
-                      <Button variant="outline" size="sm" className="mt-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="mt-2"
+                        onClick={() => {
+                          const content = pageContents.find(c => c.pageKey === 'home-benefits');
+                          if (content) {
+                            handleEditContent(content);
+                          }
+                        }}
+                      >
                         <Pencil className="h-3 w-3 mr-2" />
                         Edit Section
                       </Button>
@@ -457,7 +1117,16 @@ export default function SimpleAdminPage() {
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <Button variant="outline" size="sm">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      const content = pageContents.find(c => c.pageKey === 'guide');
+                      if (content) {
+                        handleEditContent(content);
+                      }
+                    }}
+                  >
                     <Pencil className="h-3 w-3 mr-2" />
                     Edit Guide Content
                   </Button>
@@ -474,7 +1143,16 @@ export default function SimpleAdminPage() {
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <Button variant="outline" size="sm">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      const content = pageContents.find(c => c.pageKey === 'about');
+                      if (content) {
+                        handleEditContent(content);
+                      }
+                    }}
+                  >
                     <Pencil className="h-3 w-3 mr-2" />
                     Edit About Content
                   </Button>
@@ -491,7 +1169,16 @@ export default function SimpleAdminPage() {
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <Button variant="outline" size="sm">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      const content = pageContents.find(c => c.pageKey === 'contact');
+                      if (content) {
+                        handleEditContent(content);
+                      }
+                    }}
+                  >
                     <Pencil className="h-3 w-3 mr-2" />
                     Edit Contact Information
                   </Button>
@@ -514,7 +1201,17 @@ export default function SimpleAdminPage() {
                       <p className="text-sm text-gray-500">
                         Edit your main menu links and header appearance
                       </p>
-                      <Button variant="outline" size="sm" className="mt-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="mt-2"
+                        onClick={() => {
+                          const content = pageContents.find(c => c.pageKey === 'global-header');
+                          if (content) {
+                            handleEditContent(content);
+                          }
+                        }}
+                      >
                         <Pencil className="h-3 w-3 mr-2" />
                         Edit Header
                       </Button>
@@ -525,7 +1222,17 @@ export default function SimpleAdminPage() {
                       <p className="text-sm text-gray-500">
                         Update your footer links, copyright text and social media
                       </p>
-                      <Button variant="outline" size="sm" className="mt-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="mt-2"
+                        onClick={() => {
+                          const content = pageContents.find(c => c.pageKey === 'global-footer');
+                          if (content) {
+                            handleEditContent(content);
+                          }
+                        }}
+                      >
                         <Pencil className="h-3 w-3 mr-2" />
                         Edit Footer
                       </Button>
@@ -541,8 +1248,8 @@ export default function SimpleAdminPage() {
         <TabsContent value="emails" className="space-y-4">
           <div className="flex justify-between items-center">
             <h2 className="text-xl font-bold text-black">Email Submissions</h2>
-            <Button variant="outline">
-              <Search className="h-4 w-4 mr-2" />
+            <Button variant="outline" onClick={exportEmailsToCSV}>
+              <Download className="h-4 w-4 mr-2" />
               Export CSV
             </Button>
           </div>
@@ -561,7 +1268,7 @@ export default function SimpleAdminPage() {
                   <TableRow key={submission.id}>
                     <TableCell className="font-medium">{submission.email}</TableCell>
                     <TableCell>{submission.source || "Ebook Download"}</TableCell>
-                    <TableCell>{new Date(submission.createdAt).toLocaleDateString()}</TableCell>
+                    <TableCell>{new Date(submission.downloadedAt).toLocaleDateString()}</TableCell>
                   </TableRow>
                 ))}
                 {emailSubmissions.length === 0 && (
@@ -595,9 +1302,13 @@ export default function SimpleAdminPage() {
                   <TableRow key={setting.id}>
                     <TableCell className="font-medium">{setting.pageKey}</TableCell>
                     <TableCell className="max-w-xs truncate">{setting.title}</TableCell>
-                    <TableCell className="max-w-xs truncate">{setting.description}</TableCell>
+                    <TableCell className="max-w-xs truncate">{setting.metaDescription}</TableCell>
                     <TableCell>
-                      <Button variant="ghost" size="sm">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleEditSeo(setting)}
+                      >
                         <Pencil className="h-4 w-4 mr-2" />
                         Edit
                       </Button>
@@ -614,6 +1325,78 @@ export default function SimpleAdminPage() {
               </TableBody>
             </Table>
           </div>
+          
+          {/* SEO Settings Edit Dialog */}
+          <Dialog open={seoDialogOpen} onOpenChange={setSeoDialogOpen}>
+            <DialogContent className="sm:max-w-[600px]">
+              <DialogHeader>
+                <DialogTitle>Edit SEO Settings</DialogTitle>
+                <DialogDescription>
+                  Update SEO information for this page.
+                </DialogDescription>
+              </DialogHeader>
+              <Form {...seoForm}>
+                <form onSubmit={seoForm.handleSubmit(onSeoSubmit)} className="space-y-4">
+                  <FormField
+                    control={seoForm.control}
+                    name="title"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Page Title</FormLabel>
+                        <FormControl>
+                          <Input {...field} />
+                        </FormControl>
+                        <FormDescription>
+                          This appears in search results and browser tabs.
+                        </FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={seoForm.control}
+                    name="metaDescription"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Meta Description</FormLabel>
+                        <FormControl>
+                          <Textarea
+                            {...field}
+                            rows={3}
+                          />
+                        </FormControl>
+                        <FormDescription>
+                          Appears in search results. Keep it under 160 characters.
+                        </FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={seoForm.control}
+                    name="metaKeywords"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Meta Keywords</FormLabel>
+                        <FormControl>
+                          <Input {...field} placeholder="domain, marketplace, investment" />
+                        </FormControl>
+                        <FormDescription>
+                          Comma-separated keywords relevant to the page.
+                        </FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <DialogFooter>
+                    <Button type="submit">
+                      Update SEO Settings
+                    </Button>
+                  </DialogFooter>
+                </form>
+              </Form>
+            </DialogContent>
+          </Dialog>
         </TabsContent>
         
         {/* EBOOK FILES TAB */}
@@ -640,11 +1423,17 @@ export default function SimpleAdminPage() {
                     <p className="text-sm text-gray-500">
                       Format: PDF | Size: 2.4 MB | Version: 1.0
                     </p>
-                    <p className="text-sm mt-1">Downloads: 27</p>
+                    <p className="text-sm mt-1">Downloads: {emailSubmissions.length}</p>
                   </div>
                   <div className="flex space-x-2">
-                    <Button variant="outline" size="sm">Preview</Button>
-                    <Button variant="outline" size="sm">Replace</Button>
+                    <Button variant="outline" size="sm">
+                      <Eye className="h-4 w-4 mr-2" />
+                      Preview
+                    </Button>
+                    <Button variant="outline" size="sm">
+                      <FileText className="h-4 w-4 mr-2" />
+                      Replace
+                    </Button>
                   </div>
                 </div>
               </CardContent>
@@ -656,6 +1445,41 @@ export default function SimpleAdminPage() {
           </div>
         </TabsContent>
       </Tabs>
+      
+      {/* Delete Confirmation Dialog */}
+      <Dialog open={confirmDeleteDialogOpen} onOpenChange={setConfirmDeleteDialogOpen}>
+        <DialogContent className="sm:max-w-[400px]">
+          <DialogHeader>
+            <DialogTitle>Confirm Delete</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to delete this item? This action cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="pt-4">
+            <Alert variant="destructive">
+              <AlertTriangle className="h-4 w-4 mr-2" />
+              <AlertTitle>Warning</AlertTitle>
+              <AlertDescription>
+                This will permanently delete the item from the database.
+              </AlertDescription>
+            </Alert>
+          </div>
+          <DialogFooter className="gap-2 sm:gap-0">
+            <Button
+              variant="outline"
+              onClick={() => setConfirmDeleteDialogOpen(false)}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={executeDelete}
+            >
+              Delete
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
