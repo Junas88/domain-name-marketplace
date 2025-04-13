@@ -1743,6 +1743,86 @@ export default function SimpleAdminPage() {
               </CardContent>
             </Card>
             
+            {/* Global Components */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Global Components</CardTitle>
+                <CardDescription>Edit components that appear on multiple pages</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                {/* Footer Section */}
+                <div>
+                  <h3 className="text-lg font-semibold mb-4 flex items-center">
+                    <Layout className="h-5 w-5 mr-2 text-gray-600" />
+                    Footer
+                  </h3>
+                  {pageContents.some(content => content.pageKey === 'footer') ? (
+                    <Card className="border-gray-200">
+                      <CardHeader className="pb-2">
+                        <div className="flex justify-between items-center">
+                          <CardTitle className="text-base">
+                            {pageContents.find(content => content.pageKey === 'footer')?.title || 'Website Footer'}
+                          </CardTitle>
+                          <Button 
+                            variant="outline" 
+                            size="sm"
+                            onClick={() => handleEditContent('footer', 'Website Footer')}
+                          >
+                            <Pencil className="h-4 w-4 mr-2" />
+                            Edit
+                          </Button>
+                        </div>
+                        <CardDescription>Footer links, copyright text, and contact info</CardDescription>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="rounded-md bg-gray-50 p-3 text-sm font-mono">
+                          <div className="space-y-2">
+                            <div>
+                              <span className="text-gray-500">Content preview:</span>
+                              <div className="mt-1 whitespace-pre-wrap max-h-24 overflow-hidden text-ellipsis border-l-2 border-gray-200 pl-3">
+                                {(() => {
+                                  const content = pageContents.find(c => c.pageKey === 'footer')?.content;
+                                  if (!content) return '<No content>';
+                                  return content.length > 150 
+                                    ? content.substring(0, 150) + '...' 
+                                    : content;
+                                })()}
+                              </div>
+                            </div>
+                            <div className="flex justify-between items-center">
+                              <h4 className="text-sm font-medium">Footer Content</h4>
+                              <Badge variant="outline" className="text-xs">Global Component</Badge>
+                            </div>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ) : (
+                    <Button
+                      variant="outline"
+                      className="w-full h-24 border-dashed flex flex-col items-center justify-center"
+                      onClick={() => {
+                        setEditingContent(null);
+                        contentForm.reset({
+                          pageKey: "footer",
+                          title: "Website Footer",
+                          content: "© 2025 Domain Name Guide. All Rights Reserved.\nContact: support@domainnameguide.com\nPhone: +1 (555) 123-4567\n\nPrivacy Policy | Terms of Service",
+                          metaTitle: "",
+                          metaDescription: "",
+                        });
+                        setDialogTitle("Create Footer Content");
+                        setContentDialogOpen(true);
+                      }}
+                    >
+                      <Plus className="h-6 w-6 mb-2 text-gray-400" />
+                      <span className="font-medium">Add Footer Content</span>
+                      <span className="text-xs text-gray-500 mt-1">Create website footer with links and contact information</span>
+                    </Button>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+            
             {/* Legal Pages */}
             <Card>
               <CardHeader>
