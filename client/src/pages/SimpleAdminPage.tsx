@@ -991,7 +991,7 @@ export default function SimpleAdminPage() {
                       <Button 
                         variant="ghost" 
                         size="sm"
-                        onClick={() => handleEditContent(content)}
+                        onClick={() => handleEditContent(content.pageKey, content.title || 'Page Content')}
                       >
                         <Pencil className="h-4 w-4 mr-2" />
                         Edit
