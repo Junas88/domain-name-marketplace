@@ -1096,10 +1096,10 @@ export default function SimpleAdminPage() {
           {/* Page Content Edit Dialog */}
           <Dialog open={contentDialogOpen} onOpenChange={setContentDialogOpen}>
             <DialogContent className="max-w-3xl p-0 overflow-hidden">
-              <DialogHeader className="px-6 pt-6 pb-2">
-                <DialogTitle className="text-xl">{dialogTitle}</DialogTitle>
+              <DialogHeader className="px-6 pt-6 pb-2 border-b">
+                <DialogTitle className="text-xl font-bold">{dialogTitle}</DialogTitle>
                 <DialogDescription>
-                  Update the content for this page.
+                  Manage content and SEO settings for this page.
                 </DialogDescription>
               </DialogHeader>
               <Form {...contentForm}>
@@ -1176,6 +1176,7 @@ export default function SimpleAdminPage() {
                           type="button" 
                           variant="outline" 
                           size="sm"
+                          className="h-8 bg-white border-gray-200 hover:bg-gray-50"
                           onClick={() => {
                             const textarea = document.getElementById('content-textarea') as HTMLTextAreaElement;
                             if (textarea) {
