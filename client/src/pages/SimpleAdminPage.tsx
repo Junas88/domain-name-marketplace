@@ -546,7 +546,7 @@ export default function SimpleAdminPage() {
       });
       return await res.json();
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
       toast({
         title: "Success",
         description: "Page content created successfully",
@@ -554,7 +554,17 @@ export default function SimpleAdminPage() {
       setContentDialogOpen(false);
       contentForm.reset();
       setEditingContent(null);
+      
+      // Invalidate both admin and public endpoints
       queryClient.invalidateQueries({ queryKey: ['/api/admin/page-contents'] });
+      
+      // Invalidate the public API for this specific page content
+      queryClient.invalidateQueries({ queryKey: [`/api/page-contents/${data.pageKey}`] });
+      
+      // Also invalidate any general routes that might include this content
+      queryClient.invalidateQueries({ queryKey: ['/api/page-contents'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/seo-settings'] });
+      
       refetchContents();
     },
     onError: (error: Error) => {
