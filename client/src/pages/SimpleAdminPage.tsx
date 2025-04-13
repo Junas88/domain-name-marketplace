@@ -369,10 +369,14 @@ export default function SimpleAdminPage() {
   // Content Form Submit
   const onContentSubmit = (values: z.infer<typeof contentFormSchema>) => {
     if (editingContent) {
+      // Update existing content
       updateContentMutation.mutate({
         pageKey: editingContent.pageKey,
         content: values,
       });
+    } else {
+      // Create new content
+      createContentMutation.mutate(values);
     }
   };
   
@@ -400,16 +404,59 @@ export default function SimpleAdminPage() {
     setDomainDialogOpen(true);
   };
   
-  // Handle editing content
-  const handleEditContent = (content: PageContent) => {
-    setEditingContent(content);
-    contentForm.reset({
-      pageKey: content.pageKey,
-      title: content.title,
-      content: content.content,
-      metaTitle: content.metaTitle || "",
-      metaDescription: content.metaDescription || "",
-    });
+  // Create page content mutation
+  const createContentMutation = useMutation({
+    mutationFn: async (data: InsertPageContent) => {
+      const res = await apiRequest("POST", "/api/admin/page-contents", data);
+      return await res.json();
+    },
+    onSuccess: () => {
+      toast({
+        title: "Success",
+        description: "Page content created successfully",
+      });
+      setContentDialogOpen(false);
+      contentForm.reset();
+      setEditingContent(null);
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/page-contents'] });
+      refetchContents();
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Error",
+        description: `Failed to create content: ${error.message}`,
+        variant: "destructive",
+      });
+    },
+  });
+
+  // Handle editing content - with create functionality if content doesn't exist
+  const handleEditContent = (pageKey: string, defaultTitle: string = "") => {
+    // Find existing content or prepare to create new content
+    const content = pageContents.find(c => c.pageKey === pageKey);
+    
+    if (content) {
+      // Edit existing content
+      setEditingContent(content);
+      contentForm.reset({
+        pageKey: content.pageKey,
+        title: content.title,
+        content: content.content || "",
+        metaTitle: content.metaTitle || "",
+        metaDescription: content.metaDescription || "",
+      });
+    } else {
+      // Prepare for new content creation
+      setEditingContent(null);
+      contentForm.reset({
+        pageKey: pageKey,
+        title: defaultTitle,
+        content: "",
+        metaTitle: "",
+        metaDescription: "",
+      });
+    }
+    
     setContentDialogOpen(true);
   };
   
@@ -1027,7 +1074,7 @@ export default function SimpleAdminPage() {
                 <ExternalLink className="h-4 w-4 mr-2" />
                 Preview Site
               </Button>
-              <Button variant="black">
+              <Button variant="default" className="bg-black hover:bg-gray-800 text-white">
                 <Save className="h-4 w-4 mr-2" />
                 Publish Changes
               </Button>
@@ -1067,10 +1114,7 @@ export default function SimpleAdminPage() {
                           variant="outline"
                           size="sm"
                           onClick={() => {
-                            const content = pageContents.find(c => c.pageKey === 'home-hero');
-                            if (content) {
-                              handleEditContent(content);
-                            }
+                            handleEditContent('home-hero', 'Premium Domain Names For Your Business');
                           }}
                         >
                           <Pencil className="h-3 w-3 mr-2" />
