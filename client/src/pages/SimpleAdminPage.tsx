@@ -88,6 +88,17 @@ export default function SimpleAdminPage() {
       }, 300);
     }
   }, [user, isLoading]);
+  
+  // Ensure page contents exist when admin loads the page
+  useEffect(() => {
+    // If user is admin and page contents are loaded, check for missing pages
+    if (isAdmin && pageContents.length > 0) {
+      // Add a slight delay to ensure the UI is ready
+      setTimeout(() => {
+        ensurePageContents();
+      }, 500);
+    }
+  }, [isAdmin, pageContents.length]);
 
   // Check if user is admin
   const isAdmin = !!user?.isAdmin;
@@ -354,6 +365,48 @@ export default function SimpleAdminPage() {
   const conversionRate = totalDomains > 0 
     ? (soldDomains / totalDomains) * 100
     : 0;
+    
+  // Function to ensure all necessary page content entries exist
+  const ensurePageContents = () => {
+    // Define all required page content sections by key and default title
+    const requiredPages = [
+      { key: 'home', title: 'Home Page' },
+      { key: 'home-hero', title: 'Home Hero Section' },
+      { key: 'home-benefits', title: 'Why Choose Domain Name Guide' },
+      { key: 'home-recently-sold', title: 'Recently Sold Domains Section' },
+      { key: 'about', title: 'About Us' },
+      { key: 'buyer-protection', title: 'Buyer Protection' },
+      { key: 'contact', title: 'Contact Us' },
+      { key: 'domain-valuation', title: 'Domain Valuation' },
+      { key: 'faqs', title: 'Frequently Asked Questions' },
+      { key: 'guide', title: 'Domain Guide' },
+      { key: 'guide-ebook', title: 'Domain Name Guide Ebook' },
+      { key: 'how-it-works', title: 'How It Works' },
+      { key: 'selling-strategy', title: 'Selling Strategy' },
+      { key: 'terms', title: 'Terms of Service' },
+      { key: 'privacy-policy', title: 'Privacy Policy' },
+      { key: 'not-found', title: 'Page Not Found' },
+      { key: 'footer', title: 'Footer Content' },
+      { key: 'header', title: 'Header Content' },
+    ];
+    
+    // Identify missing pages
+    const existingKeys = pageContents.map(content => content.pageKey);
+    const missingPages = requiredPages.filter(page => !existingKeys.includes(page.key));
+    
+    // Add missing pages
+    missingPages.forEach(page => {
+      handleEditContent(page.key, page.title);
+    });
+    
+    // If there are missing pages, show a notification
+    if (missingPages.length > 0) {
+      toast({
+        title: `${missingPages.length} missing page sections found`,
+        description: "You can now edit all website sections from the Content Management system",
+      });
+    }
+  };
   
   // Domain Form Submit
   const onDomainSubmit = (values: z.infer<typeof domainFormSchema>) => {
