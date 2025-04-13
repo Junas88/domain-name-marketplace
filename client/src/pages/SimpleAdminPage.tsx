@@ -194,7 +194,10 @@ export default function SimpleAdminPage() {
   // Domain mutations
   const createDomainMutation = useMutation({
     mutationFn: async (data: InsertDomain) => {
-      const res = await apiRequest("POST", "/api/admin/domains", { body: JSON.stringify(data) });
+      const res = await apiRequest("/api/admin/domains", {
+        method: "POST",
+        body: JSON.stringify(data)
+      });
       return await res.json();
     },
     onSuccess: () => {
@@ -218,7 +221,10 @@ export default function SimpleAdminPage() {
   
   const updateDomainMutation = useMutation({
     mutationFn: async (data: Domain) => {
-      const res = await apiRequest("PATCH", `/api/admin/domains/${data.id}`, data);
+      const res = await apiRequest(`/api/admin/domains/${data.id}`, {
+        method: "PATCH",
+        body: JSON.stringify(data)
+      });
       return await res.json();
     },
     onSuccess: () => {
@@ -243,7 +249,9 @@ export default function SimpleAdminPage() {
   
   const deleteDomainMutation = useMutation({
     mutationFn: async (id: number) => {
-      const res = await apiRequest("DELETE", `/api/admin/domains/${id}`);
+      const res = await apiRequest(`/api/admin/domains/${id}`, {
+        method: "DELETE"
+      });
       return await res.json();
     },
     onSuccess: () => {
@@ -267,7 +275,9 @@ export default function SimpleAdminPage() {
   
   const markAsSoldMutation = useMutation({
     mutationFn: async (id: number) => {
-      const res = await apiRequest("PATCH", `/api/admin/domains/${id}/mark-sold`, {});
+      const res = await apiRequest(`/api/admin/domains/${id}/mark-sold`, {
+        method: "PATCH"
+      });
       return await res.json();
     },
     onSuccess: () => {
@@ -290,7 +300,10 @@ export default function SimpleAdminPage() {
   // Content mutations
   const updateContentMutation = useMutation({
     mutationFn: async (data: { pageKey: string, content: Partial<InsertPageContent> }) => {
-      const res = await apiRequest("PATCH", `/api/admin/page-contents/${data.pageKey}`, data.content);
+      const res = await apiRequest(`/api/admin/page-contents/${data.pageKey}`, {
+        method: "PATCH",
+        body: JSON.stringify(data.content)
+      });
       return await res.json();
     },
     onSuccess: () => {
@@ -316,7 +329,10 @@ export default function SimpleAdminPage() {
   // SEO mutations
   const updateSeoMutation = useMutation({
     mutationFn: async (data: { pageKey: string, seo: Partial<InsertSeoSettings> }) => {
-      const res = await apiRequest("PATCH", `/api/admin/seo-settings/${data.pageKey}`, data.seo);
+      const res = await apiRequest(`/api/admin/seo-settings/${data.pageKey}`, {
+        method: "PATCH",
+        body: JSON.stringify(data.seo)
+      });
       return await res.json();
     },
     onSuccess: () => {
@@ -450,7 +466,10 @@ export default function SimpleAdminPage() {
   // Create page content mutation
   const createContentMutation = useMutation({
     mutationFn: async (data: InsertPageContent) => {
-      const res = await apiRequest("POST", "/api/admin/page-contents", data);
+      const res = await apiRequest("/api/admin/page-contents", {
+        method: "POST",
+        body: JSON.stringify(data)
+      });
       return await res.json();
     },
     onSuccess: () => {
