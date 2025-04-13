@@ -795,6 +795,24 @@ New York, NY 10001`;
   const [uploadingFile, setUploadingFile] = useState(false);
   const [fileInputRef, setFileInputRef] = useState<HTMLInputElement | null>(null);
   
+  // Contact form related state
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [contactInfo, setContactInfo] = useState<{
+    pageKey: string,
+    title: string,
+    email: string,
+    phone: string,
+    hours: string,
+    address: string
+  }>({
+    pageKey: 'contact-info',
+    title: 'Contact Information',
+    email: '',
+    phone: '',
+    hours: '',
+    address: ''
+  });
+  
   // Handle ebook upload
   const handleEbookUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     if (!event.target.files || event.target.files.length === 0) {
@@ -2996,6 +3014,126 @@ Instagram: https://instagram.com/domainnameguide`;
               onClick={executeDelete}
             >
               Delete
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Contact Info Dialog */}
+      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+        <DialogContent className="sm:max-w-[600px]">
+          <DialogHeader>
+            <DialogTitle>Edit Contact Information</DialogTitle>
+            <DialogDescription>
+              Update your business contact information that appears on the contact page.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-4">
+              <div>
+                <Label htmlFor="email" className="font-medium flex gap-2 items-center">
+                  <Mail className="h-4 w-4 text-green-600" />
+                  Email Address
+                </Label>
+                <Input 
+                  id="email" 
+                  value={contactInfo.email} 
+                  onChange={(e) => setContactInfo({...contactInfo, email: e.target.value})}
+                  placeholder="support@domainnameguide.com"
+                  className="mt-1"
+                />
+              </div>
+              
+              <div>
+                <Label htmlFor="phone" className="font-medium flex gap-2 items-center">
+                  <Phone className="h-4 w-4 text-green-600" />
+                  Phone Number
+                </Label>
+                <Input 
+                  id="phone" 
+                  value={contactInfo.phone} 
+                  onChange={(e) => setContactInfo({...contactInfo, phone: e.target.value})}
+                  placeholder="+1 (800) 123-4567"
+                  className="mt-1"
+                />
+              </div>
+              
+              <div>
+                <Label htmlFor="hours" className="font-medium flex gap-2 items-center">
+                  <Clock className="h-4 w-4 text-green-600" />
+                  Business Hours
+                </Label>
+                <Input 
+                  id="hours" 
+                  value={contactInfo.hours} 
+                  onChange={(e) => setContactInfo({...contactInfo, hours: e.target.value})}
+                  placeholder="Monday-Friday, 9am-5pm EST"
+                  className="mt-1"
+                />
+              </div>
+              
+              <div>
+                <Label htmlFor="address" className="font-medium flex gap-2 items-center">
+                  <MapPin className="h-4 w-4 text-green-600" />
+                  Address
+                </Label>
+                <Textarea 
+                  id="address" 
+                  value={contactInfo.address} 
+                  onChange={(e) => setContactInfo({...contactInfo, address: e.target.value})}
+                  placeholder="123 Domain Street&#10;San Francisco, CA 94107"
+                  className="mt-1 min-h-[80px]"
+                  rows={3}
+                />
+              </div>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setDialogOpen(false)}>
+              Cancel
+            </Button>
+            <Button onClick={() => {
+              // Generate formatted content
+              const formattedContent = `Email Us
+${contactInfo.email}
+
+Call Us
+${contactInfo.phone}
+
+${contactInfo.hours}
+
+Visit Us
+${contactInfo.address}`;
+              
+              // Check if we're editing or creating
+              const existingContent = pageContents.find(c => c.pageKey === contactInfo.pageKey);
+              
+              if (existingContent) {
+                // Update existing content
+                updateContentMutation.mutate({
+                  id: existingContent.id,
+                  pageKey: contactInfo.pageKey,
+                  title: contactInfo.title,
+                  content: formattedContent
+                });
+              } else {
+                // Create new content
+                createContentMutation.mutate({
+                  pageKey: contactInfo.pageKey,
+                  title: contactInfo.title,
+                  content: formattedContent
+                });
+              }
+              
+              // Close dialog
+              setDialogOpen(false);
+              
+              toast({
+                title: "Success",
+                description: `Contact information has been ${existingContent ? "updated" : "created"}`,
+              });
+            }}>
+              Save Changes
             </Button>
           </DialogFooter>
         </DialogContent>
