@@ -1015,64 +1015,79 @@ export default function SimpleAdminPage() {
           
           {/* Page Content Edit Dialog */}
           <Dialog open={contentDialogOpen} onOpenChange={setContentDialogOpen}>
-            <DialogContent className="sm:max-w-[700px]">
-              <DialogHeader>
-                <DialogTitle>{dialogTitle}</DialogTitle>
+            <DialogContent className="max-w-3xl p-0 overflow-hidden">
+              <DialogHeader className="px-6 pt-6 pb-2">
+                <DialogTitle className="text-xl">{dialogTitle}</DialogTitle>
                 <DialogDescription>
                   Update the content for this page.
                 </DialogDescription>
               </DialogHeader>
               <Form {...contentForm}>
-                <form onSubmit={contentForm.handleSubmit(onContentSubmit)} className="space-y-4">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <form onSubmit={contentForm.handleSubmit(onContentSubmit)} className="space-y-6">
+                  <div className="px-6">
+                    <div className="grid grid-cols-2 gap-6 mb-6">
+                      <div>
+                        <FormField
+                          control={contentForm.control}
+                          name="title"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Page Title</FormLabel>
+                              <FormControl>
+                                <Input 
+                                  {...field} 
+                                  className="border-gray-300 focus:border-black focus:ring-black" 
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+                      
+                      <div>
+                        <FormField
+                          control={contentForm.control}
+                          name="metaTitle"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Meta Title (SEO)</FormLabel>
+                              <FormControl>
+                                <Input 
+                                  {...field} 
+                                  className="border-gray-300 focus:border-black focus:ring-black" 
+                                  placeholder="Leave empty to use page title" 
+                                />
+                              </FormControl>
+                              <FormDescription className="text-xs">
+                                Leave empty to use page title
+                              </FormDescription>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+                    </div>
+                    
                     <FormField
                       control={contentForm.control}
-                      name="title"
+                      name="metaDescription"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Page Title</FormLabel>
+                          <FormLabel>Meta Description (SEO)</FormLabel>
                           <FormControl>
-                            <Input {...field} />
+                            <Textarea 
+                              {...field} 
+                              rows={3} 
+                              className="border-gray-300 focus:border-black focus:ring-black resize-none" 
+                              placeholder="Brief description for search engines" 
+                            />
                           </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={contentForm.control}
-                      name="metaTitle"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Meta Title (SEO)</FormLabel>
-                          <FormControl>
-                            <Input {...field} />
-                          </FormControl>
-                          <FormDescription>
-                            Leave empty to use page title
-                          </FormDescription>
                           <FormMessage />
                         </FormItem>
                       )}
                     />
                   </div>
-
-                  <FormField
-                    control={contentForm.control}
-                    name="metaDescription"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Meta Description (SEO)</FormLabel>
-                        <FormControl>
-                          <Textarea {...field} rows={2} />
-                        </FormControl>
-                        <FormDescription>
-                          Brief description for search engines
-                        </FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
                   <div className="space-y-3">
                     <div className="bg-gray-50 p-3 rounded-md">
                       <h4 className="text-sm font-medium mb-2">Editor Tools</h4>
