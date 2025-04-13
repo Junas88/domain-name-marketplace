@@ -971,46 +971,126 @@ export default function SimpleAdminPage() {
         </TabsContent>
         
         {/* PAGE CONTENT TAB */}
-        <TabsContent value="content" className="space-y-4">
-          <h2 className="text-xl font-bold text-black">Page Content Management</h2>
+        <TabsContent value="content" className="space-y-6">
+          <div className="flex justify-between items-center">
+            <h2 className="text-xl font-bold text-black">Page Content Management</h2>
+            <Button 
+              className="bg-black hover:bg-gray-800 text-white"
+              onClick={() => {
+                contentForm.reset({
+                  pageKey: "",
+                  title: "",
+                  content: "",
+                  metaTitle: "",
+                  metaDescription: "",
+                });
+                setEditingContent(null);
+                setDialogTitle("Add New Content");
+                setContentDialogOpen(true);
+              }}
+            >
+              <Plus className="mr-2 h-4 w-4" />
+              Add New Content
+            </Button>
+          </div>
           
-          <div className="rounded-md border overflow-hidden shadow-sm">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Page Key</TableHead>
-                  <TableHead>Title</TableHead>
-                  <TableHead>Last Updated</TableHead>
-                  <TableHead>Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {pageContents.map((content) => (
-                  <TableRow key={content.id}>
-                    <TableCell className="font-medium">{content.pageKey}</TableCell>
-                    <TableCell>{content.title}</TableCell>
-                    <TableCell>{new Date(content.updatedAt).toLocaleDateString()}</TableCell>
-                    <TableCell>
-                      <Button 
-                        variant="ghost" 
-                        size="sm"
-                        onClick={() => handleEditContent(content.pageKey, content.title || 'Page Content')}
-                      >
-                        <Pencil className="h-4 w-4 mr-2" />
-                        Edit
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                ))}
-                {pageContents.length === 0 && (
-                  <TableRow>
-                    <TableCell colSpan={4} className="h-24 text-center">
-                      No page content found.
-                    </TableCell>
-                  </TableRow>
-                )}
-              </TableBody>
-            </Table>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {pageContents.map((content) => (
+              <div 
+                key={content.id} 
+                className="group relative rounded-lg border border-gray-200 bg-white shadow-sm transition-all hover:shadow-md overflow-hidden"
+              >
+                {/* Content preview header */}
+                <div className="bg-gray-50 p-4 border-b flex justify-between items-center">
+                  <div className="flex items-center space-x-2">
+                    <FileText className="h-4 w-4 text-gray-500" />
+                    <h3 className="font-medium text-sm truncate max-w-[200px]">{content.title || content.pageKey}</h3>
+                  </div>
+                  <Badge variant="outline" className="bg-white text-xs">
+                    {content.pageKey}
+                  </Badge>
+                </div>
+                
+                {/* Content preview */}
+                <div className="p-4 h-32 overflow-hidden relative">
+                  <div className="prose prose-sm">
+                    <div 
+                      className="line-clamp-4 text-sm text-gray-600"
+                      dangerouslySetInnerHTML={{ __html: content.content || '<p class="text-gray-400 italic">No content</p>' }} 
+                    />
+                  </div>
+                  <div className="absolute inset-x-0 bottom-0 h-12 bg-gradient-to-t from-white to-transparent"></div>
+                </div>
+                
+                {/* Footer with metadata and actions */}
+                <div className="p-4 bg-white border-t flex justify-between items-center">
+                  <div className="text-xs text-gray-500">
+                    Updated: {new Date(content.updatedAt).toLocaleDateString()}
+                  </div>
+                  <div className="flex space-x-1">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-8 w-8 p-0"
+                      onClick={() => window.open(`/${content.pageKey}`, '_blank')}
+                    >
+                      <Eye className="h-4 w-4" />
+                      <span className="sr-only">View</span>
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-8 w-8 p-0"
+                      onClick={() => handleEditContent(content.pageKey, content.title || 'Page Content')}
+                    >
+                      <Pencil className="h-4 w-4" />
+                      <span className="sr-only">Edit</span>
+                    </Button>
+                  </div>
+                </div>
+                
+                {/* Hover overlay with quick edit action */}
+                <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center opacity-0 transition-opacity group-hover:opacity-100">
+                  <Button
+                    variant="default"
+                    size="sm"
+                    className="bg-white text-black hover:bg-gray-100"
+                    onClick={() => handleEditContent(content.pageKey, content.title || 'Page Content')}
+                  >
+                    <Pencil className="h-4 w-4 mr-2" />
+                    Edit Content
+                  </Button>
+                </div>
+              </div>
+            ))}
+            
+            {pageContents.length === 0 && (
+              <div className="col-span-full rounded-lg border border-dashed border-gray-300 p-10 text-center">
+                <FileText className="mx-auto h-10 w-10 text-gray-400 mb-3" />
+                <h3 className="text-sm font-medium text-gray-900">No page content yet</h3>
+                <p className="mt-1 text-sm text-gray-500">Get started by creating a new page content.</p>
+                <div className="mt-6">
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      contentForm.reset({
+                        pageKey: "",
+                        title: "",
+                        content: "",
+                        metaTitle: "",
+                        metaDescription: "",
+                      });
+                      setEditingContent(null);
+                      setDialogTitle("Add New Content");
+                      setContentDialogOpen(true);
+                    }}
+                  >
+                    <Plus className="mr-2 h-4 w-4" />
+                    Add Content
+                  </Button>
+                </div>
+              </div>
+            )}
           </div>
           
           {/* Page Content Edit Dialog */}
@@ -1088,9 +1168,9 @@ export default function SimpleAdminPage() {
                       )}
                     />
                   </div>
-                  <div className="space-y-3">
-                    <div className="bg-gray-50 p-3 rounded-md">
-                      <h4 className="text-sm font-medium mb-2">Editor Tools</h4>
+                  <div className="w-full">
+                    <div className="mx-6 mb-2">
+                      <h3 className="font-medium text-sm mb-2">Editor Tools</h3>
                       <div className="flex flex-wrap gap-2">
                         <Button 
                           type="button" 
@@ -1274,47 +1354,49 @@ export default function SimpleAdminPage() {
                       </div>
                     </div>
 
-                    <FormField
-                      control={contentForm.control}
-                      name="content"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Content</FormLabel>
-                          <FormControl>
-                            <Textarea
-                              {...field}
-                              id="content-textarea"
-                              rows={12}
-                              className="font-mono text-sm"
-                            />
-                          </FormControl>
-                          <FormDescription>
-                            HTML content for the page. Use the editor tools above to format your content.
-                          </FormDescription>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <div className="border rounded-md p-3">
-                      <h4 className="text-sm font-medium mb-2 flex items-center">
-                        <Eye className="h-3 w-3 mr-2" />
-                        Content Preview
-                      </h4>
+                    <div className="border-t border-b">
+                      <FormField
+                        control={contentForm.control}
+                        name="content"
+                        render={({ field }) => (
+                          <FormItem className="mb-0">
+                            <FormLabel className="sr-only">Content</FormLabel>
+                            <FormControl>
+                              <Textarea
+                                {...field}
+                                id="content-textarea"
+                                rows={10}
+                                className="font-mono text-sm resize-none border-0 focus:ring-0 rounded-none min-h-[200px]"
+                                placeholder="HTML content for the page. Use the editor tools above to format your content."
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <div className="px-6 py-2 text-xs text-gray-500">
+                        HTML content for the page. Use the editor tools above to format your content.
+                      </div>
+                    </div>
+                      
+                    <div className="mx-6 my-4">
+                      <div className="flex items-center mb-2">
+                        <Eye className="h-4 w-4 mr-2" />
+                        <h3 className="font-medium text-sm">Content Preview</h3>
+                      </div>
                       <div 
-                        className="prose prose-sm max-w-none bg-white p-4 rounded-md border overflow-auto max-h-[300px]"
-                        dangerouslySetInnerHTML={{ __html: contentForm.watch('content') || '<p>No content to preview</p>' }}
+                        className="prose prose-sm max-w-none bg-gray-50 p-4 rounded-md border border-gray-200 overflow-auto max-h-[200px]"
+                        dangerouslySetInnerHTML={{ __html: contentForm.watch('content') || '<p class="text-gray-400 italic">No content to preview</p>' }}
                       />
                     </div>
                   </div>
-                  <DialogFooter className="flex justify-between items-center sm:justify-between">
+                  <DialogFooter className="px-6 py-4 bg-gray-50 border-t flex justify-between sm:justify-between">
                     <div className="flex items-center gap-2">
                       <Button
                         type="button"
                         variant="outline"
                         size="sm"
                         onClick={() => {
-                          // Reset to original content if editing
                           if (editingContent) {
                             contentForm.reset({
                               pageKey: editingContent.pageKey,
@@ -1333,6 +1415,7 @@ export default function SimpleAdminPage() {
                             });
                           }
                         }}
+                        className="border-gray-300"
                       >
                         Reset
                       </Button>
@@ -1346,16 +1429,15 @@ export default function SimpleAdminPage() {
                           }
                         }}
                         disabled={!editingContent}
+                        className="border-gray-300"
                       >
                         <ExternalLink className="h-3 w-3 mr-2" />
                         View Page
                       </Button>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <Button type="submit" size="default">
-                        {editingContent ? 'Update Content' : 'Create Content'}
-                      </Button>
-                    </div>
+                    <Button type="submit" className="bg-black hover:bg-gray-800 text-white">
+                      {editingContent ? 'Update Content' : 'Create Content'}
+                    </Button>
                   </DialogFooter>
                 </form>
               </Form>
