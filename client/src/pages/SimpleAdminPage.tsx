@@ -64,6 +64,20 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 export default function SimpleAdminPage() {
   const { user, isLoading, logoutMutation } = useAuth();
   const [activeTab, setActiveTab] = useState("domains");
+  
+  // Analytics state
+  const [pageViewsData, setPageViewsData] = useState<{
+    page: string;
+    views: number;
+    avgTimeOnPage: number;
+    bounceRate: number;
+  }[]>([
+    { page: "Home", views: 1842, avgTimeOnPage: 92, bounceRate: 36 },
+    { page: "Premium Domains", views: 3756, avgTimeOnPage: 145, bounceRate: 28 },
+    { page: "Domain Guide", views: 1276, avgTimeOnPage: 215, bounceRate: 22 },
+    { page: "About", views: 487, avgTimeOnPage: 68, bounceRate: 45 },
+    { page: "Contact", views: 694, avgTimeOnPage: 73, bounceRate: 38 },
+  ]);
   const [isRedirecting, setIsRedirecting] = useState(false);
   const { toast } = useToast();
   
@@ -821,7 +835,7 @@ export default function SimpleAdminPage() {
       
       {/* Main Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
-        <TabsList className="grid w-full grid-cols-7">
+        <TabsList className="grid w-full grid-cols-8">
           <TabsTrigger value="domains">Domains</TabsTrigger>
           <TabsTrigger value="offers">Offers</TabsTrigger>
           <TabsTrigger value="consultations">Consultations</TabsTrigger>
@@ -829,6 +843,7 @@ export default function SimpleAdminPage() {
           <TabsTrigger value="seo">SEO Settings</TabsTrigger>
           <TabsTrigger value="editor">Website Editor</TabsTrigger>
           <TabsTrigger value="ebooks">Ebook Files</TabsTrigger>
+          <TabsTrigger value="analytics">Analytics</TabsTrigger>
         </TabsList>
         
         {/* DOMAINS TAB */}
