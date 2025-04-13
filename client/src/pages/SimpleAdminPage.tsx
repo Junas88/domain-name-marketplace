@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { 
   LogOut, Loader2, Plus, Pencil, Trash, Check, Tag, 
   CircleCheck, Upload, Search, Download, File, Save,
-  AlertTriangle, Eye, X, FileText, ExternalLink
+  AlertTriangle, Eye, X, FileText, ExternalLink, Layers
 } from "lucide-react";
 import { 
   Domain, PageContent, SeoSettings, Consultation, 
@@ -194,7 +194,7 @@ export default function SimpleAdminPage() {
   // Domain mutations
   const createDomainMutation = useMutation({
     mutationFn: async (data: InsertDomain) => {
-      const res = await apiRequest("POST", "/api/admin/domains", data);
+      const res = await apiRequest("POST", "/api/admin/domains", { body: JSON.stringify(data) });
       return await res.json();
     },
     onSuccess: () => {
@@ -1490,26 +1490,35 @@ export default function SimpleAdminPage() {
         
         {/* WEBSITE EDITOR TAB */}
         <TabsContent value="website" className="space-y-4">
-          <div className="flex justify-between items-center">
+          <div className="flex flex-col md:flex-row justify-between md:items-center gap-3">
             <h2 className="text-xl font-bold text-black">Website Editor</h2>
-            <div className="space-x-2">
+            <div className="flex flex-wrap gap-2">
               <Button 
                 variant="outline" 
-                className="text-xs" 
+                className="text-xs h-9" 
                 onClick={ensurePageContents}
               >
                 <FileText className="h-4 w-4 mr-1" />
-                Add All Missing Pages
+                Add Missing Pages
               </Button>
               <Button 
                 variant="outline" 
-                className="text-xs"
+                className="text-xs h-9"
                 onClick={() => window.open('/', '_blank')}
               >
                 <ExternalLink className="h-4 w-4 mr-1" />
                 Preview Site
               </Button>
-              <Button variant="default" className="bg-black hover:bg-gray-800 text-white text-xs">
+              <Button 
+                variant="outline" 
+                size="sm"
+                className="h-9 text-xs"
+                onClick={() => setActiveTab("content")}
+              >
+                <Layers className="h-4 w-4 mr-1" />
+                Content Manager
+              </Button>
+              <Button variant="default" className="bg-black hover:bg-gray-800 text-white text-xs h-9">
                 <Save className="h-4 w-4 mr-1" />
                 Publish Changes
               </Button>
