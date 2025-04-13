@@ -81,6 +81,52 @@ export default function SimpleAdminPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 20;
   
+  // Helper functions for page content display
+  const getPageKeyTitle = (pageKey: string): string => {
+    const mapping: Record<string, string> = {
+      'home-hero': 'Homepage Hero Section',
+      'home-features': 'Features Section',
+      'home-testimonials': 'Testimonials',
+      'home-why-choose': 'Why Choose Us',
+      'guide-intro': 'Guide Introduction',
+      'guide-tabs': 'Guide Tab Content',
+      'about': 'About Page',
+      'contact': 'Contact Page',
+      'faq': 'FAQ Page'
+    };
+    return mapping[pageKey] || pageKey;
+  };
+  
+  const getPageKeyDescription = (pageKey: string): string => {
+    const mapping: Record<string, string> = {
+      'home-hero': 'Main banner and headline',
+      'home-features': 'Key features and benefits',
+      'home-testimonials': 'Customer reviews and quotes',
+      'home-why-choose': 'Value proposition section',
+      'guide-intro': 'Main introduction and overview',
+      'guide-tabs': 'Tab-based guide content',
+      'about': 'Company information',
+      'contact': 'Contact information',
+      'faq': 'Frequently asked questions'
+    };
+    return mapping[pageKey] || 'Website content';
+  };
+  
+  const getPageKeyIcon = (pageKey: string): React.ReactNode => {
+    const iconMapping: Record<string, React.ReactNode> = {
+      'home-hero': <Layout className="h-8 w-8 mb-2" />,
+      'home-features': <ListChecks className="h-8 w-8 mb-2" />,
+      'home-testimonials': <Quote className="h-8 w-8 mb-2" />,
+      'home-why-choose': <Award className="h-8 w-8 mb-2" />,
+      'guide-intro': <BookOpen className="h-8 w-8 mb-2" />,
+      'guide-tabs': <FileText className="h-8 w-8 mb-2" />,
+      'about': <Info className="h-8 w-8 mb-2" />,
+      'contact': <Contact className="h-8 w-8 mb-2" />,
+      'faq': <HelpCircle className="h-8 w-8 mb-2" />
+    };
+    return iconMapping[pageKey] || <File className="h-8 w-8 mb-2" />;
+  };
+  
   // Simple admin check with redirect
   useEffect(() => {
     if (!isLoading && (!user || !user.isAdmin)) {
@@ -1142,122 +1188,203 @@ export default function SimpleAdminPage() {
           <p className="text-gray-500 mb-4">Edit website content sections. Changes will be immediately visible on the site.</p>
           
           <div className="space-y-6">
+            {/* Homepage Content */}
             <Card>
               <CardHeader>
                 <CardTitle>Homepage Sections</CardTitle>
                 <CardDescription>Edit main sections of the homepage</CardDescription>
               </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <Button 
-                    variant="outline"
-                    className="h-auto py-6 flex flex-col items-center justify-center"
-                    onClick={() => handleEditContent('home-hero', 'Homepage Hero Section')}
-                  >
-                    <Layout className="h-8 w-8 mb-2" />
-                    <span className="font-medium">Hero Section</span>
-                    <span className="text-xs text-gray-500 mt-1">Main banner and headline</span>
-                  </Button>
-                  
-                  <Button 
-                    variant="outline"
-                    className="h-auto py-6 flex flex-col items-center justify-center"
-                    onClick={() => handleEditContent('home-features', 'Homepage Features')}
-                  >
-                    <ListChecks className="h-8 w-8 mb-2" />
-                    <span className="font-medium">Features Section</span>
-                    <span className="text-xs text-gray-500 mt-1">Key features and benefits</span>
-                  </Button>
-                  
-                  <Button 
-                    variant="outline"
-                    className="h-auto py-6 flex flex-col items-center justify-center"
-                    onClick={() => handleEditContent('home-testimonials', 'Homepage Testimonials')}
-                  >
-                    <Quote className="h-8 w-8 mb-2" />
-                    <span className="font-medium">Testimonials</span>
-                    <span className="text-xs text-gray-500 mt-1">Customer reviews and quotes</span>
-                  </Button>
-                  
-                  <Button 
-                    variant="outline"
-                    className="h-auto py-6 flex flex-col items-center justify-center"
-                    onClick={() => handleEditContent('home-why-choose', 'Why Choose Us')}
-                  >
-                    <Award className="h-8 w-8 mb-2" />
-                    <span className="font-medium">Why Choose Us</span>
-                    <span className="text-xs text-gray-500 mt-1">Value proposition section</span>
-                  </Button>
+              <CardContent className="space-y-6">
+                {/* Content Cards for Homepage Sections */}
+                {pageContents
+                  .filter(content => content.pageKey.startsWith('home-'))
+                  .map(content => (
+                    <Card key={content.pageKey} className="border-gray-200">
+                      <CardHeader className="pb-2">
+                        <div className="flex justify-between items-center">
+                          <CardTitle className="text-base">{content.title || 'Untitled Section'}</CardTitle>
+                          <Button 
+                            variant="outline" 
+                            size="sm"
+                            onClick={() => handleEditContent(content.pageKey, content.title || 'Section')}
+                          >
+                            <Pencil className="h-4 w-4 mr-2" />
+                            Edit
+                          </Button>
+                        </div>
+                        <CardDescription>{getPageKeyDescription(content.pageKey)}</CardDescription>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="rounded-md bg-gray-50 p-3 text-sm font-mono">
+                          <div className="space-y-2">
+                            <div>
+                              <span className="text-gray-500">Content preview:</span>
+                              <div className="mt-1 whitespace-pre-wrap max-h-24 overflow-hidden text-ellipsis border-l-2 border-gray-200 pl-3">
+                                {content.content?.length > 150 
+                                  ? content.content.substring(0, 150) + '...' 
+                                  : content.content || '<No content>'}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                
+                {/* Add missing homepage sections button */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                  {['home-hero', 'home-features', 'home-testimonials', 'home-why-choose'].map(pageKey => {
+                    const exists = pageContents.some(content => content.pageKey === pageKey);
+                    if (!exists) {
+                      return (
+                        <Button 
+                          key={pageKey}
+                          variant="outline"
+                          className="h-auto py-6 flex flex-col items-center justify-center"
+                          onClick={() => handleEditContent(pageKey, getPageKeyTitle(pageKey))}
+                        >
+                          {getPageKeyIcon(pageKey)}
+                          <span className="font-medium">{getPageKeyTitle(pageKey)}</span>
+                          <span className="text-xs text-gray-500 mt-1">Add this section</span>
+                        </Button>
+                      );
+                    }
+                    return null;
+                  })}
                 </div>
               </CardContent>
             </Card>
             
+            {/* Domain Guide Pages */}
             <Card>
               <CardHeader>
                 <CardTitle>Domain Guide Pages</CardTitle>
                 <CardDescription>Edit content on domain guides and resources</CardDescription>
               </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <Button 
-                    variant="outline"
-                    className="h-auto py-6 flex flex-col items-center justify-center"
-                    onClick={() => handleEditContent('guide-intro', 'Domain Guide Introduction')}
-                  >
-                    <BookOpen className="h-8 w-8 mb-2" />
-                    <span className="font-medium">Guide Introduction</span>
-                    <span className="text-xs text-gray-500 mt-1">Main introduction and overview</span>
-                  </Button>
-                  
-                  <Button 
-                    variant="outline"
-                    className="h-auto py-6 flex flex-col items-center justify-center"
-                    onClick={() => handleEditContent('guide-tabs', 'Guide Tabs Content')}
-                  >
-                    <FileText className="h-8 w-8 mb-2" />
-                    <span className="font-medium">Guide Tab Content</span>
-                    <span className="text-xs text-gray-500 mt-1">Tab-based guide content</span>
-                  </Button>
+              <CardContent className="space-y-6">
+                {/* Content Cards for Guide Sections */}
+                {pageContents
+                  .filter(content => content.pageKey.startsWith('guide-'))
+                  .map(content => (
+                    <Card key={content.pageKey} className="border-gray-200">
+                      <CardHeader className="pb-2">
+                        <div className="flex justify-between items-center">
+                          <CardTitle className="text-base">{content.title || 'Untitled Section'}</CardTitle>
+                          <Button 
+                            variant="outline" 
+                            size="sm"
+                            onClick={() => handleEditContent(content.pageKey, content.title || 'Section')}
+                          >
+                            <Pencil className="h-4 w-4 mr-2" />
+                            Edit
+                          </Button>
+                        </div>
+                        <CardDescription>{getPageKeyDescription(content.pageKey)}</CardDescription>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="rounded-md bg-gray-50 p-3 text-sm font-mono">
+                          <div className="space-y-2">
+                            <div>
+                              <span className="text-gray-500">Content preview:</span>
+                              <div className="mt-1 whitespace-pre-wrap max-h-24 overflow-hidden text-ellipsis border-l-2 border-gray-200 pl-3">
+                                {content.content?.length > 150 
+                                  ? content.content.substring(0, 150) + '...' 
+                                  : content.content || '<No content>'}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                
+                {/* Add missing guide sections button */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                  {['guide-intro', 'guide-tabs'].map(pageKey => {
+                    const exists = pageContents.some(content => content.pageKey === pageKey);
+                    if (!exists) {
+                      return (
+                        <Button 
+                          key={pageKey}
+                          variant="outline"
+                          className="h-auto py-6 flex flex-col items-center justify-center"
+                          onClick={() => handleEditContent(pageKey, getPageKeyTitle(pageKey))}
+                        >
+                          {getPageKeyIcon(pageKey)}
+                          <span className="font-medium">{getPageKeyTitle(pageKey)}</span>
+                          <span className="text-xs text-gray-500 mt-1">Add this section</span>
+                        </Button>
+                      );
+                    }
+                    return null;
+                  })}
                 </div>
               </CardContent>
             </Card>
             
+            {/* Other Pages */}
             <Card>
               <CardHeader>
                 <CardTitle>Other Pages</CardTitle>
                 <CardDescription>Edit additional pages on the site</CardDescription>
               </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <Button 
-                    variant="outline"
-                    className="h-auto py-6 flex flex-col items-center justify-center"
-                    onClick={() => handleEditContent('about', 'About Page')}
-                  >
-                    <Info className="h-8 w-8 mb-2" />
-                    <span className="font-medium">About Page</span>
-                    <span className="text-xs text-gray-500 mt-1">Company information</span>
-                  </Button>
-                  
-                  <Button 
-                    variant="outline"
-                    className="h-auto py-6 flex flex-col items-center justify-center"
-                    onClick={() => handleEditContent('contact', 'Contact Page')}
-                  >
-                    <Contact className="h-8 w-8 mb-2" />
-                    <span className="font-medium">Contact Page</span>
-                    <span className="text-xs text-gray-500 mt-1">Contact information</span>
-                  </Button>
-                  
-                  <Button 
-                    variant="outline"
-                    className="h-auto py-6 flex flex-col items-center justify-center"
-                    onClick={() => handleEditContent('faq', 'FAQ Page')}
-                  >
-                    <HelpCircle className="h-8 w-8 mb-2" />
-                    <span className="font-medium">FAQ Page</span>
-                    <span className="text-xs text-gray-500 mt-1">Frequently asked questions</span>
-                  </Button>
+              <CardContent className="space-y-6">
+                {/* Content Cards for Other Pages */}
+                {pageContents
+                  .filter(content => !content.pageKey.startsWith('home-') && !content.pageKey.startsWith('guide-'))
+                  .map(content => (
+                    <Card key={content.pageKey} className="border-gray-200">
+                      <CardHeader className="pb-2">
+                        <div className="flex justify-between items-center">
+                          <CardTitle className="text-base">{content.title || 'Untitled Section'}</CardTitle>
+                          <Button 
+                            variant="outline" 
+                            size="sm"
+                            onClick={() => handleEditContent(content.pageKey, content.title || 'Section')}
+                          >
+                            <Pencil className="h-4 w-4 mr-2" />
+                            Edit
+                          </Button>
+                        </div>
+                        <CardDescription>{getPageKeyDescription(content.pageKey)}</CardDescription>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="rounded-md bg-gray-50 p-3 text-sm font-mono">
+                          <div className="space-y-2">
+                            <div>
+                              <span className="text-gray-500">Content preview:</span>
+                              <div className="mt-1 whitespace-pre-wrap max-h-24 overflow-hidden text-ellipsis border-l-2 border-gray-200 pl-3">
+                                {content.content?.length > 150 
+                                  ? content.content.substring(0, 150) + '...' 
+                                  : content.content || '<No content>'}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                
+                {/* Add missing other pages sections button */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+                  {['about', 'contact', 'faq'].map(pageKey => {
+                    const exists = pageContents.some(content => content.pageKey === pageKey);
+                    if (!exists) {
+                      return (
+                        <Button 
+                          key={pageKey}
+                          variant="outline"
+                          className="h-auto py-6 flex flex-col items-center justify-center"
+                          onClick={() => handleEditContent(pageKey, getPageKeyTitle(pageKey))}
+                        >
+                          {getPageKeyIcon(pageKey)}
+                          <span className="font-medium">{getPageKeyTitle(pageKey)}</span>
+                          <span className="text-xs text-gray-500 mt-1">Add this section</span>
+                        </Button>
+                      );
+                    }
+                    return null;
+                  })}
                 </div>
               </CardContent>
             </Card>
