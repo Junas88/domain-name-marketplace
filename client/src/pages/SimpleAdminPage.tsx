@@ -10,11 +10,9 @@ import {
   Layout, ListChecks, Quote, Award, BookOpen, Contact,
   HelpCircle, Info, BarChart, LineChart, PieChart, 
   Activity, Clock, Users, ArrowUpRight, ArrowDownRight,
-  Phone, Share2, MessageSquare, RefreshCw, Shield, Mail,
-  MapPin
+  Phone, Share2, MessageSquare, RefreshCw
 } from "lucide-react";
 import InquiryManagement from "@/components/admin/InquiryManagement";
-import ContactInfoEditor from "@/components/admin/ContactInfoEditor";
 import { 
   Domain, PageContent, SeoSettings, Consultation, 
   EmailSubmission, Offer, InsertDomain, InsertPageContent,
@@ -29,10 +27,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import {
   Dialog,
   DialogContent,
@@ -103,118 +100,47 @@ export default function SimpleAdminPage() {
   const itemsPerPage = 20;
   
   // Helper functions for page content display
-  // Using the getPageKeyTitle function defined below
+  const getPageKeyTitle = (pageKey: string): string => {
+    const mapping: Record<string, string> = {
+      'home-hero': 'Homepage Hero Section',
+      'home-features': 'Features Section',
+      'home-testimonials': 'Testimonials',
+      'home-why-choose': 'Why Choose Us',
+      'guide-intro': 'Guide Introduction',
+      'guide-tabs': 'Guide Tab Content',
+      'about': 'About Page',
+      'contact': 'Contact Page',
+      'faq': 'FAQ Page'
+    };
+    return mapping[pageKey] || pageKey;
+  };
   
   const getPageKeyDescription = (pageKey: string): string => {
     const mapping: Record<string, string> = {
-      // Home Page Sections
-      'hero': 'Main banner and headline on homepage',
-      'features': 'Key features and benefits of the platform',
-      
-      // Contact Page Sections
-      'contact': 'Main contact page content',
-      'contact-info': 'Contact details (email, phone, address)',
-      
-      // Guide Page Sections
-      'guide-intro': 'Domain guide introduction',
-      'guide-content': 'Main content of the domain guide',
-      'guide-checklist': 'Domain checklist items',
-      
-      // Domain Finder Page
-      'domain-finder': 'Overall domain finder page',
-      'domain-finder-intro': 'Domain finder introduction',
-      'domain-finder-steps': 'Steps for finding the right domain',
-      
-      // FAQ Page
-      'faqs': 'FAQ page content and questions',
-      'faqs-intro': 'Introduction to FAQs section',
-      
-      // Buyer Protection
-      'buyer-protection': 'Overall buyer protection content',
-      'buyer-protection-intro': 'Introduction to buyer protection',
-      'buyer-protection-steps': 'Buyer protection process steps',
-      
-      // How It Works
-      'how-it-works': 'Overall how it works content',
-      'how-it-works-intro': 'Introduction to how the platform works',
-      'how-it-works-steps': 'Steps explaining the platform process',
-      
-      // Selling Strategy
-      'selling-strategy': 'Overall selling strategy content',
-      'selling-strategy-intro': 'Introduction to selling domains',
-      'selling-strategy-tips': 'Tips for selling domains effectively',
-      
-      // Ebook Section
-      'ebook-section': 'Ebook download section settings',
-      'ebook-intro': 'Introduction to the ebook offering',
-      
-      // Miscellaneous Sections
-      'footer': 'Website footer content',
-      'newsletter': 'Newsletter signup text',
-      'privacy-policy': 'Privacy policy legal content',
-      'terms-of-service': 'Terms of service legal content',
-      'about-us': 'About us page content',
-      
-      // Legal Pages
-      'privacy': 'Privacy policy and cookie usage information',
-      'terms': 'Terms and conditions of service'
+      'home-hero': 'Main banner and headline',
+      'home-features': 'Key features and benefits',
+      'home-testimonials': 'Customer reviews and quotes',
+      'home-why-choose': 'Value proposition section',
+      'guide-intro': 'Main introduction and overview',
+      'guide-tabs': 'Tab-based guide content',
+      'about': 'Company information',
+      'contact': 'Contact information',
+      'faq': 'Frequently asked questions'
     };
     return mapping[pageKey] || 'Website content';
   };
   
   const getPageKeyIcon = (pageKey: string): React.ReactNode => {
     const iconMapping: Record<string, React.ReactNode> = {
-      // Home Page Sections
-      'hero': <Layout className="h-8 w-8 mb-2" />,
-      'features': <ListChecks className="h-8 w-8 mb-2" />,
-      
-      // Contact Page Sections
-      'contact': <Contact className="h-8 w-8 mb-2" />,
-      'contact-info': <Phone className="h-8 w-8 mb-2" />,
-      
-      // Guide Page Sections
+      'home-hero': <Layout className="h-8 w-8 mb-2" />,
+      'home-features': <ListChecks className="h-8 w-8 mb-2" />,
+      'home-testimonials': <Quote className="h-8 w-8 mb-2" />,
+      'home-why-choose': <Award className="h-8 w-8 mb-2" />,
       'guide-intro': <BookOpen className="h-8 w-8 mb-2" />,
-      'guide-content': <FileText className="h-8 w-8 mb-2" />,
-      'guide-checklist': <CircleCheck className="h-8 w-8 mb-2" />,
-      
-      // Domain Finder Page
-      'domain-finder': <Search className="h-8 w-8 mb-2" />,
-      'domain-finder-intro': <Info className="h-8 w-8 mb-2" />,
-      'domain-finder-steps': <ListChecks className="h-8 w-8 mb-2" />,
-      
-      // FAQ Page
-      'faqs': <HelpCircle className="h-8 w-8 mb-2" />,
-      'faqs-intro': <Info className="h-8 w-8 mb-2" />,
-      
-      // Buyer Protection
-      'buyer-protection': <Shield className="h-8 w-8 mb-2" />,
-      'buyer-protection-intro': <Info className="h-8 w-8 mb-2" />,
-      'buyer-protection-steps': <ListChecks className="h-8 w-8 mb-2" />,
-      
-      // How It Works
-      'how-it-works': <RefreshCw className="h-8 w-8 mb-2" />,
-      'how-it-works-intro': <Info className="h-8 w-8 mb-2" />,
-      'how-it-works-steps': <ListChecks className="h-8 w-8 mb-2" />,
-      
-      // Selling Strategy
-      'selling-strategy': <Tag className="h-8 w-8 mb-2" />,
-      'selling-strategy-intro': <Info className="h-8 w-8 mb-2" />,
-      'selling-strategy-tips': <ListChecks className="h-8 w-8 mb-2" />,
-      
-      // Ebook Section
-      'ebook-section': <BookOpen className="h-8 w-8 mb-2" />,
-      'ebook-intro': <Info className="h-8 w-8 mb-2" />,
-      
-      // Miscellaneous Sections
-      'footer': <Layout className="h-8 w-8 mb-2" />,
-      'newsletter': <Mail className="h-8 w-8 mb-2" />,
-      'privacy-policy': <FileText className="h-8 w-8 mb-2" />,
-      'terms-of-service': <FileText className="h-8 w-8 mb-2" />,
-      'about-us': <Users className="h-8 w-8 mb-2" />,
-      
-      // Legal Pages
-      'privacy': <Shield className="h-8 w-8 mb-2" />,
-      'terms': <FileText className="h-8 w-8 mb-2" />
+      'guide-tabs': <FileText className="h-8 w-8 mb-2" />,
+      'about': <Info className="h-8 w-8 mb-2" />,
+      'contact': <Contact className="h-8 w-8 mb-2" />,
+      'faq': <HelpCircle className="h-8 w-8 mb-2" />
     };
     return iconMapping[pageKey] || <File className="h-8 w-8 mb-2" />;
   };
@@ -602,9 +528,6 @@ export default function SimpleAdminPage() {
       // Create new content
       createContentMutation.mutate(values);
     }
-    
-    // Log what's happening for debugging
-    console.log(`${editingContent ? 'Updating' : 'Creating'} content for page key: ${values.pageKey}`);
   };
   
   // SEO Form Submit
@@ -615,29 +538,6 @@ export default function SimpleAdminPage() {
         seo: values,
       });
     }
-  };
-  
-  // Helper function to get user-friendly title for a page key
-  const getPageKeyTitle = (pageKey: string): string => {
-    const pageKeyMap: Record<string, string> = {
-      'hero': 'Hero Section',
-      'features': 'Features Section',
-      'domain-guide': 'Domain Guide',
-      'ebook': 'E-book Section',
-      'contact': 'Contact Us',
-      'contact-info': 'Contact Information',
-      'about': 'About Us',
-      'faq': 'Frequently Asked Questions',
-      'social-media': 'Social Media Links',
-      'privacy': 'Privacy Policy',
-      'terms': 'Terms of Service',
-      'finder': 'Domain Finder',
-      'testimonials': 'Testimonials'
-    };
-    
-    return pageKeyMap[pageKey] || pageKey.split('-').map(word => 
-      word.charAt(0).toUpperCase() + word.slice(1)
-    ).join(' ');
   };
   
   // Handle editing domain
@@ -653,9 +553,6 @@ export default function SimpleAdminPage() {
     });
     setDomainDialogOpen(true);
   };
-  
-  // Handle editing content
-  // This function is defined further down in the file
   
   // Create page content mutation
   const createContentMutation = useMutation({
@@ -724,34 +621,6 @@ export default function SimpleAdminPage() {
     // Find existing content or prepare to create new content
     const content = pageContents.find(c => c.pageKey === pageKey);
     
-    // Special case for contact-info with pre-filled template for Call Us, Email Us, Visit Us
-    if (pageKey === 'contact-info') {
-      const existingContent = content?.content || "";
-      const templateContent = existingContent.length > 0 ? existingContent : 
-`Email Us
-support@domainnameguide.com
-
-Call Us
-+1 (555) 123-4567
-
-Visit Us
-123 Domain Street, Suite 100
-New York, NY 10001`;
-      
-      setEditingContent(content || null);
-      setDialogTitle(content ? 'Edit Contact Information' : 'Add Contact Information');
-      contentForm.reset({
-        pageKey: 'contact-info',
-        title: content?.title || 'Contact Information',
-        content: templateContent,
-        metaTitle: content?.metaTitle || "",
-        metaDescription: content?.metaDescription || "",
-      });
-      setContentDialogOpen(true);
-      console.log(`Editing content for page key: ${pageKey}`);
-      return;
-    }
-    
     if (content) {
       // Edit existing content
       setEditingContent(content);
@@ -777,9 +646,6 @@ New York, NY 10001`;
     }
     
     setContentDialogOpen(true);
-    
-    // Log what's happening for debugging
-    console.log(`${content ? 'Editing' : 'Creating'} content for page key: ${pageKey}`);
   };
   
   // Handle editing SEO
@@ -797,24 +663,6 @@ New York, NY 10001`;
   // File upload state
   const [uploadingFile, setUploadingFile] = useState(false);
   const [fileInputRef, setFileInputRef] = useState<HTMLInputElement | null>(null);
-  
-  // Contact form related state
-  const [dialogOpen, setDialogOpen] = useState(false);
-  const [contactInfo, setContactInfo] = useState<{
-    pageKey: string,
-    title: string,
-    email: string,
-    phone: string,
-    hours: string,
-    address: string
-  }>({
-    pageKey: 'contact-info',
-    title: 'Contact Information',
-    email: '',
-    phone: '',
-    hours: '',
-    address: ''
-  });
   
   // Handle ebook upload
   const handleEbookUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -1154,15 +1002,25 @@ New York, NY 10001`;
           </Tabs>
         </div>
         
-        <TabsList className="grid w-full grid-cols-5">
+        <TabsList className="grid w-full grid-cols-9">
           <TabsTrigger value="domains">Domains</TabsTrigger>
+          <TabsTrigger value="inquiries">Inquiries</TabsTrigger>
           <TabsTrigger value="offers">Offers</TabsTrigger>
+          <TabsTrigger value="consultations">Consultations</TabsTrigger>
           <TabsTrigger value="emails">Email Submissions</TabsTrigger>
+          <TabsTrigger value="seo">SEO Settings</TabsTrigger>
+          <TabsTrigger value="editor">Website Editor</TabsTrigger>
           <TabsTrigger value="ebooks">Ebook Files</TabsTrigger>
           <TabsTrigger value="analytics">Analytics</TabsTrigger>
         </TabsList>
         
-
+        {/* INQUIRIES TAB */}
+        <TabsContent value="inquiries" className="space-y-4">
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-xl font-bold text-black">Inquiry Management</h2>
+          </div>
+          <InquiryManagement />
+        </TabsContent>
         
         {/* DOMAINS TAB */}
         <TabsContent value="domains" className="space-y-4">
@@ -1513,450 +1371,14 @@ New York, NY 10001`;
           </div>
         </TabsContent>
         
-        {/* EMAIL SUBMISSIONS TAB */}
-        <TabsContent value="emails" className="space-y-4">
-          <div className="flex justify-between items-center">
-            <h2 className="text-xl font-bold text-black">Email Submissions</h2>
-            <Button variant="outline" onClick={exportEmailsToCSV}>
-              <Download className="h-4 w-4 mr-2" />
-              Export CSV
-            </Button>
-          </div>
-                <div>
-                  <h3 className="text-lg font-semibold mb-4 flex items-center">
-                    <Layout className="h-5 w-5 mr-2 text-gray-600" />
-                    Hero Section
-                  </h3>
-                  {pageContents.some(content => content.pageKey === 'hero') ? (
-                    <Card className="border-gray-200">
-                      <CardHeader className="pb-2">
-                        <div className="flex justify-between items-center">
-                          <CardTitle className="text-base">
-                            {pageContents.find(content => content.pageKey === 'hero')?.title || 'Hero Section'}
-                          </CardTitle>
-                          <Button 
-                            variant="outline" 
-                            size="sm"
-                            onClick={() => handleEditContent('hero', 'Hero Section')}
-                          >
-                            <Pencil className="h-4 w-4 mr-2" />
-                            Edit
-                          </Button>
-                        </div>
-                        <CardDescription>Main hero banner content</CardDescription>
-                      </CardHeader>
-                      <CardContent>
-                        <div className="rounded-md bg-gray-50 p-3 text-sm font-mono">
-                          <div className="space-y-2">
-                            <div>
-                              <span className="text-gray-500">Content preview:</span>
-                              <div className="mt-1 whitespace-pre-wrap max-h-24 overflow-hidden text-ellipsis border-l-2 border-gray-200 pl-3">
-                                {(() => {
-                                  const content = pageContents.find(c => c.pageKey === 'hero')?.content;
-                                  if (!content) return '<No content>';
-                                  return content.length > 150 
-                                    ? content.substring(0, 150) + '...' 
-                                    : content;
-                                })()}
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ) : (
-                    <Button 
-                      variant="outline"
-                      className="w-full py-6 flex flex-col items-center justify-center border-dashed"
-                      onClick={() => handleEditContent('hero', 'Hero Section')}
-                    >
-                      <Plus className="h-6 w-6 mb-2 text-gray-400" />
-                      <span className="font-medium">Add Hero Section</span>
-                      <span className="text-xs text-gray-500 mt-1">Create main hero banner content</span>
-                    </Button>
-                  )}
-                </div>
-                
-                {/* Features Section */}
-                <div>
-                  <h3 className="text-lg font-semibold mb-4 flex items-center">
-                    <ListChecks className="h-5 w-5 mr-2 text-gray-600" />
-                    Features Section
-                  </h3>
-                  {pageContents.some(content => content.pageKey === 'features') ? (
-                    <Card className="border-gray-200">
-                      <CardHeader className="pb-2">
-                        <div className="flex justify-between items-center">
-                          <CardTitle className="text-base">
-                            {pageContents.find(content => content.pageKey === 'features')?.title || 'Features Section'}
-                          </CardTitle>
-                          <Button 
-                            variant="outline" 
-                            size="sm"
-                            onClick={() => handleEditContent('features', 'Features Section')}
-                          >
-                            <Pencil className="h-4 w-4 mr-2" />
-                            Edit
-                          </Button>
-                        </div>
-                        <CardDescription>Service features and highlights</CardDescription>
-                      </CardHeader>
-                      <CardContent>
-                        <div className="rounded-md bg-gray-50 p-3 text-sm font-mono">
-                          <div className="space-y-2">
-                            <div>
-                              <span className="text-gray-500">Content preview:</span>
-                              <div className="mt-1 whitespace-pre-wrap max-h-24 overflow-hidden text-ellipsis border-l-2 border-gray-200 pl-3">
-                                {(() => {
-                                  const content = pageContents.find(c => c.pageKey === 'features')?.content;
-                                  if (!content) return '<No content>';
-                                  return content.length > 150 
-                                    ? content.substring(0, 150) + '...' 
-                                    : content;
-                                })()}
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ) : (
-                    <Button 
-                      variant="outline"
-                      className="w-full py-6 flex flex-col items-center justify-center border-dashed"
-                      onClick={() => handleEditContent('features', 'Features Section')}
-                    >
-                      <Plus className="h-6 w-6 mb-2 text-gray-400" />
-                      <span className="font-medium">Add Features Section</span>
-                      <span className="text-xs text-gray-500 mt-1">Create service features and highlights</span>
-                    </Button>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-            
-            {/* Domain Guide Sections */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Domain Guide</CardTitle>
-                <CardDescription>Edit domain guide content</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                {/* Domain Guide Section */}
-                <div>
-                  <h3 className="text-lg font-semibold mb-4 flex items-center">
-                    <BookOpen className="h-5 w-5 mr-2 text-gray-600" />
-                    Domain Guide Content
-                  </h3>
-                  {pageContents.some(content => content.pageKey === 'domain-guide') ? (
-                    <Card className="border-gray-200">
-                      <CardHeader className="pb-2">
-                        <div className="flex justify-between items-center">
-                          <CardTitle className="text-base">
-                            {pageContents.find(content => content.pageKey === 'domain-guide')?.title || 'Domain Guide'}
-                          </CardTitle>
-                          <Button 
-                            variant="outline" 
-                            size="sm"
-                            onClick={() => handleEditContent('domain-guide', 'Domain Guide')}
-                          >
-                            <Pencil className="h-4 w-4 mr-2" />
-                            Edit
-                          </Button>
-                        </div>
-                        <CardDescription>Domain guide page content</CardDescription>
-                      </CardHeader>
-                      <CardContent>
-                        <div className="rounded-md bg-gray-50 p-3 text-sm font-mono">
-                          <div className="space-y-2">
-                            <div>
-                              <span className="text-gray-500">Content preview:</span>
-                              <div className="mt-1 whitespace-pre-wrap max-h-24 overflow-hidden text-ellipsis border-l-2 border-gray-200 pl-3">
-                                {(() => {
-                                  const content = pageContents.find(c => c.pageKey === 'domain-guide')?.content;
-                                  if (!content) return '<No content>';
-                                  return content.length > 150 
-                                    ? content.substring(0, 150) + '...' 
-                                    : content;
-                                })()}
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ) : (
-                    <Button 
-                      variant="outline"
-                      className="w-full py-6 flex flex-col items-center justify-center border-dashed"
-                      onClick={() => handleEditContent('domain-guide', 'Domain Guide')}
-                    >
-                      <Plus className="h-6 w-6 mb-2 text-gray-400" />
-                      <span className="font-medium">Add Domain Guide Content</span>
-                      <span className="text-xs text-gray-500 mt-1">Create domain guide page content</span>
-                    </Button>
-                  )}
-                </div>
-                
-                {/* E-book Section */}
-                <div>
-                  <h3 className="text-lg font-semibold mb-4 flex items-center">
-                    <FileText className="h-5 w-5 mr-2 text-gray-600" />
-                    E-book Section
-                  </h3>
-                  {pageContents.some(content => content.pageKey === 'ebook') ? (
-                    <Card className="border-gray-200">
-                      <CardHeader className="pb-2">
-                        <div className="flex justify-between items-center">
-                          <CardTitle className="text-base">
-                            {pageContents.find(content => content.pageKey === 'ebook')?.title || 'E-book Section'}
-                          </CardTitle>
-                          <Button 
-                            variant="outline" 
-                            size="sm"
-                            onClick={() => handleEditContent('ebook', 'E-book Section')}
-                          >
-                            <Pencil className="h-4 w-4 mr-2" />
-                            Edit
-                          </Button>
-                        </div>
-                        <CardDescription>Free e-book offer details</CardDescription>
-                      </CardHeader>
-                      <CardContent>
-                        <div className="rounded-md bg-gray-50 p-3 text-sm font-mono">
-                          <div className="space-y-2">
-                            <div>
-                              <span className="text-gray-500">Content preview:</span>
-                              <div className="mt-1 whitespace-pre-wrap max-h-24 overflow-hidden text-ellipsis border-l-2 border-gray-200 pl-3">
-                                {(() => {
-                                  const content = pageContents.find(c => c.pageKey === 'ebook')?.content;
-                                  if (!content) return '<No content>';
-                                  return content.length > 150 
-                                    ? content.substring(0, 150) + '...' 
-                                    : content;
-                                })()}
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ) : (
-                    <Button 
-                      variant="outline"
-                      className="w-full py-6 flex flex-col items-center justify-center border-dashed"
-                      onClick={() => handleEditContent('ebook', 'E-book Section')}
-                    >
-                      <Plus className="h-6 w-6 mb-2 text-gray-400" />
-                      <span className="font-medium">Add E-book Section Content</span>
-                      <span className="text-xs text-gray-500 mt-1">Create e-book offer content</span>
-                    </Button>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-            
-            {/* Global Components */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Global Components</CardTitle>
-                <CardDescription>Edit components that appear on multiple pages</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                {/* Footer Section */}
-                <div>
-                  <h3 className="text-lg font-semibold mb-4 flex items-center">
-                    <Layout className="h-5 w-5 mr-2 text-gray-600" />
-                    Footer
-                  </h3>
-                  {pageContents.some(content => content.pageKey === 'footer') ? (
-                    <Card className="border-gray-200">
-                      <CardHeader className="pb-2">
-                        <div className="flex justify-between items-center">
-                          <CardTitle className="text-base">
-                            {pageContents.find(content => content.pageKey === 'footer')?.title || 'Website Footer'}
-                          </CardTitle>
-                          <Button 
-                            variant="outline" 
-                            size="sm"
-                            onClick={() => handleEditContent('footer', 'Website Footer')}
-                          >
-                            <Pencil className="h-4 w-4 mr-2" />
-                            Edit
-                          </Button>
-                        </div>
-                        <CardDescription>Footer links, copyright text, and contact info</CardDescription>
-                      </CardHeader>
-                      <CardContent>
-                        <div className="rounded-md bg-gray-50 p-3 text-sm font-mono">
-                          <div className="space-y-2">
-                            <div>
-                              <span className="text-gray-500">Content preview:</span>
-                              <div className="mt-1 whitespace-pre-wrap max-h-24 overflow-hidden text-ellipsis border-l-2 border-gray-200 pl-3">
-                                {(() => {
-                                  const content = pageContents.find(c => c.pageKey === 'footer')?.content;
-                                  if (!content) return '<No content>';
-                                  return content.length > 150 
-                                    ? content.substring(0, 150) + '...' 
-                                    : content;
-                                })()}
-                              </div>
-                            </div>
-                            <div className="flex justify-between items-center">
-                              <h4 className="text-sm font-medium">Footer Content</h4>
-                              <Badge variant="outline" className="text-xs">Global Component</Badge>
-                            </div>
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ) : (
-                    <Button
-                      variant="outline"
-                      className="w-full h-24 border-dashed flex flex-col items-center justify-center"
-                      onClick={() => {
-                        setEditingContent(null);
-                        contentForm.reset({
-                          pageKey: "footer",
-                          title: "Website Footer",
-                          content: "© 2025 Domain Name Guide. All Rights Reserved.\nContact: support@domainnameguide.com\nPhone: +1 (555) 123-4567\n\nPrivacy Policy | Terms of Service",
-                          metaTitle: "",
-                          metaDescription: "",
-                        });
-                        setDialogTitle("Create Footer Content");
-                        setContentDialogOpen(true);
-                      }}
-                    >
-                      <Plus className="h-6 w-6 mb-2 text-gray-400" />
-                      <span className="font-medium">Add Footer Content</span>
-                      <span className="text-xs text-gray-500 mt-1">Create website footer with links and contact information</span>
-                    </Button>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-            
-            {/* Legal Pages */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Legal Pages</CardTitle>
-                <CardDescription>Edit legal content and policies</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                {/* Privacy Policy */}
-                <div>
-                  <h3 className="text-lg font-semibold mb-4 flex items-center">
-                    <Shield className="h-5 w-5 mr-2 text-gray-600" />
-                    Privacy Policy
-                  </h3>
-                  {pageContents.some(content => content.pageKey === 'privacy') ? (
-                    <Card className="border-gray-200">
-                      <CardHeader className="pb-2">
-                        <div className="flex justify-between items-center">
-                          <CardTitle className="text-base">
-                            {pageContents.find(content => content.pageKey === 'privacy')?.title || 'Privacy Policy'}
-                          </CardTitle>
-                          <Button 
-                            variant="outline" 
-                            size="sm"
-                            onClick={() => handleEditContent('privacy', 'Privacy Policy')}
-                          >
-                            <Pencil className="h-4 w-4 mr-2" />
-                            Edit
-                          </Button>
-                        </div>
-                        <CardDescription>Privacy policy and data usage</CardDescription>
-                      </CardHeader>
-                      <CardContent>
-                        <div className="rounded-md bg-gray-50 p-3 text-sm font-mono">
-                          <div className="space-y-2">
-                            <div>
-                              <span className="text-gray-500">Content preview:</span>
-                              <div className="mt-1 whitespace-pre-wrap max-h-24 overflow-hidden text-ellipsis border-l-2 border-gray-200 pl-3">
-                                {(() => {
-                                  const content = pageContents.find(c => c.pageKey === 'privacy')?.content;
-                                  if (!content) return '<No content>';
-                                  return content.length > 150 
-                                    ? content.substring(0, 150) + '...' 
-                                    : content;
-                                })()}
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ) : (
-                    <Button 
-                      variant="outline"
-                      className="w-full py-6 flex flex-col items-center justify-center border-dashed"
-                      onClick={() => handleEditContent('privacy', 'Privacy Policy')}
-                    >
-                      <Plus className="h-6 w-6 mb-2 text-gray-400" />
-                      <span className="font-medium">Add Privacy Policy</span>
-                      <span className="text-xs text-gray-500 mt-1">Create privacy policy content</span>
-                    </Button>
-                  )}
-                </div>
-                
-                {/* Terms of Service */}
-                <div>
-                  <h3 className="text-lg font-semibold mb-4 flex items-center">
-                    <FileText className="h-5 w-5 mr-2 text-gray-600" />
-                    Terms of Service
-                  </h3>
-                  {pageContents.some(content => content.pageKey === 'terms') ? (
-                    <Card className="border-gray-200">
-                      <CardHeader className="pb-2">
-                        <div className="flex justify-between items-center">
-                          <CardTitle className="text-base">
-                            {pageContents.find(content => content.pageKey === 'terms')?.title || 'Terms of Service'}
-                          </CardTitle>
-                          <Button 
-                            variant="outline" 
-                            size="sm"
-                            onClick={() => handleEditContent('terms', 'Terms of Service')}
-                          >
-                            <Pencil className="h-4 w-4 mr-2" />
-                            Edit
-                          </Button>
-                        </div>
-                        <CardDescription>Terms and conditions of service</CardDescription>
-                      </CardHeader>
-                      <CardContent>
-                        <div className="rounded-md bg-gray-50 p-3 text-sm font-mono">
-                          <div className="space-y-2">
-                            <div>
-                              <span className="text-gray-500">Content preview:</span>
-                              <div className="mt-1 whitespace-pre-wrap max-h-24 overflow-hidden text-ellipsis border-l-2 border-gray-200 pl-3">
-                                {(() => {
-                                  const content = pageContents.find(c => c.pageKey === 'terms')?.content;
-                                  if (!content) return '<No content>';
-                                  return content.length > 150 
-                                    ? content.substring(0, 150) + '...' 
-                                    : content;
-                                })()}
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ) : (
-                    <Button 
-                      variant="outline"
-                      className="w-full py-6 flex flex-col items-center justify-center border-dashed"
-                      onClick={() => handleEditContent('terms', 'Terms of Service')}
-                    >
-                      <Plus className="h-6 w-6 mb-2 text-gray-400" />
-                      <span className="font-medium">Add Terms of Service</span>
-                      <span className="text-xs text-gray-500 mt-1">Create terms of service content</span>
-                    </Button>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-            
+        {/* PAGE CONTENT TAB */}
+        
+        {/* WEBSITE EDITOR TAB */}
+        <TabsContent value="editor" className="space-y-4">
+          <h2 className="text-xl font-bold text-black">Website Content Editor</h2>
+          <p className="text-gray-500 mb-4">Edit website content sections. Changes will be immediately visible on the site.</p>
+          
+          <div className="space-y-6">
             {/* Other Pages */}
             <Card>
               <CardHeader>
@@ -1989,79 +1411,19 @@ New York, NY 10001`;
                         <CardDescription>Main contact information and form</CardDescription>
                       </CardHeader>
                       <CardContent>
-                        <div className="space-y-4">
-                          <div className="flex flex-col space-y-2">
-                            <div className="flex justify-between items-center">
-                              <h4 className="text-sm font-medium">Contact Page Content</h4>
-                              <Badge variant="outline" className="text-xs">Page Content</Badge>
-                            </div>
-                            <div className="rounded-md bg-gray-50 p-3 text-sm font-mono">
-                              <div className="space-y-2">
-                                <div>
-                                  <span className="text-gray-500">Content preview:</span>
-                                  <div className="mt-1 whitespace-pre-wrap max-h-24 overflow-hidden text-ellipsis border-l-2 border-gray-200 pl-3">
-                                    {(() => {
-                                      const content = pageContents.find(c => c.pageKey === 'contact')?.content;
-                                      if (!content) return '<No content>';
-                                      return content.length > 150 
-                                        ? content.substring(0, 150) + '...' 
-                                        : content;
-                                    })()}
-                                  </div>
-                                </div>
+                        <div className="rounded-md bg-gray-50 p-3 text-sm font-mono">
+                          <div className="space-y-2">
+                            <div>
+                              <span className="text-gray-500">Content preview:</span>
+                              <div className="mt-1 whitespace-pre-wrap max-h-24 overflow-hidden text-ellipsis border-l-2 border-gray-200 pl-3">
+                                {(() => {
+                                  const content = pageContents.find(c => c.pageKey === 'contact')?.content;
+                                  if (!content) return '<No content>';
+                                  return content.length > 150 
+                                    ? content.substring(0, 150) + '...' 
+                                    : content;
+                                })()}
                               </div>
-                            </div>
-                          </div>
-                          
-                          <div className="flex flex-col space-y-2">
-                            <div className="flex justify-between items-center">
-                              <h4 className="text-sm font-medium">Contact Information Details</h4>
-                              <div className="flex space-x-2 items-center">
-                                <div className="mr-2">
-                                  <Button 
-                                    variant="outline" 
-                                    size="sm"
-                                    onClick={() => handleEditContent('contact-info', 'Contact Information')}
-                                  >
-                                    <Pencil className="h-4 w-4 mr-2" />
-                                    Edit Contact Info
-                                  </Button>
-                                </div>
-                                <Badge variant="outline" className="text-xs">Call Us</Badge>
-                                <Badge variant="outline" className="text-xs">Email Us</Badge>
-                                <Badge variant="outline" className="text-xs">Visit Us</Badge>
-                              </div>
-                            </div>
-                            <div className="rounded-md bg-gray-50 p-3 text-sm font-mono">
-                              <div className="space-y-2">
-                                <div>
-                                  <span className="text-gray-500">Contact info preview:</span>
-                                  <div className="mt-1 whitespace-pre-wrap max-h-24 overflow-hidden text-ellipsis border-l-2 border-gray-200 pl-3">
-                                    {(() => {
-                                      const content = pageContents.find(c => c.pageKey === 'contact-info')?.content;
-                                      if (!content) return '<No contact information>';
-                                      return content.length > 150 
-                                        ? content.substring(0, 150) + '...' 
-                                        : content;
-                                    })()}
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                            <div className="text-xs text-gray-500 italic mt-1">
-                              <p><strong>Format your contact information with section headings:</strong></p>
-                              <p className="mt-1">Example:</p>
-                              <pre className="bg-gray-100 p-2 rounded text-xs mt-1">
-Email Us
-support@domainnameguide.com
-
-Call Us
-+1 (555) 123-4567
-
-Visit Us
-123 Domain Street, Suite 100
-New York, NY 10001
-                              </pre>
                             </div>
                           </div>
                         </div>
@@ -2981,126 +2343,6 @@ Instagram: https://instagram.com/domainnameguide`;
               onClick={executeDelete}
             >
               Delete
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
-      {/* Contact Info Dialog */}
-      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent className="sm:max-w-[600px]">
-          <DialogHeader>
-            <DialogTitle>Edit Contact Information</DialogTitle>
-            <DialogDescription>
-              Update your business contact information that appears on the contact page.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4 py-4">
-            <div className="space-y-4">
-              <div>
-                <Label htmlFor="email" className="font-medium flex gap-2 items-center">
-                  <Mail className="h-4 w-4 text-green-600" />
-                  Email Address
-                </Label>
-                <Input 
-                  id="email" 
-                  value={contactInfo.email} 
-                  onChange={(e) => setContactInfo({...contactInfo, email: e.target.value})}
-                  placeholder="support@domainnameguide.com"
-                  className="mt-1"
-                />
-              </div>
-              
-              <div>
-                <Label htmlFor="phone" className="font-medium flex gap-2 items-center">
-                  <Phone className="h-4 w-4 text-green-600" />
-                  Phone Number
-                </Label>
-                <Input 
-                  id="phone" 
-                  value={contactInfo.phone} 
-                  onChange={(e) => setContactInfo({...contactInfo, phone: e.target.value})}
-                  placeholder="+1 (800) 123-4567"
-                  className="mt-1"
-                />
-              </div>
-              
-              <div>
-                <Label htmlFor="hours" className="font-medium flex gap-2 items-center">
-                  <Clock className="h-4 w-4 text-green-600" />
-                  Business Hours
-                </Label>
-                <Input 
-                  id="hours" 
-                  value={contactInfo.hours} 
-                  onChange={(e) => setContactInfo({...contactInfo, hours: e.target.value})}
-                  placeholder="Monday-Friday, 9am-5pm EST"
-                  className="mt-1"
-                />
-              </div>
-              
-              <div>
-                <Label htmlFor="address" className="font-medium flex gap-2 items-center">
-                  <MapPin className="h-4 w-4 text-green-600" />
-                  Address
-                </Label>
-                <Textarea 
-                  id="address" 
-                  value={contactInfo.address} 
-                  onChange={(e) => setContactInfo({...contactInfo, address: e.target.value})}
-                  placeholder="123 Domain Street&#10;San Francisco, CA 94107"
-                  className="mt-1 min-h-[80px]"
-                  rows={3}
-                />
-              </div>
-            </div>
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setDialogOpen(false)}>
-              Cancel
-            </Button>
-            <Button onClick={() => {
-              // Generate formatted content
-              const formattedContent = `Email Us
-${contactInfo.email}
-
-Call Us
-${contactInfo.phone}
-
-${contactInfo.hours}
-
-Visit Us
-${contactInfo.address}`;
-              
-              // Check if we're editing or creating
-              const existingContent = pageContents.find(c => c.pageKey === contactInfo.pageKey);
-              
-              if (existingContent) {
-                // Update existing content
-                updateContentMutation.mutate({
-                  id: existingContent.id,
-                  pageKey: contactInfo.pageKey,
-                  title: contactInfo.title,
-                  content: formattedContent
-                });
-              } else {
-                // Create new content
-                createContentMutation.mutate({
-                  pageKey: contactInfo.pageKey,
-                  title: contactInfo.title,
-                  content: formattedContent
-                });
-              }
-              
-              // Close dialog
-              setDialogOpen(false);
-              
-              toast({
-                title: "Success",
-                description: `Contact information has been ${existingContent ? "updated" : "created"}`,
-              });
-            }}>
-              Save Changes
             </Button>
           </DialogFooter>
         </DialogContent>
