@@ -150,7 +150,11 @@ export default function SimpleAdminPage() {
       'newsletter': 'Newsletter signup text',
       'privacy-policy': 'Privacy policy legal content',
       'terms-of-service': 'Terms of service legal content',
-      'about-us': 'About us page content'
+      'about-us': 'About us page content',
+      
+      // Legal Pages
+      'privacy': 'Privacy policy and cookie usage information',
+      'terms': 'Terms and conditions of service'
     };
     return mapping[pageKey] || 'Website content';
   };
@@ -203,7 +207,11 @@ export default function SimpleAdminPage() {
       'newsletter': <Mail className="h-8 w-8 mb-2" />,
       'privacy-policy': <FileText className="h-8 w-8 mb-2" />,
       'terms-of-service': <FileText className="h-8 w-8 mb-2" />,
-      'about-us': <Users className="h-8 w-8 mb-2" />
+      'about-us': <Users className="h-8 w-8 mb-2" />,
+      
+      // Legal Pages
+      'privacy': <Shield className="h-8 w-8 mb-2" />,
+      'terms': <FileText className="h-8 w-8 mb-2" />
     };
     return iconMapping[pageKey] || <File className="h-8 w-8 mb-2" />;
   };
