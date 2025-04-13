@@ -13,6 +13,11 @@ export default function AdminDashboard() {
     if (!isLoading && (!user || !user.isAdmin)) {
       console.log("Not authenticated as admin, redirecting to login");
       navigate("/login", { replace: true });
+      return;
+    }
+
+    if (!isLoading && user?.isAdmin) {
+      console.log("Admin authenticated successfully");
     }
   }, [user, isLoading, navigate]);
 
