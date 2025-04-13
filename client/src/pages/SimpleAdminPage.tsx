@@ -10,8 +10,9 @@ import {
   Layout, ListChecks, Quote, Award, BookOpen, Contact,
   HelpCircle, Info, BarChart, LineChart, PieChart, 
   Activity, Clock, Users, ArrowUpRight, ArrowDownRight,
-  Phone, Share2
+  Phone, Share2, MessageSquare, RefreshCw
 } from "lucide-react";
+import InquiryManagement from "@/components/admin/InquiryManagement";
 import { 
   Domain, PageContent, SeoSettings, Consultation, 
   EmailSubmission, Offer, InsertDomain, InsertPageContent,
@@ -66,6 +67,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 export default function SimpleAdminPage() {
   const { user, isLoading, logoutMutation } = useAuth();
   const [activeTab, setActiveTab] = useState("domains");
+  const [activeGoogleTab, setActiveGoogleTab] = useState("search-console");
   
   // Analytics state
   const [pageViewsData, setPageViewsData] = useState<{
@@ -837,8 +839,112 @@ export default function SimpleAdminPage() {
       
       {/* Main Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
-        <TabsList className="grid w-full grid-cols-8">
+        {/* Google Integration Section */}
+        <div className="mb-8 bg-gray-50 p-6 rounded-lg border border-gray-200">
+          <h2 className="text-2xl font-bold mb-4 flex items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" className="mr-2">
+              <path fill="#4285F4" d="M12 11v2h2v2H9v-4h3zm0-9a9.01 9.01 0 0 0-9 9 9.01 9.01 0 0 0 9 9 9.01 9.01 0 0 0 9-9 9.01 9.01 0 0 0-9-9zm0 16c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7z"/>
+            </svg>
+            Google Integration Tools
+          </h2>
+          <p className="text-gray-600 mb-4">Connect your domain marketplace with Google services for better visibility, analytics, and monetization</p>
+          
+          <Tabs defaultValue="search-console" value={activeGoogleTab} onValueChange={setActiveGoogleTab} className="w-full">
+            <TabsList className="grid w-full grid-cols-3 mb-6">
+              <TabsTrigger value="search-console">Search Console</TabsTrigger>
+              <TabsTrigger value="google-analytics">Google Analytics</TabsTrigger>
+              <TabsTrigger value="adsense">AdSense</TabsTrigger>
+            </TabsList>
+            
+            {/* Search Console Tab */}
+            <TabsContent value="search-console" className="space-y-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Google Search Console</CardTitle>
+                  <CardDescription>Monitor your site's performance in Google search results</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex flex-col space-y-4">
+                    <div className="p-6 border border-gray-200 rounded-md">
+                      <h3 className="text-lg font-semibold mb-2">Site Verification</h3>
+                      <p className="mb-4">Verify your site ownership to access Search Console features</p>
+                      <div className="flex space-x-2">
+                        <Input placeholder="Enter your verification code" />
+                        <Button>Verify</Button>
+                      </div>
+                    </div>
+                    
+                    <div className="p-6 border border-gray-200 rounded-md">
+                      <h3 className="text-lg font-semibold mb-2">Performance Overview</h3>
+                      <p className="mb-4">Your site is not yet fully verified with Google Search Console</p>
+                      <Button variant="outline">Connect Search Console</Button>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+            
+            {/* Google Analytics Tab */}
+            <TabsContent value="google-analytics" className="space-y-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Google Analytics</CardTitle>
+                  <CardDescription>View insights about your website visitors and behavior</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex flex-col space-y-4">
+                    <div className="p-6 border border-gray-200 rounded-md">
+                      <h3 className="text-lg font-semibold mb-2">Analytics Setup</h3>
+                      <p className="mb-4">Connect your Google Analytics account to track website metrics</p>
+                      <div className="flex space-x-2">
+                        <Input placeholder="Enter your Google Analytics ID (G-XXXXXXXXXX)" />
+                        <Button>Connect</Button>
+                      </div>
+                    </div>
+                    
+                    <div className="p-6 border border-gray-200 rounded-md">
+                      <h3 className="text-lg font-semibold mb-2">Analytics Dashboard</h3>
+                      <p className="mb-4">Your site is not yet connected to Google Analytics</p>
+                      <Button variant="outline">View in Google Analytics</Button>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+            
+            {/* AdSense Tab */}
+            <TabsContent value="adsense" className="space-y-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Google AdSense</CardTitle>
+                  <CardDescription>Monetize your website with targeted ads</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex flex-col space-y-4">
+                    <div className="p-6 border border-gray-200 rounded-md">
+                      <h3 className="text-lg font-semibold mb-2">AdSense Setup</h3>
+                      <p className="mb-4">Connect your Google AdSense account to display ads on your site</p>
+                      <div className="flex space-x-2">
+                        <Input placeholder="Enter your AdSense Publisher ID (pub-xxxxxxxxxx)" />
+                        <Button>Connect</Button>
+                      </div>
+                    </div>
+                    
+                    <div className="p-6 border border-gray-200 rounded-md">
+                      <h3 className="text-lg font-semibold mb-2">AdSense Performance</h3>
+                      <p className="mb-4">Your site is not yet connected to Google AdSense</p>
+                      <Button variant="outline">View in AdSense</Button>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+          </Tabs>
+        </div>
+        
+        <TabsList className="grid w-full grid-cols-9">
           <TabsTrigger value="domains">Domains</TabsTrigger>
+          <TabsTrigger value="inquiries">Inquiries</TabsTrigger>
           <TabsTrigger value="offers">Offers</TabsTrigger>
           <TabsTrigger value="consultations">Consultations</TabsTrigger>
           <TabsTrigger value="emails">Email Submissions</TabsTrigger>
