@@ -584,7 +584,7 @@ export default function AdminPage() {
             <CardTitle className="text-sm font-medium text-gray-500">Total Revenue</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold">${stats.totalRevenue.toLocaleString()}</div>
+            <div className="text-3xl font-bold">${(stats?.totalRevenue || 0).toLocaleString()}</div>
             <div className="text-sm text-gray-500 mt-1">From sold domains</div>
           </CardContent>
         </Card>
