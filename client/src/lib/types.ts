@@ -71,3 +71,40 @@ export interface SeoSettings {
   structuredData: string | null;
   updatedAt: string;
 }
+
+// Inquiry status type
+export type InquiryStatus = 'new' | 'in_progress' | 'negotiating' | 'closed' | 'lost';
+
+// Inquiry type
+export interface Inquiry {
+  id: number;
+  domainId: number;
+  name: string;
+  email: string;
+  phone: string | null;
+  message: string;
+  status: InquiryStatus;
+  priority: number;
+  notes: string | null;
+  budget: number | null;
+  timeline: string | null;
+  source: string | null;
+  lastContactedAt: string | null;
+  nextFollowUpAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+  // Added client-side for displaying purposes
+  domainName?: string;
+}
+
+// Communication direction type
+export type CommunicationDirection = 'incoming' | 'outgoing';
+
+// Communication type
+export interface Communication {
+  id: number;
+  inquiryId: number;
+  direction: CommunicationDirection;
+  message: string;
+  sentAt: string;
+}
