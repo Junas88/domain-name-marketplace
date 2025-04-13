@@ -38,10 +38,10 @@ export default function AdminLogin() {
 
   // Redirect if already logged in
   useEffect(() => {
-    if (user?.isAdmin) {
-      window.location.href = "/admin/dashboard";
+    if (!isLoading && user?.isAdmin) {
+      window.location.href = "/admin";
     }
-  }, [user]);
+  }, [user, isLoading]);
 
   const onSubmit = (data: LoginFormValues) => {
     loginMutation.mutate(data, {
