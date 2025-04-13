@@ -76,6 +76,8 @@ export default function SimpleAdminPage() {
   const [confirmDeleteDialogOpen, setConfirmDeleteDialogOpen] = useState(false);
   const [itemToDelete, setItemToDelete] = useState<{id: number, type: string} | null>(null);
   const [csvData, setCsvData] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 20;
   
   // Simple admin check with redirect
   useEffect(() => {
@@ -206,7 +208,7 @@ export default function SimpleAdminPage() {
   // Domain mutations
   const createDomainMutation = useMutation({
     mutationFn: async (data: InsertDomain) => {
-      const res = await apiRequest("POST", "/api/admin/domains", data);
+      const res = await apiRequest("POST", "/api/admin/domains", { data });
       return await res.json();
     },
     onSuccess: () => {
@@ -230,7 +232,7 @@ export default function SimpleAdminPage() {
   
   const updateDomainMutation = useMutation({
     mutationFn: async (data: Domain) => {
-      const res = await apiRequest("PATCH", `/api/admin/domains/${data.id}`, data);
+      const res = await apiRequest("PATCH", `/api/admin/domains/${data.id}`, { data });
       return await res.json();
     },
     onSuccess: () => {
@@ -255,7 +257,7 @@ export default function SimpleAdminPage() {
   
   const deleteDomainMutation = useMutation({
     mutationFn: async (id: number) => {
-      const res = await apiRequest("DELETE", `/api/admin/domains/${id}`);
+      const res = await apiRequest("DELETE", `/api/admin/domains/${id}`, { });
       return await res.json();
     },
     onSuccess: () => {
@@ -770,7 +772,7 @@ export default function SimpleAdminPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {domains.slice(0, 10).map((domain) => (
+                {domains.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage).map((domain) => (
                   <TableRow key={domain.id}>
                     <TableCell className="font-medium">{domain.name}</TableCell>
                     <TableCell>
@@ -833,6 +835,35 @@ export default function SimpleAdminPage() {
                 )}
               </TableBody>
             </Table>
+            
+            {/* Pagination Controls */}
+            {domains.length > itemsPerPage && (
+              <div className="flex items-center justify-between px-4 py-4 border-t">
+                <div className="text-sm text-gray-700">
+                  Showing <span className="font-medium">{Math.min((currentPage - 1) * itemsPerPage + 1, domains.length)}</span> to{" "}
+                  <span className="font-medium">{Math.min(currentPage * itemsPerPage, domains.length)}</span> of{" "}
+                  <span className="font-medium">{domains.length}</span> domains
+                </div>
+                <div className="flex space-x-2">
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                    disabled={currentPage === 1}
+                  >
+                    Previous
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={() => setCurrentPage(p => Math.min(Math.ceil(domains.length / itemsPerPage), p + 1))}
+                    disabled={currentPage >= Math.ceil(domains.length / itemsPerPage)}
+                  >
+                    Next
+                  </Button>
+                </div>
+              </div>
+            )}
           </div>
           
           {/* Domain Edit/Add Dialog */}
