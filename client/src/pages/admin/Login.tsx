@@ -46,7 +46,7 @@ export default function AdminLogin() {
   const onSubmit = (data: LoginFormValues) => {
     loginMutation.mutate(data, {
       onSuccess: () => {
-        window.location.href = "/admin/dashboard";
+        window.location.replace("/admin");
       }
     });
   };
