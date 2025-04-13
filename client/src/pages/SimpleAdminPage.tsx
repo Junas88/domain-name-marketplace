@@ -1210,10 +1210,7 @@ export default function SimpleAdminPage() {
                           variant="outline"
                           size="sm"
                           onClick={() => {
-                            const content = pageContents.find(c => c.pageKey === 'home-benefits');
-                            if (content) {
-                              handleEditContent(content);
-                            }
+                            handleEditContent('home-benefits', 'Why Choose Domain Name Guide');
                           }}
                         >
                           <Pencil className="h-3 w-3 mr-2" />
@@ -1262,10 +1259,7 @@ export default function SimpleAdminPage() {
                           variant="outline"
                           size="sm"
                           onClick={() => {
-                            const content = pageContents.find(c => c.pageKey === 'home-recently-sold');
-                            if (content) {
-                              handleEditContent(content);
-                            }
+                            handleEditContent('home-recently-sold', 'Gone Fast - See What\'s Already Sold');
                           }}
                         >
                           <Pencil className="h-3 w-3 mr-2" />
@@ -1331,10 +1325,7 @@ export default function SimpleAdminPage() {
                           variant="outline"
                           size="sm"
                           onClick={() => {
-                            const content = pageContents.find(c => c.pageKey === 'guide');
-                            if (content) {
-                              handleEditContent(content);
-                            }
+                            handleEditContent('guide', 'Domain Guide: Everything You Need to Know');
                           }}
                         >
                           <Pencil className="h-3 w-3 mr-2" />
@@ -1383,10 +1374,7 @@ export default function SimpleAdminPage() {
                           variant="outline"
                           size="sm"
                           onClick={() => {
-                            const content = pageContents.find(c => c.pageKey === 'guide-ebook');
-                            if (content) {
-                              handleEditContent(content);
-                            }
+                            handleEditContent('guide-ebook', 'Domain Name Guide - Free Ebook');
                           }}
                         >
                           <Pencil className="h-3 w-3 mr-2" />
@@ -1452,10 +1440,7 @@ export default function SimpleAdminPage() {
                           variant="outline"
                           size="sm"
                           onClick={() => {
-                            const content = pageContents.find(c => c.pageKey === 'about');
-                            if (content) {
-                              handleEditContent(content);
-                            }
+                            handleEditContent('about', 'About Domain Name Guide');
                           }}
                         >
                           <Pencil className="h-3 w-3 mr-2" />
@@ -1511,10 +1496,7 @@ export default function SimpleAdminPage() {
                           variant="outline"
                           size="sm"
                           onClick={() => {
-                            const content = pageContents.find(c => c.pageKey === 'contact');
-                            if (content) {
-                              handleEditContent(content);
-                            }
+                            handleEditContent('contact', 'Get in Touch');
                           }}
                         >
                           <Pencil className="h-3 w-3 mr-2" />
@@ -1570,10 +1552,7 @@ export default function SimpleAdminPage() {
                           variant="outline"
                           size="sm"
                           onClick={() => {
-                            const content = pageContents.find(c => c.pageKey === 'global-header');
-                            if (content) {
-                              handleEditContent(content);
-                            }
+                            handleEditContent('global-header', 'Site Navigation');
                           }}
                         >
                           <Pencil className="h-3 w-3 mr-2" />
@@ -1615,10 +1594,7 @@ export default function SimpleAdminPage() {
                           variant="outline"
                           size="sm"
                           onClick={() => {
-                            const content = pageContents.find(c => c.pageKey === 'global-footer');
-                            if (content) {
-                              handleEditContent(content);
-                            }
+                            handleEditContent('global-footer', 'Footer Content');
                           }}
                         >
                           <Pencil className="h-3 w-3 mr-2" />
@@ -1657,10 +1633,7 @@ export default function SimpleAdminPage() {
                           variant="outline"
                           size="sm"
                           onClick={() => {
-                            const content = pageContents.find(c => c.pageKey === 'global-theme');
-                            if (content) {
-                              handleEditContent(content);
-                            }
+                            handleEditContent('global-theme', 'Theme & Brand Settings');
                           }}
                         >
                           <Pencil className="h-3 w-3 mr-2" />
