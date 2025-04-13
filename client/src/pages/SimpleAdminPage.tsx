@@ -954,6 +954,14 @@ export default function SimpleAdminPage() {
           <TabsTrigger value="analytics">Analytics</TabsTrigger>
         </TabsList>
         
+        {/* INQUIRIES TAB */}
+        <TabsContent value="inquiries" className="space-y-4">
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-xl font-bold text-black">Inquiry Management</h2>
+          </div>
+          <InquiryManagement />
+        </TabsContent>
+        
         {/* DOMAINS TAB */}
         <TabsContent value="domains" className="space-y-4">
           <div className="flex justify-between items-center">
