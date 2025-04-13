@@ -1345,24 +1345,29 @@ export default function SimpleAdminPage() {
                 <CardDescription>Edit additional pages on the site</CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
-                {/* Content Cards for Other Pages */}
-                {pageContents
-                  .filter(content => !content.pageKey.startsWith('home-') && !content.pageKey.startsWith('guide-'))
-                  .map(content => (
-                    <Card key={content.pageKey} className="border-gray-200">
+                {/* Contact Page Section */}
+                <div>
+                  <h3 className="text-lg font-semibold mb-4 flex items-center">
+                    <Contact className="h-5 w-5 mr-2 text-gray-600" />
+                    Contact Page
+                  </h3>
+                  {pageContents.some(content => content.pageKey === 'contact') ? (
+                    <Card className="border-gray-200">
                       <CardHeader className="pb-2">
                         <div className="flex justify-between items-center">
-                          <CardTitle className="text-base">{content.title || 'Untitled Section'}</CardTitle>
+                          <CardTitle className="text-base">
+                            {pageContents.find(content => content.pageKey === 'contact')?.title || 'Contact Us'}
+                          </CardTitle>
                           <Button 
                             variant="outline" 
                             size="sm"
-                            onClick={() => handleEditContent(content.pageKey, content.title || 'Section')}
+                            onClick={() => handleEditContent('contact', 'Contact Us')}
                           >
                             <Pencil className="h-4 w-4 mr-2" />
                             Edit
                           </Button>
                         </div>
-                        <CardDescription>{getPageKeyDescription(content.pageKey)}</CardDescription>
+                        <CardDescription>Main contact information and form</CardDescription>
                       </CardHeader>
                       <CardContent>
                         <div className="rounded-md bg-gray-50 p-3 text-sm font-mono">
@@ -1370,37 +1375,189 @@ export default function SimpleAdminPage() {
                             <div>
                               <span className="text-gray-500">Content preview:</span>
                               <div className="mt-1 whitespace-pre-wrap max-h-24 overflow-hidden text-ellipsis border-l-2 border-gray-200 pl-3">
-                                {content.content?.length > 150 
-                                  ? content.content.substring(0, 150) + '...' 
-                                  : content.content || '<No content>'}
+                                {(() => {
+                                  const content = pageContents.find(c => c.pageKey === 'contact')?.content;
+                                  return content?.length > 150 
+                                    ? content.substring(0, 150) + '...' 
+                                    : content || '<No content>';
+                                })()}
                               </div>
                             </div>
                           </div>
                         </div>
                       </CardContent>
                     </Card>
-                  ))}
+                  ) : (
+                    <Button 
+                      variant="outline"
+                      className="w-full py-6 flex flex-col items-center justify-center border-dashed"
+                      onClick={() => handleEditContent('contact', 'Contact Us')}
+                    >
+                      <Plus className="h-6 w-6 mb-2 text-gray-400" />
+                      <span className="font-medium">Add Contact Page</span>
+                      <span className="text-xs text-gray-500 mt-1">Create contact information and form</span>
+                    </Button>
+                  )}
+                </div>
                 
-                {/* Add missing other pages sections button */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
-                  {['about', 'contact', 'faq'].map(pageKey => {
-                    const exists = pageContents.some(content => content.pageKey === pageKey);
-                    if (!exists) {
-                      return (
-                        <Button 
-                          key={pageKey}
-                          variant="outline"
-                          className="h-auto py-6 flex flex-col items-center justify-center"
-                          onClick={() => handleEditContent(pageKey, getPageKeyTitle(pageKey))}
-                        >
-                          {getPageKeyIcon(pageKey)}
-                          <span className="font-medium">{getPageKeyTitle(pageKey)}</span>
-                          <span className="text-xs text-gray-500 mt-1">Add this section</span>
-                        </Button>
-                      );
-                    }
-                    return null;
-                  })}
+                {/* About Page Section */}
+                <div>
+                  <h3 className="text-lg font-semibold mb-4 flex items-center">
+                    <Info className="h-5 w-5 mr-2 text-gray-600" />
+                    About Page
+                  </h3>
+                  {pageContents.some(content => content.pageKey === 'about') ? (
+                    <Card className="border-gray-200">
+                      <CardHeader className="pb-2">
+                        <div className="flex justify-between items-center">
+                          <CardTitle className="text-base">
+                            {pageContents.find(content => content.pageKey === 'about')?.title || 'About Us'}
+                          </CardTitle>
+                          <Button 
+                            variant="outline" 
+                            size="sm"
+                            onClick={() => handleEditContent('about', 'About Us')}
+                          >
+                            <Pencil className="h-4 w-4 mr-2" />
+                            Edit
+                          </Button>
+                        </div>
+                        <CardDescription>Company information and history</CardDescription>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="rounded-md bg-gray-50 p-3 text-sm font-mono">
+                          <div className="space-y-2">
+                            <div>
+                              <span className="text-gray-500">Content preview:</span>
+                              <div className="mt-1 whitespace-pre-wrap max-h-24 overflow-hidden text-ellipsis border-l-2 border-gray-200 pl-3">
+                                {(() => {
+                                  const content = pageContents.find(c => c.pageKey === 'about')?.content;
+                                  return content?.length > 150 
+                                    ? content.substring(0, 150) + '...' 
+                                    : content || '<No content>';
+                                })()}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ) : (
+                    <Button 
+                      variant="outline"
+                      className="w-full py-6 flex flex-col items-center justify-center border-dashed"
+                      onClick={() => handleEditContent('about', 'About Us')}
+                    >
+                      <Plus className="h-6 w-6 mb-2 text-gray-400" />
+                      <span className="font-medium">Add About Page</span>
+                      <span className="text-xs text-gray-500 mt-1">Create company information and history</span>
+                    </Button>
+                  )}
+                </div>
+                
+                {/* FAQ Page Section */}
+                <div>
+                  <h3 className="text-lg font-semibold mb-4 flex items-center">
+                    <HelpCircle className="h-5 w-5 mr-2 text-gray-600" />
+                    FAQ Page
+                  </h3>
+                  {pageContents.some(content => content.pageKey === 'faq') ? (
+                    <Card className="border-gray-200">
+                      <CardHeader className="pb-2">
+                        <div className="flex justify-between items-center">
+                          <CardTitle className="text-base">
+                            {pageContents.find(content => content.pageKey === 'faq')?.title || 'Frequently Asked Questions'}
+                          </CardTitle>
+                          <Button 
+                            variant="outline" 
+                            size="sm"
+                            onClick={() => handleEditContent('faq', 'Frequently Asked Questions')}
+                          >
+                            <Pencil className="h-4 w-4 mr-2" />
+                            Edit
+                          </Button>
+                        </div>
+                        <CardDescription>Common questions and answers</CardDescription>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="rounded-md bg-gray-50 p-3 text-sm font-mono">
+                          <div className="space-y-2">
+                            <div>
+                              <span className="text-gray-500">Content preview:</span>
+                              <div className="mt-1 whitespace-pre-wrap max-h-24 overflow-hidden text-ellipsis border-l-2 border-gray-200 pl-3">
+                                {(() => {
+                                  const content = pageContents.find(c => c.pageKey === 'faq')?.content;
+                                  return content?.length > 150 
+                                    ? content.substring(0, 150) + '...' 
+                                    : content || '<No content>';
+                                })()}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ) : (
+                    <Button 
+                      variant="outline"
+                      className="w-full py-6 flex flex-col items-center justify-center border-dashed"
+                      onClick={() => handleEditContent('faq', 'Frequently Asked Questions')}
+                    >
+                      <Plus className="h-6 w-6 mb-2 text-gray-400" />
+                      <span className="font-medium">Add FAQ Page</span>
+                      <span className="text-xs text-gray-500 mt-1">Create frequently asked questions</span>
+                    </Button>
+                  )}
+                </div>
+                
+                {/* Other Custom Content */}
+                <div>
+                  <h3 className="text-lg font-semibold mb-4 flex items-center">
+                    <File className="h-5 w-5 mr-2 text-gray-600" />
+                    Other Custom Content
+                  </h3>
+                  <div className="space-y-4">
+                    {pageContents
+                      .filter(content => 
+                        !content.pageKey.startsWith('home-') && 
+                        !content.pageKey.startsWith('guide-') && 
+                        content.pageKey !== 'contact' && 
+                        content.pageKey !== 'about' && 
+                        content.pageKey !== 'faq'
+                      )
+                      .map(content => (
+                        <Card key={content.pageKey} className="border-gray-200">
+                          <CardHeader className="pb-2">
+                            <div className="flex justify-between items-center">
+                              <CardTitle className="text-base">{content.title || 'Untitled Section'}</CardTitle>
+                              <Button 
+                                variant="outline" 
+                                size="sm"
+                                onClick={() => handleEditContent(content.pageKey, content.title || 'Section')}
+                              >
+                                <Pencil className="h-4 w-4 mr-2" />
+                                Edit
+                              </Button>
+                            </div>
+                            <CardDescription>{getPageKeyDescription(content.pageKey)}</CardDescription>
+                          </CardHeader>
+                          <CardContent>
+                            <div className="rounded-md bg-gray-50 p-3 text-sm font-mono">
+                              <div className="space-y-2">
+                                <div>
+                                  <span className="text-gray-500">Content preview:</span>
+                                  <div className="mt-1 whitespace-pre-wrap max-h-24 overflow-hidden text-ellipsis border-l-2 border-gray-200 pl-3">
+                                    {content.content?.length > 150 
+                                      ? content.content.substring(0, 150) + '...' 
+                                      : content.content || '<No content>'}
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      ))}
+                  </div>
                 </div>
               </CardContent>
             </Card>
