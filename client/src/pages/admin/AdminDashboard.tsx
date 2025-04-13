@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+
+import { useEffect } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { Loader2 } from "lucide-react";
 import AdminPage from "./AdminPage";
@@ -11,7 +12,7 @@ export default function AdminDashboard() {
   useEffect(() => {
     if (!isLoading && (!user || !user.isAdmin)) {
       console.log("Not authenticated as admin, redirecting to login");
-      navigate("/login");
+      navigate("/login", { replace: true });
     }
   }, [user, isLoading, navigate]);
 

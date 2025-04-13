@@ -48,9 +48,7 @@ export default function AdminLogin() {
       onSuccess: (userData) => {
         console.log("Login successful, user data:", userData);
         if (userData.isAdmin) {
-          navigate("/admin/dashboard");
-        } else {
-          navigate("/login");
+          navigate("/admin/dashboard", { replace: true });
         }
       }
     });
