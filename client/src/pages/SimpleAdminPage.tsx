@@ -1896,19 +1896,57 @@ export default function SimpleAdminPage() {
                         <CardDescription>Main contact information and form</CardDescription>
                       </CardHeader>
                       <CardContent>
-                        <div className="rounded-md bg-gray-50 p-3 text-sm font-mono">
-                          <div className="space-y-2">
-                            <div>
-                              <span className="text-gray-500">Content preview:</span>
-                              <div className="mt-1 whitespace-pre-wrap max-h-24 overflow-hidden text-ellipsis border-l-2 border-gray-200 pl-3">
-                                {(() => {
-                                  const content = pageContents.find(c => c.pageKey === 'contact')?.content;
-                                  if (!content) return '<No content>';
-                                  return content.length > 150 
-                                    ? content.substring(0, 150) + '...' 
-                                    : content;
-                                })()}
+                        <div className="space-y-4">
+                          <div className="flex flex-col space-y-2">
+                            <div className="flex justify-between items-center">
+                              <h4 className="text-sm font-medium">Contact Page Content</h4>
+                              <Badge variant="outline" className="text-xs">Page Content</Badge>
+                            </div>
+                            <div className="rounded-md bg-gray-50 p-3 text-sm font-mono">
+                              <div className="space-y-2">
+                                <div>
+                                  <span className="text-gray-500">Content preview:</span>
+                                  <div className="mt-1 whitespace-pre-wrap max-h-24 overflow-hidden text-ellipsis border-l-2 border-gray-200 pl-3">
+                                    {(() => {
+                                      const content = pageContents.find(c => c.pageKey === 'contact')?.content;
+                                      if (!content) return '<No content>';
+                                      return content.length > 150 
+                                        ? content.substring(0, 150) + '...' 
+                                        : content;
+                                    })()}
+                                  </div>
+                                </div>
                               </div>
+                            </div>
+                          </div>
+                          
+                          <div className="flex flex-col space-y-2">
+                            <div className="flex justify-between items-center">
+                              <h4 className="text-sm font-medium">Contact Information Details</h4>
+                              <div className="flex space-x-2">
+                                <Badge variant="outline" className="text-xs">Call Us</Badge>
+                                <Badge variant="outline" className="text-xs">Email Us</Badge>
+                                <Badge variant="outline" className="text-xs">Visit Us</Badge>
+                              </div>
+                            </div>
+                            <div className="rounded-md bg-gray-50 p-3 text-sm font-mono">
+                              <div className="space-y-2">
+                                <div>
+                                  <span className="text-gray-500">Contact info preview:</span>
+                                  <div className="mt-1 whitespace-pre-wrap max-h-24 overflow-hidden text-ellipsis border-l-2 border-gray-200 pl-3">
+                                    {(() => {
+                                      const content = pageContents.find(c => c.pageKey === 'contact-info')?.content;
+                                      if (!content) return '<No contact information>';
+                                      return content.length > 150 
+                                        ? content.substring(0, 150) + '...' 
+                                        : content;
+                                    })()}
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                            <div className="text-xs text-gray-500 italic mt-1">
+                              Format: Use separate lines for email, phone, and address. Add headings like "Call Us", "Email Us", "Visit Us" before each section.
                             </div>
                           </div>
                         </div>
