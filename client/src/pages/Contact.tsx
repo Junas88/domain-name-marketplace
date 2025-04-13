@@ -43,27 +43,34 @@ type ContactFormValues = z.infer<typeof contactSchema>;
 export default function Contact() {
   const { toast } = useToast();
   
-  // Fetch contact info from API with direct fetch, bypassing React Query cache completely
+  // Fetch contact info from our special no-cache API endpoint
   const [contactInfo, setContactInfo] = useState<PageContent | null>(null);
+  const [refreshCount, setRefreshCount] = useState(0);
   
-  // Force a direct fetch of the data when the component mounts
+  // Force a direct fetch from our special endpoint designed to bypass all caching
   useEffect(() => {
     const fetchContactInfo = async () => {
       try {
-        console.log("Directly fetching contact-info with no caching");
-        const response = await fetch('/api/page-contents/contact-info', {
+        // Use our brand new endpoint specifically designed to bypass all caching
+        console.log(`Fetching contact info from fresh-content endpoint, refresh #${refreshCount}`);
+        
+        // Use our new special endpoint that bypasses all caching on the server side
+        const response = await fetch(`/api/fresh-content/contact-info`, {
+          // Still add client-side cache headers just to be thorough
           headers: {
-            'Cache-Control': 'no-cache',
+            'Cache-Control': 'no-cache, no-store, must-revalidate',
             'Pragma': 'no-cache',
             'Expires': '0',
           },
-          // Add a cache-busting query parameter with current timestamp
           cache: 'no-store'
         });
         
         if (response.ok) {
           const data = await response.json();
+          console.log("Contact info data received from fresh API:", data);
           setContactInfo(data);
+        } else {
+          console.error("Failed to fetch contact info:", response.status);
         }
       } catch (error) {
         console.error("Error fetching contact info:", error);
@@ -71,7 +78,15 @@ export default function Contact() {
     };
     
     fetchContactInfo();
-  }, []);
+    
+    // Set up an interval to refresh the data every 2 seconds when on this page
+    const refreshInterval = setInterval(() => {
+      setRefreshCount(prev => prev + 1);
+    }, 2000);
+    
+    // Clean up interval on component unmount
+    return () => clearInterval(refreshInterval);
+  }, [refreshCount]); // Refresh whenever refreshCount changes
   
   const form = useForm<ContactFormValues>({
     resolver: zodResolver(contactSchema),

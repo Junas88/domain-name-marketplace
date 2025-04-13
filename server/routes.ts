@@ -452,10 +452,48 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
+  // Special no-cache endpoint for contact info
+  app.get("/api/fresh-content/contact-info", async (req, res) => {
+    try {
+      // Set cache-busting headers
+      res.set({
+        'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+        'Pragma': 'no-cache',
+        'Expires': '0',
+        'Surrogate-Control': 'no-store'
+      });
+      
+      // Force fresh data from database
+      const pageContent = await storage.getPageContent('contact-info');
+      
+      if (!pageContent) {
+        return res.status(404).json({ message: "Contact info not found" });
+      }
+      
+      console.log("Serving fresh contact info:", pageContent);
+      res.json(pageContent);
+    } catch (error) {
+      console.error("Error fetching contact info:", error);
+      res.status(500).json({ message: "Failed to fetch contact info" });
+    }
+  });
+
   // Get a specific page content by key (public)
   app.get("/api/page-contents/:pageKey", async (req, res) => {
     try {
       const pageKey = req.params.pageKey;
+      
+      // For contact-related content, add no-cache headers
+      if (pageKey === 'contact' || pageKey === 'contact-info') {
+        res.set({
+          'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+          'Pragma': 'no-cache',
+          'Expires': '0',
+          'Surrogate-Control': 'no-store'
+        });
+        console.log(`Serving ${pageKey} with no-cache headers`);
+      }
+      
       const pageContent = await storage.getPageContent(pageKey);
       
       if (!pageContent) {
