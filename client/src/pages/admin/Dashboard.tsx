@@ -39,6 +39,7 @@ import {
 } from "lucide-react";
 import FileUploader from "@/components/admin/FileUploader";
 import EmailSubmissionsTable from "@/components/admin/EmailSubmissionsTable";
+import InquiryManagement from "@/components/admin/InquiryManagement";
 import { Domain, Offer, Consultation, PageContent, SeoSettings } from "@/lib/types";
 import { formatDistanceToNow } from "date-fns";
 
@@ -542,8 +543,9 @@ export default function AdminDashboard() {
       </header>
 
       <Tabs defaultValue="domains" value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="grid w-full grid-cols-7 mb-6">
+        <TabsList className="grid w-full grid-cols-8 mb-6">
           <TabsTrigger value="domains">Domains</TabsTrigger>
+          <TabsTrigger value="inquiries">Inquiries</TabsTrigger>
           <TabsTrigger value="analytics">Analytics</TabsTrigger>
           <TabsTrigger value="offers">Offers</TabsTrigger>
           <TabsTrigger value="consultations">Consultations</TabsTrigger>
