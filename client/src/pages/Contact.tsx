@@ -2,10 +2,11 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import Layout from "@/components/Layout";
+import { PageContent } from "@/lib/types";
 
 import {
   Form,
@@ -40,6 +41,12 @@ type ContactFormValues = z.infer<typeof contactSchema>;
 
 export default function Contact() {
   const { toast } = useToast();
+  
+  // Fetch contact info from API
+  const { data: contactInfo } = useQuery<PageContent>({
+    queryKey: ['/api/page-contents/contact-info'],
+  });
+  
   const form = useForm<ContactFormValues>({
     resolver: zodResolver(contactSchema),
     defaultValues: {
@@ -203,8 +210,14 @@ export default function Contact() {
                       <Mail className="text-green-600 mt-1 mr-4 shrink-0" size={24} />
                       <div>
                         <h3 className="text-lg font-medium">Email Us</h3>
-                        <p className="text-neutral-700">support@domainnameguide.com</p>
-                        <p className="text-neutral-700">sales@domainnameguide.com</p>
+                        {contactInfo ? (
+                          <div dangerouslySetInnerHTML={{ __html: contactInfo.content || "" }} />
+                        ) : (
+                          <>
+                            <p className="text-neutral-700">support@domainnameguide.com</p>
+                            <p className="text-neutral-700">sales@domainnameguide.com</p>
+                          </>
+                        )}
                       </div>
                     </div>
                     
