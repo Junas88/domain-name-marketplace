@@ -100,58 +100,7 @@ export default function SimpleAdminPage() {
   const itemsPerPage = 20;
   
   // Helper functions for page content display
-  const getPageKeyTitle = (pageKey: string): string => {
-    const mapping: Record<string, string> = {
-      // Home Page Sections
-      'hero': 'Homepage Hero Section',
-      'features': 'Features Section',
-      
-      // Contact Page Sections
-      'contact': 'Contact Page',
-      'contact-info': 'Contact Information',
-      
-      // Guide Page Sections
-      'guide-intro': 'Guide Introduction',
-      'guide-content': 'Guide Main Content',
-      'guide-checklist': 'Guide Checklist',
-      
-      // Domain Finder Page
-      'domain-finder': 'Domain Finder Page',
-      'domain-finder-intro': 'Domain Finder Introduction',
-      'domain-finder-steps': 'Domain Finder Steps',
-      
-      // FAQ Page
-      'faqs': 'Frequently Asked Questions',
-      'faqs-intro': 'FAQs Introduction',
-      
-      // Buyer Protection
-      'buyer-protection': 'Buyer Protection',
-      'buyer-protection-intro': 'Buyer Protection Introduction',
-      'buyer-protection-steps': 'Buyer Protection Steps',
-      
-      // How It Works
-      'how-it-works': 'How It Works Page',
-      'how-it-works-intro': 'How It Works Introduction',
-      'how-it-works-steps': 'How It Works Steps',
-      
-      // Selling Strategy
-      'selling-strategy': 'Selling Strategy Page',
-      'selling-strategy-intro': 'Selling Strategy Introduction',
-      'selling-strategy-tips': 'Selling Strategy Tips',
-      
-      // Ebook Section
-      'ebook-section': 'Ebook Download Section',
-      'ebook-intro': 'Ebook Introduction',
-      
-      // Miscellaneous Sections
-      'footer': 'Footer Content',
-      'newsletter': 'Newsletter Signup',
-      'privacy-policy': 'Privacy Policy',
-      'terms-of-service': 'Terms of Service',
-      'about-us': 'About Us'
-    };
-    return mapping[pageKey] || pageKey;
-  };
+  // Using the getPageKeyTitle function defined below
   
   const getPageKeyDescription = (pageKey: string): string => {
     const mapping: Record<string, string> = {
@@ -655,6 +604,29 @@ export default function SimpleAdminPage() {
         seo: values,
       });
     }
+  };
+  
+  // Helper function to get user-friendly title for a page key
+  const getPageKeyTitle = (pageKey: string): string => {
+    const pageKeyMap: Record<string, string> = {
+      'hero': 'Hero Section',
+      'features': 'Features Section',
+      'domain-guide': 'Domain Guide',
+      'ebook': 'E-book Section',
+      'contact': 'Contact Us',
+      'contact-info': 'Contact Information',
+      'about': 'About Us',
+      'faq': 'Frequently Asked Questions',
+      'social-media': 'Social Media Links',
+      'privacy': 'Privacy Policy',
+      'terms': 'Terms of Service',
+      'finder': 'Domain Finder',
+      'testimonials': 'Testimonials'
+    };
+    
+    return pageKeyMap[pageKey] || pageKey.split('-').map(word => 
+      word.charAt(0).toUpperCase() + word.slice(1)
+    ).join(' ');
   };
   
   // Handle editing domain
@@ -1521,7 +1493,370 @@ export default function SimpleAdminPage() {
           </div>
           
           <div className="space-y-6">
-            {/* Home Page */}
+            {/* Home Page Sections */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Home Page</CardTitle>
+                <CardDescription>Edit home page content sections</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                {/* Hero Section */}
+                <div>
+                  <h3 className="text-lg font-semibold mb-4 flex items-center">
+                    <Layout className="h-5 w-5 mr-2 text-gray-600" />
+                    Hero Section
+                  </h3>
+                  {pageContents.some(content => content.pageKey === 'hero') ? (
+                    <Card className="border-gray-200">
+                      <CardHeader className="pb-2">
+                        <div className="flex justify-between items-center">
+                          <CardTitle className="text-base">
+                            {pageContents.find(content => content.pageKey === 'hero')?.title || 'Hero Section'}
+                          </CardTitle>
+                          <Button 
+                            variant="outline" 
+                            size="sm"
+                            onClick={() => handleEditContent('hero', 'Hero Section')}
+                          >
+                            <Pencil className="h-4 w-4 mr-2" />
+                            Edit
+                          </Button>
+                        </div>
+                        <CardDescription>Main hero banner content</CardDescription>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="rounded-md bg-gray-50 p-3 text-sm font-mono">
+                          <div className="space-y-2">
+                            <div>
+                              <span className="text-gray-500">Content preview:</span>
+                              <div className="mt-1 whitespace-pre-wrap max-h-24 overflow-hidden text-ellipsis border-l-2 border-gray-200 pl-3">
+                                {(() => {
+                                  const content = pageContents.find(c => c.pageKey === 'hero')?.content;
+                                  if (!content) return '<No content>';
+                                  return content.length > 150 
+                                    ? content.substring(0, 150) + '...' 
+                                    : content;
+                                })()}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ) : (
+                    <Button 
+                      variant="outline"
+                      className="w-full py-6 flex flex-col items-center justify-center border-dashed"
+                      onClick={() => handleEditContent('hero', 'Hero Section')}
+                    >
+                      <Plus className="h-6 w-6 mb-2 text-gray-400" />
+                      <span className="font-medium">Add Hero Section</span>
+                      <span className="text-xs text-gray-500 mt-1">Create main hero banner content</span>
+                    </Button>
+                  )}
+                </div>
+                
+                {/* Features Section */}
+                <div>
+                  <h3 className="text-lg font-semibold mb-4 flex items-center">
+                    <ListChecks className="h-5 w-5 mr-2 text-gray-600" />
+                    Features Section
+                  </h3>
+                  {pageContents.some(content => content.pageKey === 'features') ? (
+                    <Card className="border-gray-200">
+                      <CardHeader className="pb-2">
+                        <div className="flex justify-between items-center">
+                          <CardTitle className="text-base">
+                            {pageContents.find(content => content.pageKey === 'features')?.title || 'Features Section'}
+                          </CardTitle>
+                          <Button 
+                            variant="outline" 
+                            size="sm"
+                            onClick={() => handleEditContent('features', 'Features Section')}
+                          >
+                            <Pencil className="h-4 w-4 mr-2" />
+                            Edit
+                          </Button>
+                        </div>
+                        <CardDescription>Service features and highlights</CardDescription>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="rounded-md bg-gray-50 p-3 text-sm font-mono">
+                          <div className="space-y-2">
+                            <div>
+                              <span className="text-gray-500">Content preview:</span>
+                              <div className="mt-1 whitespace-pre-wrap max-h-24 overflow-hidden text-ellipsis border-l-2 border-gray-200 pl-3">
+                                {(() => {
+                                  const content = pageContents.find(c => c.pageKey === 'features')?.content;
+                                  if (!content) return '<No content>';
+                                  return content.length > 150 
+                                    ? content.substring(0, 150) + '...' 
+                                    : content;
+                                })()}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ) : (
+                    <Button 
+                      variant="outline"
+                      className="w-full py-6 flex flex-col items-center justify-center border-dashed"
+                      onClick={() => handleEditContent('features', 'Features Section')}
+                    >
+                      <Plus className="h-6 w-6 mb-2 text-gray-400" />
+                      <span className="font-medium">Add Features Section</span>
+                      <span className="text-xs text-gray-500 mt-1">Create service features and highlights</span>
+                    </Button>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+            
+            {/* Domain Guide Sections */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Domain Guide</CardTitle>
+                <CardDescription>Edit domain guide content</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                {/* Domain Guide Section */}
+                <div>
+                  <h3 className="text-lg font-semibold mb-4 flex items-center">
+                    <BookOpen className="h-5 w-5 mr-2 text-gray-600" />
+                    Domain Guide Content
+                  </h3>
+                  {pageContents.some(content => content.pageKey === 'domain-guide') ? (
+                    <Card className="border-gray-200">
+                      <CardHeader className="pb-2">
+                        <div className="flex justify-between items-center">
+                          <CardTitle className="text-base">
+                            {pageContents.find(content => content.pageKey === 'domain-guide')?.title || 'Domain Guide'}
+                          </CardTitle>
+                          <Button 
+                            variant="outline" 
+                            size="sm"
+                            onClick={() => handleEditContent('domain-guide', 'Domain Guide')}
+                          >
+                            <Pencil className="h-4 w-4 mr-2" />
+                            Edit
+                          </Button>
+                        </div>
+                        <CardDescription>Domain guide page content</CardDescription>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="rounded-md bg-gray-50 p-3 text-sm font-mono">
+                          <div className="space-y-2">
+                            <div>
+                              <span className="text-gray-500">Content preview:</span>
+                              <div className="mt-1 whitespace-pre-wrap max-h-24 overflow-hidden text-ellipsis border-l-2 border-gray-200 pl-3">
+                                {(() => {
+                                  const content = pageContents.find(c => c.pageKey === 'domain-guide')?.content;
+                                  if (!content) return '<No content>';
+                                  return content.length > 150 
+                                    ? content.substring(0, 150) + '...' 
+                                    : content;
+                                })()}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ) : (
+                    <Button 
+                      variant="outline"
+                      className="w-full py-6 flex flex-col items-center justify-center border-dashed"
+                      onClick={() => handleEditContent('domain-guide', 'Domain Guide')}
+                    >
+                      <Plus className="h-6 w-6 mb-2 text-gray-400" />
+                      <span className="font-medium">Add Domain Guide Content</span>
+                      <span className="text-xs text-gray-500 mt-1">Create domain guide page content</span>
+                    </Button>
+                  )}
+                </div>
+                
+                {/* E-book Section */}
+                <div>
+                  <h3 className="text-lg font-semibold mb-4 flex items-center">
+                    <FileText className="h-5 w-5 mr-2 text-gray-600" />
+                    E-book Section
+                  </h3>
+                  {pageContents.some(content => content.pageKey === 'ebook') ? (
+                    <Card className="border-gray-200">
+                      <CardHeader className="pb-2">
+                        <div className="flex justify-between items-center">
+                          <CardTitle className="text-base">
+                            {pageContents.find(content => content.pageKey === 'ebook')?.title || 'E-book Section'}
+                          </CardTitle>
+                          <Button 
+                            variant="outline" 
+                            size="sm"
+                            onClick={() => handleEditContent('ebook', 'E-book Section')}
+                          >
+                            <Pencil className="h-4 w-4 mr-2" />
+                            Edit
+                          </Button>
+                        </div>
+                        <CardDescription>Free e-book offer details</CardDescription>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="rounded-md bg-gray-50 p-3 text-sm font-mono">
+                          <div className="space-y-2">
+                            <div>
+                              <span className="text-gray-500">Content preview:</span>
+                              <div className="mt-1 whitespace-pre-wrap max-h-24 overflow-hidden text-ellipsis border-l-2 border-gray-200 pl-3">
+                                {(() => {
+                                  const content = pageContents.find(c => c.pageKey === 'ebook')?.content;
+                                  if (!content) return '<No content>';
+                                  return content.length > 150 
+                                    ? content.substring(0, 150) + '...' 
+                                    : content;
+                                })()}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ) : (
+                    <Button 
+                      variant="outline"
+                      className="w-full py-6 flex flex-col items-center justify-center border-dashed"
+                      onClick={() => handleEditContent('ebook', 'E-book Section')}
+                    >
+                      <Plus className="h-6 w-6 mb-2 text-gray-400" />
+                      <span className="font-medium">Add E-book Section Content</span>
+                      <span className="text-xs text-gray-500 mt-1">Create e-book offer content</span>
+                    </Button>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+            
+            {/* Legal Pages */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Legal Pages</CardTitle>
+                <CardDescription>Edit legal content and policies</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                {/* Privacy Policy */}
+                <div>
+                  <h3 className="text-lg font-semibold mb-4 flex items-center">
+                    <Shield className="h-5 w-5 mr-2 text-gray-600" />
+                    Privacy Policy
+                  </h3>
+                  {pageContents.some(content => content.pageKey === 'privacy') ? (
+                    <Card className="border-gray-200">
+                      <CardHeader className="pb-2">
+                        <div className="flex justify-between items-center">
+                          <CardTitle className="text-base">
+                            {pageContents.find(content => content.pageKey === 'privacy')?.title || 'Privacy Policy'}
+                          </CardTitle>
+                          <Button 
+                            variant="outline" 
+                            size="sm"
+                            onClick={() => handleEditContent('privacy', 'Privacy Policy')}
+                          >
+                            <Pencil className="h-4 w-4 mr-2" />
+                            Edit
+                          </Button>
+                        </div>
+                        <CardDescription>Privacy policy and data usage</CardDescription>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="rounded-md bg-gray-50 p-3 text-sm font-mono">
+                          <div className="space-y-2">
+                            <div>
+                              <span className="text-gray-500">Content preview:</span>
+                              <div className="mt-1 whitespace-pre-wrap max-h-24 overflow-hidden text-ellipsis border-l-2 border-gray-200 pl-3">
+                                {(() => {
+                                  const content = pageContents.find(c => c.pageKey === 'privacy')?.content;
+                                  if (!content) return '<No content>';
+                                  return content.length > 150 
+                                    ? content.substring(0, 150) + '...' 
+                                    : content;
+                                })()}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ) : (
+                    <Button 
+                      variant="outline"
+                      className="w-full py-6 flex flex-col items-center justify-center border-dashed"
+                      onClick={() => handleEditContent('privacy', 'Privacy Policy')}
+                    >
+                      <Plus className="h-6 w-6 mb-2 text-gray-400" />
+                      <span className="font-medium">Add Privacy Policy</span>
+                      <span className="text-xs text-gray-500 mt-1">Create privacy policy content</span>
+                    </Button>
+                  )}
+                </div>
+                
+                {/* Terms of Service */}
+                <div>
+                  <h3 className="text-lg font-semibold mb-4 flex items-center">
+                    <FileText className="h-5 w-5 mr-2 text-gray-600" />
+                    Terms of Service
+                  </h3>
+                  {pageContents.some(content => content.pageKey === 'terms') ? (
+                    <Card className="border-gray-200">
+                      <CardHeader className="pb-2">
+                        <div className="flex justify-between items-center">
+                          <CardTitle className="text-base">
+                            {pageContents.find(content => content.pageKey === 'terms')?.title || 'Terms of Service'}
+                          </CardTitle>
+                          <Button 
+                            variant="outline" 
+                            size="sm"
+                            onClick={() => handleEditContent('terms', 'Terms of Service')}
+                          >
+                            <Pencil className="h-4 w-4 mr-2" />
+                            Edit
+                          </Button>
+                        </div>
+                        <CardDescription>Terms and conditions of service</CardDescription>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="rounded-md bg-gray-50 p-3 text-sm font-mono">
+                          <div className="space-y-2">
+                            <div>
+                              <span className="text-gray-500">Content preview:</span>
+                              <div className="mt-1 whitespace-pre-wrap max-h-24 overflow-hidden text-ellipsis border-l-2 border-gray-200 pl-3">
+                                {(() => {
+                                  const content = pageContents.find(c => c.pageKey === 'terms')?.content;
+                                  if (!content) return '<No content>';
+                                  return content.length > 150 
+                                    ? content.substring(0, 150) + '...' 
+                                    : content;
+                                })()}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ) : (
+                    <Button 
+                      variant="outline"
+                      className="w-full py-6 flex flex-col items-center justify-center border-dashed"
+                      onClick={() => handleEditContent('terms', 'Terms of Service')}
+                    >
+                      <Plus className="h-6 w-6 mb-2 text-gray-400" />
+                      <span className="font-medium">Add Terms of Service</span>
+                      <span className="text-xs text-gray-500 mt-1">Create terms of service content</span>
+                    </Button>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+            
+            {/* Other Pages */}
             <Card>
               <CardHeader>
                 <CardTitle>Other Pages</CardTitle>
