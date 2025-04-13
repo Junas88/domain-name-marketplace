@@ -320,8 +320,13 @@ export default function AdminPage() {
       });
       return res.json();
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
+      // Invalidate the admin page contents list
       queryClient.invalidateQueries({ queryKey: ['/api/admin/page-contents'] });
+      
+      // Also invalidate the public API endpoint for this specific page content
+      queryClient.invalidateQueries({ queryKey: [`/api/page-contents/${data.pageKey}`] });
+
       setShowPageContentDialog(false);
       pageContentForm.reset();
       toast({
@@ -346,8 +351,13 @@ export default function AdminPage() {
       });
       return res.json();
     },
-    onSuccess: () => {
+    onSuccess: (data, variables) => {
+      // Invalidate admin endpoints
       queryClient.invalidateQueries({ queryKey: ['/api/admin/page-contents'] });
+      
+      // Also invalidate the public API endpoint for this specific page content
+      queryClient.invalidateQueries({ queryKey: [`/api/page-contents/${variables.pageKey}`] });
+      
       setShowPageContentDialog(false);
       setEditingPageContent(null);
       pageContentForm.reset();
@@ -371,8 +381,13 @@ export default function AdminPage() {
         method: "DELETE",
       });
     },
-    onSuccess: () => {
+    onSuccess: (_, pageKey) => {
+      // Invalidate admin endpoints
       queryClient.invalidateQueries({ queryKey: ['/api/admin/page-contents'] });
+      
+      // Also invalidate the public API endpoint for this specific page content
+      queryClient.invalidateQueries({ queryKey: [`/api/page-contents/${pageKey}`] });
+      
       toast({
         title: "Page Content Deleted",
         description: "The page content has been deleted successfully.",
@@ -395,8 +410,13 @@ export default function AdminPage() {
       });
       return res.json();
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
+      // Invalidate admin endpoints
       queryClient.invalidateQueries({ queryKey: ['/api/admin/seo-settings'] });
+      
+      // Also invalidate the public API endpoint for this specific SEO setting
+      queryClient.invalidateQueries({ queryKey: [`/api/seo-settings/${data.pageKey}`] });
+      
       setShowSeoSettingsDialog(false);
       seoSettingsForm.reset();
       toast({
@@ -421,8 +441,13 @@ export default function AdminPage() {
       });
       return res.json();
     },
-    onSuccess: () => {
+    onSuccess: (data, variables) => {
+      // Invalidate admin endpoints
       queryClient.invalidateQueries({ queryKey: ['/api/admin/seo-settings'] });
+      
+      // Also invalidate the public API endpoint for this specific SEO setting
+      queryClient.invalidateQueries({ queryKey: [`/api/seo-settings/${variables.pageKey}`] });
+      
       setShowSeoSettingsDialog(false);
       setEditingSeoSettings(null);
       seoSettingsForm.reset();
