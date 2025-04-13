@@ -1095,28 +1095,28 @@ export default function SimpleAdminPage() {
           
           {/* Page Content Edit Dialog */}
           <Dialog open={contentDialogOpen} onOpenChange={setContentDialogOpen}>
-            <DialogContent className="max-w-3xl p-0 overflow-hidden">
-              <DialogHeader className="px-6 pt-6 pb-2 border-b">
-                <DialogTitle className="text-xl font-bold">{dialogTitle}</DialogTitle>
-                <DialogDescription>
-                  Manage content and SEO settings for this page.
+            <DialogContent className="max-w-2xl p-0 overflow-hidden">
+              <DialogHeader className="px-4 pt-4 pb-2 border-b">
+                <DialogTitle className="text-lg font-bold">{dialogTitle}</DialogTitle>
+                <DialogDescription className="text-xs">
+                  Edit content and SEO for this page
                 </DialogDescription>
               </DialogHeader>
               <Form {...contentForm}>
-                <form onSubmit={contentForm.handleSubmit(onContentSubmit)} className="space-y-6">
-                  <div className="px-6">
-                    <div className="grid grid-cols-2 gap-6 mb-6">
+                <form onSubmit={contentForm.handleSubmit(onContentSubmit)} className="space-y-3">
+                  <div className="p-4">
+                    <div className="grid grid-cols-2 gap-4 mb-4">
                       <div>
                         <FormField
                           control={contentForm.control}
                           name="title"
                           render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Page Title</FormLabel>
+                            <FormItem className="space-y-1">
+                              <FormLabel className="text-xs font-medium">Page Title</FormLabel>
                               <FormControl>
                                 <Input 
                                   {...field} 
-                                  className="border-gray-300 focus:border-black focus:ring-black" 
+                                  className="h-8 text-sm border-gray-200 focus:border-black focus:ring-black" 
                                 />
                               </FormControl>
                               <FormMessage />
@@ -1130,16 +1130,16 @@ export default function SimpleAdminPage() {
                           control={contentForm.control}
                           name="metaTitle"
                           render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Meta Title (SEO)</FormLabel>
+                            <FormItem className="space-y-1">
+                              <FormLabel className="text-xs font-medium">Meta Title (SEO)</FormLabel>
                               <FormControl>
                                 <Input 
                                   {...field} 
-                                  className="border-gray-300 focus:border-black focus:ring-black" 
+                                  className="h-8 text-sm border-gray-200 focus:border-black focus:ring-black" 
                                   placeholder="Leave empty to use page title" 
                                 />
                               </FormControl>
-                              <FormDescription className="text-xs">
+                              <FormDescription className="text-[10px]">
                                 Leave empty to use page title
                               </FormDescription>
                               <FormMessage />
@@ -1153,13 +1153,13 @@ export default function SimpleAdminPage() {
                       control={contentForm.control}
                       name="metaDescription"
                       render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Meta Description (SEO)</FormLabel>
+                        <FormItem className="space-y-1">
+                          <FormLabel className="text-xs font-medium">Meta Description (SEO)</FormLabel>
                           <FormControl>
                             <Textarea 
                               {...field} 
-                              rows={3} 
-                              className="border-gray-300 focus:border-black focus:ring-black resize-none" 
+                              rows={2} 
+                              className="text-sm min-h-[60px] border-gray-200 focus:border-black focus:ring-black resize-none" 
                               placeholder="Brief description for search engines" 
                             />
                           </FormControl>
@@ -1169,14 +1169,14 @@ export default function SimpleAdminPage() {
                     />
                   </div>
                   <div className="w-full">
-                    <div className="mx-6 mb-2">
-                      <h3 className="font-medium text-sm mb-2">Editor Tools</h3>
-                      <div className="flex flex-wrap gap-2">
+                    <div className="px-4 mb-1">
+                      <h3 className="font-medium text-xs mb-1">Editor Tools</h3>
+                      <div className="flex flex-wrap gap-1">
                         <Button 
                           type="button" 
                           variant="outline" 
                           size="sm"
-                          className="h-8 bg-white border-gray-200 hover:bg-gray-50"
+                          className="h-6 px-2 text-xs bg-white border-gray-200 hover:bg-gray-50"
                           onClick={() => {
                             const textarea = document.getElementById('content-textarea') as HTMLTextAreaElement;
                             if (textarea) {
@@ -1366,8 +1366,8 @@ export default function SimpleAdminPage() {
                               <Textarea
                                 {...field}
                                 id="content-textarea"
-                                rows={10}
-                                className="font-mono text-sm resize-none border-0 focus:ring-0 rounded-none min-h-[200px]"
+                                rows={6}
+                                className="font-mono text-xs resize-none border-0 focus:ring-0 rounded-none min-h-[150px]"
                                 placeholder="HTML content for the page. Use the editor tools above to format your content."
                               />
                             </FormControl>
@@ -1380,19 +1380,19 @@ export default function SimpleAdminPage() {
                       </div>
                     </div>
                       
-                    <div className="mx-6 my-4">
-                      <div className="flex items-center mb-2">
-                        <Eye className="h-4 w-4 mr-2" />
-                        <h3 className="font-medium text-sm">Content Preview</h3>
+                    <div className="px-4 my-2">
+                      <div className="flex items-center mb-1">
+                        <Eye className="h-3 w-3 mr-1" />
+                        <h3 className="font-medium text-xs">Preview</h3>
                       </div>
                       <div 
-                        className="prose prose-sm max-w-none bg-gray-50 p-4 rounded-md border border-gray-200 overflow-auto max-h-[200px]"
-                        dangerouslySetInnerHTML={{ __html: contentForm.watch('content') || '<p class="text-gray-400 italic">No content to preview</p>' }}
+                        className="prose prose-sm max-w-none bg-gray-50 p-3 rounded-md border border-gray-200 overflow-auto max-h-[120px]"
+                        dangerouslySetInnerHTML={{ __html: contentForm.watch('content') || '<p class="text-gray-400 italic text-xs">No content to preview</p>' }}
                       />
                     </div>
                   </div>
-                  <DialogFooter className="px-6 py-4 bg-gray-50 border-t flex justify-between sm:justify-between">
-                    <div className="flex items-center gap-2">
+                  <DialogFooter className="px-4 py-3 bg-gray-50 border-t flex justify-between sm:justify-between">
+                    <div className="flex items-center gap-1">
                       <Button
                         type="button"
                         variant="outline"
@@ -1416,7 +1416,7 @@ export default function SimpleAdminPage() {
                             });
                           }
                         }}
-                        className="border-gray-300"
+                        className="h-7 text-xs border-gray-200"
                       >
                         Reset
                       </Button>
@@ -1430,14 +1430,14 @@ export default function SimpleAdminPage() {
                           }
                         }}
                         disabled={!editingContent}
-                        className="border-gray-300"
+                        className="h-7 text-xs border-gray-200"
                       >
-                        <ExternalLink className="h-3 w-3 mr-2" />
-                        View Page
+                        <ExternalLink className="h-3 w-3 mr-1" />
+                        View
                       </Button>
                     </div>
-                    <Button type="submit" className="bg-black hover:bg-gray-800 text-white">
-                      {editingContent ? 'Update Content' : 'Create Content'}
+                    <Button type="submit" className="h-7 text-xs bg-black hover:bg-gray-800 text-white">
+                      {editingContent ? 'Save Changes' : 'Create Content'}
                     </Button>
                   </DialogFooter>
                 </form>
