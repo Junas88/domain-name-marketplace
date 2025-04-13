@@ -10,7 +10,7 @@ import {
   Layout, ListChecks, Quote, Award, BookOpen, Contact,
   HelpCircle, Info, BarChart, LineChart, PieChart, 
   Activity, Clock, Users, ArrowUpRight, ArrowDownRight,
-  Phone, Share2, MessageSquare, RefreshCw
+  Phone, Share2, MessageSquare, RefreshCw, Shield, Mail
 } from "lucide-react";
 import InquiryManagement from "@/components/admin/InquiryManagement";
 import { 
@@ -102,45 +102,159 @@ export default function SimpleAdminPage() {
   // Helper functions for page content display
   const getPageKeyTitle = (pageKey: string): string => {
     const mapping: Record<string, string> = {
-      'home-hero': 'Homepage Hero Section',
-      'home-features': 'Features Section',
-      'home-testimonials': 'Testimonials',
-      'home-why-choose': 'Why Choose Us',
-      'guide-intro': 'Guide Introduction',
-      'guide-tabs': 'Guide Tab Content',
-      'about': 'About Page',
+      // Home Page Sections
+      'hero': 'Homepage Hero Section',
+      'features': 'Features Section',
+      
+      // Contact Page Sections
       'contact': 'Contact Page',
-      'faq': 'FAQ Page'
+      'contact-info': 'Contact Information',
+      
+      // Guide Page Sections
+      'guide-intro': 'Guide Introduction',
+      'guide-content': 'Guide Main Content',
+      'guide-checklist': 'Guide Checklist',
+      
+      // Domain Finder Page
+      'domain-finder': 'Domain Finder Page',
+      'domain-finder-intro': 'Domain Finder Introduction',
+      'domain-finder-steps': 'Domain Finder Steps',
+      
+      // FAQ Page
+      'faqs': 'Frequently Asked Questions',
+      'faqs-intro': 'FAQs Introduction',
+      
+      // Buyer Protection
+      'buyer-protection': 'Buyer Protection',
+      'buyer-protection-intro': 'Buyer Protection Introduction',
+      'buyer-protection-steps': 'Buyer Protection Steps',
+      
+      // How It Works
+      'how-it-works': 'How It Works Page',
+      'how-it-works-intro': 'How It Works Introduction',
+      'how-it-works-steps': 'How It Works Steps',
+      
+      // Selling Strategy
+      'selling-strategy': 'Selling Strategy Page',
+      'selling-strategy-intro': 'Selling Strategy Introduction',
+      'selling-strategy-tips': 'Selling Strategy Tips',
+      
+      // Ebook Section
+      'ebook-section': 'Ebook Download Section',
+      'ebook-intro': 'Ebook Introduction',
+      
+      // Miscellaneous Sections
+      'footer': 'Footer Content',
+      'newsletter': 'Newsletter Signup',
+      'privacy-policy': 'Privacy Policy',
+      'terms-of-service': 'Terms of Service',
+      'about-us': 'About Us'
     };
     return mapping[pageKey] || pageKey;
   };
   
   const getPageKeyDescription = (pageKey: string): string => {
     const mapping: Record<string, string> = {
-      'home-hero': 'Main banner and headline',
-      'home-features': 'Key features and benefits',
-      'home-testimonials': 'Customer reviews and quotes',
-      'home-why-choose': 'Value proposition section',
-      'guide-intro': 'Main introduction and overview',
-      'guide-tabs': 'Tab-based guide content',
-      'about': 'Company information',
-      'contact': 'Contact information',
-      'faq': 'Frequently asked questions'
+      // Home Page Sections
+      'hero': 'Main banner and headline on homepage',
+      'features': 'Key features and benefits of the platform',
+      
+      // Contact Page Sections
+      'contact': 'Main contact page content',
+      'contact-info': 'Contact details (email, phone, address)',
+      
+      // Guide Page Sections
+      'guide-intro': 'Domain guide introduction',
+      'guide-content': 'Main content of the domain guide',
+      'guide-checklist': 'Domain checklist items',
+      
+      // Domain Finder Page
+      'domain-finder': 'Overall domain finder page',
+      'domain-finder-intro': 'Domain finder introduction',
+      'domain-finder-steps': 'Steps for finding the right domain',
+      
+      // FAQ Page
+      'faqs': 'FAQ page content and questions',
+      'faqs-intro': 'Introduction to FAQs section',
+      
+      // Buyer Protection
+      'buyer-protection': 'Overall buyer protection content',
+      'buyer-protection-intro': 'Introduction to buyer protection',
+      'buyer-protection-steps': 'Buyer protection process steps',
+      
+      // How It Works
+      'how-it-works': 'Overall how it works content',
+      'how-it-works-intro': 'Introduction to how the platform works',
+      'how-it-works-steps': 'Steps explaining the platform process',
+      
+      // Selling Strategy
+      'selling-strategy': 'Overall selling strategy content',
+      'selling-strategy-intro': 'Introduction to selling domains',
+      'selling-strategy-tips': 'Tips for selling domains effectively',
+      
+      // Ebook Section
+      'ebook-section': 'Ebook download section settings',
+      'ebook-intro': 'Introduction to the ebook offering',
+      
+      // Miscellaneous Sections
+      'footer': 'Website footer content',
+      'newsletter': 'Newsletter signup text',
+      'privacy-policy': 'Privacy policy legal content',
+      'terms-of-service': 'Terms of service legal content',
+      'about-us': 'About us page content'
     };
     return mapping[pageKey] || 'Website content';
   };
   
   const getPageKeyIcon = (pageKey: string): React.ReactNode => {
     const iconMapping: Record<string, React.ReactNode> = {
-      'home-hero': <Layout className="h-8 w-8 mb-2" />,
-      'home-features': <ListChecks className="h-8 w-8 mb-2" />,
-      'home-testimonials': <Quote className="h-8 w-8 mb-2" />,
-      'home-why-choose': <Award className="h-8 w-8 mb-2" />,
-      'guide-intro': <BookOpen className="h-8 w-8 mb-2" />,
-      'guide-tabs': <FileText className="h-8 w-8 mb-2" />,
-      'about': <Info className="h-8 w-8 mb-2" />,
+      // Home Page Sections
+      'hero': <Layout className="h-8 w-8 mb-2" />,
+      'features': <ListChecks className="h-8 w-8 mb-2" />,
+      
+      // Contact Page Sections
       'contact': <Contact className="h-8 w-8 mb-2" />,
-      'faq': <HelpCircle className="h-8 w-8 mb-2" />
+      'contact-info': <Phone className="h-8 w-8 mb-2" />,
+      
+      // Guide Page Sections
+      'guide-intro': <BookOpen className="h-8 w-8 mb-2" />,
+      'guide-content': <FileText className="h-8 w-8 mb-2" />,
+      'guide-checklist': <CircleCheck className="h-8 w-8 mb-2" />,
+      
+      // Domain Finder Page
+      'domain-finder': <Search className="h-8 w-8 mb-2" />,
+      'domain-finder-intro': <Info className="h-8 w-8 mb-2" />,
+      'domain-finder-steps': <ListChecks className="h-8 w-8 mb-2" />,
+      
+      // FAQ Page
+      'faqs': <HelpCircle className="h-8 w-8 mb-2" />,
+      'faqs-intro': <Info className="h-8 w-8 mb-2" />,
+      
+      // Buyer Protection
+      'buyer-protection': <Shield className="h-8 w-8 mb-2" />,
+      'buyer-protection-intro': <Info className="h-8 w-8 mb-2" />,
+      'buyer-protection-steps': <ListChecks className="h-8 w-8 mb-2" />,
+      
+      // How It Works
+      'how-it-works': <RefreshCw className="h-8 w-8 mb-2" />,
+      'how-it-works-intro': <Info className="h-8 w-8 mb-2" />,
+      'how-it-works-steps': <ListChecks className="h-8 w-8 mb-2" />,
+      
+      // Selling Strategy
+      'selling-strategy': <Tag className="h-8 w-8 mb-2" />,
+      'selling-strategy-intro': <Info className="h-8 w-8 mb-2" />,
+      'selling-strategy-tips': <ListChecks className="h-8 w-8 mb-2" />,
+      
+      // Ebook Section
+      'ebook-section': <BookOpen className="h-8 w-8 mb-2" />,
+      'ebook-intro': <Info className="h-8 w-8 mb-2" />,
+      
+      // Miscellaneous Sections
+      'footer': <Layout className="h-8 w-8 mb-2" />,
+      'newsletter': <Mail className="h-8 w-8 mb-2" />,
+      'privacy-policy': <FileText className="h-8 w-8 mb-2" />,
+      'terms-of-service': <FileText className="h-8 w-8 mb-2" />,
+      'about-us': <Users className="h-8 w-8 mb-2" />
     };
     return iconMapping[pageKey] || <File className="h-8 w-8 mb-2" />;
   };
