@@ -14,6 +14,7 @@ import {
   MapPin
 } from "lucide-react";
 import InquiryManagement from "@/components/admin/InquiryManagement";
+import ContactInfoEditor from "@/components/admin/ContactInfoEditor";
 import { 
   Domain, PageContent, SeoSettings, Consultation, 
   EmailSubmission, Offer, InsertDomain, InsertPageContent,
@@ -1153,25 +1154,17 @@ New York, NY 10001`;
           </Tabs>
         </div>
         
-        <TabsList className="grid w-full grid-cols-9">
+        <TabsList className="grid w-full grid-cols-7">
           <TabsTrigger value="domains">Domains</TabsTrigger>
-          <TabsTrigger value="inquiries">Inquiries</TabsTrigger>
           <TabsTrigger value="offers">Offers</TabsTrigger>
           <TabsTrigger value="consultations">Consultations</TabsTrigger>
           <TabsTrigger value="emails">Email Submissions</TabsTrigger>
           <TabsTrigger value="seo">SEO Settings</TabsTrigger>
-          <TabsTrigger value="editor">Website Editor</TabsTrigger>
           <TabsTrigger value="ebooks">Ebook Files</TabsTrigger>
           <TabsTrigger value="analytics">Analytics</TabsTrigger>
         </TabsList>
         
-        {/* INQUIRIES TAB */}
-        <TabsContent value="inquiries" className="space-y-4">
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="text-xl font-bold text-black">Inquiry Management</h2>
-          </div>
-          <InquiryManagement />
-        </TabsContent>
+
         
         {/* DOMAINS TAB */}
         <TabsContent value="domains" className="space-y-4">
