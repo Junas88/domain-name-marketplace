@@ -1154,10 +1154,12 @@ New York, NY 10001`;
           </Tabs>
         </div>
         
-        <TabsList className="grid w-full grid-cols-5">
+        <TabsList className="grid w-full grid-cols-7">
           <TabsTrigger value="domains">Domains</TabsTrigger>
           <TabsTrigger value="offers">Offers</TabsTrigger>
+          <TabsTrigger value="consultations">Consultations</TabsTrigger>
           <TabsTrigger value="emails">Email Submissions</TabsTrigger>
+          <TabsTrigger value="seo">SEO Settings</TabsTrigger>
           <TabsTrigger value="ebooks">Ebook Files</TabsTrigger>
           <TabsTrigger value="analytics">Analytics</TabsTrigger>
         </TabsList>
@@ -1514,14 +1516,13 @@ New York, NY 10001`;
         </TabsContent>
         
         {/* EMAIL SUBMISSIONS TAB */}
-        <TabsContent value="emails" className="space-y-4">
-          <div className="flex justify-between items-center">
-            <h2 className="text-xl font-bold text-black">Email Submissions</h2>
-            <Button variant="outline" onClick={exportEmailsToCSV}>
-              <Download className="h-4 w-4 mr-2" />
-              Export CSV
-            </Button>
-          </div>
+            <Card>
+              <CardHeader>
+                <CardTitle>Home Page</CardTitle>
+                <CardDescription>Edit home page content sections</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                {/* Hero Section */}
                 <div>
                   <h3 className="text-lg font-semibold mb-4 flex items-center">
                     <Layout className="h-5 w-5 mr-2 text-gray-600" />

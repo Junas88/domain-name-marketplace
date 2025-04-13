@@ -1154,10 +1154,12 @@ New York, NY 10001`;
           </Tabs>
         </div>
         
-        <TabsList className="grid w-full grid-cols-5">
+        <TabsList className="grid w-full grid-cols-7">
           <TabsTrigger value="domains">Domains</TabsTrigger>
           <TabsTrigger value="offers">Offers</TabsTrigger>
+          <TabsTrigger value="consultations">Consultations</TabsTrigger>
           <TabsTrigger value="emails">Email Submissions</TabsTrigger>
+          <TabsTrigger value="seo">SEO Settings</TabsTrigger>
           <TabsTrigger value="ebooks">Ebook Files</TabsTrigger>
           <TabsTrigger value="analytics">Analytics</TabsTrigger>
         </TabsList>
