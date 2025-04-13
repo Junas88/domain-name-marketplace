@@ -438,9 +438,10 @@ export default function SimpleAdminPage() {
     if (content) {
       // Edit existing content
       setEditingContent(content);
+      setDialogTitle(`Edit ${content.title || defaultTitle}`);
       contentForm.reset({
         pageKey: content.pageKey,
-        title: content.title,
+        title: content.title || defaultTitle,
         content: content.content || "",
         metaTitle: content.metaTitle || "",
         metaDescription: content.metaDescription || "",
@@ -448,6 +449,7 @@ export default function SimpleAdminPage() {
     } else {
       // Prepare for new content creation
       setEditingContent(null);
+      setDialogTitle(`Add ${defaultTitle}`);
       contentForm.reset({
         pageKey: pageKey,
         title: defaultTitle,
