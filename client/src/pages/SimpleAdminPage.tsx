@@ -88,17 +88,6 @@ export default function SimpleAdminPage() {
       }, 300);
     }
   }, [user, isLoading]);
-  
-  // Ensure page contents exist when admin loads the page
-  useEffect(() => {
-    // If user is admin and page contents are loaded, check for missing pages
-    if (isAdmin && pageContents.length > 0) {
-      // Add a slight delay to ensure the UI is ready
-      setTimeout(() => {
-        ensurePageContents();
-      }, 500);
-    }
-  }, [isAdmin, pageContents.length]);
 
   // Check if user is admin
   const isAdmin = !!user?.isAdmin;
@@ -692,12 +681,10 @@ export default function SimpleAdminPage() {
       
       {/* Main Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
-        <TabsList className="grid w-full grid-cols-8">
+        <TabsList className="grid w-full grid-cols-6">
           <TabsTrigger value="domains">Domains</TabsTrigger>
           <TabsTrigger value="offers">Offers</TabsTrigger>
           <TabsTrigger value="consultations">Consultations</TabsTrigger>
-          <TabsTrigger value="content">Page Content</TabsTrigger>
-          <TabsTrigger value="website">Website Editor</TabsTrigger>
           <TabsTrigger value="emails">Email Submissions</TabsTrigger>
           <TabsTrigger value="seo">SEO Settings</TabsTrigger>
           <TabsTrigger value="ebooks">Ebook Files</TabsTrigger>
@@ -1027,24 +1014,33 @@ export default function SimpleAdminPage() {
         <TabsContent value="content" className="space-y-6">
           <div className="flex justify-between items-center">
             <h2 className="text-xl font-bold text-black">Page Content Management</h2>
-            <Button 
-              className="bg-black hover:bg-gray-800 text-white"
-              onClick={() => {
-                contentForm.reset({
-                  pageKey: "",
-                  title: "",
-                  content: "",
-                  metaTitle: "",
-                  metaDescription: "",
-                });
-                setEditingContent(null);
-                setDialogTitle("Add New Content");
-                setContentDialogOpen(true);
-              }}
-            >
-              <Plus className="mr-2 h-4 w-4" />
-              Add New Content
-            </Button>
+            <div className="flex space-x-2">
+              <Button 
+                variant="outline"
+                onClick={() => ensurePageContents()}
+              >
+                <FileText className="mr-2 h-4 w-4" />
+                Add All Missing Pages
+              </Button>
+              <Button 
+                className="bg-black hover:bg-gray-800 text-white"
+                onClick={() => {
+                  contentForm.reset({
+                    pageKey: "",
+                    title: "",
+                    content: "",
+                    metaTitle: "",
+                    metaDescription: "",
+                  });
+                  setEditingContent(null);
+                  setDialogTitle("Add New Content");
+                  setContentDialogOpen(true);
+                }}
+              >
+                <Plus className="mr-2 h-4 w-4" />
+                Add New Content
+              </Button>
+            </div>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-3">
