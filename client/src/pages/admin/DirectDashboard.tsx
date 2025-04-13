@@ -10,16 +10,16 @@ export default function DirectDashboard() {
   
   // Authentication check
   useEffect(() => {
-    if (!isLoading && (!user || !user.isAdmin)) {
-      console.log("Not authenticated as admin, redirecting to login...");
-      setIsRedirecting(true);
-      window.location.href = "/login";
-      return;
-    }
-
-    if (user?.isAdmin) {
+    const checkAuth = async () => {
+      if (!isLoading && (!user || !user.isAdmin)) {
+        console.log("Not authenticated as admin, redirecting to login...");
+        setIsRedirecting(true);
+        window.location.href = "/login";
+        return;
+      }
       setIsRedirecting(false);
-    }
+    };
+    checkAuth();
   }, [user, isLoading]);
   
   // Loading or redirecting state
