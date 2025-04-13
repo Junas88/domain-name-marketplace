@@ -88,17 +88,6 @@ export default function SimpleAdminPage() {
       }, 300);
     }
   }, [user, isLoading]);
-  
-  // Ensure page contents exist when admin loads the page
-  useEffect(() => {
-    // If user is admin and page contents are loaded, check for missing pages
-    if (isAdmin && pageContents.length > 0) {
-      // Add a slight delay to ensure the UI is ready
-      setTimeout(() => {
-        ensurePageContents();
-      }, 500);
-    }
-  }, [isAdmin, pageContents.length]);
 
   // Check if user is admin
   const isAdmin = !!user?.isAdmin;
@@ -1504,24 +1493,39 @@ export default function SimpleAdminPage() {
           <div className="flex justify-between items-center">
             <h2 className="text-xl font-bold text-black">Website Editor</h2>
             <div className="space-x-2">
-              <Button variant="outline" onClick={() => window.open('/', '_blank')}>
-                <ExternalLink className="h-4 w-4 mr-2" />
+              <Button 
+                variant="outline" 
+                className="text-xs" 
+                onClick={ensurePageContents}
+              >
+                <FileText className="h-4 w-4 mr-1" />
+                Add All Missing Pages
+              </Button>
+              <Button 
+                variant="outline" 
+                className="text-xs"
+                onClick={() => window.open('/', '_blank')}
+              >
+                <ExternalLink className="h-4 w-4 mr-1" />
                 Preview Site
               </Button>
-              <Button variant="default" className="bg-black hover:bg-gray-800 text-white">
-                <Save className="h-4 w-4 mr-2" />
+              <Button variant="default" className="bg-black hover:bg-gray-800 text-white text-xs">
+                <Save className="h-4 w-4 mr-1" />
                 Publish Changes
               </Button>
             </div>
           </div>
           
           <Tabs defaultValue="homepage" className="w-full">
-            <TabsList className="w-full grid grid-cols-5">
-              <TabsTrigger value="homepage">Homepage</TabsTrigger>
-              <TabsTrigger value="about">About Page</TabsTrigger>
-              <TabsTrigger value="guide">Guide Page</TabsTrigger>
-              <TabsTrigger value="contact">Contact Page</TabsTrigger>
-              <TabsTrigger value="global">Global Elements</TabsTrigger>
+            <TabsList className="w-full overflow-x-auto flex gap-1 whitespace-nowrap">
+              <TabsTrigger value="homepage" className="text-xs px-2">Homepage</TabsTrigger>
+              <TabsTrigger value="guide" className="text-xs px-2">Guide</TabsTrigger>
+              <TabsTrigger value="about" className="text-xs px-2">About</TabsTrigger>
+              <TabsTrigger value="contact" className="text-xs px-2">Contact</TabsTrigger>
+              <TabsTrigger value="legal" className="text-xs px-2">Legal Pages</TabsTrigger>
+              <TabsTrigger value="global" className="text-xs px-2">Global Elements</TabsTrigger>
+              <TabsTrigger value="utility" className="text-xs px-2">Utility Pages</TabsTrigger>
+              <TabsTrigger value="features" className="text-xs px-2">Features</TabsTrigger>
             </TabsList>
             <TabsContent value="homepage" className="pt-4">
               <Card>
@@ -2153,6 +2157,273 @@ export default function SimpleAdminPage() {
                     </div>
                     <div className="text-xs mt-2 text-gray-500">
                       Primary color palette
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+          
+            <TabsContent value="legal" className="pt-4">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Legal Pages</CardTitle>
+                  <CardDescription>
+                    Edit terms of service, privacy policy, and legal documents
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  <div className="border rounded-md p-4 bg-white hover:shadow-md transition-shadow">
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <h3 className="font-medium mb-2 flex items-center">
+                          <span className="bg-black text-white rounded px-2 py-1 text-xs mr-2">Legal</span>
+                          Terms of Service
+                        </h3>
+                        <p className="text-sm text-gray-500">
+                          Website terms and conditions
+                        </p>
+                      </div>
+                      <div className="flex space-x-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            handleEditContent('terms', 'Terms of Service');
+                          }}
+                        >
+                          <Pencil className="h-3 w-3 mr-2" />
+                          Edit
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                        >
+                          <Eye className="h-3 w-3 mr-2" />
+                          Preview
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="border rounded-md p-4 bg-white hover:shadow-md transition-shadow">
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <h3 className="font-medium mb-2 flex items-center">
+                          <span className="bg-black text-white rounded px-2 py-1 text-xs mr-2">Legal</span>
+                          Privacy Policy
+                        </h3>
+                        <p className="text-sm text-gray-500">
+                          Data collection and privacy practices
+                        </p>
+                      </div>
+                      <div className="flex space-x-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            handleEditContent('privacy-policy', 'Privacy Policy');
+                          }}
+                        >
+                          <Pencil className="h-3 w-3 mr-2" />
+                          Edit
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                        >
+                          <Eye className="h-3 w-3 mr-2" />
+                          Preview
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+            
+            <TabsContent value="utility" className="pt-4">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Utility Pages</CardTitle>
+                  <CardDescription>
+                    Edit utility and system pages like 404, confirmation, and thank you pages
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  <div className="border rounded-md p-4 bg-white hover:shadow-md transition-shadow">
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <h3 className="font-medium mb-2 flex items-center">
+                          <span className="bg-black text-white rounded px-2 py-1 text-xs mr-2">Utility</span>
+                          404 Page Not Found
+                        </h3>
+                        <p className="text-sm text-gray-500">
+                          Page displayed when content can't be found
+                        </p>
+                      </div>
+                      <div className="flex space-x-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            handleEditContent('not-found', '404 Page Not Found');
+                          }}
+                        >
+                          <Pencil className="h-3 w-3 mr-2" />
+                          Edit
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                        >
+                          <Eye className="h-3 w-3 mr-2" />
+                          Preview
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+            
+            <TabsContent value="features" className="pt-4">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Feature Pages</CardTitle>
+                  <CardDescription>
+                    Edit feature and service-related content
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  <div className="border rounded-md p-4 bg-white hover:shadow-md transition-shadow">
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <h3 className="font-medium mb-2 flex items-center">
+                          <span className="bg-black text-white rounded px-2 py-1 text-xs mr-2">Feature</span>
+                          How It Works
+                        </h3>
+                        <p className="text-sm text-gray-500">
+                          Process explanation for buyers and sellers
+                        </p>
+                      </div>
+                      <div className="flex space-x-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            handleEditContent('how-it-works', 'How It Works');
+                          }}
+                        >
+                          <Pencil className="h-3 w-3 mr-2" />
+                          Edit
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                        >
+                          <Eye className="h-3 w-3 mr-2" />
+                          Preview
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="border rounded-md p-4 bg-white hover:shadow-md transition-shadow">
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <h3 className="font-medium mb-2 flex items-center">
+                          <span className="bg-black text-white rounded px-2 py-1 text-xs mr-2">Feature</span>
+                          FAQs
+                        </h3>
+                        <p className="text-sm text-gray-500">
+                          Answers to common questions
+                        </p>
+                      </div>
+                      <div className="flex space-x-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            handleEditContent('faqs', 'Frequently Asked Questions');
+                          }}
+                        >
+                          <Pencil className="h-3 w-3 mr-2" />
+                          Edit
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                        >
+                          <Eye className="h-3 w-3 mr-2" />
+                          Preview
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="border rounded-md p-4 bg-white hover:shadow-md transition-shadow">
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <h3 className="font-medium mb-2 flex items-center">
+                          <span className="bg-black text-white rounded px-2 py-1 text-xs mr-2">Feature</span>
+                          Buyer Protection
+                        </h3>
+                        <p className="text-sm text-gray-500">
+                          Trust and safety information
+                        </p>
+                      </div>
+                      <div className="flex space-x-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            handleEditContent('buyer-protection', 'Buyer Protection Guarantee');
+                          }}
+                        >
+                          <Pencil className="h-3 w-3 mr-2" />
+                          Edit
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                        >
+                          <Eye className="h-3 w-3 mr-2" />
+                          Preview
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="border rounded-md p-4 bg-white hover:shadow-md transition-shadow">
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <h3 className="font-medium mb-2 flex items-center">
+                          <span className="bg-black text-white rounded px-2 py-1 text-xs mr-2">Feature</span>
+                          Domain Valuation
+                        </h3>
+                        <p className="text-sm text-gray-500">
+                          How we determine domain values
+                        </p>
+                      </div>
+                      <div className="flex space-x-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            handleEditContent('domain-valuation', 'Domain Valuation');
+                          }}
+                        >
+                          <Pencil className="h-3 w-3 mr-2" />
+                          Edit
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                        >
+                          <Eye className="h-3 w-3 mr-2" />
+                          Preview
+                        </Button>
+                      </div>
                     </div>
                   </div>
                 </CardContent>
