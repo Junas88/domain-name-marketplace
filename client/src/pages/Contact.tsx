@@ -263,7 +263,7 @@ export default function Contact() {
                       <Phone className="text-green-600 mt-1 mr-4 shrink-0" size={24} />
                       <div>
                         <h3 className="text-lg font-medium">Call Us</h3>
-                        <p className="text-neutral-700">00 7 73 73 73 09</p>
+                        <p className="text-neutral-700">00 212 7 73 73 73 09</p>
                         <p className="text-neutral-700">Monday-Friday, 9am-5pm EST</p>
                       </div>
                     </div>
