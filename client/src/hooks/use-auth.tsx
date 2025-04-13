@@ -38,6 +38,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   // Enhanced login mutation with better error handling and state management
   const loginMutation = useMutation({
     mutationFn: async (credentials: LoginData) => {
+      console.log("Attempting login with credentials...");
       console.log("Login attempt with:", credentials.username);
       
       try {
