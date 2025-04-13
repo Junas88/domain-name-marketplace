@@ -128,6 +128,18 @@ export default function SimpleAdminPage() {
     enabled: isAdmin,
   });
   
+  // Ebook info query
+  const { data: ebookInfo, refetch: refetchEbookInfo } = useQuery<{
+    exists: boolean;
+    fileName?: string;
+    filePath?: string;
+    fileSize?: string;
+    downloadCount: number;
+  }>({
+    queryKey: ['/api/admin/ebook-info'],
+    enabled: isAdmin,
+  });
+  
   // Domain form schema
   const domainFormSchema = z.object({
     name: z.string().min(3, "Domain name must be at least 3 characters"),
@@ -475,6 +487,81 @@ export default function SimpleAdminPage() {
       metaKeywords: seo.metaKeywords,
     });
     setSeoDialogOpen(true);
+  };
+  
+  // File upload state
+  const [uploadingFile, setUploadingFile] = useState(false);
+  const [fileInputRef, setFileInputRef] = useState<HTMLInputElement | null>(null);
+  
+  // Handle ebook upload
+  const handleEbookUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (!event.target.files || event.target.files.length === 0) {
+      return;
+    }
+    
+    const file = event.target.files[0];
+    
+    // Check if file is a PDF
+    if (file.type !== 'application/pdf') {
+      toast({
+        title: "Invalid file type",
+        description: "Please upload a PDF file",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    // Check file size (max 20MB)
+    if (file.size > 20 * 1024 * 1024) {
+      toast({
+        title: "File too large",
+        description: "Maximum file size is 20MB",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    setUploadingFile(true);
+    
+    try {
+      const formData = new FormData();
+      formData.append('ebook', file);
+      
+      const response = await fetch('/api/admin/upload-ebook', {
+        method: 'POST',
+        body: formData,
+        credentials: 'include'
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to upload ebook');
+      }
+      
+      const data = await response.json();
+      
+      toast({
+        title: "Success",
+        description: "Ebook uploaded successfully",
+      });
+      
+      // Clear file input
+      if (fileInputRef) {
+        fileInputRef.value = '';
+      }
+      
+      // Refresh ebook info
+      refetchEbookInfo();
+      
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: `Failed to upload ebook: ${error.message}`,
+        variant: "destructive",
+      });
+    } finally {
+      setUploadingFile(false);
+    }
   };
   
   // Handle delete confirmation
