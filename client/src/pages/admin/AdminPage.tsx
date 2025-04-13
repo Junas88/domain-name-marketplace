@@ -471,8 +471,13 @@ export default function AdminPage() {
         method: "DELETE",
       });
     },
-    onSuccess: () => {
+    onSuccess: (_, pageKey) => {
+      // Invalidate admin endpoints
       queryClient.invalidateQueries({ queryKey: ['/api/admin/seo-settings'] });
+      
+      // Also invalidate the public API endpoint for this specific SEO setting
+      queryClient.invalidateQueries({ queryKey: [`/api/seo-settings/${pageKey}`] });
+      
       toast({
         title: "SEO Settings Deleted",
         description: "The SEO settings have been deleted successfully.",
