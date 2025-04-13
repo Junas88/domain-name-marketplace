@@ -7,7 +7,8 @@ export default function Features() {
   // Fetch features content from API
   const { data: featuresContent, isLoading } = useQuery<PageContent>({
     queryKey: ['/api/page-contents/features'],
-    staleTime: 5 * 60 * 1000, // 5 minutes
+    staleTime: 60 * 1000, // 1 minute - shorter stale time for homepage content
+    refetchOnMount: true, // Always refetch when component mounts
   });
 
   return (

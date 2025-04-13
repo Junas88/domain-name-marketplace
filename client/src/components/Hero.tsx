@@ -6,7 +6,8 @@ export default function Hero() {
   // Fetch hero content from API
   const { data: heroContent, isLoading } = useQuery<PageContent>({
     queryKey: ['/api/page-contents/hero'],
-    staleTime: 5 * 60 * 1000, // 5 minutes
+    staleTime: 60 * 1000, // 1 minute - shorter stale time for home page content
+    refetchOnMount: true, // Always refetch when component mounts
   });
 
   return (

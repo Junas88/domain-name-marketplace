@@ -46,6 +46,7 @@ export default function Contact() {
   const { data: contactInfo } = useQuery<PageContent>({
     queryKey: ['/api/page-contents/contact-info'],
     staleTime: 5 * 60 * 1000, // 5 minutes
+    refetchOnMount: true, // Always refetch when component mounts
   });
   
   const form = useForm<ContactFormValues>({
