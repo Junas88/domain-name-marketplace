@@ -12,7 +12,7 @@ export default function AdminDashboard() {
     if (!isLoading && (!user || !user.isAdmin)) {
       console.log("Not authenticated as admin, redirecting to login");
       setIsRedirecting(true);
-      window.location.href = "/login";
+      window.location.replace("/login");
     }
   }, [user, isLoading]);
 
@@ -21,7 +21,7 @@ export default function AdminDashboard() {
       <div className="flex flex-col items-center justify-center min-h-screen">
         <Loader2 className="h-8 w-8 animate-spin text-black mb-4" />
         <p className="text-lg font-medium">
-          {isRedirecting ? "Redirecting..." : "Loading..."}
+          {isRedirecting ? "Redirecting to login..." : "Loading dashboard..."}
         </p>
       </div>
     );
