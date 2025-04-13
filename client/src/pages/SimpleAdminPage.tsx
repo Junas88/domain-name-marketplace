@@ -1022,10 +1022,16 @@ export default function SimpleAdminPage() {
         <TabsContent value="website" className="space-y-4">
           <div className="flex justify-between items-center">
             <h2 className="text-xl font-bold text-black">Website Editor</h2>
-            <Button variant="outline" onClick={() => window.open('/', '_blank')}>
-              <Eye className="h-4 w-4 mr-2" />
-              Preview Site
-            </Button>
+            <div className="space-x-2">
+              <Button variant="outline" onClick={() => window.open('/', '_blank')}>
+                <ExternalLink className="h-4 w-4 mr-2" />
+                Preview Site
+              </Button>
+              <Button variant="black">
+                <Save className="h-4 w-4 mr-2" />
+                Publish Changes
+              </Button>
+            </div>
           </div>
           
           <Tabs defaultValue="homepage" className="w-full">
@@ -1044,66 +1050,214 @@ export default function SimpleAdminPage() {
                     Update your homepage sections, images, and text
                   </CardDescription>
                 </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    <div className="border rounded-md p-4">
-                      <h3 className="font-medium mb-2">Hero Section</h3>
-                      <p className="text-sm text-gray-500">
-                        Edit your main hero banner, headline and call-to-action
-                      </p>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="mt-2"
-                        onClick={() => {
-                          const content = pageContents.find(c => c.pageKey === 'home');
-                          if (content) {
-                            handleEditContent(content);
-                          }
-                        }}
-                      >
-                        <Pencil className="h-3 w-3 mr-2" />
-                        Edit Section
-                      </Button>
+                <CardContent className="space-y-6">
+                  <div className="border rounded-md p-4 bg-white hover:shadow-md transition-shadow">
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <h3 className="font-medium mb-2 flex items-center">
+                          <span className="bg-black text-white rounded px-2 py-1 text-xs mr-2">Section 1</span>
+                          Hero Section
+                        </h3>
+                        <p className="text-sm text-gray-500">
+                          Main banner with headline, subheading, and call-to-action button
+                        </p>
+                      </div>
+                      <div className="flex space-x-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            const content = pageContents.find(c => c.pageKey === 'home-hero');
+                            if (content) {
+                              handleEditContent(content);
+                            }
+                          }}
+                        >
+                          <Pencil className="h-3 w-3 mr-2" />
+                          Edit
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                        >
+                          <Eye className="h-3 w-3 mr-2" />
+                          Preview
+                        </Button>
+                      </div>
                     </div>
-                    
-                    <div className="border rounded-md p-4">
-                      <h3 className="font-medium mb-2">Featured Domains</h3>
-                      <p className="text-sm text-gray-500">
-                        Choose which domains to highlight on your homepage
-                      </p>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="mt-2"
-                        onClick={() => setActiveTab("domains")}
-                      >
-                        <Pencil className="h-3 w-3 mr-2" />
-                        Manage Domains
-                      </Button>
+                    <div className="mt-4 bg-gray-50 p-3 rounded text-sm">
+                      <div className="font-bold">Current content:</div>
+                      <div className="text-gray-600 mt-1 line-clamp-2">
+                        {pageContents.find(c => c.pageKey === 'home-hero')?.title || "Premium Domain Names For Your Business"}
+                      </div>
                     </div>
-                    
-                    <div className="border rounded-md p-4">
-                      <h3 className="font-medium mb-2">Benefits Section</h3>
-                      <p className="text-sm text-gray-500">
-                        Update the value proposition and benefits of your service
-                      </p>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="mt-2"
-                        onClick={() => {
-                          const content = pageContents.find(c => c.pageKey === 'home-benefits');
-                          if (content) {
-                            handleEditContent(content);
-                          }
-                        }}
-                      >
-                        <Pencil className="h-3 w-3 mr-2" />
-                        Edit Section
-                      </Button>
+                    <Separator className="my-4" />
+                    <div className="flex justify-between items-center">
+                      <div className="flex items-center space-x-2">
+                        <Badge variant="outline">Hero</Badge>
+                        <Badge variant="outline">Primary</Badge>
+                      </div>
+                      <div className="text-xs text-gray-500">
+                        Last updated: {new Date(pageContents.find(c => c.pageKey === 'home-hero')?.updatedAt || Date.now()).toLocaleDateString()}
+                      </div>
                     </div>
                   </div>
+                  
+                  <div className="border rounded-md p-4 bg-white hover:shadow-md transition-shadow">
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <h3 className="font-medium mb-2 flex items-center">
+                          <span className="bg-black text-white rounded px-2 py-1 text-xs mr-2">Section 2</span>
+                          Featured Domains
+                        </h3>
+                        <p className="text-sm text-gray-500">
+                          Showcase premium domains that visitors see first
+                        </p>
+                      </div>
+                      <div className="flex space-x-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setActiveTab("domains")}
+                        >
+                          <Pencil className="h-3 w-3 mr-2" />
+                          Manage
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                        >
+                          <Eye className="h-3 w-3 mr-2" />
+                          Preview
+                        </Button>
+                      </div>
+                    </div>
+                    <div className="mt-4 bg-gray-50 p-3 rounded text-sm">
+                      <div className="font-bold">Current selection:</div>
+                      <div className="text-gray-600 mt-1">
+                        {domains.filter(d => !d.isSold).slice(0, 3).map(d => d.name).join(", ")} and {Math.min(20, domains.filter(d => !d.isSold).length - 3)} more...
+                      </div>
+                    </div>
+                    <Separator className="my-4" />
+                    <div className="flex justify-between items-center">
+                      <div className="flex items-center space-x-2">
+                        <Badge variant="outline">Product</Badge>
+                        <Badge variant="outline">Dynamic</Badge>
+                      </div>
+                      <div className="text-xs text-gray-500">
+                        {domains.filter(d => !d.isSold).length} domains available
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="border rounded-md p-4 bg-white hover:shadow-md transition-shadow">
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <h3 className="font-medium mb-2 flex items-center">
+                          <span className="bg-black text-white rounded px-2 py-1 text-xs mr-2">Section 3</span>
+                          Benefits Section
+                        </h3>
+                        <p className="text-sm text-gray-500">
+                          Value proposition and key benefits of using our marketplace
+                        </p>
+                      </div>
+                      <div className="flex space-x-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            const content = pageContents.find(c => c.pageKey === 'home-benefits');
+                            if (content) {
+                              handleEditContent(content);
+                            }
+                          }}
+                        >
+                          <Pencil className="h-3 w-3 mr-2" />
+                          Edit
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                        >
+                          <Eye className="h-3 w-3 mr-2" />
+                          Preview
+                        </Button>
+                      </div>
+                    </div>
+                    <div className="mt-4 bg-gray-50 p-3 rounded text-sm">
+                      <div className="font-bold">Current content:</div>
+                      <div className="text-gray-600 mt-1 line-clamp-2">
+                        {pageContents.find(c => c.pageKey === 'home-benefits')?.title || "Why Choose Domain Name Guide"}
+                      </div>
+                    </div>
+                    <Separator className="my-4" />
+                    <div className="flex justify-between items-center">
+                      <div className="flex items-center space-x-2">
+                        <Badge variant="outline">Features</Badge>
+                        <Badge variant="outline">Secondary</Badge>
+                      </div>
+                      <div className="text-xs text-gray-500">
+                        Last updated: {new Date(pageContents.find(c => c.pageKey === 'home-benefits')?.updatedAt || Date.now()).toLocaleDateString()}
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="border rounded-md p-4 bg-white hover:shadow-md transition-shadow">
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <h3 className="font-medium mb-2 flex items-center">
+                          <span className="bg-black text-white rounded px-2 py-1 text-xs mr-2">Section 4</span>
+                          Recently Sold Domains
+                        </h3>
+                        <p className="text-sm text-gray-500">
+                          Showcase recently sold domains to create urgency
+                        </p>
+                      </div>
+                      <div className="flex space-x-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            const content = pageContents.find(c => c.pageKey === 'home-recently-sold');
+                            if (content) {
+                              handleEditContent(content);
+                            }
+                          }}
+                        >
+                          <Pencil className="h-3 w-3 mr-2" />
+                          Edit
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                        >
+                          <Eye className="h-3 w-3 mr-2" />
+                          Preview
+                        </Button>
+                      </div>
+                    </div>
+                    <div className="mt-4 bg-gray-50 p-3 rounded text-sm">
+                      <div className="font-bold">Current selection:</div>
+                      <div className="text-gray-600 mt-1">
+                        {domains.filter(d => d.isSold).slice(0, 3).map(d => d.name).join(", ")} and {Math.max(0, domains.filter(d => d.isSold).length - 3)} more...
+                      </div>
+                    </div>
+                    <Separator className="my-4" />
+                    <div className="flex justify-between items-center">
+                      <div className="flex items-center space-x-2">
+                        <Badge variant="outline">Social Proof</Badge>
+                        <Badge variant="outline">Dynamic</Badge>
+                      </div>
+                      <div className="text-xs text-gray-500">
+                        {domains.filter(d => d.isSold).length} domains sold
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <Button className="w-full mt-4">
+                    <Plus className="h-4 w-4 mr-2" />
+                    Add New Section
+                  </Button>
                 </CardContent>
               </Card>
             </TabsContent>
@@ -1116,19 +1270,114 @@ export default function SimpleAdminPage() {
                     Update your domain guide content and resources
                   </CardDescription>
                 </CardHeader>
-                <CardContent>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => {
-                      const content = pageContents.find(c => c.pageKey === 'guide');
-                      if (content) {
-                        handleEditContent(content);
-                      }
-                    }}
-                  >
-                    <Pencil className="h-3 w-3 mr-2" />
-                    Edit Guide Content
+                <CardContent className="space-y-6">
+                  <div className="border rounded-md p-4 bg-white hover:shadow-md transition-shadow">
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <h3 className="font-medium mb-2 flex items-center">
+                          <span className="bg-black text-white rounded px-2 py-1 text-xs mr-2">Section 1</span>
+                          Guide Header
+                        </h3>
+                        <p className="text-sm text-gray-500">
+                          Introduction and overview of domain guide resources
+                        </p>
+                      </div>
+                      <div className="flex space-x-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            const content = pageContents.find(c => c.pageKey === 'guide');
+                            if (content) {
+                              handleEditContent(content);
+                            }
+                          }}
+                        >
+                          <Pencil className="h-3 w-3 mr-2" />
+                          Edit
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                        >
+                          <Eye className="h-3 w-3 mr-2" />
+                          Preview
+                        </Button>
+                      </div>
+                    </div>
+                    <div className="mt-4 bg-gray-50 p-3 rounded text-sm">
+                      <div className="font-bold">Current content:</div>
+                      <div className="text-gray-600 mt-1 line-clamp-2">
+                        {pageContents.find(c => c.pageKey === 'guide')?.title || "Domain Guide: Everything You Need to Know"}
+                      </div>
+                    </div>
+                    <Separator className="my-4" />
+                    <div className="flex justify-between items-center">
+                      <div className="flex items-center space-x-2">
+                        <Badge variant="outline">Educational</Badge>
+                        <Badge variant="outline">Primary</Badge>
+                      </div>
+                      <div className="text-xs text-gray-500">
+                        Last updated: {new Date(pageContents.find(c => c.pageKey === 'guide')?.updatedAt || Date.now()).toLocaleDateString()}
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="border rounded-md p-4 bg-white hover:shadow-md transition-shadow">
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <h3 className="font-medium mb-2 flex items-center">
+                          <span className="bg-black text-white rounded px-2 py-1 text-xs mr-2">Section 2</span>
+                          Free Ebook Download
+                        </h3>
+                        <p className="text-sm text-gray-500">
+                          Lead generation section with free domain guide PDF
+                        </p>
+                      </div>
+                      <div className="flex space-x-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            const content = pageContents.find(c => c.pageKey === 'guide-ebook');
+                            if (content) {
+                              handleEditContent(content);
+                            }
+                          }}
+                        >
+                          <Pencil className="h-3 w-3 mr-2" />
+                          Edit
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                        >
+                          <Eye className="h-3 w-3 mr-2" />
+                          Preview
+                        </Button>
+                      </div>
+                    </div>
+                    <div className="mt-4 bg-gray-50 p-3 rounded text-sm">
+                      <div className="font-bold">Current status:</div>
+                      <div className="text-gray-600 mt-1">
+                        {emailSubmissions.length} downloads collected
+                      </div>
+                    </div>
+                    <Separator className="my-4" />
+                    <div className="flex justify-between items-center">
+                      <div className="flex items-center space-x-2">
+                        <Badge variant="outline">CTA</Badge>
+                        <Badge variant="outline">Lead Gen</Badge>
+                      </div>
+                      <div className="text-xs text-gray-500">
+                        Conversion rate: {(emailSubmissions.length / totalViews * 100).toFixed(1)}%
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <Button className="w-full mt-4">
+                    <Plus className="h-4 w-4 mr-2" />
+                    Add New Section
                   </Button>
                 </CardContent>
               </Card>
@@ -1142,19 +1391,52 @@ export default function SimpleAdminPage() {
                     Update your about page content and team information
                   </CardDescription>
                 </CardHeader>
-                <CardContent>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => {
-                      const content = pageContents.find(c => c.pageKey === 'about');
-                      if (content) {
-                        handleEditContent(content);
-                      }
-                    }}
-                  >
-                    <Pencil className="h-3 w-3 mr-2" />
-                    Edit About Content
+                <CardContent className="space-y-6">
+                  <div className="border rounded-md p-4 bg-white hover:shadow-md transition-shadow">
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <h3 className="font-medium mb-2 flex items-center">
+                          <span className="bg-black text-white rounded px-2 py-1 text-xs mr-2">Section 1</span>
+                          Company Story
+                        </h3>
+                        <p className="text-sm text-gray-500">
+                          Main content about your company's mission and history
+                        </p>
+                      </div>
+                      <div className="flex space-x-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            const content = pageContents.find(c => c.pageKey === 'about');
+                            if (content) {
+                              handleEditContent(content);
+                            }
+                          }}
+                        >
+                          <Pencil className="h-3 w-3 mr-2" />
+                          Edit
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                        >
+                          <Eye className="h-3 w-3 mr-2" />
+                          Preview
+                        </Button>
+                      </div>
+                    </div>
+                    <div className="mt-4 bg-gray-50 p-3 rounded text-sm">
+                      <div className="font-bold">Current content:</div>
+                      <div className="text-gray-600 mt-1 line-clamp-2">
+                        {pageContents.find(c => c.pageKey === 'about')?.title || "About Domain Name Guide"}
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <Button className="w-full mt-4">
+                    <Plus className="h-4 w-4 mr-2" />
+                    Add New Section
                   </Button>
                 </CardContent>
               </Card>
@@ -1168,19 +1450,52 @@ export default function SimpleAdminPage() {
                     Update your contact information and form settings
                   </CardDescription>
                 </CardHeader>
-                <CardContent>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => {
-                      const content = pageContents.find(c => c.pageKey === 'contact');
-                      if (content) {
-                        handleEditContent(content);
-                      }
-                    }}
-                  >
-                    <Pencil className="h-3 w-3 mr-2" />
-                    Edit Contact Information
+                <CardContent className="space-y-6">
+                  <div className="border rounded-md p-4 bg-white hover:shadow-md transition-shadow">
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <h3 className="font-medium mb-2 flex items-center">
+                          <span className="bg-black text-white rounded px-2 py-1 text-xs mr-2">Section 1</span>
+                          Contact Information
+                        </h3>
+                        <p className="text-sm text-gray-500">
+                          Company contact details and inquiry form
+                        </p>
+                      </div>
+                      <div className="flex space-x-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            const content = pageContents.find(c => c.pageKey === 'contact');
+                            if (content) {
+                              handleEditContent(content);
+                            }
+                          }}
+                        >
+                          <Pencil className="h-3 w-3 mr-2" />
+                          Edit
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                        >
+                          <Eye className="h-3 w-3 mr-2" />
+                          Preview
+                        </Button>
+                      </div>
+                    </div>
+                    <div className="mt-4 bg-gray-50 p-3 rounded text-sm">
+                      <div className="font-bold">Current content:</div>
+                      <div className="text-gray-600 mt-1 line-clamp-2">
+                        {pageContents.find(c => c.pageKey === 'contact')?.title || "Get in Touch"}
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <Button className="w-full mt-4">
+                    <Plus className="h-4 w-4 mr-2" />
+                    Add New Section
                   </Button>
                 </CardContent>
               </Card>
@@ -1194,48 +1509,129 @@ export default function SimpleAdminPage() {
                     Edit elements that appear on all pages like header and footer
                   </CardDescription>
                 </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    <div className="border rounded-md p-4">
-                      <h3 className="font-medium mb-2">Header Navigation</h3>
-                      <p className="text-sm text-gray-500">
-                        Edit your main menu links and header appearance
-                      </p>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="mt-2"
-                        onClick={() => {
-                          const content = pageContents.find(c => c.pageKey === 'global-header');
-                          if (content) {
-                            handleEditContent(content);
-                          }
-                        }}
-                      >
-                        <Pencil className="h-3 w-3 mr-2" />
-                        Edit Header
-                      </Button>
+                <CardContent className="space-y-6">
+                  <div className="border rounded-md p-4 bg-white hover:shadow-md transition-shadow">
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <h3 className="font-medium mb-2 flex items-center">
+                          <span className="bg-black text-white rounded px-2 py-1 text-xs mr-2">Global</span>
+                          Header Navigation
+                        </h3>
+                        <p className="text-sm text-gray-500">
+                          Main menu links and site logo appearance
+                        </p>
+                      </div>
+                      <div className="flex space-x-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            const content = pageContents.find(c => c.pageKey === 'global-header');
+                            if (content) {
+                              handleEditContent(content);
+                            }
+                          }}
+                        >
+                          <Pencil className="h-3 w-3 mr-2" />
+                          Edit
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                        >
+                          <Eye className="h-3 w-3 mr-2" />
+                          Preview
+                        </Button>
+                      </div>
                     </div>
-                    
-                    <div className="border rounded-md p-4">
-                      <h3 className="font-medium mb-2">Footer Content</h3>
-                      <p className="text-sm text-gray-500">
-                        Update your footer links, copyright text and social media
-                      </p>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="mt-2"
-                        onClick={() => {
-                          const content = pageContents.find(c => c.pageKey === 'global-footer');
-                          if (content) {
-                            handleEditContent(content);
-                          }
-                        }}
-                      >
-                        <Pencil className="h-3 w-3 mr-2" />
-                        Edit Footer
-                      </Button>
+                    <div className="mt-4 bg-gray-50 p-3 rounded text-sm border-l-2 border-black pl-4">
+                      <div className="font-bold">Current navigation:</div>
+                      <div className="text-gray-600 mt-1 flex space-x-4">
+                        <span>Home</span>
+                        <span>Guide</span>
+                        <span>About</span>
+                        <span>Contact</span>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="border rounded-md p-4 bg-white hover:shadow-md transition-shadow">
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <h3 className="font-medium mb-2 flex items-center">
+                          <span className="bg-black text-white rounded px-2 py-1 text-xs mr-2">Global</span>
+                          Footer Content
+                        </h3>
+                        <p className="text-sm text-gray-500">
+                          Footer links, copyright text, and legal information
+                        </p>
+                      </div>
+                      <div className="flex space-x-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            const content = pageContents.find(c => c.pageKey === 'global-footer');
+                            if (content) {
+                              handleEditContent(content);
+                            }
+                          }}
+                        >
+                          <Pencil className="h-3 w-3 mr-2" />
+                          Edit
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                        >
+                          <Eye className="h-3 w-3 mr-2" />
+                          Preview
+                        </Button>
+                      </div>
+                    </div>
+                    <div className="mt-4 bg-gray-50 p-3 rounded text-sm border-l-2 border-black pl-4">
+                      <div className="font-bold">Current footer:</div>
+                      <div className="text-gray-600 mt-1">
+                        Copyright © {new Date().getFullYear()} Domain Name Guide. All rights reserved.
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="border rounded-md p-4 bg-white hover:shadow-md transition-shadow">
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <h3 className="font-medium mb-2 flex items-center">
+                          <span className="bg-black text-white rounded px-2 py-1 text-xs mr-2">Global</span>
+                          Theme & Brand Settings
+                        </h3>
+                        <p className="text-sm text-gray-500">
+                          Colors, typography, and site-wide design elements
+                        </p>
+                      </div>
+                      <div className="flex space-x-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            const content = pageContents.find(c => c.pageKey === 'global-theme');
+                            if (content) {
+                              handleEditContent(content);
+                            }
+                          }}
+                        >
+                          <Pencil className="h-3 w-3 mr-2" />
+                          Edit
+                        </Button>
+                      </div>
+                    </div>
+                    <div className="mt-4 flex space-x-4">
+                      <div className="w-8 h-8 rounded-full bg-black"></div>
+                      <div className="w-8 h-8 rounded-full bg-white border"></div>
+                      <div className="w-8 h-8 rounded-full bg-green-500"></div>
+                      <div className="w-8 h-8 rounded-full bg-gray-200"></div>
+                    </div>
+                    <div className="text-xs mt-2 text-gray-500">
+                      Primary color palette
                     </div>
                   </div>
                 </CardContent>
