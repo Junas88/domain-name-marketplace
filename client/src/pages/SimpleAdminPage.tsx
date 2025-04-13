@@ -721,6 +721,34 @@ export default function SimpleAdminPage() {
     // Find existing content or prepare to create new content
     const content = pageContents.find(c => c.pageKey === pageKey);
     
+    // Special case for contact-info with pre-filled template for Call Us, Email Us, Visit Us
+    if (pageKey === 'contact-info') {
+      const existingContent = content?.content || "";
+      const templateContent = existingContent.length > 0 ? existingContent : 
+`Email Us
+support@domainnameguide.com
+
+Call Us
++1 (555) 123-4567
+
+Visit Us
+123 Domain Street, Suite 100
+New York, NY 10001`;
+      
+      setEditingContent(content || null);
+      setDialogTitle(content ? 'Edit Contact Information' : 'Add Contact Information');
+      contentForm.reset({
+        pageKey: 'contact-info',
+        title: content?.title || 'Contact Information',
+        content: templateContent,
+        metaTitle: content?.metaTitle || "",
+        metaDescription: content?.metaDescription || "",
+      });
+      setContentDialogOpen(true);
+      console.log(`Editing content for page key: ${pageKey}`);
+      return;
+    }
+    
     if (content) {
       // Edit existing content
       setEditingContent(content);
