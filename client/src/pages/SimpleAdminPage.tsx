@@ -1024,43 +1024,323 @@ export default function SimpleAdminPage() {
               </DialogHeader>
               <Form {...contentForm}>
                 <form onSubmit={contentForm.handleSubmit(onContentSubmit)} className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <FormField
+                      control={contentForm.control}
+                      name="title"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Page Title</FormLabel>
+                          <FormControl>
+                            <Input {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={contentForm.control}
+                      name="metaTitle"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Meta Title (SEO)</FormLabel>
+                          <FormControl>
+                            <Input {...field} />
+                          </FormControl>
+                          <FormDescription>
+                            Leave empty to use page title
+                          </FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
                   <FormField
                     control={contentForm.control}
-                    name="title"
+                    name="metaDescription"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Page Title</FormLabel>
+                        <FormLabel>Meta Description (SEO)</FormLabel>
                         <FormControl>
-                          <Input {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={contentForm.control}
-                    name="content"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Content</FormLabel>
-                        <FormControl>
-                          <Textarea
-                            {...field}
-                            rows={10}
-                            className="font-mono text-sm"
-                          />
+                          <Textarea {...field} rows={2} />
                         </FormControl>
                         <FormDescription>
-                          HTML content for the page.
+                          Brief description for search engines
                         </FormDescription>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
-                  <DialogFooter>
-                    <Button type="submit">
-                      Update Content
-                    </Button>
+                  <div className="space-y-3">
+                    <div className="bg-gray-50 p-3 rounded-md">
+                      <h4 className="text-sm font-medium mb-2">Editor Tools</h4>
+                      <div className="flex flex-wrap gap-2">
+                        <Button 
+                          type="button" 
+                          variant="outline" 
+                          size="sm"
+                          onClick={() => {
+                            const textarea = document.getElementById('content-textarea') as HTMLTextAreaElement;
+                            if (textarea) {
+                              const start = textarea.selectionStart;
+                              const end = textarea.selectionEnd;
+                              const text = textarea.value;
+                              const selectedText = text.substring(start, end);
+                              const replacement = `<h2>${selectedText}</h2>`;
+                              contentForm.setValue('content', 
+                                text.substring(0, start) + replacement + text.substring(end),
+                                { shouldValidate: true, shouldDirty: true });
+                            }
+                          }}
+                        >
+                          H2
+                        </Button>
+                        <Button 
+                          type="button" 
+                          variant="outline" 
+                          size="sm"
+                          onClick={() => {
+                            const textarea = document.getElementById('content-textarea') as HTMLTextAreaElement;
+                            if (textarea) {
+                              const start = textarea.selectionStart;
+                              const end = textarea.selectionEnd;
+                              const text = textarea.value;
+                              const selectedText = text.substring(start, end);
+                              const replacement = `<h3>${selectedText}</h3>`;
+                              contentForm.setValue('content', 
+                                text.substring(0, start) + replacement + text.substring(end),
+                                { shouldValidate: true, shouldDirty: true });
+                            }
+                          }}
+                        >
+                          H3
+                        </Button>
+                        <Button 
+                          type="button" 
+                          variant="outline" 
+                          size="sm"
+                          onClick={() => {
+                            const textarea = document.getElementById('content-textarea') as HTMLTextAreaElement;
+                            if (textarea) {
+                              const start = textarea.selectionStart;
+                              const end = textarea.selectionEnd;
+                              const text = textarea.value;
+                              const selectedText = text.substring(start, end);
+                              const replacement = `<p>${selectedText}</p>`;
+                              contentForm.setValue('content', 
+                                text.substring(0, start) + replacement + text.substring(end),
+                                { shouldValidate: true, shouldDirty: true });
+                            }
+                          }}
+                        >
+                          Paragraph
+                        </Button>
+                        <Button 
+                          type="button" 
+                          variant="outline" 
+                          size="sm"
+                          onClick={() => {
+                            const textarea = document.getElementById('content-textarea') as HTMLTextAreaElement;
+                            if (textarea) {
+                              const start = textarea.selectionStart;
+                              const end = textarea.selectionEnd;
+                              const text = textarea.value;
+                              const selectedText = text.substring(start, end);
+                              const replacement = `<strong>${selectedText}</strong>`;
+                              contentForm.setValue('content', 
+                                text.substring(0, start) + replacement + text.substring(end),
+                                { shouldValidate: true, shouldDirty: true });
+                            }
+                          }}
+                        >
+                          Bold
+                        </Button>
+                        <Button 
+                          type="button" 
+                          variant="outline" 
+                          size="sm"
+                          onClick={() => {
+                            const textarea = document.getElementById('content-textarea') as HTMLTextAreaElement;
+                            if (textarea) {
+                              const start = textarea.selectionStart;
+                              const end = textarea.selectionEnd;
+                              const text = textarea.value;
+                              const selectedText = text.substring(start, end);
+                              const replacement = `<em>${selectedText}</em>`;
+                              contentForm.setValue('content', 
+                                text.substring(0, start) + replacement + text.substring(end),
+                                { shouldValidate: true, shouldDirty: true });
+                            }
+                          }}
+                        >
+                          Italic
+                        </Button>
+                        <Button 
+                          type="button" 
+                          variant="outline" 
+                          size="sm"
+                          onClick={() => {
+                            const textarea = document.getElementById('content-textarea') as HTMLTextAreaElement;
+                            if (textarea) {
+                              const start = textarea.selectionStart;
+                              const end = textarea.selectionEnd;
+                              const text = textarea.value;
+                              const selectedText = text.substring(start, end);
+                              const replacement = `<a href="#">${selectedText}</a>`;
+                              contentForm.setValue('content', 
+                                text.substring(0, start) + replacement + text.substring(end),
+                                { shouldValidate: true, shouldDirty: true });
+                            }
+                          }}
+                        >
+                          Link
+                        </Button>
+                        <Button 
+                          type="button" 
+                          variant="outline" 
+                          size="sm"
+                          onClick={() => {
+                            const textarea = document.getElementById('content-textarea') as HTMLTextAreaElement;
+                            if (textarea) {
+                              const start = textarea.selectionStart;
+                              const end = textarea.selectionEnd;
+                              const text = textarea.value;
+                              const selectedText = text.substring(start, end);
+                              const replacement = `<ul>\n  <li>${selectedText || 'List item'}</li>\n  <li>List item</li>\n</ul>`;
+                              contentForm.setValue('content', 
+                                text.substring(0, start) + replacement + text.substring(end),
+                                { shouldValidate: true, shouldDirty: true });
+                            }
+                          }}
+                        >
+                          List
+                        </Button>
+                        <Button 
+                          type="button" 
+                          variant="outline" 
+                          size="sm"
+                          onClick={() => {
+                            const textarea = document.getElementById('content-textarea') as HTMLTextAreaElement;
+                            if (textarea) {
+                              const start = textarea.selectionStart;
+                              const end = textarea.selectionEnd;
+                              const text = textarea.value;
+                              const selectedText = text.substring(start, end);
+                              const replacement = `<div class="bg-gray-100 p-4 rounded-md shadow-sm my-4">\n  ${selectedText || 'Content box'}\n</div>`;
+                              contentForm.setValue('content', 
+                                text.substring(0, start) + replacement + text.substring(end),
+                                { shouldValidate: true, shouldDirty: true });
+                            }
+                          }}
+                        >
+                          Box
+                        </Button>
+                        <Button 
+                          type="button" 
+                          variant="outline" 
+                          size="sm"
+                          onClick={() => {
+                            const textarea = document.getElementById('content-textarea') as HTMLTextAreaElement;
+                            if (textarea) {
+                              const start = textarea.selectionStart;
+                              const end = textarea.selectionEnd;
+                              const text = textarea.value;
+                              const replacement = `<img src="/placeholder-image.jpg" alt="Description" class="rounded-md my-4 w-full" />`;
+                              contentForm.setValue('content', 
+                                text.substring(0, start) + replacement + text.substring(end),
+                                { shouldValidate: true, shouldDirty: true });
+                            }
+                          }}
+                        >
+                          Image
+                        </Button>
+                      </div>
+                    </div>
+
+                    <FormField
+                      control={contentForm.control}
+                      name="content"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Content</FormLabel>
+                          <FormControl>
+                            <Textarea
+                              {...field}
+                              id="content-textarea"
+                              rows={12}
+                              className="font-mono text-sm"
+                            />
+                          </FormControl>
+                          <FormDescription>
+                            HTML content for the page. Use the editor tools above to format your content.
+                          </FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <div className="border rounded-md p-3">
+                      <h4 className="text-sm font-medium mb-2 flex items-center">
+                        <Eye className="h-3 w-3 mr-2" />
+                        Content Preview
+                      </h4>
+                      <div 
+                        className="prose prose-sm max-w-none bg-white p-4 rounded-md border overflow-auto max-h-[300px]"
+                        dangerouslySetInnerHTML={{ __html: contentForm.watch('content') || '<p>No content to preview</p>' }}
+                      />
+                    </div>
+                  </div>
+                  <DialogFooter className="flex justify-between items-center sm:justify-between">
+                    <div className="flex items-center gap-2">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          // Reset to original content if editing
+                          if (editingContent) {
+                            contentForm.reset({
+                              pageKey: editingContent.pageKey,
+                              title: editingContent.title || "",
+                              content: editingContent.content || "",
+                              metaTitle: editingContent.metaTitle || "",
+                              metaDescription: editingContent.metaDescription || "",
+                            });
+                          } else {
+                            contentForm.reset({
+                              pageKey: contentForm.getValues("pageKey"),
+                              title: "",
+                              content: "",
+                              metaTitle: "",
+                              metaDescription: "",
+                            });
+                          }
+                        }}
+                      >
+                        Reset
+                      </Button>
+                      <Button 
+                        type="button" 
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          if (editingContent) {
+                            window.open(`/${editingContent.pageKey}`, '_blank');
+                          }
+                        }}
+                        disabled={!editingContent}
+                      >
+                        <ExternalLink className="h-3 w-3 mr-2" />
+                        View Page
+                      </Button>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Button type="submit" size="default">
+                        {editingContent ? 'Update Content' : 'Create Content'}
+                      </Button>
+                    </div>
                   </DialogFooter>
                 </form>
               </Form>
