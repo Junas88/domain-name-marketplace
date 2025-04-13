@@ -6,6 +6,8 @@ import {
   pageContents, type PageContent, type InsertPageContent,
   emailSubmissions, type EmailSubmission, type InsertEmailSubmission,
   seoSettings, type SeoSettings, type InsertSeoSettings,
+  inquiries, type Inquiry, type InsertInquiry, type InquiryStatus,
+  communications, type Communication, type InsertCommunication,
   type SectionContent
 } from "@shared/schema";
 import session from "express-session";
@@ -1254,6 +1256,129 @@ export class MemStorage implements IStorage {
   async deleteSeoSetting(pageKey: string): Promise<boolean> {
     return this.seoSettings.delete(pageKey);
   }
+
+  // Inquiry Management methods implementation
+  async getAllInquiries(): Promise<Inquiry[]> {
+    return Array.from(this.inquiries.values());
+  }
+
+  async getInquiry(id: number): Promise<Inquiry | undefined> {
+    return this.inquiries.get(id);
+  }
+
+  async getInquiriesByDomain(domainId: number): Promise<Inquiry[]> {
+    return Array.from(this.inquiries.values()).filter(inquiry => inquiry.domainId === domainId);
+  }
+
+  async getInquiriesByStatus(status: InquiryStatus): Promise<Inquiry[]> {
+    return Array.from(this.inquiries.values()).filter(inquiry => inquiry.status === status);
+  }
+
+  async getInquiriesByPriority(priority: number): Promise<Inquiry[]> {
+    return Array.from(this.inquiries.values()).filter(inquiry => inquiry.priority === priority);
+  }
+
+  async createInquiry(insertInquiry: InsertInquiry): Promise<Inquiry> {
+    const now = new Date();
+    const inquiry: Inquiry = {
+      id: this.inquiryIdCounter++,
+      ...insertInquiry,
+      createdAt: now,
+      updatedAt: now,
+      lastContactedAt: insertInquiry.status !== 'new' ? now : null,
+    };
+    this.inquiries.set(inquiry.id, inquiry);
+    return inquiry;
+  }
+
+  async updateInquiry(id: number, updates: Partial<InsertInquiry>): Promise<Inquiry | undefined> {
+    const inquiry = this.inquiries.get(id);
+    if (!inquiry) return undefined;
+    
+    const updatedInquiry: Inquiry = {
+      ...inquiry,
+      ...updates,
+      updatedAt: new Date()
+    };
+    
+    this.inquiries.set(id, updatedInquiry);
+    return updatedInquiry;
+  }
+
+  async deleteInquiry(id: number): Promise<boolean> {
+    return this.inquiries.delete(id);
+  }
+
+  async updateInquiryStatus(id: number, status: InquiryStatus): Promise<Inquiry | undefined> {
+    const inquiry = this.inquiries.get(id);
+    if (!inquiry) return undefined;
+    
+    const now = new Date();
+    const updatedInquiry: Inquiry = {
+      ...inquiry,
+      status,
+      updatedAt: now,
+      lastContactedAt: status !== 'new' ? now : inquiry.lastContactedAt
+    };
+    
+    this.inquiries.set(id, updatedInquiry);
+    return updatedInquiry;
+  }
+
+  async updateInquiryPriority(id: number, priority: number): Promise<Inquiry | undefined> {
+    const inquiry = this.inquiries.get(id);
+    if (!inquiry) return undefined;
+    
+    const updatedInquiry: Inquiry = {
+      ...inquiry,
+      priority,
+      updatedAt: new Date()
+    };
+    
+    this.inquiries.set(id, updatedInquiry);
+    return updatedInquiry;
+  }
+
+  // Communications methods implementation
+  async getAllCommunications(): Promise<Communication[]> {
+    return Array.from(this.communications.values());
+  }
+
+  async getCommunicationsByInquiry(inquiryId: number): Promise<Communication[]> {
+    return Array.from(this.communications.values())
+      .filter(comm => comm.inquiryId === inquiryId)
+      .sort((a, b) => a.sentAt.getTime() - b.sentAt.getTime());
+  }
+
+  async createCommunication(insertCommunication: InsertCommunication): Promise<Communication> {
+    const communication: Communication = {
+      id: this.communicationIdCounter++,
+      ...insertCommunication,
+      sentAt: new Date()
+    };
+    
+    this.communications.set(communication.id, communication);
+    
+    // Update the related inquiry's lastContactedAt and status if needed
+    const inquiry = this.inquiries.get(communication.inquiryId);
+    if (inquiry) {
+      inquiry.lastContactedAt = communication.sentAt;
+      
+      // If inquiry is new and we're responding, change to in_progress
+      if (inquiry.status === 'new' && communication.direction === 'outgoing') {
+        inquiry.status = 'in_progress';
+      }
+      
+      inquiry.updatedAt = communication.sentAt;
+      this.inquiries.set(inquiry.id, inquiry);
+    }
+    
+    return communication;
+  }
+
+  async deleteCommunication(id: number): Promise<boolean> {
+    return this.communications.delete(id);
+  }
 }
 
 export class DatabaseStorage implements IStorage {
@@ -1620,6 +1745,130 @@ export class DatabaseStorage implements IStorage {
   async deleteSeoSetting(pageKey: string): Promise<boolean> {
     await db.delete(seoSettings)
       .where(eq(seoSettings.pageKey, pageKey));
+    return true;
+  }
+
+  // Inquiry Management methods implementation
+  async getAllInquiries(): Promise<Inquiry[]> {
+    return await db.select()
+      .from(inquiries)
+      .orderBy(desc(inquiries.createdAt));
+  }
+
+  async getInquiry(id: number): Promise<Inquiry | undefined> {
+    const [inquiry] = await db.select()
+      .from(inquiries)
+      .where(eq(inquiries.id, id));
+    return inquiry;
+  }
+
+  async getInquiriesByDomain(domainId: number): Promise<Inquiry[]> {
+    return await db.select()
+      .from(inquiries)
+      .where(eq(inquiries.domainId, domainId))
+      .orderBy(desc(inquiries.createdAt));
+  }
+
+  async getInquiriesByStatus(status: InquiryStatus): Promise<Inquiry[]> {
+    return await db.select()
+      .from(inquiries)
+      .where(eq(inquiries.status, status))
+      .orderBy(desc(inquiries.createdAt));
+  }
+
+  async getInquiriesByPriority(priority: number): Promise<Inquiry[]> {
+    return await db.select()
+      .from(inquiries)
+      .where(eq(inquiries.priority, priority))
+      .orderBy(desc(inquiries.createdAt));
+  }
+
+  async createInquiry(insertInquiry: InsertInquiry): Promise<Inquiry> {
+    const [inquiry] = await db.insert(inquiries)
+      .values(insertInquiry)
+      .returning();
+    return inquiry;
+  }
+
+  async updateInquiry(id: number, updates: Partial<InsertInquiry>): Promise<Inquiry | undefined> {
+    const [updatedInquiry] = await db.update(inquiries)
+      .set({
+        ...updates,
+        updatedAt: new Date()
+      })
+      .where(eq(inquiries.id, id))
+      .returning();
+    return updatedInquiry;
+  }
+
+  async deleteInquiry(id: number): Promise<boolean> {
+    await db.delete(inquiries).where(eq(inquiries.id, id));
+    return true;
+  }
+
+  async updateInquiryStatus(id: number, status: InquiryStatus): Promise<Inquiry | undefined> {
+    const now = new Date();
+    const [updatedInquiry] = await db.update(inquiries)
+      .set({
+        status,
+        updatedAt: now,
+        lastContactedAt: status !== 'new' ? now : undefined
+      })
+      .where(eq(inquiries.id, id))
+      .returning();
+    return updatedInquiry;
+  }
+
+  async updateInquiryPriority(id: number, priority: number): Promise<Inquiry | undefined> {
+    const [updatedInquiry] = await db.update(inquiries)
+      .set({
+        priority,
+        updatedAt: new Date()
+      })
+      .where(eq(inquiries.id, id))
+      .returning();
+    return updatedInquiry;
+  }
+
+  // Communications methods implementation
+  async getAllCommunications(): Promise<Communication[]> {
+    return await db.select()
+      .from(communications)
+      .orderBy(desc(communications.sentAt));
+  }
+
+  async getCommunicationsByInquiry(inquiryId: number): Promise<Communication[]> {
+    return await db.select()
+      .from(communications)
+      .where(eq(communications.inquiryId, inquiryId))
+      .orderBy(communications.sentAt);
+  }
+
+  async createCommunication(insertCommunication: InsertCommunication): Promise<Communication> {
+    const [communication] = await db.insert(communications)
+      .values(insertCommunication)
+      .returning();
+    
+    // Update the related inquiry's lastContactedAt and status if needed
+    if (insertCommunication.direction === 'outgoing') {
+      const inquiry = await this.getInquiry(insertCommunication.inquiryId);
+      if (inquiry && inquiry.status === 'new') {
+        await this.updateInquiryStatus(inquiry.id, 'in_progress');
+      } else if (inquiry) {
+        await db.update(inquiries)
+          .set({
+            lastContactedAt: new Date(),
+            updatedAt: new Date()
+          })
+          .where(eq(inquiries.id, inquiry.id));
+      }
+    }
+    
+    return communication;
+  }
+
+  async deleteCommunication(id: number): Promise<boolean> {
+    await db.delete(communications).where(eq(communications.id, id));
     return true;
   }
 }
