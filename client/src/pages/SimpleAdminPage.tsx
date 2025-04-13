@@ -994,56 +994,56 @@ export default function SimpleAdminPage() {
             </Button>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-3">
             {pageContents.map((content) => (
               <div 
                 key={content.id} 
                 className="group relative rounded-lg border border-gray-200 bg-white shadow-sm transition-all hover:shadow-md overflow-hidden"
               >
                 {/* Content preview header */}
-                <div className="bg-gray-50 p-4 border-b flex justify-between items-center">
-                  <div className="flex items-center space-x-2">
-                    <FileText className="h-4 w-4 text-gray-500" />
-                    <h3 className="font-medium text-sm truncate max-w-[200px]">{content.title || content.pageKey}</h3>
+                <div className="bg-gray-50 p-3 border-b flex justify-between items-center">
+                  <div className="flex items-center space-x-1">
+                    <FileText className="h-3 w-3 text-gray-500" />
+                    <h3 className="font-medium text-xs truncate max-w-[120px]">{content.title || content.pageKey}</h3>
                   </div>
-                  <Badge variant="outline" className="bg-white text-xs">
+                  <Badge variant="outline" className="bg-white text-[10px] px-1 py-0 h-5">
                     {content.pageKey}
                   </Badge>
                 </div>
                 
                 {/* Content preview */}
-                <div className="p-4 h-32 overflow-hidden relative">
+                <div className="p-3 h-20 overflow-hidden relative">
                   <div className="prose prose-sm">
                     <div 
-                      className="line-clamp-4 text-sm text-gray-600"
+                      className="line-clamp-3 text-xs text-gray-600"
                       dangerouslySetInnerHTML={{ __html: content.content || '<p class="text-gray-400 italic">No content</p>' }} 
                     />
                   </div>
-                  <div className="absolute inset-x-0 bottom-0 h-12 bg-gradient-to-t from-white to-transparent"></div>
+                  <div className="absolute inset-x-0 bottom-0 h-8 bg-gradient-to-t from-white to-transparent"></div>
                 </div>
                 
                 {/* Footer with metadata and actions */}
-                <div className="p-4 bg-white border-t flex justify-between items-center">
-                  <div className="text-xs text-gray-500">
-                    Updated: {new Date(content.updatedAt).toLocaleDateString()}
+                <div className="p-2 bg-white border-t flex justify-between items-center">
+                  <div className="text-[10px] text-gray-500">
+                    {new Date(content.updatedAt).toLocaleDateString()}
                   </div>
                   <div className="flex space-x-1">
                     <Button
                       variant="ghost"
                       size="sm"
-                      className="h-8 w-8 p-0"
+                      className="h-6 w-6 p-0"
                       onClick={() => window.open(`/${content.pageKey}`, '_blank')}
                     >
-                      <Eye className="h-4 w-4" />
+                      <Eye className="h-3 w-3" />
                       <span className="sr-only">View</span>
                     </Button>
                     <Button
                       variant="ghost"
                       size="sm"
-                      className="h-8 w-8 p-0"
+                      className="h-6 w-6 p-0"
                       onClick={() => handleEditContent(content.pageKey, content.title || 'Page Content')}
                     >
-                      <Pencil className="h-4 w-4" />
+                      <Pencil className="h-3 w-3" />
                       <span className="sr-only">Edit</span>
                     </Button>
                   </div>
@@ -1054,11 +1054,11 @@ export default function SimpleAdminPage() {
                   <Button
                     variant="default"
                     size="sm"
-                    className="bg-white text-black hover:bg-gray-100"
+                    className="bg-white text-black hover:bg-gray-100 h-7 text-xs px-2"
                     onClick={() => handleEditContent(content.pageKey, content.title || 'Page Content')}
                   >
-                    <Pencil className="h-4 w-4 mr-2" />
-                    Edit Content
+                    <Pencil className="h-3 w-3 mr-1" />
+                    Edit
                   </Button>
                 </div>
               </div>
