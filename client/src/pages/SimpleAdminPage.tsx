@@ -1381,196 +1381,266 @@ export default function SimpleAdminPage() {
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">
-                  <div className="border rounded-md p-4 bg-white hover:shadow-md transition-shadow">
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <h3 className="font-medium mb-2 flex items-center">
-                          <span className="bg-black text-white rounded px-2 py-1 text-xs mr-2">Section 1</span>
-                          Hero Section
-                        </h3>
-                        <p className="text-sm text-gray-500">
-                          Main banner with headline, subheading, and call-to-action button
+                  <div className="group relative overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm transition-all hover:shadow-md">
+                    {/* Status indicator */}
+                    <div className="absolute right-3 top-3 z-10 flex items-center space-x-1">
+                      <span className="h-2 w-2 rounded-full bg-green-500"></span>
+                      <span className="text-xs font-medium text-gray-500">Active</span>
+                    </div>
+                    
+                    {/* Section number badge - floating left */}
+                    <div className="absolute left-0 top-4 bg-black px-2 py-1 text-xs font-semibold text-white shadow-md">
+                      Section 1
+                    </div>
+                    
+                    {/* Content preview */}
+                    <div className="relative h-32 w-full overflow-hidden bg-gray-100">
+                      <div className="absolute inset-0 bg-gradient-to-b from-transparent to-gray-100 opacity-60"></div>
+                      <div className="h-full w-full p-8 pt-12">
+                        <h4 className="text-lg font-bold">
+                          {pageContents.find(c => c.pageKey === 'home-hero')?.title || "Premium Domain Names For Your Business"}
+                        </h4>
+                        <p className="mt-2 text-sm text-gray-600 line-clamp-2">
+                          {pageContents.find(c => c.pageKey === 'home-hero')?.content?.replace(/<[^>]*>/g, ' ').substring(0, 100) || "Main banner with headline, subheading, and call-to-action button"}...
                         </p>
                       </div>
-                      <div className="flex space-x-2">
+                      
+                      {/* Hover overlay with quick actions */}
+                      <div className="absolute inset-0 flex items-center justify-center bg-black/5 opacity-0 transition-opacity group-hover:opacity-100">
                         <Button
-                          variant="outline"
+                          variant="default"
                           size="sm"
+                          className="bg-white text-black hover:bg-gray-100"
                           onClick={() => {
                             handleEditContent('home-hero', 'Premium Domain Names For Your Business');
                           }}
                         >
-                          <Pencil className="h-3 w-3 mr-2" />
-                          Edit
+                          <Pencil className="h-4 w-4 mr-2" />
+                          Edit Content
                         </Button>
-                        <Button
-                          variant="ghost"
-                          size="sm"
+                      </div>
+                    </div>
+                    
+                    {/* Footer with metadata */}
+                    <div className="px-4 py-3">
+                      <div className="flex items-center justify-between">
+                        <h3 className="text-sm font-medium">Hero Section</h3>
+                        <div className="flex items-center space-x-2">
+                          <Badge variant="outline" className="bg-gray-50">Hero</Badge>
+                          <Badge variant="outline" className="bg-gray-50">Primary</Badge>
+                        </div>
+                      </div>
+                      
+                      <div className="mt-3 flex items-center justify-between">
+                        <div className="text-xs text-gray-500">
+                          Last updated: {new Date(pageContents.find(c => c.pageKey === 'home-hero')?.updatedAt || Date.now()).toLocaleDateString()}
+                        </div>
+                        <Button 
+                          variant="ghost" 
+                          size="sm" 
+                          className="h-8 px-2 text-xs"
+                          onClick={() => window.open('/', '_blank')}
                         >
-                          <Eye className="h-3 w-3 mr-2" />
+                          <Eye className="h-3 w-3 mr-1" />
                           Preview
                         </Button>
                       </div>
                     </div>
-                    <div className="mt-4 bg-gray-50 p-3 rounded text-sm">
-                      <div className="font-bold">Current content:</div>
-                      <div className="text-gray-600 mt-1 line-clamp-2">
-                        {pageContents.find(c => c.pageKey === 'home-hero')?.title || "Premium Domain Names For Your Business"}
-                      </div>
-                    </div>
-                    <Separator className="my-4" />
-                    <div className="flex justify-between items-center">
-                      <div className="flex items-center space-x-2">
-                        <Badge variant="outline">Hero</Badge>
-                        <Badge variant="outline">Primary</Badge>
-                      </div>
-                      <div className="text-xs text-gray-500">
-                        Last updated: {new Date(pageContents.find(c => c.pageKey === 'home-hero')?.updatedAt || Date.now()).toLocaleDateString()}
-                      </div>
-                    </div>
                   </div>
                   
-                  <div className="border rounded-md p-4 bg-white hover:shadow-md transition-shadow">
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <h3 className="font-medium mb-2 flex items-center">
-                          <span className="bg-black text-white rounded px-2 py-1 text-xs mr-2">Section 2</span>
-                          Featured Domains
-                        </h3>
-                        <p className="text-sm text-gray-500">
-                          Showcase premium domains that visitors see first
+                  <div className="group relative overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm transition-all hover:shadow-md">
+                    {/* Status indicator */}
+                    <div className="absolute right-3 top-3 z-10 flex items-center space-x-1">
+                      <span className="h-2 w-2 rounded-full bg-green-500"></span>
+                      <span className="text-xs font-medium text-gray-500">Dynamic</span>
+                    </div>
+                    
+                    {/* Section number badge - floating left */}
+                    <div className="absolute left-0 top-4 bg-black px-2 py-1 text-xs font-semibold text-white shadow-md">
+                      Section 2
+                    </div>
+                    
+                    {/* Content preview */}
+                    <div className="relative h-32 w-full overflow-hidden bg-gray-100">
+                      <div className="absolute inset-0 bg-gradient-to-b from-transparent to-gray-100 opacity-60"></div>
+                      <div className="h-full w-full p-8 pt-12">
+                        <h4 className="text-lg font-bold">Featured Domains</h4>
+                        <p className="mt-2 text-sm text-gray-600 line-clamp-2">
+                          {domains.filter(d => !d.isSold).slice(0, 3).map(d => d.name).join(", ")} and {Math.min(20, domains.filter(d => !d.isSold).length - 3)} more...
                         </p>
                       </div>
-                      <div className="flex space-x-2">
+                      
+                      {/* Hover overlay with quick actions */}
+                      <div className="absolute inset-0 flex items-center justify-center bg-black/5 opacity-0 transition-opacity group-hover:opacity-100">
                         <Button
-                          variant="outline"
+                          variant="default"
                           size="sm"
+                          className="bg-white text-black hover:bg-gray-100"
                           onClick={() => setActiveTab("domains")}
                         >
-                          <Pencil className="h-3 w-3 mr-2" />
-                          Manage
+                          <Pencil className="h-4 w-4 mr-2" />
+                          Manage Domains
                         </Button>
-                        <Button
-                          variant="ghost"
-                          size="sm"
+                      </div>
+                    </div>
+                    
+                    {/* Footer with metadata */}
+                    <div className="px-4 py-3">
+                      <div className="flex items-center justify-between">
+                        <h3 className="text-sm font-medium">Featured Domains</h3>
+                        <div className="flex items-center space-x-2">
+                          <Badge variant="outline" className="bg-gray-50">Product</Badge>
+                          <Badge variant="outline" className="bg-gray-50">Dynamic</Badge>
+                        </div>
+                      </div>
+                      
+                      <div className="mt-3 flex items-center justify-between">
+                        <div className="text-xs text-gray-500">
+                          {domains.filter(d => !d.isSold).length} domains available
+                        </div>
+                        <Button 
+                          variant="ghost" 
+                          size="sm" 
+                          className="h-8 px-2 text-xs"
+                          onClick={() => window.open('/', '_blank')}
                         >
-                          <Eye className="h-3 w-3 mr-2" />
+                          <Eye className="h-3 w-3 mr-1" />
                           Preview
                         </Button>
                       </div>
                     </div>
-                    <div className="mt-4 bg-gray-50 p-3 rounded text-sm">
-                      <div className="font-bold">Current selection:</div>
-                      <div className="text-gray-600 mt-1">
-                        {domains.filter(d => !d.isSold).slice(0, 3).map(d => d.name).join(", ")} and {Math.min(20, domains.filter(d => !d.isSold).length - 3)} more...
-                      </div>
-                    </div>
-                    <Separator className="my-4" />
-                    <div className="flex justify-between items-center">
-                      <div className="flex items-center space-x-2">
-                        <Badge variant="outline">Product</Badge>
-                        <Badge variant="outline">Dynamic</Badge>
-                      </div>
-                      <div className="text-xs text-gray-500">
-                        {domains.filter(d => !d.isSold).length} domains available
-                      </div>
-                    </div>
                   </div>
                   
-                  <div className="border rounded-md p-4 bg-white hover:shadow-md transition-shadow">
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <h3 className="font-medium mb-2 flex items-center">
-                          <span className="bg-black text-white rounded px-2 py-1 text-xs mr-2">Section 3</span>
-                          Benefits Section
-                        </h3>
-                        <p className="text-sm text-gray-500">
-                          Value proposition and key benefits of using our marketplace
+                  <div className="group relative overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm transition-all hover:shadow-md">
+                    {/* Status indicator */}
+                    <div className="absolute right-3 top-3 z-10 flex items-center space-x-1">
+                      <span className="h-2 w-2 rounded-full bg-green-500"></span>
+                      <span className="text-xs font-medium text-gray-500">Active</span>
+                    </div>
+                    
+                    {/* Section number badge - floating left */}
+                    <div className="absolute left-0 top-4 bg-black px-2 py-1 text-xs font-semibold text-white shadow-md">
+                      Section 3
+                    </div>
+                    
+                    {/* Content preview */}
+                    <div className="relative h-32 w-full overflow-hidden bg-gray-100">
+                      <div className="absolute inset-0 bg-gradient-to-b from-transparent to-gray-100 opacity-60"></div>
+                      <div className="h-full w-full p-8 pt-12">
+                        <h4 className="text-lg font-bold">
+                          {pageContents.find(c => c.pageKey === 'home-benefits')?.title || "Why Choose Domain Name Guide"}
+                        </h4>
+                        <p className="mt-2 text-sm text-gray-600 line-clamp-2">
+                          {pageContents.find(c => c.pageKey === 'home-benefits')?.content?.replace(/<[^>]*>/g, ' ').substring(0, 100) || "Value proposition and key benefits of using our marketplace"}...
                         </p>
                       </div>
-                      <div className="flex space-x-2">
+                      
+                      {/* Hover overlay with quick actions */}
+                      <div className="absolute inset-0 flex items-center justify-center bg-black/5 opacity-0 transition-opacity group-hover:opacity-100">
                         <Button
-                          variant="outline"
+                          variant="default"
                           size="sm"
+                          className="bg-white text-black hover:bg-gray-100"
                           onClick={() => {
                             handleEditContent('home-benefits', 'Why Choose Domain Name Guide');
                           }}
                         >
-                          <Pencil className="h-3 w-3 mr-2" />
-                          Edit
+                          <Pencil className="h-4 w-4 mr-2" />
+                          Edit Content
                         </Button>
-                        <Button
-                          variant="ghost"
-                          size="sm"
+                      </div>
+                    </div>
+                    
+                    {/* Footer with metadata */}
+                    <div className="px-4 py-3">
+                      <div className="flex items-center justify-between">
+                        <h3 className="text-sm font-medium">Benefits Section</h3>
+                        <div className="flex items-center space-x-2">
+                          <Badge variant="outline" className="bg-gray-50">Features</Badge>
+                          <Badge variant="outline" className="bg-gray-50">Secondary</Badge>
+                        </div>
+                      </div>
+                      
+                      <div className="mt-3 flex items-center justify-between">
+                        <div className="text-xs text-gray-500">
+                          Last updated: {new Date(pageContents.find(c => c.pageKey === 'home-benefits')?.updatedAt || Date.now()).toLocaleDateString()}
+                        </div>
+                        <Button 
+                          variant="ghost" 
+                          size="sm" 
+                          className="h-8 px-2 text-xs"
+                          onClick={() => window.open('/#benefits', '_blank')}
                         >
-                          <Eye className="h-3 w-3 mr-2" />
+                          <Eye className="h-3 w-3 mr-1" />
                           Preview
                         </Button>
-                      </div>
-                    </div>
-                    <div className="mt-4 bg-gray-50 p-3 rounded text-sm">
-                      <div className="font-bold">Current content:</div>
-                      <div className="text-gray-600 mt-1 line-clamp-2">
-                        {pageContents.find(c => c.pageKey === 'home-benefits')?.title || "Why Choose Domain Name Guide"}
-                      </div>
-                    </div>
-                    <Separator className="my-4" />
-                    <div className="flex justify-between items-center">
-                      <div className="flex items-center space-x-2">
-                        <Badge variant="outline">Features</Badge>
-                        <Badge variant="outline">Secondary</Badge>
-                      </div>
-                      <div className="text-xs text-gray-500">
-                        Last updated: {new Date(pageContents.find(c => c.pageKey === 'home-benefits')?.updatedAt || Date.now()).toLocaleDateString()}
                       </div>
                     </div>
                   </div>
                   
-                  <div className="border rounded-md p-4 bg-white hover:shadow-md transition-shadow">
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <h3 className="font-medium mb-2 flex items-center">
-                          <span className="bg-black text-white rounded px-2 py-1 text-xs mr-2">Section 4</span>
-                          Recently Sold Domains
-                        </h3>
-                        <p className="text-sm text-gray-500">
-                          Showcase recently sold domains to create urgency
+                  <div className="group relative overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm transition-all hover:shadow-md">
+                    {/* Status indicator */}
+                    <div className="absolute right-3 top-3 z-10 flex items-center space-x-1">
+                      <span className="h-2 w-2 rounded-full bg-green-500"></span>
+                      <span className="text-xs font-medium text-gray-500">Dynamic</span>
+                    </div>
+                    
+                    {/* Section number badge - floating left */}
+                    <div className="absolute left-0 top-4 bg-black px-2 py-1 text-xs font-semibold text-white shadow-md">
+                      Section 4
+                    </div>
+                    
+                    {/* Content preview */}
+                    <div className="relative h-32 w-full overflow-hidden bg-gray-100">
+                      <div className="absolute inset-0 bg-gradient-to-b from-transparent to-gray-100 opacity-60"></div>
+                      <div className="h-full w-full p-8 pt-12">
+                        <h4 className="text-lg font-bold">
+                          {pageContents.find(c => c.pageKey === 'home-recently-sold')?.title || "Gone Fast - See What's Already Sold"}
+                        </h4>
+                        <p className="mt-2 text-sm text-gray-600 line-clamp-2">
+                          {domains.filter(d => d.isSold).slice(0, 3).map(d => d.name).join(", ")} and {Math.max(0, domains.filter(d => d.isSold).length - 3)} more...
                         </p>
                       </div>
-                      <div className="flex space-x-2">
+                      
+                      {/* Hover overlay with quick actions */}
+                      <div className="absolute inset-0 flex items-center justify-center bg-black/5 opacity-0 transition-opacity group-hover:opacity-100">
                         <Button
-                          variant="outline"
+                          variant="default"
                           size="sm"
+                          className="bg-white text-black hover:bg-gray-100"
                           onClick={() => {
                             handleEditContent('home-recently-sold', 'Gone Fast - See What\'s Already Sold');
                           }}
                         >
-                          <Pencil className="h-3 w-3 mr-2" />
-                          Edit
+                          <Pencil className="h-4 w-4 mr-2" />
+                          Edit Content
                         </Button>
-                        <Button
-                          variant="ghost"
-                          size="sm"
+                      </div>
+                    </div>
+                    
+                    {/* Footer with metadata */}
+                    <div className="px-4 py-3">
+                      <div className="flex items-center justify-between">
+                        <h3 className="text-sm font-medium">Recently Sold Domains</h3>
+                        <div className="flex items-center space-x-2">
+                          <Badge variant="outline" className="bg-gray-50">Social Proof</Badge>
+                          <Badge variant="outline" className="bg-gray-50">Dynamic</Badge>
+                        </div>
+                      </div>
+                      
+                      <div className="mt-3 flex items-center justify-between">
+                        <div className="text-xs text-gray-500">
+                          {domains.filter(d => d.isSold).length} domains sold
+                        </div>
+                        <Button 
+                          variant="ghost" 
+                          size="sm" 
+                          className="h-8 px-2 text-xs"
+                          onClick={() => window.open('/#sold', '_blank')}
                         >
-                          <Eye className="h-3 w-3 mr-2" />
+                          <Eye className="h-3 w-3 mr-1" />
                           Preview
                         </Button>
-                      </div>
-                    </div>
-                    <div className="mt-4 bg-gray-50 p-3 rounded text-sm">
-                      <div className="font-bold">Current selection:</div>
-                      <div className="text-gray-600 mt-1">
-                        {domains.filter(d => d.isSold).slice(0, 3).map(d => d.name).join(", ")} and {Math.max(0, domains.filter(d => d.isSold).length - 3)} more...
-                      </div>
-                    </div>
-                    <Separator className="my-4" />
-                    <div className="flex justify-between items-center">
-                      <div className="flex items-center space-x-2">
-                        <Badge variant="outline">Social Proof</Badge>
-                        <Badge variant="outline">Dynamic</Badge>
-                      </div>
-                      <div className="text-xs text-gray-500">
-                        {domains.filter(d => d.isSold).length} domains sold
                       </div>
                     </div>
                   </div>
