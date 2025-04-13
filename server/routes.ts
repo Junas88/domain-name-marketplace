@@ -840,6 +840,129 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Upload ebook file endpoint
+  app.post("/api/admin/upload-ebook", async (req, res) => {
+    try {
+      // Check if user is authenticated and an admin
+      if (!req.isAuthenticated() || !(req.user?.isAdmin)) {
+        return res.status(403).json({ message: "Unauthorized" });
+      }
+      
+      const upload = multer({
+        storage: storage_config,
+        limits: {
+          fileSize: 20 * 1024 * 1024, // 20MB limit for PDFs
+        },
+        fileFilter: (req, file, cb) => {
+          // Only accept PDF files
+          if (file.mimetype === 'application/pdf') {
+            cb(null, true);
+          } else {
+            cb(null, false);
+            return cb(new Error('Only PDF files are allowed'));
+          }
+        }
+      }).single('ebook');
+      
+      upload(req, res, async function(err) {
+        if (err) {
+          console.error("Error uploading file:", err);
+          return res.status(400).json({ error: err.message });
+        }
+        
+        if (!req.file) {
+          return res.status(400).json({ error: 'No file uploaded' });
+        }
+        
+        // Create ebooks directory if it doesn't exist
+        const ebooksDir = path.join(uploadDir, 'ebooks');
+        if (!fs.existsSync(ebooksDir)) {
+          fs.mkdirSync(ebooksDir, { recursive: true });
+        }
+        
+        // Move the file to the ebooks directory
+        const originalPath = req.file.path;
+        const filename = `domain-guide-${Date.now()}.pdf`;
+        const targetPath = path.join(ebooksDir, filename);
+        
+        if (originalPath !== targetPath) {
+          fs.renameSync(originalPath, targetPath);
+        }
+        
+        // Get filesize in MB (rounded to 1 decimal place)
+        const stats = fs.statSync(targetPath);
+        const fileSizeMB = (stats.size / (1024 * 1024)).toFixed(1);
+        
+        // Update the ebook page content
+        const ebookContent = await storage.getPageContent('ebook-section');
+        
+        if (ebookContent) {
+          await storage.updatePageContent('ebook-section', {
+            pageKey: 'ebook-section',
+            content: ebookContent.content,
+            filePath: targetPath,
+            fileName: req.file.originalname,
+            fileSize: fileSizeMB
+          });
+        } else {
+          await storage.createPageContent({
+            pageKey: 'ebook-section',
+            title: 'Domain Name Guide Ebook',
+            content: '<p>The complete guide to domain name acquisition and investment</p>',
+            filePath: targetPath,
+            fileName: req.file.originalname,
+            fileSize: fileSizeMB
+          });
+        }
+        
+        res.json({ 
+          success: true,
+          file: {
+            path: targetPath,
+            name: req.file.originalname,
+            size: fileSizeMB
+          }
+        });
+      });
+    } catch (error) {
+      console.error('Error handling ebook upload:', error);
+      res.status(500).json({ error: error.message });
+    }
+  });
+  
+  // Get ebook info
+  app.get("/api/admin/ebook-info", async (req, res) => {
+    try {
+      // Check if user is authenticated and an admin
+      if (!req.isAuthenticated() || !(req.user?.isAdmin)) {
+        return res.status(403).json({ message: "Unauthorized" });
+      }
+      
+      const ebookContent = await storage.getPageContent('ebook-section');
+      
+      if (!ebookContent || !ebookContent.filePath) {
+        return res.json({ 
+          exists: false,
+          downloadCount: await storage.getAllEmailSubmissions().then(submissions => submissions.length)
+        });
+      }
+      
+      // Check if file exists
+      const fileExists = fs.existsSync(ebookContent.filePath);
+      
+      res.json({
+        exists: fileExists,
+        fileName: ebookContent.fileName || 'Domain Name Guide.pdf',
+        filePath: ebookContent.filePath,
+        fileSize: ebookContent.fileSize || '0',
+        downloadCount: await storage.getAllEmailSubmissions().then(submissions => submissions.length)
+      });
+    } catch (error) {
+      console.error('Error getting ebook info:', error);
+      res.status(500).json({ error: error.message });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }
