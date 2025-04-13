@@ -8,7 +8,8 @@ import {
   CircleCheck, Upload, Search, Download, File, Save,
   AlertTriangle, Eye, X, FileText, ExternalLink,
   Layout, ListChecks, Quote, Award, BookOpen, Contact,
-  HelpCircle, Info
+  HelpCircle, Info, BarChart, LineChart, PieChart, 
+  Activity, Clock, Users, ArrowUpRight, ArrowDownRight
 } from "lucide-react";
 import { 
   Domain, PageContent, SeoSettings, Consultation, 
@@ -1752,6 +1753,206 @@ export default function SimpleAdminPage() {
               <p className="mt-1">Uploading a new file will replace the existing one</p>
             </div>
           </div>
+        </TabsContent>
+        
+        {/* ANALYTICS TAB */}
+        <TabsContent value="analytics" className="space-y-4">
+          <h2 className="text-xl font-bold text-black">Page Analytics</h2>
+          
+          {/* Summary Cards */}
+          <div className="grid grid-cols-4 gap-4">
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Total Page Views</CardTitle>
+                <Activity className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">{pageViewsData.reduce((sum, page) => sum + page.views, 0).toLocaleString()}</div>
+                <p className="text-xs text-muted-foreground">
+                  <ArrowUpRight className="mr-1 h-3 w-3 inline" />
+                  +12% from last month
+                </p>
+              </CardContent>
+            </Card>
+            
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Avg. Time on Page</CardTitle>
+                <Clock className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">
+                  {Math.round(pageViewsData.reduce((sum, page) => sum + (page.avgTimeOnPage * page.views), 0) / 
+                  pageViewsData.reduce((sum, page) => sum + page.views, 0))}s
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  <ArrowUpRight className="mr-1 h-3 w-3 inline" />
+                  +5% from last month
+                </p>
+              </CardContent>
+            </Card>
+            
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Domain Views</CardTitle>
+                <Eye className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">{totalViews.toLocaleString()}</div>
+                <p className="text-xs text-muted-foreground">
+                  <ArrowUpRight className="mr-1 h-3 w-3 inline" />
+                  +18% from last month
+                </p>
+              </CardContent>
+            </Card>
+            
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Unique Visitors</CardTitle>
+                <Users className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">{Math.round(pageViewsData.reduce((sum, page) => sum + page.views, 0) * 0.64).toLocaleString()}</div>
+                <p className="text-xs text-muted-foreground">
+                  <ArrowUpRight className="mr-1 h-3 w-3 inline" />
+                  +9% from last month
+                </p>
+              </CardContent>
+            </Card>
+          </div>
+          
+          {/* Page Performance Table */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Page Performance</CardTitle>
+              <CardDescription>
+                Metrics on page views, engagement, and bounce rates
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Page</TableHead>
+                    <TableHead>Page Views</TableHead>
+                    <TableHead>Avg. Time on Page</TableHead>
+                    <TableHead>Bounce Rate</TableHead>
+                    <TableHead>Performance</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {pageViewsData.map((page) => (
+                    <TableRow key={page.page}>
+                      <TableCell className="font-medium">{page.page}</TableCell>
+                      <TableCell>{page.views.toLocaleString()}</TableCell>
+                      <TableCell>{page.avgTimeOnPage}s</TableCell>
+                      <TableCell>{page.bounceRate}%</TableCell>
+                      <TableCell>
+                        <div className="flex items-center">
+                          {page.avgTimeOnPage > 100 ? (
+                            <ArrowUpRight className="h-4 w-4 mr-2 text-green-500" />
+                          ) : (
+                            <ArrowDownRight className="h-4 w-4 mr-2 text-amber-500" />
+                          )}
+                          {page.avgTimeOnPage > 100 ? "Good" : "Needs Improvement"}
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
+          
+          {/* Domain Performance Section */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Domain Performance</CardTitle>
+              <CardDescription>
+                Metrics on domain views, engagement, and conversion rates
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-3 gap-4">
+                <div className="space-y-2">
+                  <h3 className="text-sm font-medium">Domain Views (Total)</h3>
+                  <div className="text-2xl font-bold">{totalViews.toLocaleString()}</div>
+                  <p className="text-xs text-muted-foreground">
+                    Average of {Math.round(totalViews / totalDomains)} views per domain
+                  </p>
+                </div>
+                
+                <div className="space-y-2">
+                  <h3 className="text-sm font-medium">Conversion Rate</h3>
+                  <div className="text-2xl font-bold">{conversionRate.toFixed(1)}%</div>
+                  <p className="text-xs text-muted-foreground">
+                    {soldDomains} domains sold out of {totalDomains}
+                  </p>
+                </div>
+                
+                <div className="space-y-2">
+                  <h3 className="text-sm font-medium">Average Sale Price</h3>
+                  <div className="text-2xl font-bold">${Math.round(averagePrice).toLocaleString()}</div>
+                  <p className="text-xs text-muted-foreground">
+                    Total revenue: ${totalRevenue.toLocaleString()}
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+          
+          {/* Top Performing Domains */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Top Performing Domains</CardTitle>
+              <CardDescription>
+                Domains with the highest view counts
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Domain</TableHead>
+                    <TableHead>Category</TableHead>
+                    <TableHead>Views</TableHead>
+                    <TableHead>Price</TableHead>
+                    <TableHead>Status</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {[...domains]
+                    .sort((a, b) => (b.viewCount || 0) - (a.viewCount || 0))
+                    .slice(0, 5)
+                    .map((domain) => (
+                      <TableRow key={domain.id}>
+                        <TableCell className="font-medium">{domain.name}</TableCell>
+                        <TableCell>
+                          <span className="inline-flex items-center rounded-full px-2 py-1 text-xs font-medium bg-gray-100">
+                            <Tag className="h-3 w-3 mr-1 text-gray-500" />
+                            {domain.category}
+                          </span>
+                        </TableCell>
+                        <TableCell>{domain.viewCount || 0}</TableCell>
+                        <TableCell>${domain.price.toLocaleString()}</TableCell>
+                        <TableCell>
+                          {domain.isSold ? (
+                            <span className="inline-flex items-center rounded-full bg-green-50 px-2 py-1 text-xs font-medium text-green-700">
+                              <CircleCheck className="h-3 w-3 mr-1" />
+                              Sold
+                            </span>
+                          ) : (
+                            <span className="inline-flex items-center rounded-full bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700">
+                              Available
+                            </span>
+                          )}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
         </TabsContent>
       </Tabs>
       
