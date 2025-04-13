@@ -642,6 +642,9 @@ export default function SimpleAdminPage() {
       // Create new content
       createContentMutation.mutate(values);
     }
+    
+    // Log what's happening for debugging
+    console.log(`${editingContent ? 'Updating' : 'Creating'} content for page key: ${values.pageKey}`);
   };
   
   // SEO Form Submit
@@ -667,6 +670,9 @@ export default function SimpleAdminPage() {
     });
     setDomainDialogOpen(true);
   };
+  
+  // Handle editing content
+  // This function is defined further down in the file
   
   // Create page content mutation
   const createContentMutation = useMutation({
@@ -760,6 +766,9 @@ export default function SimpleAdminPage() {
     }
     
     setContentDialogOpen(true);
+    
+    // Log what's happening for debugging
+    console.log(`${content ? 'Editing' : 'Creating'} content for page key: ${pageKey}`);
   };
   
   // Handle editing SEO
@@ -1489,11 +1498,30 @@ export default function SimpleAdminPage() {
         
         {/* WEBSITE EDITOR TAB */}
         <TabsContent value="editor" className="space-y-4">
-          <h2 className="text-xl font-bold text-black">Website Content Editor</h2>
-          <p className="text-gray-500 mb-4">Edit website content sections. Changes will be immediately visible on the site.</p>
+          <div className="flex justify-between items-center">
+            <div>
+              <h2 className="text-xl font-bold text-black">Website Content Editor</h2>
+              <p className="text-gray-500">Edit website content sections. Changes will be immediately visible on the site.</p>
+            </div>
+            <Button onClick={() => {
+              setEditingContent(null);
+              contentForm.reset({
+                pageKey: "",
+                title: "",
+                content: "",
+                metaTitle: "",
+                metaDescription: "",
+              });
+              setDialogTitle("Create New Content Section");
+              setContentDialogOpen(true);
+            }}>
+              <Plus className="h-4 w-4 mr-2" />
+              Create Content
+            </Button>
+          </div>
           
           <div className="space-y-6">
-            {/* Other Pages */}
+            {/* Home Page */}
             <Card>
               <CardHeader>
                 <CardTitle>Other Pages</CardTitle>
