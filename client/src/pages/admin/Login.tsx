@@ -45,8 +45,13 @@ export default function AdminLogin() {
 
   const onSubmit = (data: LoginFormValues) => {
     loginMutation.mutate(data, {
-      onSuccess: () => {
-        window.location.replace("/admin");
+      onSuccess: (userData) => {
+        console.log("Login successful, user data:", userData);
+        if (userData.isAdmin) {
+          navigate("/admin/dashboard");
+        } else {
+          navigate("/login");
+        }
       }
     });
   };
