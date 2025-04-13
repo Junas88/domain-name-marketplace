@@ -2003,7 +2003,17 @@ export default function SimpleAdminPage() {
                           <div className="flex flex-col space-y-2">
                             <div className="flex justify-between items-center">
                               <h4 className="text-sm font-medium">Contact Information Details</h4>
-                              <div className="flex space-x-2">
+                              <div className="flex space-x-2 items-center">
+                                <div className="mr-2">
+                                  <Button 
+                                    variant="outline" 
+                                    size="sm"
+                                    onClick={() => handleEditContent('contact-info', 'Contact Information')}
+                                  >
+                                    <Pencil className="h-4 w-4 mr-2" />
+                                    Edit Contact Info
+                                  </Button>
+                                </div>
                                 <Badge variant="outline" className="text-xs">Call Us</Badge>
                                 <Badge variant="outline" className="text-xs">Email Us</Badge>
                                 <Badge variant="outline" className="text-xs">Visit Us</Badge>
@@ -2026,7 +2036,19 @@ export default function SimpleAdminPage() {
                               </div>
                             </div>
                             <div className="text-xs text-gray-500 italic mt-1">
-                              Format: Use separate lines for email, phone, and address. Add headings like "Call Us", "Email Us", "Visit Us" before each section.
+                              <p><strong>Format your contact information with section headings:</strong></p>
+                              <p className="mt-1">Example:</p>
+                              <pre className="bg-gray-100 p-2 rounded text-xs mt-1">
+Email Us
+support@domainnameguide.com
+
+Call Us
++1 (555) 123-4567
+
+Visit Us
+123 Domain Street, Suite 100
+New York, NY 10001
+                              </pre>
                             </div>
                           </div>
                         </div>
