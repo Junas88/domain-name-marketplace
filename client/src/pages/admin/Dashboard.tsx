@@ -549,7 +549,7 @@ export default function AdminDashboard() {
       </header>
 
       <Tabs defaultValue="domains" value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="grid w-full grid-cols-11 mb-6">
+        <TabsList className="grid w-full grid-cols-4 md:grid-cols-11 mb-6 overflow-x-auto">
           <TabsTrigger value="domains">Domains</TabsTrigger>
           <TabsTrigger value="inquiries">Inquiries</TabsTrigger>
           <TabsTrigger value="analytics">Analytics</TabsTrigger>
