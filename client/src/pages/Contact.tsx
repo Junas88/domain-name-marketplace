@@ -43,19 +43,35 @@ type ContactFormValues = z.infer<typeof contactSchema>;
 export default function Contact() {
   const { toast } = useToast();
   
-  // Fetch contact info from API
-  const { data: contactInfo, refetch } = useQuery<PageContent>({
-    queryKey: ['/api/page-contents/contact-info'],
-    staleTime: 0, // No cache - always fetch fresh data
-    refetchOnMount: true, // Always refetch when component mounts
-    refetchOnWindowFocus: true, // Refetch when window regains focus
-  });
+  // Fetch contact info from API with direct fetch, bypassing React Query cache completely
+  const [contactInfo, setContactInfo] = useState<PageContent | null>(null);
   
-  // Force an immediate refetch when component mounts
+  // Force a direct fetch of the data when the component mounts
   useEffect(() => {
-    console.log("Contact page mounted - refetching contact info");
-    refetch();
-  }, [refetch]);
+    const fetchContactInfo = async () => {
+      try {
+        console.log("Directly fetching contact-info with no caching");
+        const response = await fetch('/api/page-contents/contact-info', {
+          headers: {
+            'Cache-Control': 'no-cache',
+            'Pragma': 'no-cache',
+            'Expires': '0',
+          },
+          // Add a cache-busting query parameter with current timestamp
+          cache: 'no-store'
+        });
+        
+        if (response.ok) {
+          const data = await response.json();
+          setContactInfo(data);
+        }
+      } catch (error) {
+        console.error("Error fetching contact info:", error);
+      }
+    };
+    
+    fetchContactInfo();
+  }, []);
   
   const form = useForm<ContactFormValues>({
     resolver: zodResolver(contactSchema),

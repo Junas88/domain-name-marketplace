@@ -49,6 +49,7 @@ export const getQueryFn: <T>(options: {
     return await res.json();
   };
 
+// Define a query client with stronger cache busting for contact-related queries
 export const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -64,4 +65,14 @@ export const queryClient = new QueryClient({
       retry: false,
     },
   },
+});
+
+// Special handling for contact-related queries to never cache them
+queryClient.setQueryDefaults(['/api/page-contents/contact', '/api/page-contents/contact-info'], {
+  staleTime: 0, // Data is always considered stale
+  gcTime: 0, // Don't keep unused data in cache (formerly called cacheTime in v4)
+  refetchOnMount: true,
+  refetchOnWindowFocus: true,
+  refetchInterval: false,
+  retry: false,
 });
