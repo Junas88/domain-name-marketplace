@@ -10,7 +10,8 @@ import {
   Layout, ListChecks, Quote, Award, BookOpen, Contact,
   HelpCircle, Info, BarChart, LineChart, PieChart, 
   Activity, Clock, Users, ArrowUpRight, ArrowDownRight,
-  Phone, Share2, MessageSquare, RefreshCw, Shield, Mail
+  Phone, Share2, MessageSquare, RefreshCw, Shield, Mail,
+  MapPin
 } from "lucide-react";
 import InquiryManagement from "@/components/admin/InquiryManagement";
 import { 
@@ -27,9 +28,10 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import {
   Dialog,
   DialogContent,
