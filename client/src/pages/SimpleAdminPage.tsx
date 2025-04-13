@@ -6,7 +6,9 @@ import { Button } from "@/components/ui/button";
 import { 
   LogOut, Loader2, Plus, Pencil, Trash, Check, Tag, 
   CircleCheck, Upload, Search, Download, File, Save,
-  AlertTriangle, Eye, X, FileText, ExternalLink
+  AlertTriangle, Eye, X, FileText, ExternalLink,
+  Layout, ListChecks, Quote, Award, BookOpen, Contact,
+  HelpCircle, Info
 } from "lucide-react";
 import { 
   Domain, PageContent, SeoSettings, Consultation, 
@@ -208,7 +210,13 @@ export default function SimpleAdminPage() {
   // Domain mutations
   const createDomainMutation = useMutation({
     mutationFn: async (data: InsertDomain) => {
-      const res = await apiRequest("POST", "/api/admin/domains", { data });
+      const res = await fetch("/api/admin/domains", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
       return await res.json();
     },
     onSuccess: () => {
@@ -730,12 +738,13 @@ export default function SimpleAdminPage() {
       
       {/* Main Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
-        <TabsList className="grid w-full grid-cols-6">
+        <TabsList className="grid w-full grid-cols-7">
           <TabsTrigger value="domains">Domains</TabsTrigger>
           <TabsTrigger value="offers">Offers</TabsTrigger>
           <TabsTrigger value="consultations">Consultations</TabsTrigger>
           <TabsTrigger value="emails">Email Submissions</TabsTrigger>
           <TabsTrigger value="seo">SEO Settings</TabsTrigger>
+          <TabsTrigger value="editor">Website Editor</TabsTrigger>
           <TabsTrigger value="ebooks">Ebook Files</TabsTrigger>
         </TabsList>
         
@@ -1091,6 +1100,217 @@ export default function SimpleAdminPage() {
         {/* PAGE CONTENT TAB */}
         
         {/* WEBSITE EDITOR TAB */}
+        <TabsContent value="editor" className="space-y-4">
+          <h2 className="text-xl font-bold text-black">Website Content Editor</h2>
+          <p className="text-gray-500 mb-4">Edit website content sections. Changes will be immediately visible on the site.</p>
+          
+          <div className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Homepage Sections</CardTitle>
+                <CardDescription>Edit main sections of the homepage</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <Button 
+                    variant="outline"
+                    className="h-auto py-6 flex flex-col items-center justify-center"
+                    onClick={() => handleEditContent('home-hero', 'Homepage Hero Section')}
+                  >
+                    <Layout className="h-8 w-8 mb-2" />
+                    <span className="font-medium">Hero Section</span>
+                    <span className="text-xs text-gray-500 mt-1">Main banner and headline</span>
+                  </Button>
+                  
+                  <Button 
+                    variant="outline"
+                    className="h-auto py-6 flex flex-col items-center justify-center"
+                    onClick={() => handleEditContent('home-features', 'Homepage Features')}
+                  >
+                    <ListChecks className="h-8 w-8 mb-2" />
+                    <span className="font-medium">Features Section</span>
+                    <span className="text-xs text-gray-500 mt-1">Key features and benefits</span>
+                  </Button>
+                  
+                  <Button 
+                    variant="outline"
+                    className="h-auto py-6 flex flex-col items-center justify-center"
+                    onClick={() => handleEditContent('home-testimonials', 'Homepage Testimonials')}
+                  >
+                    <Quote className="h-8 w-8 mb-2" />
+                    <span className="font-medium">Testimonials</span>
+                    <span className="text-xs text-gray-500 mt-1">Customer reviews and quotes</span>
+                  </Button>
+                  
+                  <Button 
+                    variant="outline"
+                    className="h-auto py-6 flex flex-col items-center justify-center"
+                    onClick={() => handleEditContent('home-why-choose', 'Why Choose Us')}
+                  >
+                    <Award className="h-8 w-8 mb-2" />
+                    <span className="font-medium">Why Choose Us</span>
+                    <span className="text-xs text-gray-500 mt-1">Value proposition section</span>
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+            
+            <Card>
+              <CardHeader>
+                <CardTitle>Domain Guide Pages</CardTitle>
+                <CardDescription>Edit content on domain guides and resources</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <Button 
+                    variant="outline"
+                    className="h-auto py-6 flex flex-col items-center justify-center"
+                    onClick={() => handleEditContent('guide-intro', 'Domain Guide Introduction')}
+                  >
+                    <BookOpen className="h-8 w-8 mb-2" />
+                    <span className="font-medium">Guide Introduction</span>
+                    <span className="text-xs text-gray-500 mt-1">Main introduction and overview</span>
+                  </Button>
+                  
+                  <Button 
+                    variant="outline"
+                    className="h-auto py-6 flex flex-col items-center justify-center"
+                    onClick={() => handleEditContent('guide-tabs', 'Guide Tabs Content')}
+                  >
+                    <FileText className="h-8 w-8 mb-2" />
+                    <span className="font-medium">Guide Tab Content</span>
+                    <span className="text-xs text-gray-500 mt-1">Tab-based guide content</span>
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+            
+            <Card>
+              <CardHeader>
+                <CardTitle>Other Pages</CardTitle>
+                <CardDescription>Edit additional pages on the site</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <Button 
+                    variant="outline"
+                    className="h-auto py-6 flex flex-col items-center justify-center"
+                    onClick={() => handleEditContent('about', 'About Page')}
+                  >
+                    <Info className="h-8 w-8 mb-2" />
+                    <span className="font-medium">About Page</span>
+                    <span className="text-xs text-gray-500 mt-1">Company information</span>
+                  </Button>
+                  
+                  <Button 
+                    variant="outline"
+                    className="h-auto py-6 flex flex-col items-center justify-center"
+                    onClick={() => handleEditContent('contact', 'Contact Page')}
+                  >
+                    <Contact className="h-8 w-8 mb-2" />
+                    <span className="font-medium">Contact Page</span>
+                    <span className="text-xs text-gray-500 mt-1">Contact information</span>
+                  </Button>
+                  
+                  <Button 
+                    variant="outline"
+                    className="h-auto py-6 flex flex-col items-center justify-center"
+                    onClick={() => handleEditContent('faq', 'FAQ Page')}
+                  >
+                    <HelpCircle className="h-8 w-8 mb-2" />
+                    <span className="font-medium">FAQ Page</span>
+                    <span className="text-xs text-gray-500 mt-1">Frequently asked questions</span>
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+          
+          {/* Content Edit Dialog */}
+          <Dialog open={contentDialogOpen} onOpenChange={setContentDialogOpen}>
+            <DialogContent className="sm:max-w-[800px]">
+              <DialogHeader>
+                <DialogTitle>{dialogTitle}</DialogTitle>
+                <DialogDescription>
+                  Update the content for this section. Changes will be published immediately.
+                </DialogDescription>
+              </DialogHeader>
+              <Form {...contentForm}>
+                <form onSubmit={contentForm.handleSubmit(onContentSubmit)} className="space-y-4">
+                  <FormField
+                    control={contentForm.control}
+                    name="title"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Title</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Section Title" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={contentForm.control}
+                    name="content"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Content</FormLabel>
+                        <FormControl>
+                          <Textarea
+                            placeholder="HTML content or plain text..."
+                            {...field}
+                            rows={12}
+                            className="font-mono text-sm"
+                          />
+                        </FormControl>
+                        <FormDescription>
+                          You can use HTML tags to format content. Simple markdown is also supported.
+                        </FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={contentForm.control}
+                    name="metaTitle"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Meta Title (optional)</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Meta title for SEO" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={contentForm.control}
+                    name="metaDescription"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Meta Description (optional)</FormLabel>
+                        <FormControl>
+                          <Textarea
+                            placeholder="Meta description for SEO"
+                            {...field}
+                            rows={2}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <DialogFooter>
+                    <Button type="submit">
+                      {editingContent ? "Update Content" : "Create Content"}
+                    </Button>
+                  </DialogFooter>
+                </form>
+              </Form>
+            </DialogContent>
+          </Dialog>
+        </TabsContent>
         
         {/* EMAIL SUBMISSIONS TAB */}
         <TabsContent value="emails" className="space-y-4">
