@@ -9,7 +9,8 @@ import {
   AlertTriangle, Eye, X, FileText, ExternalLink,
   Layout, ListChecks, Quote, Award, BookOpen, Contact,
   HelpCircle, Info, BarChart, LineChart, PieChart, 
-  Activity, Clock, Users, ArrowUpRight, ArrowDownRight
+  Activity, Clock, Users, ArrowUpRight, ArrowDownRight,
+  Phone, Share2
 } from "lucide-react";
 import { 
   Domain, PageContent, SeoSettings, Consultation, 
@@ -1243,9 +1244,10 @@ export default function SimpleAdminPage() {
                               <div className="mt-1 whitespace-pre-wrap max-h-24 overflow-hidden text-ellipsis border-l-2 border-gray-200 pl-3">
                                 {(() => {
                                   const content = pageContents.find(c => c.pageKey === 'contact')?.content;
-                                  return content?.length > 150 
+                                  if (!content) return '<No content>';
+                                  return content.length > 150 
                                     ? content.substring(0, 150) + '...' 
-                                    : content || '<No content>';
+                                    : content;
                                 })()}
                               </div>
                             </div>
@@ -1298,9 +1300,10 @@ export default function SimpleAdminPage() {
                               <div className="mt-1 whitespace-pre-wrap max-h-24 overflow-hidden text-ellipsis border-l-2 border-gray-200 pl-3">
                                 {(() => {
                                   const content = pageContents.find(c => c.pageKey === 'about')?.content;
-                                  return content?.length > 150 
+                                  if (!content) return '<No content>';
+                                  return content.length > 150 
                                     ? content.substring(0, 150) + '...' 
-                                    : content || '<No content>';
+                                    : content;
                                 })()}
                               </div>
                             </div>
@@ -1353,9 +1356,10 @@ export default function SimpleAdminPage() {
                               <div className="mt-1 whitespace-pre-wrap max-h-24 overflow-hidden text-ellipsis border-l-2 border-gray-200 pl-3">
                                 {(() => {
                                   const content = pageContents.find(c => c.pageKey === 'faq')?.content;
-                                  return content?.length > 150 
+                                  if (!content) return '<No content>';
+                                  return content.length > 150 
                                     ? content.substring(0, 150) + '...' 
-                                    : content || '<No content>';
+                                    : content;
                                 })()}
                               </div>
                             </div>
@@ -1376,6 +1380,160 @@ export default function SimpleAdminPage() {
                   )}
                 </div>
                 
+                {/* Contact Information Section */}
+                <div>
+                  <h3 className="text-lg font-semibold mb-4 flex items-center">
+                    <Phone className="h-5 w-5 mr-2 text-gray-600" />
+                    Contact Information
+                  </h3>
+                  {pageContents.some(content => content.pageKey === 'contact-info') ? (
+                    <Card className="border-gray-200">
+                      <CardHeader className="pb-2">
+                        <div className="flex justify-between items-center">
+                          <CardTitle className="text-base">
+                            {pageContents.find(content => content.pageKey === 'contact-info')?.title || 'Contact Information'}
+                          </CardTitle>
+                          <Button 
+                            variant="outline" 
+                            size="sm"
+                            onClick={() => handleEditContent('contact-info', 'Contact Information')}
+                          >
+                            <Pencil className="h-4 w-4 mr-2" />
+                            Edit
+                          </Button>
+                        </div>
+                        <CardDescription>Phone, address, and business hours</CardDescription>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="rounded-md bg-gray-50 p-3 text-sm font-mono">
+                          <div className="space-y-2">
+                            <div>
+                              <span className="text-gray-500">Content preview:</span>
+                              <div className="mt-1 whitespace-pre-wrap max-h-24 overflow-hidden text-ellipsis border-l-2 border-gray-200 pl-3">
+                                {(() => {
+                                  const content = pageContents.find(c => c.pageKey === 'contact-info')?.content;
+                                  return content?.length ? (content.length > 150 
+                                    ? content.substring(0, 150) + '...' 
+                                    : content) : `Call Us
++1 (800) 123-4567
+
+Monday-Friday, 9am-5pm EST
+
+Visit Us
+123 Domain Street
+San Francisco, CA 94107`;
+                                })()}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ) : (
+                    <Button 
+                      variant="outline"
+                      className="w-full py-6 flex flex-col items-center justify-center border-dashed"
+                      onClick={() => {
+                        // Pre-populate with default content
+                        const defaultContent = `Call Us
++1 (800) 123-4567
+
+Monday-Friday, 9am-5pm EST
+
+Visit Us
+123 Domain Street
+San Francisco, CA 94107`;
+                        
+                        contentForm.reset({
+                          pageKey: 'contact-info',
+                          title: 'Contact Information',
+                          content: defaultContent
+                        });
+                        setDialogTitle('Add Contact Information');
+                        setEditingContent(null);
+                        setContentDialogOpen(true);
+                      }}
+                    >
+                      <Plus className="h-6 w-6 mb-2 text-gray-400" />
+                      <span className="font-medium">Add Contact Information</span>
+                      <span className="text-xs text-gray-500 mt-1">Phone, address, and business hours</span>
+                    </Button>
+                  )}
+                </div>
+                
+                {/* Social Media Links Section */}
+                <div>
+                  <h3 className="text-lg font-semibold mb-4 flex items-center">
+                    <Share2 className="h-5 w-5 mr-2 text-gray-600" />
+                    Social Media Links
+                  </h3>
+                  {pageContents.some(content => content.pageKey === 'social-media') ? (
+                    <Card className="border-gray-200">
+                      <CardHeader className="pb-2">
+                        <div className="flex justify-between items-center">
+                          <CardTitle className="text-base">
+                            {pageContents.find(content => content.pageKey === 'social-media')?.title || 'Social Media Links'}
+                          </CardTitle>
+                          <Button 
+                            variant="outline" 
+                            size="sm"
+                            onClick={() => handleEditContent('social-media', 'Social Media Links')}
+                          >
+                            <Pencil className="h-4 w-4 mr-2" />
+                            Edit
+                          </Button>
+                        </div>
+                        <CardDescription>Links to social media profiles</CardDescription>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="rounded-md bg-gray-50 p-3 text-sm font-mono">
+                          <div className="space-y-2">
+                            <div>
+                              <span className="text-gray-500">Content preview:</span>
+                              <div className="mt-1 whitespace-pre-wrap max-h-24 overflow-hidden text-ellipsis border-l-2 border-gray-200 pl-3">
+                                {(() => {
+                                  const content = pageContents.find(c => c.pageKey === 'social-media')?.content;
+                                  return content?.length ? (content.length > 150 
+                                    ? content.substring(0, 150) + '...' 
+                                    : content) : `Facebook: https://facebook.com/domainnameguide
+Twitter: https://twitter.com/domainnameguide
+LinkedIn: https://linkedin.com/company/domainnameguide
+Instagram: https://instagram.com/domainnameguide`;
+                                })()}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ) : (
+                    <Button 
+                      variant="outline"
+                      className="w-full py-6 flex flex-col items-center justify-center border-dashed"
+                      onClick={() => {
+                        // Pre-populate with default content
+                        const defaultContent = `Facebook: https://facebook.com/domainnameguide
+Twitter: https://twitter.com/domainnameguide
+LinkedIn: https://linkedin.com/company/domainnameguide
+Instagram: https://instagram.com/domainnameguide`;
+                        
+                        contentForm.reset({
+                          pageKey: 'social-media',
+                          title: 'Social Media Links',
+                          content: defaultContent
+                        });
+                        setDialogTitle('Add Social Media Links');
+                        setEditingContent(null);
+                        setContentDialogOpen(true);
+                      }}
+                    >
+                      <Plus className="h-6 w-6 mb-2 text-gray-400" />
+                      <span className="font-medium">Add Social Media Links</span>
+                      <span className="text-xs text-gray-500 mt-1">Connect to your social profiles</span>
+                    </Button>
+                  )}
+                </div>
+                
                 {/* Other Custom Content */}
                 <div>
                   <h3 className="text-lg font-semibold mb-4 flex items-center">
@@ -1389,7 +1547,9 @@ export default function SimpleAdminPage() {
                         !content.pageKey.startsWith('guide-') && 
                         content.pageKey !== 'contact' && 
                         content.pageKey !== 'about' && 
-                        content.pageKey !== 'faq'
+                        content.pageKey !== 'faq' &&
+                        content.pageKey !== 'contact-info' &&
+                        content.pageKey !== 'social-media'
                       )
                       .map(content => (
                         <Card key={content.pageKey} className="border-gray-200">
@@ -1413,9 +1573,9 @@ export default function SimpleAdminPage() {
                                 <div>
                                   <span className="text-gray-500">Content preview:</span>
                                   <div className="mt-1 whitespace-pre-wrap max-h-24 overflow-hidden text-ellipsis border-l-2 border-gray-200 pl-3">
-                                    {content.content?.length > 150 
+                                    {content.content?.length ? (content.content.length > 150 
                                       ? content.content.substring(0, 150) + '...' 
-                                      : content.content || '<No content>'}
+                                      : content.content) : '<No content>'}
                                   </div>
                                 </div>
                               </div>
