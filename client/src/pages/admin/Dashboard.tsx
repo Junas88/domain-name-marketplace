@@ -25,10 +25,15 @@ import {
   TableRow 
 } from "@/components/ui/table";
 import {
+  AlertCircle,
+  BarChart as BarChartIcon,
   Check,
+  DollarSign,
   EyeIcon,
   FileText,
   FileUp,
+  LineChart,
+  Link as LinkIcon,
   Loader2,
   LogOut,
   PenIcon,
@@ -543,7 +548,7 @@ export default function AdminDashboard() {
       </header>
 
       <Tabs defaultValue="domains" value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="grid w-full grid-cols-8 mb-6">
+        <TabsList className="grid w-full grid-cols-11 mb-6">
           <TabsTrigger value="domains">Domains</TabsTrigger>
           <TabsTrigger value="inquiries">Inquiries</TabsTrigger>
           <TabsTrigger value="analytics">Analytics</TabsTrigger>
@@ -552,6 +557,9 @@ export default function AdminDashboard() {
           <TabsTrigger value="content">Page Content</TabsTrigger>
           <TabsTrigger value="emails">Email Submissions</TabsTrigger>
           <TabsTrigger value="seo">SEO Settings</TabsTrigger>
+          <TabsTrigger value="search-console">Search Console</TabsTrigger>
+          <TabsTrigger value="google-analytics">Google Analytics</TabsTrigger>
+          <TabsTrigger value="adsense">AdSense</TabsTrigger>
         </TabsList>
         
         {/* DOMAINS TAB */}
@@ -1612,6 +1620,431 @@ export default function AdminDashboard() {
                   </Table>
                 </div>
               )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+        {/* GOOGLE SEARCH CONSOLE TAB */}
+        <TabsContent value="search-console" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Google Search Console</CardTitle>
+              <CardDescription>Monitor your site's performance in Google search results</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              {/* Connection Status Card */}
+              <div className="rounded-lg border p-6 bg-white">
+                <div className="flex justify-between items-start">
+                  <div className="space-y-1">
+                    <h3 className="font-medium text-lg">Connection Status</h3>
+                    <div className="flex items-center">
+                      <Badge className="bg-amber-100 text-amber-800 hover:bg-amber-100">
+                        <AlertCircle className="h-3 w-3 mr-1" />
+                        Not Connected
+                      </Badge>
+                    </div>
+                    <p className="text-sm text-gray-500 mt-2">
+                      Connect your Google Search Console account to monitor search performance
+                    </p>
+                  </div>
+                  <Button className="bg-[#4285F4] hover:bg-[#3367d6] text-white">
+                    <svg viewBox="0 0 24 24" className="mr-2 h-4 w-4">
+                      <path
+                        fill="currentColor"
+                        d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+                      />
+                      <path
+                        fill="currentColor"
+                        d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+                      />
+                      <path
+                        fill="currentColor"
+                        d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
+                      />
+                      <path
+                        fill="currentColor"
+                        d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
+                      />
+                    </svg>
+                    Connect with Google
+                  </Button>
+                </div>
+              </div>
+              
+              {/* Performance Overview Placeholder */}
+              <div className="rounded-lg border p-6 space-y-4">
+                <div className="flex justify-between items-center">
+                  <h3 className="font-medium text-lg">Performance Overview</h3>
+                  <Select defaultValue="28days">
+                    <SelectTrigger className="w-36">
+                      <SelectValue placeholder="Select period" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="7days">Last 7 days</SelectItem>
+                      <SelectItem value="28days">Last 28 days</SelectItem>
+                      <SelectItem value="3months">Last 3 months</SelectItem>
+                      <SelectItem value="6months">Last 6 months</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                  <Card>
+                    <CardHeader className="pb-2">
+                      <CardTitle className="text-sm font-medium">Total Clicks</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="text-2xl font-bold">--</div>
+                      <p className="text-xs text-gray-500 mt-1">Connect to view data</p>
+                    </CardContent>
+                  </Card>
+                  <Card>
+                    <CardHeader className="pb-2">
+                      <CardTitle className="text-sm font-medium">Total Impressions</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="text-2xl font-bold">--</div>
+                      <p className="text-xs text-gray-500 mt-1">Connect to view data</p>
+                    </CardContent>
+                  </Card>
+                  <Card>
+                    <CardHeader className="pb-2">
+                      <CardTitle className="text-sm font-medium">Average CTR</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="text-2xl font-bold">--</div>
+                      <p className="text-xs text-gray-500 mt-1">Connect to view data</p>
+                    </CardContent>
+                  </Card>
+                  <Card>
+                    <CardHeader className="pb-2">
+                      <CardTitle className="text-sm font-medium">Average Position</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="text-2xl font-bold">--</div>
+                      <p className="text-xs text-gray-500 mt-1">Connect to view data</p>
+                    </CardContent>
+                  </Card>
+                </div>
+                
+                <div className="h-64 w-full flex items-center justify-center bg-gray-50 rounded-md border border-dashed">
+                  <div className="text-center space-y-2">
+                    <LineChart className="mx-auto h-12 w-12 text-gray-300" />
+                    <p className="text-sm text-gray-500">Performance data will appear here after connecting</p>
+                    <Button variant="outline" size="sm">
+                      <LinkIcon className="h-4 w-4 mr-2" />
+                      Connect Now
+                    </Button>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Top Queries Placeholder */}
+              <div className="rounded-lg border p-6">
+                <h3 className="font-medium text-lg mb-4">Top Queries</h3>
+                <div className="overflow-x-auto">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Query</TableHead>
+                        <TableHead>Clicks</TableHead>
+                        <TableHead>Impressions</TableHead>
+                        <TableHead>CTR</TableHead>
+                        <TableHead>Position</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      <TableRow>
+                        <TableCell colSpan={5} className="h-24 text-center">
+                          Connect to Google Search Console to view your top search queries
+                        </TableCell>
+                      </TableRow>
+                    </TableBody>
+                  </Table>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+        
+        {/* GOOGLE ANALYTICS TAB */}
+        <TabsContent value="google-analytics" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Google Analytics</CardTitle>
+              <CardDescription>Track and analyze your website traffic</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              {/* Connection Status Card */}
+              <div className="rounded-lg border p-6 bg-white">
+                <div className="flex justify-between items-start">
+                  <div className="space-y-1">
+                    <h3 className="font-medium text-lg">Connection Status</h3>
+                    <div className="flex items-center">
+                      <Badge className="bg-amber-100 text-amber-800 hover:bg-amber-100">
+                        <AlertCircle className="h-3 w-3 mr-1" />
+                        Not Connected
+                      </Badge>
+                    </div>
+                    <p className="text-sm text-gray-500 mt-2">
+                      Connect your Google Analytics account to track visitor behavior
+                    </p>
+                  </div>
+                  <Button className="bg-[#4285F4] hover:bg-[#3367d6] text-white">
+                    <svg viewBox="0 0 24 24" className="mr-2 h-4 w-4">
+                      <path
+                        fill="currentColor"
+                        d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+                      />
+                      <path
+                        fill="currentColor"
+                        d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+                      />
+                      <path
+                        fill="currentColor"
+                        d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
+                      />
+                      <path
+                        fill="currentColor"
+                        d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
+                      />
+                    </svg>
+                    Connect with Google
+                  </Button>
+                </div>
+              </div>
+              
+              {/* Traffic Overview Placeholder */}
+              <div className="rounded-lg border p-6 space-y-4">
+                <div className="flex justify-between items-center">
+                  <h3 className="font-medium text-lg">Traffic Overview</h3>
+                  <Select defaultValue="7days">
+                    <SelectTrigger className="w-36">
+                      <SelectValue placeholder="Select period" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="1day">Today</SelectItem>
+                      <SelectItem value="7days">Last 7 days</SelectItem>
+                      <SelectItem value="30days">Last 30 days</SelectItem>
+                      <SelectItem value="90days">Last 90 days</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                  <Card>
+                    <CardHeader className="pb-2">
+                      <CardTitle className="text-sm font-medium">Users</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="text-2xl font-bold">--</div>
+                      <p className="text-xs text-gray-500 mt-1">Connect to view data</p>
+                    </CardContent>
+                  </Card>
+                  <Card>
+                    <CardHeader className="pb-2">
+                      <CardTitle className="text-sm font-medium">Sessions</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="text-2xl font-bold">--</div>
+                      <p className="text-xs text-gray-500 mt-1">Connect to view data</p>
+                    </CardContent>
+                  </Card>
+                  <Card>
+                    <CardHeader className="pb-2">
+                      <CardTitle className="text-sm font-medium">Avg. Session Duration</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="text-2xl font-bold">--</div>
+                      <p className="text-xs text-gray-500 mt-1">Connect to view data</p>
+                    </CardContent>
+                  </Card>
+                  <Card>
+                    <CardHeader className="pb-2">
+                      <CardTitle className="text-sm font-medium">Bounce Rate</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="text-2xl font-bold">--</div>
+                      <p className="text-xs text-gray-500 mt-1">Connect to view data</p>
+                    </CardContent>
+                  </Card>
+                </div>
+                
+                <div className="h-64 w-full flex items-center justify-center bg-gray-50 rounded-md border border-dashed">
+                  <div className="text-center space-y-2">
+                    <BarChart className="mx-auto h-12 w-12 text-gray-300" />
+                    <p className="text-sm text-gray-500">Traffic data will appear here after connecting</p>
+                    <Button variant="outline" size="sm">
+                      <LinkIcon className="h-4 w-4 mr-2" />
+                      Connect Now
+                    </Button>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Acquisition Channels Placeholder */}
+              <div className="rounded-lg border p-6">
+                <h3 className="font-medium text-lg mb-4">Acquisition Channels</h3>
+                <div className="overflow-x-auto">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Channel</TableHead>
+                        <TableHead>Users</TableHead>
+                        <TableHead>Sessions</TableHead>
+                        <TableHead>Bounce Rate</TableHead>
+                        <TableHead>Conversion Rate</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      <TableRow>
+                        <TableCell colSpan={5} className="h-24 text-center">
+                          Connect to Google Analytics to view your acquisition channels
+                        </TableCell>
+                      </TableRow>
+                    </TableBody>
+                  </Table>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+        
+        {/* GOOGLE ADSENSE TAB */}
+        <TabsContent value="adsense" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Google AdSense</CardTitle>
+              <CardDescription>Monitor your ad revenue and performance</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              {/* Connection Status Card */}
+              <div className="rounded-lg border p-6 bg-white">
+                <div className="flex justify-between items-start">
+                  <div className="space-y-1">
+                    <h3 className="font-medium text-lg">Connection Status</h3>
+                    <div className="flex items-center">
+                      <Badge className="bg-amber-100 text-amber-800 hover:bg-amber-100">
+                        <AlertCircle className="h-3 w-3 mr-1" />
+                        Not Connected
+                      </Badge>
+                    </div>
+                    <p className="text-sm text-gray-500 mt-2">
+                      Connect your Google AdSense account to track ad performance and revenue
+                    </p>
+                  </div>
+                  <Button className="bg-[#4285F4] hover:bg-[#3367d6] text-white">
+                    <svg viewBox="0 0 24 24" className="mr-2 h-4 w-4">
+                      <path
+                        fill="currentColor"
+                        d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+                      />
+                      <path
+                        fill="currentColor"
+                        d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+                      />
+                      <path
+                        fill="currentColor"
+                        d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
+                      />
+                      <path
+                        fill="currentColor"
+                        d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
+                      />
+                    </svg>
+                    Connect with Google
+                  </Button>
+                </div>
+              </div>
+              
+              {/* Revenue Overview Placeholder */}
+              <div className="rounded-lg border p-6 space-y-4">
+                <div className="flex justify-between items-center">
+                  <h3 className="font-medium text-lg">Revenue Overview</h3>
+                  <Select defaultValue="month">
+                    <SelectTrigger className="w-36">
+                      <SelectValue placeholder="Select period" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="today">Today</SelectItem>
+                      <SelectItem value="week">This Week</SelectItem>
+                      <SelectItem value="month">This Month</SelectItem>
+                      <SelectItem value="year">This Year</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                  <Card>
+                    <CardHeader className="pb-2">
+                      <CardTitle className="text-sm font-medium">Estimated Earnings</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="text-2xl font-bold">$--</div>
+                      <p className="text-xs text-gray-500 mt-1">Connect to view data</p>
+                    </CardContent>
+                  </Card>
+                  <Card>
+                    <CardHeader className="pb-2">
+                      <CardTitle className="text-sm font-medium">Page RPM</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="text-2xl font-bold">$--</div>
+                      <p className="text-xs text-gray-500 mt-1">Connect to view data</p>
+                    </CardContent>
+                  </Card>
+                  <Card>
+                    <CardHeader className="pb-2">
+                      <CardTitle className="text-sm font-medium">Impressions</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="text-2xl font-bold">--</div>
+                      <p className="text-xs text-gray-500 mt-1">Connect to view data</p>
+                    </CardContent>
+                  </Card>
+                  <Card>
+                    <CardHeader className="pb-2">
+                      <CardTitle className="text-sm font-medium">Click-Through Rate</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="text-2xl font-bold">--</div>
+                      <p className="text-xs text-gray-500 mt-1">Connect to view data</p>
+                    </CardContent>
+                  </Card>
+                </div>
+                
+                <div className="h-64 w-full flex items-center justify-center bg-gray-50 rounded-md border border-dashed">
+                  <div className="text-center space-y-2">
+                    <DollarSign className="mx-auto h-12 w-12 text-gray-300" />
+                    <p className="text-sm text-gray-500">Revenue data will appear here after connecting</p>
+                    <Button variant="outline" size="sm">
+                      <LinkIcon className="h-4 w-4 mr-2" />
+                      Connect Now
+                    </Button>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Top Earning Pages Placeholder */}
+              <div className="rounded-lg border p-6">
+                <h3 className="font-medium text-lg mb-4">Top Earning Pages</h3>
+                <div className="overflow-x-auto">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Page</TableHead>
+                        <TableHead>Impressions</TableHead>
+                        <TableHead>Clicks</TableHead>
+                        <TableHead>CTR</TableHead>
+                        <TableHead>Estimated Earnings</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      <TableRow>
+                        <TableCell colSpan={5} className="h-24 text-center">
+                          Connect to Google AdSense to view your top earning pages
+                        </TableCell>
+                      </TableRow>
+                    </TableBody>
+                  </Table>
+                </div>
+              </div>
             </CardContent>
           </Card>
         </TabsContent>
