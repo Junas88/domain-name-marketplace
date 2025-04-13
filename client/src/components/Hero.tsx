@@ -6,6 +6,7 @@ export default function Hero() {
   // Fetch hero content from API
   const { data: heroContent, isLoading } = useQuery<PageContent>({
     queryKey: ['/api/page-contents/hero'],
+    staleTime: 5 * 60 * 1000, // 5 minutes
   });
 
   return (

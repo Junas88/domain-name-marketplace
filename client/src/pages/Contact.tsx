@@ -45,6 +45,7 @@ export default function Contact() {
   // Fetch contact info from API
   const { data: contactInfo } = useQuery<PageContent>({
     queryKey: ['/api/page-contents/contact-info'],
+    staleTime: 5 * 60 * 1000, // 5 minutes
   });
   
   const form = useForm<ContactFormValues>({
