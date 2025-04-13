@@ -414,14 +414,25 @@ export default function SimpleAdminPage() {
       // Invalidate admin page contents cache
       queryClient.invalidateQueries({ queryKey: ['/api/admin/page-contents'] });
       
-      // Invalidate the public API for this specific page content so front-end updates
-      queryClient.invalidateQueries({ queryKey: [`/api/page-contents/${data.pageKey}`] });
-      
-      // Also invalidate any routes that might include this page content
+      // Force invalidate ALL page content queries to ensure the frontend is updated
       queryClient.invalidateQueries({ queryKey: ['/api/page-contents'] });
+      
+      // Invalidate the specific page key for this content
+      if (data && data.pageKey) {
+        queryClient.invalidateQueries({ queryKey: [`/api/page-contents/${data.pageKey}`] });
+      }
+      
+      // Invalidate related queries that might be affected
       queryClient.invalidateQueries({ queryKey: ['/api/seo-settings'] });
       
+      // Hard refetch
       refetchContents();
+      
+      // Force a window reload after a short delay to ensure fresh data on the frontend
+      setTimeout(() => {
+        console.log("Forcing refetch of all queries");
+        queryClient.refetchQueries({ type: 'all' });
+      }, 500);
     },
     onError: (error: Error) => {
       toast({

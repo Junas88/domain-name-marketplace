@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -43,11 +44,18 @@ export default function Contact() {
   const { toast } = useToast();
   
   // Fetch contact info from API
-  const { data: contactInfo } = useQuery<PageContent>({
+  const { data: contactInfo, refetch } = useQuery<PageContent>({
     queryKey: ['/api/page-contents/contact-info'],
-    staleTime: 5 * 60 * 1000, // 5 minutes
+    staleTime: 0, // No cache - always fetch fresh data
     refetchOnMount: true, // Always refetch when component mounts
+    refetchOnWindowFocus: true, // Refetch when window regains focus
   });
+  
+  // Force an immediate refetch when component mounts
+  useEffect(() => {
+    console.log("Contact page mounted - refetching contact info");
+    refetch();
+  }, [refetch]);
   
   const form = useForm<ContactFormValues>({
     resolver: zodResolver(contactSchema),
