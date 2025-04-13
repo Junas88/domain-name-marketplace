@@ -17,9 +17,8 @@ import BuyerProtection from "@/pages/BuyerProtection";
 import EbookPage from "@/pages/EbookPage";
 import EbookSuccess from "@/pages/EbookSuccess";
 import DomainFinderPage from "@/pages/DomainFinderPage";
-import AdminPage from "@/pages/admin/AdminPage";
-import AdminDashboard from "@/pages/admin/AdminDashboard";
-import LoginPage from "@/pages/auth/LoginPage";
+import SimpleAdminPage from "@/pages/SimpleAdminPage";
+import SimpleLoginPage from "@/pages/SimpleLoginPage";
 
 // Enhanced components with SEO metadata
 const HomePage = () => <SeoPageWrapper pageKey="home"><Home /></SeoPageWrapper>;
@@ -52,15 +51,14 @@ function Router() {
       <Route path="/domain-finder" component={DomainFinderWrapper} />
       <Route path="/ebook" component={EbookWrapper} />
       <Route path="/ebook-success" component={EbookSuccessWrapper} />
-      <Route path="/login" component={LoginPage} />
-      {/* Use direct component for stable paths */}
-      <Route path="/admin" component={AdminPage} />
+      <Route path="/login" component={SimpleLoginPage} />
       
-      {/* Use the bridge component for potentially problematic paths in production */}
-      <Route path="/admin/dashboard" component={AdminDashboard} />
-      <Route path="/dashboard" component={AdminDashboard} />
-      <Route path="/admin/index.html" component={AdminDashboard} />
-      <Route path="/dashboard/index.html" component={AdminDashboard} />
+      {/* Use direct, simple admin component for all admin paths */}
+      <Route path="/admin" component={SimpleAdminPage} />
+      <Route path="/admin/dashboard" component={SimpleAdminPage} />
+      <Route path="/dashboard" component={SimpleAdminPage} />
+      <Route path="/admin/index.html" component={SimpleAdminPage} />
+      <Route path="/dashboard/index.html" component={SimpleAdminPage} />
       <Route component={NotFoundWrapper} />
     </Switch>
   );
