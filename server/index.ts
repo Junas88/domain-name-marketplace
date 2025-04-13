@@ -2,6 +2,7 @@ import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 import { seedDatabase } from "./seed";
+import path from 'path'; // Import path module
 
 const app = express();
 app.use(express.json());
@@ -40,7 +41,7 @@ app.use((req, res, next) => {
 (async () => {
   // Seed the database with initial data
   await seedDatabase();
-  
+
   const server = await registerRoutes(app);
 
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
@@ -57,7 +58,9 @@ app.use((req, res, next) => {
   if (app.get("env") === "development") {
     await setupVite(app, server);
   } else {
-    serveStatic(app);
+    // Serve static assets from the 'dist' directory in production
+    const distPath = path.join(__dirname, 'dist'); // Assuming dist is where your built assets are
+    app.use(express.static(distPath)); 
   }
 
   // ALWAYS serve the app on port 5000
