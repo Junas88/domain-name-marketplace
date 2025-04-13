@@ -77,6 +77,24 @@ export interface IStorage {
   createSeoSetting(seoSetting: InsertSeoSettings): Promise<SeoSettings>;
   updateSeoSetting(pageKey: string, updates: Partial<InsertSeoSettings>): Promise<SeoSettings | undefined>;
   deleteSeoSetting(pageKey: string): Promise<boolean>;
+  
+  // Inquiry Management methods
+  getAllInquiries(): Promise<Inquiry[]>;
+  getInquiry(id: number): Promise<Inquiry | undefined>;
+  getInquiriesByDomain(domainId: number): Promise<Inquiry[]>;
+  getInquiriesByStatus(status: InquiryStatus): Promise<Inquiry[]>;
+  getInquiriesByPriority(priority: number): Promise<Inquiry[]>;
+  createInquiry(inquiry: InsertInquiry): Promise<Inquiry>;
+  updateInquiry(id: number, updates: Partial<InsertInquiry>): Promise<Inquiry | undefined>;
+  deleteInquiry(id: number): Promise<boolean>;
+  updateInquiryStatus(id: number, status: InquiryStatus): Promise<Inquiry | undefined>;
+  updateInquiryPriority(id: number, priority: number): Promise<Inquiry | undefined>;
+  
+  // Communication methods
+  getAllCommunications(): Promise<Communication[]>;
+  getCommunicationsByInquiry(inquiryId: number): Promise<Communication[]>;
+  createCommunication(communication: InsertCommunication): Promise<Communication>;
+  deleteCommunication(id: number): Promise<boolean>;
 }
 
 export class MemStorage implements IStorage {
@@ -87,6 +105,8 @@ export class MemStorage implements IStorage {
   private pageContents: Map<string, PageContent>;
   private emailSubmissions: Map<number, EmailSubmission>;
   private seoSettings: Map<string, SeoSettings>;
+  private inquiries: Map<number, Inquiry>;
+  private communications: Map<number, Communication>;
   
   public sessionStore: session.Store;
   
@@ -97,6 +117,8 @@ export class MemStorage implements IStorage {
   private pageContentIdCounter: number;
   private emailSubmissionIdCounter: number;
   private seoSettingIdCounter: number;
+  private inquiryIdCounter: number;
+  private communicationIdCounter: number;
 
   constructor() {
     this.users = new Map();
@@ -106,6 +128,8 @@ export class MemStorage implements IStorage {
     this.pageContents = new Map();
     this.emailSubmissions = new Map();
     this.seoSettings = new Map();
+    this.inquiries = new Map();
+    this.communications = new Map();
     
     this.sessionStore = new MemoryStore({
       checkPeriod: 86400000 // prune expired entries every 24h
@@ -118,6 +142,8 @@ export class MemStorage implements IStorage {
     this.pageContentIdCounter = 1;
     this.emailSubmissionIdCounter = 1;
     this.seoSettingIdCounter = 1;
+    this.inquiryIdCounter = 1;
+    this.communicationIdCounter = 1;
     
     // Initialize with some sample domains
     this.initializeDomains();

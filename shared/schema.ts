@@ -179,3 +179,60 @@ export const insertSeoSettingsSchema = createInsertSchema(seoSettings).pick({
 
 export type InsertSeoSettings = z.infer<typeof insertSeoSettingsSchema>;
 export type SeoSettings = typeof seoSettings.$inferSelect;
+
+// Domain inquiries tracking system
+export const inquiryStatuses = ["new", "in_progress", "negotiating", "closed", "lost"] as const;
+export type InquiryStatus = typeof inquiryStatuses[number];
+
+export const inquiries = pgTable("inquiries", {
+  id: serial("id").primaryKey(),
+  domainId: integer("domain_id").references(() => domains.id).notNull(),
+  name: text("name").notNull(),
+  email: text("email").notNull(),
+  phone: text("phone"),
+  company: text("company"),
+  message: text("message").notNull(),
+  offerAmount: integer("offer_amount"),
+  status: text("status", { enum: inquiryStatuses }).notNull().default("new"),
+  priority: integer("priority").notNull().default(0), // 0=normal, 1=high, 2=urgent
+  notes: text("notes"),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+  lastContactedAt: timestamp("last_contacted_at"),
+  nextFollowUpAt: timestamp("next_follow_up_at"),
+});
+
+export const insertInquirySchema = createInsertSchema(inquiries).pick({
+  domainId: true,
+  name: true,
+  email: true,
+  phone: true,
+  company: true,
+  message: true,
+  offerAmount: true,
+  status: true,
+  priority: true,
+  notes: true,
+  nextFollowUpAt: true,
+});
+
+export type InsertInquiry = z.infer<typeof insertInquirySchema>;
+export type Inquiry = typeof inquiries.$inferSelect;
+
+// Communication history for inquiries
+export const communications = pgTable("communications", {
+  id: serial("id").primaryKey(),
+  inquiryId: integer("inquiry_id").references(() => inquiries.id).notNull(),
+  direction: text("direction", { enum: ["incoming", "outgoing"] }).notNull(),
+  message: text("message").notNull(),
+  sentAt: timestamp("sent_at").notNull().defaultNow(),
+});
+
+export const insertCommunicationSchema = createInsertSchema(communications).pick({
+  inquiryId: true,
+  direction: true,
+  message: true,
+});
+
+export type InsertCommunication = z.infer<typeof insertCommunicationSchema>;
+export type Communication = typeof communications.$inferSelect;
