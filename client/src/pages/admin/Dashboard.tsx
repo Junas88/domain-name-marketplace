@@ -840,6 +840,11 @@ export default function AdminDashboard() {
           </Card>
         </TabsContent>
         
+        {/* INQUIRIES TAB */}
+        <TabsContent value="inquiries" className="space-y-6">
+          <InquiryManagement />
+        </TabsContent>
+        
         {/* ANALYTICS TAB */}
         <TabsContent value="analytics" className="space-y-6">
           {/* Revenue and Conversion Metrics */}
