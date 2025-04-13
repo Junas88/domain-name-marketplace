@@ -1283,6 +1283,8 @@ export class MemStorage implements IStorage {
     const inquiry: Inquiry = {
       id: this.inquiryIdCounter++,
       ...insertInquiry,
+      // Always ensure status is set, default to 'new'
+      status: insertInquiry.status || 'new',
       createdAt: now,
       updatedAt: now,
       lastContactedAt: insertInquiry.status !== 'new' ? now : null,
@@ -1784,8 +1786,14 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createInquiry(insertInquiry: InsertInquiry): Promise<Inquiry> {
+    // Ensure status is set to 'new' if not provided
+    const inquiryData = {
+      ...insertInquiry,
+      status: insertInquiry.status || 'new'
+    };
+    
     const [inquiry] = await db.insert(inquiries)
-      .values(insertInquiry)
+      .values(inquiryData)
       .returning();
     return inquiry;
   }

@@ -966,6 +966,260 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Domain Inquiry Management API routes
+  
+  // Get all inquiries (admin)
+  app.get("/api/admin/inquiries", async (req, res) => {
+    try {
+      // Check if user is authenticated and an admin
+      if (!req.isAuthenticated() || !(req.user?.isAdmin)) {
+        return res.status(403).json({ message: "Unauthorized" });
+      }
+      
+      const inquiries = await storage.getAllInquiries();
+      
+      // Get domain names for each inquiry
+      const inquiriesWithDomainNames = await Promise.all(
+        inquiries.map(async (inquiry) => {
+          const domain = await storage.getDomain(inquiry.domainId);
+          return {
+            ...inquiry,
+            domainName: domain?.name || `Unknown (ID: ${inquiry.domainId})`
+          };
+        })
+      );
+      
+      res.json(inquiriesWithDomainNames);
+    } catch (error) {
+      console.error("Error fetching inquiries:", error);
+      res.status(500).json({ message: "Failed to fetch inquiries" });
+    }
+  });
+  
+  // Get inquiry by ID (admin)
+  app.get("/api/admin/inquiries/:id", async (req, res) => {
+    try {
+      // Check if user is authenticated and an admin
+      if (!req.isAuthenticated() || !(req.user?.isAdmin)) {
+        return res.status(403).json({ message: "Unauthorized" });
+      }
+      
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) {
+        return res.status(400).json({ message: "Invalid inquiry ID" });
+      }
+      
+      const inquiry = await storage.getInquiry(id);
+      if (!inquiry) {
+        return res.status(404).json({ message: "Inquiry not found" });
+      }
+      
+      // Get domain name
+      const domain = await storage.getDomain(inquiry.domainId);
+      
+      // Get communications for this inquiry
+      const communications = await storage.getCommunicationsByInquiry(id);
+      
+      res.json({
+        ...inquiry,
+        domainName: domain?.name || `Unknown (ID: ${inquiry.domainId})`,
+        communications
+      });
+    } catch (error) {
+      console.error("Error fetching inquiry:", error);
+      res.status(500).json({ message: "Failed to fetch inquiry" });
+    }
+  });
+  
+  // Create an inquiry
+  app.post("/api/inquiries", async (req, res) => {
+    try {
+      const inquiryData = insertInquirySchema.parse(req.body);
+      const inquiry = await storage.createInquiry(inquiryData);
+      res.status(201).json(inquiry);
+    } catch (error) {
+      console.error("Error creating inquiry:", error);
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Invalid inquiry data", errors: error.errors });
+      }
+      res.status(500).json({ message: "Failed to create inquiry" });
+    }
+  });
+  
+  // Update inquiry (admin)
+  app.patch("/api/admin/inquiries/:id", async (req, res) => {
+    try {
+      // Check if user is authenticated and an admin
+      if (!req.isAuthenticated() || !(req.user?.isAdmin)) {
+        return res.status(403).json({ message: "Unauthorized" });
+      }
+      
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) {
+        return res.status(400).json({ message: "Invalid inquiry ID" });
+      }
+      
+      const inquiry = await storage.updateInquiry(id, req.body);
+      if (!inquiry) {
+        return res.status(404).json({ message: "Inquiry not found" });
+      }
+      
+      res.json(inquiry);
+    } catch (error) {
+      console.error("Error updating inquiry:", error);
+      res.status(500).json({ message: "Failed to update inquiry" });
+    }
+  });
+  
+  // Update inquiry status (admin)
+  app.patch("/api/admin/inquiries/:id/status", async (req, res) => {
+    try {
+      // Check if user is authenticated and an admin
+      if (!req.isAuthenticated() || !(req.user?.isAdmin)) {
+        return res.status(403).json({ message: "Unauthorized" });
+      }
+      
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) {
+        return res.status(400).json({ message: "Invalid inquiry ID" });
+      }
+      
+      const { status } = req.body;
+      
+      // Validate status
+      if (!["new", "in_progress", "negotiating", "closed", "lost"].includes(status)) {
+        return res.status(400).json({ message: "Invalid status" });
+      }
+      
+      const inquiry = await storage.updateInquiryStatus(id, status as InquiryStatus);
+      if (!inquiry) {
+        return res.status(404).json({ message: "Inquiry not found" });
+      }
+      
+      res.json(inquiry);
+    } catch (error) {
+      console.error("Error updating inquiry status:", error);
+      res.status(500).json({ message: "Failed to update inquiry status" });
+    }
+  });
+  
+  // Update inquiry priority (admin)
+  app.patch("/api/admin/inquiries/:id/priority", async (req, res) => {
+    try {
+      // Check if user is authenticated and an admin
+      if (!req.isAuthenticated() || !(req.user?.isAdmin)) {
+        return res.status(403).json({ message: "Unauthorized" });
+      }
+      
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) {
+        return res.status(400).json({ message: "Invalid inquiry ID" });
+      }
+      
+      const { priority } = req.body;
+      
+      // Validate priority (0=normal, 1=high, 2=urgent)
+      if (![0, 1, 2].includes(priority)) {
+        return res.status(400).json({ message: "Invalid priority" });
+      }
+      
+      const inquiry = await storage.updateInquiryPriority(id, priority);
+      if (!inquiry) {
+        return res.status(404).json({ message: "Inquiry not found" });
+      }
+      
+      res.json(inquiry);
+    } catch (error) {
+      console.error("Error updating inquiry priority:", error);
+      res.status(500).json({ message: "Failed to update inquiry priority" });
+    }
+  });
+  
+  // Create a communication for an inquiry (admin)
+  app.post("/api/admin/inquiries/:id/communications", async (req, res) => {
+    try {
+      // Check if user is authenticated and an admin
+      if (!req.isAuthenticated() || !(req.user?.isAdmin)) {
+        return res.status(403).json({ message: "Unauthorized" });
+      }
+      
+      const inquiryId = parseInt(req.params.id);
+      if (isNaN(inquiryId)) {
+        return res.status(400).json({ message: "Invalid inquiry ID" });
+      }
+      
+      const communicationData = insertCommunicationSchema.parse({
+        ...req.body,
+        inquiryId
+      });
+      
+      const communication = await storage.createCommunication(communicationData);
+      res.status(201).json(communication);
+    } catch (error) {
+      console.error("Error creating communication:", error);
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Invalid communication data", errors: error.errors });
+      }
+      res.status(500).json({ message: "Failed to create communication" });
+    }
+  });
+  
+  // Get inquiries by domain ID
+  app.get("/api/admin/domains/:id/inquiries", async (req, res) => {
+    try {
+      // Check if user is authenticated and an admin
+      if (!req.isAuthenticated() || !(req.user?.isAdmin)) {
+        return res.status(403).json({ message: "Unauthorized" });
+      }
+      
+      const domainId = parseInt(req.params.id);
+      if (isNaN(domainId)) {
+        return res.status(400).json({ message: "Invalid domain ID" });
+      }
+      
+      const inquiries = await storage.getInquiriesByDomain(domainId);
+      res.json(inquiries);
+    } catch (error) {
+      console.error("Error fetching inquiries by domain:", error);
+      res.status(500).json({ message: "Failed to fetch inquiries by domain" });
+    }
+  });
+  
+  // Get inquiries by status
+  app.get("/api/admin/inquiries/by-status/:status", async (req, res) => {
+    try {
+      // Check if user is authenticated and an admin
+      if (!req.isAuthenticated() || !(req.user?.isAdmin)) {
+        return res.status(403).json({ message: "Unauthorized" });
+      }
+      
+      const status = req.params.status as InquiryStatus;
+      
+      // Validate status
+      if (!["new", "in_progress", "negotiating", "closed", "lost"].includes(status)) {
+        return res.status(400).json({ message: "Invalid status" });
+      }
+      
+      const inquiries = await storage.getInquiriesByStatus(status);
+      
+      // Get domain names for each inquiry
+      const inquiriesWithDomainNames = await Promise.all(
+        inquiries.map(async (inquiry) => {
+          const domain = await storage.getDomain(inquiry.domainId);
+          return {
+            ...inquiry,
+            domainName: domain?.name || `Unknown (ID: ${inquiry.domainId})`
+          };
+        })
+      );
+      
+      res.json(inquiriesWithDomainNames);
+    } catch (error) {
+      console.error("Error fetching inquiries by status:", error);
+      res.status(500).json({ message: "Failed to fetch inquiries by status" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }
