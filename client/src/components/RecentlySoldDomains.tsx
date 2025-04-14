@@ -40,43 +40,43 @@ export default function RecentlySoldDomains() {
 
   if (isLoading) {
     return (
-      <div className="relative py-16 mb-10 overflow-hidden bg-white">
-        <div className="max-w-7xl mx-auto px-4 relative z-10">
-          {/* Skeleton for title/subtitle */}
+      <div className="relative py-8 mb-6 overflow-hidden bg-white">
+        <div className="max-w-5xl mx-auto px-4 relative z-10">
+          {/* Skeleton for title/subtitle - smaller */}
           <div className="flex flex-col items-center">
-            <Skeleton className="h-20 w-96 mx-auto mb-4 bg-green-100" />
-            <Skeleton className="h-6 w-[500px] mx-auto mb-16 bg-gray-100" />
+            <Skeleton className="h-10 w-64 mx-auto mb-2 bg-gray-200" />
+            <Skeleton className="h-5 w-[320px] mx-auto mb-8 bg-gray-100" />
           </div>
           
-          {/* Skeleton for carousel navigation */}
+          {/* Skeleton for carousel navigation - more compact */}
           <div className="flex relative">
-            {/* Left arrow skeleton - black circle */}
-            <div className="absolute -left-12 top-1/2 transform -translate-y-1/2 h-16 w-16 z-20">
-              <Skeleton className="h-16 w-16 rounded-full bg-black opacity-70" />
+            {/* Left arrow skeleton - smaller black circle */}
+            <div className="absolute -left-8 top-1/2 transform -translate-y-1/2 h-10 w-10 z-20">
+              <Skeleton className="h-10 w-10 rounded-full bg-black opacity-70" />
             </div>
             
-            {/* Skeleton carousel items */}
+            {/* Skeleton carousel items - smaller */}
             <div className="mx-auto w-full">
               <div className="flex justify-center">
-                <div className="px-8 py-4 text-center">
-                  <Skeleton className="h-14 w-96 mx-auto mb-3 bg-gray-200" />
-                  <Skeleton className="h-10 w-48 mx-auto bg-green-100" />
+                <div className="px-4 py-1 text-center">
+                  <Skeleton className="h-8 w-64 mx-auto mb-1 bg-gray-200" />
+                  <Skeleton className="h-6 w-32 mx-auto bg-green-100" />
                 </div>
               </div>
             </div>
             
-            {/* Right arrow skeleton - black circle */}
-            <div className="absolute -right-12 top-1/2 transform -translate-y-1/2 h-16 w-16 z-20">
-              <Skeleton className="h-16 w-16 rounded-full bg-black opacity-70" />
+            {/* Right arrow skeleton - smaller black circle */}
+            <div className="absolute -right-8 top-1/2 transform -translate-y-1/2 h-10 w-10 z-20">
+              <Skeleton className="h-10 w-10 rounded-full bg-black opacity-70" />
             </div>
           </div>
           
-          {/* Skeleton for dots */}
-          <div className="flex justify-center mt-8 space-x-2">
+          {/* Skeleton for dots - smaller */}
+          <div className="flex justify-center mt-4 space-x-1">
             {[...Array(10)].map((_, i) => (
               <Skeleton 
                 key={i} 
-                className={`w-3 h-3 rounded-full ${i === 0 ? 'bg-green-500' : 'bg-gray-200'}`} 
+                className={`w-2 h-2 rounded-full ${i === 0 ? 'bg-green-500' : 'bg-gray-200'}`} 
               />
             ))}
           </div>
@@ -93,10 +93,10 @@ export default function RecentlySoldDomains() {
     if (Array.isArray(domains)) {
       return domains.map((domain) => (
         <CarouselItem key={domain.id}>
-          <div className="px-8 py-2">
+          <div className="px-4 py-1">
             <div className="text-center">
-              {/* Domain name in large black text */}
-              <h3 className="text-5xl font-black text-black mb-2">
+              {/* Domain name in smaller black text */}
+              <h3 className="text-3xl font-black text-black mb-1">
                 <a 
                   href={`https://${domain.name}`} 
                   target="_blank"
@@ -107,8 +107,8 @@ export default function RecentlySoldDomains() {
                 </a>
               </h3>
               
-              {/* Price in green */}
-              <div className="font-bold text-3xl text-green-500 mt-2">
+              {/* Price in green - smaller */}
+              <div className="font-bold text-xl text-green-500 mt-1">
                 {formatCurrency(domain.price)}
               </div>
             </div>
@@ -120,26 +120,26 @@ export default function RecentlySoldDomains() {
   };
 
   return (
-    <div className="relative py-16 mb-10 overflow-hidden bg-white">
-      <div className="max-w-7xl mx-auto px-4 relative z-10">
-        {/* Main content */}
+    <div className="relative py-8 mb-6 overflow-hidden bg-white">
+      <div className="max-w-5xl mx-auto px-4 relative z-10">
+        {/* Main content - more compact */}
         <div className="flex flex-col items-center">
-          {/* Large heading styled like the image */}
-          <h2 className="text-7xl font-black text-green-500 text-center mb-4">
+          {/* Smaller black heading */}
+          <h2 className="text-4xl font-black text-black text-center mb-2">
             Already Sold
           </h2>
           
-          {/* Subtitle with consistent styling */}
-          <p className="text-black text-xl text-center mb-16 max-w-2xl">
+          {/* Smaller subtitle with less spacing */}
+          <p className="text-black text-base text-center mb-8 max-w-xl">
             use a premium domain and your business will grow faster
           </p>
         </div>
         
         <Carousel className="mx-auto">
           <div className="flex relative">
-            {/* Left arrow - black circle with white arrow */}
-            <CarouselPrevious className="absolute -left-12 top-1/2 transform -translate-y-1/2 bg-black hover:bg-black text-white border-none shadow-lg h-16 w-16 z-20 rounded-full flex items-center justify-center">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            {/* Left arrow - smaller black circle with white arrow */}
+            <CarouselPrevious className="absolute -left-8 top-1/2 transform -translate-y-1/2 bg-black hover:bg-black text-white border-none shadow-md h-10 w-10 z-20 rounded-full flex items-center justify-center">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M15 6L9 12L15 18" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
             </CarouselPrevious>
@@ -148,20 +148,20 @@ export default function RecentlySoldDomains() {
               {carouselItems()}
             </CarouselContent>
             
-            {/* Right arrow - black circle with white arrow */}
-            <CarouselNext className="absolute -right-12 top-1/2 transform -translate-y-1/2 bg-black hover:bg-black text-white border-none shadow-lg h-16 w-16 z-20 rounded-full flex items-center justify-center">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            {/* Right arrow - smaller black circle with white arrow */}
+            <CarouselNext className="absolute -right-8 top-1/2 transform -translate-y-1/2 bg-black hover:bg-black text-white border-none shadow-md h-10 w-10 z-20 rounded-full flex items-center justify-center">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M9 6L15 12L9 18" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
             </CarouselNext>
           </div>
           
-          {/* Dot indicators like in the image */}
-          <div className="flex justify-center mt-8 space-x-2">
+          {/* Smaller dot indicators */}
+          <div className="flex justify-center mt-4 space-x-1">
             {Array.from({ length: Math.min(10, domains.length) }).map((_, i) => (
               <div 
                 key={i} 
-                className={`w-3 h-3 rounded-full ${i === 0 ? 'bg-green-500' : 'bg-gray-200 hover:bg-green-200'}`}
+                className={`w-2 h-2 rounded-full ${i === 0 ? 'bg-green-500' : 'bg-gray-200 hover:bg-green-200'}`}
               />
             ))}
           </div>
