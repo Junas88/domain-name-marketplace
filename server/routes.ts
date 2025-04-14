@@ -18,7 +18,6 @@ import multer from 'multer';
 import path from 'path';
 import fs from 'fs-extra';
 import express from 'express';
-import openaiService from './services/openaiService';
 
 // Create uploads directory if it doesn't exist
 const uploadDir = path.join(process.cwd(), 'uploads');
@@ -394,94 +393,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error fetching most viewed domains:", error);
       res.status(500).json({ message: "Failed to fetch most viewed domains" });
-    }
-  });
-  
-  // MARKET RESEARCH DASHBOARD API ENDPOINTS
-  
-  // Get domain industry news
-  app.get("/api/market-research/news", async (req, res) => {
-    try {
-      if (!req.isAuthenticated() || !(req.user?.isAdmin)) {
-        return res.status(403).json({ message: "Unauthorized" });
-      }
-      
-      const newsData = await openaiService.getDomainIndustryNews();
-      res.json(newsData);
-    } catch (error) {
-      console.error("Error fetching domain industry news:", error);
-      res.status(500).json({ message: "Failed to fetch domain industry news" });
-    }
-  });
-  
-  // Analyze domain pricing trends
-  app.get("/api/market-research/pricing-trends", async (req, res) => {
-    try {
-      if (!req.isAuthenticated() || !(req.user?.isAdmin)) {
-        return res.status(403).json({ message: "Unauthorized" });
-      }
-      
-      const domains = await storage.getAllDomains();
-      const pricingAnalysis = await openaiService.analyzePricingTrends(domains);
-      res.json(pricingAnalysis);
-    } catch (error) {
-      console.error("Error analyzing pricing trends:", error);
-      res.status(500).json({ message: "Failed to analyze pricing trends" });
-    }
-  });
-  
-  // Generate market demand heat index
-  app.get("/api/market-research/market-demand", async (req, res) => {
-    try {
-      if (!req.isAuthenticated() || !(req.user?.isAdmin)) {
-        return res.status(403).json({ message: "Unauthorized" });
-      }
-      
-      // Get recently sold domains to improve accuracy of market demand analysis
-      const recentlySold = await storage.getRecentlySoldDomains(50);
-      const demandIndex = await openaiService.generateMarketDemandIndex(recentlySold);
-      res.json(demandIndex);
-    } catch (error) {
-      console.error("Error generating market demand index:", error);
-      res.status(500).json({ message: "Failed to generate market demand index" });
-    }
-  });
-  
-  // Create benchmark comparisons
-  app.get("/api/market-research/benchmarks", async (req, res) => {
-    try {
-      if (!req.isAuthenticated() || !(req.user?.isAdmin)) {
-        return res.status(403).json({ message: "Unauthorized" });
-      }
-      
-      // Get domain stats to use for benchmark creation
-      const stats = await storage.getDomainStats();
-      const benchmarks = await openaiService.createBenchmarkComparisons(stats);
-      res.json(benchmarks);
-    } catch (error) {
-      console.error("Error creating benchmark comparisons:", error);
-      res.status(500).json({ message: "Failed to create benchmark comparisons" });
-    }
-  });
-  
-  // Analyze specific domains
-  app.post("/api/market-research/analyze-domains", async (req, res) => {
-    try {
-      if (!req.isAuthenticated() || !(req.user?.isAdmin)) {
-        return res.status(403).json({ message: "Unauthorized" });
-      }
-      
-      const { domainNames } = req.body;
-      
-      if (!Array.isArray(domainNames) || domainNames.length === 0) {
-        return res.status(400).json({ message: "Invalid domain names. Please provide an array of domain names." });
-      }
-      
-      const analysis = await openaiService.analyzeDomains(domainNames);
-      res.json(analysis);
-    } catch (error) {
-      console.error("Error analyzing domains:", error);
-      res.status(500).json({ message: "Failed to analyze domains" });
     }
   });
   

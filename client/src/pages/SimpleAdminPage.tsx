@@ -10,9 +10,8 @@ import {
   Layout, ListChecks, Quote, Award, BookOpen, Contact,
   HelpCircle, Info, BarChart, LineChart, PieChart, 
   Activity, Clock, Users, ArrowUpRight, ArrowDownRight,
-  Phone, Share2, MessageSquare, RefreshCw, TrendingUp
+  Phone, Share2, MessageSquare, RefreshCw
 } from "lucide-react";
-import MarketResearchDashboard from "@/components/admin/MarketResearchDashboard";
 // InquiryManagement component import removed
 import { 
   Domain, PageContent, SeoSettings, Consultation, 
@@ -1013,10 +1012,6 @@ export default function SimpleAdminPage() {
           <TabsTrigger value="editor">Website Editor</TabsTrigger>
           <TabsTrigger value="ebooks">Ebook Files</TabsTrigger>
           <TabsTrigger value="analytics">Analytics</TabsTrigger>
-          <TabsTrigger value="market-research" className="flex items-center">
-            <TrendingUp className="h-4 w-4 mr-2" />
-            Market Research
-          </TabsTrigger>
         </TabsList>
         
         {/* Inquiries tab removed */}
@@ -2148,11 +2143,6 @@ Instagram: https://instagram.com/domainnameguide`;
         </TabsContent>
         
         {/* ANALYTICS TAB */}
-        {/* MARKET RESEARCH TAB */}
-        <TabsContent value="market-research">
-          <MarketResearchDashboard />
-        </TabsContent>
-
         <TabsContent value="analytics" className="space-y-4">
           <h2 className="text-xl font-bold text-black">Page Analytics</h2>
           
