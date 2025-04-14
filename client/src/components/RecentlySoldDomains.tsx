@@ -45,38 +45,38 @@ export default function RecentlySoldDomains() {
           {/* Skeleton for updated title/subtitle */}
           <div className="flex flex-col items-center">
             <Skeleton className="h-10 w-80 mx-auto mb-2 bg-gray-200" />
-            <Skeleton className="h-5 w-[400px] mx-auto mb-8 bg-gray-100" />
+            <Skeleton className="h-5 w-[400px] mx-auto mb-4 bg-gray-100" />
           </div>
           
-          {/* Skeleton for carousel navigation - more compact */}
+          {/* Skeleton for carousel navigation - even more compact */}
           <div className="flex relative">
             {/* Left arrow skeleton - smaller black circle */}
-            <div className="absolute -left-8 top-1/2 transform -translate-y-1/2 h-10 w-10 z-20">
-              <Skeleton className="h-10 w-10 rounded-full bg-black opacity-70" />
+            <div className="absolute -left-4 top-1/2 transform -translate-y-1/2 h-8 w-8 z-20">
+              <Skeleton className="h-8 w-8 rounded-full bg-black opacity-70" />
             </div>
             
             {/* Skeleton carousel items - smaller */}
             <div className="mx-auto w-full">
               <div className="flex justify-center">
-                <div className="px-4 py-1 text-center">
-                  <Skeleton className="h-8 w-64 mx-auto mb-1 bg-gray-200" />
-                  <Skeleton className="h-6 w-32 mx-auto bg-gray-400" />
+                <div className="px-2 py-0 text-center">
+                  <Skeleton className="h-6 w-56 mx-auto mb-0.5 bg-gray-200" />
+                  <Skeleton className="h-5 w-24 mx-auto bg-gray-400" />
                 </div>
               </div>
             </div>
             
             {/* Right arrow skeleton - smaller black circle */}
-            <div className="absolute -right-8 top-1/2 transform -translate-y-1/2 h-10 w-10 z-20">
-              <Skeleton className="h-10 w-10 rounded-full bg-black opacity-70" />
+            <div className="absolute -right-4 top-1/2 transform -translate-y-1/2 h-8 w-8 z-20">
+              <Skeleton className="h-8 w-8 rounded-full bg-black opacity-70" />
             </div>
           </div>
           
-          {/* Skeleton for dots - smaller */}
-          <div className="flex justify-center mt-4 space-x-1">
+          {/* Skeleton for dots - smaller with less spacing */}
+          <div className="flex justify-center mt-2 space-x-1">
             {[...Array(10)].map((_, i) => (
               <Skeleton 
                 key={i} 
-                className={`w-2 h-2 rounded-full ${i === 0 ? 'bg-black' : 'bg-gray-200'}`} 
+                className={`w-1.5 h-1.5 rounded-full ${i === 0 ? 'bg-black' : 'bg-gray-200'}`} 
               />
             ))}
           </div>
@@ -93,10 +93,10 @@ export default function RecentlySoldDomains() {
     if (Array.isArray(domains)) {
       return domains.map((domain) => (
         <CarouselItem key={domain.id}>
-          <div className="px-4 py-1">
+          <div className="px-2 py-0">
             <div className="text-center">
-              {/* Domain name in smaller black text */}
-              <h3 className="text-3xl font-black text-black mb-1">
+              {/* Domain name in smaller black text - more compact */}
+              <h3 className="text-2xl font-black text-black mb-0.5 leading-tight">
                 <a 
                   href={`https://${domain.name}`} 
                   target="_blank"
@@ -107,8 +107,8 @@ export default function RecentlySoldDomains() {
                 </a>
               </h3>
               
-              {/* Price in green - smaller */}
-              <div className="font-bold text-xl text-green-500 mt-1">
+              {/* Price in green - smaller and more compact */}
+              <div className="font-bold text-lg text-green-500 mt-0.5">
                 {formatCurrency(domain.price)}
               </div>
             </div>
@@ -129,17 +129,17 @@ export default function RecentlySoldDomains() {
             Our Latest Domain Sales
           </h2>
           
-          {/* Updated subtitle with less spacing */}
-          <p className="text-black text-base text-center mb-8 max-w-xl">
+          {/* Updated subtitle with minimal spacing */}
+          <p className="text-black text-base text-center mb-4 max-w-xl">
             These domains opened doors for bold brands. Yours could be next.
           </p>
         </div>
         
         <Carousel className="mx-auto">
           <div className="flex relative">
-            {/* Left arrow - smaller black circle with white arrow */}
-            <CarouselPrevious className="absolute -left-8 top-1/2 transform -translate-y-1/2 bg-black hover:bg-black text-white border-none shadow-md h-10 w-10 z-20 rounded-full flex items-center justify-center">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            {/* Left arrow - smaller black circle with white arrow - moved closer */}
+            <CarouselPrevious className="absolute -left-4 top-1/2 transform -translate-y-1/2 bg-black hover:bg-black text-white border-none shadow-md h-8 w-8 z-20 rounded-full flex items-center justify-center">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M15 6L9 12L15 18" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
             </CarouselPrevious>
@@ -148,20 +148,20 @@ export default function RecentlySoldDomains() {
               {carouselItems()}
             </CarouselContent>
             
-            {/* Right arrow - smaller black circle with white arrow */}
-            <CarouselNext className="absolute -right-8 top-1/2 transform -translate-y-1/2 bg-black hover:bg-black text-white border-none shadow-md h-10 w-10 z-20 rounded-full flex items-center justify-center">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            {/* Right arrow - smaller black circle with white arrow - moved closer */}
+            <CarouselNext className="absolute -right-4 top-1/2 transform -translate-y-1/2 bg-black hover:bg-black text-white border-none shadow-md h-8 w-8 z-20 rounded-full flex items-center justify-center">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M9 6L15 12L9 18" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
             </CarouselNext>
           </div>
           
-          {/* Smaller dot indicators - all black/gray */}
-          <div className="flex justify-center mt-4 space-x-1">
+          {/* Smaller dot indicators - all black/gray - less spacing */}
+          <div className="flex justify-center mt-2 space-x-1">
             {Array.from({ length: Math.min(10, domains.length) }).map((_, i) => (
               <div 
                 key={i} 
-                className={`w-2 h-2 rounded-full ${i === 0 ? 'bg-black' : 'bg-gray-200 hover:bg-gray-400'}`}
+                className={`w-1.5 h-1.5 rounded-full ${i === 0 ? 'bg-black' : 'bg-gray-200 hover:bg-gray-400'}`}
               />
             ))}
           </div>
