@@ -77,11 +77,11 @@ export default function SimpleAdminPage() {
     avgTimeOnPage: number;
     bounceRate: number;
   }[]>([
-    { page: "Home", views: 1842, avgTimeOnPage: 92, bounceRate: 36 },
-    { page: "Premium Domains", views: 3756, avgTimeOnPage: 145, bounceRate: 28 },
-    { page: "Domain Guide", views: 1276, avgTimeOnPage: 215, bounceRate: 22 },
-    { page: "About", views: 487, avgTimeOnPage: 68, bounceRate: 45 },
-    { page: "Contact", views: 694, avgTimeOnPage: 73, bounceRate: 38 },
+    { page: "Home", views: 0, avgTimeOnPage: 0, bounceRate: 0 },
+    { page: "Premium Domains", views: 0, avgTimeOnPage: 0, bounceRate: 0 },
+    { page: "Domain Guide", views: 0, avgTimeOnPage: 0, bounceRate: 0 },
+    { page: "About", views: 0, avgTimeOnPage: 0, bounceRate: 0 },
+    { page: "Contact", views: 0, avgTimeOnPage: 0, bounceRate: 0 },
   ]);
   const [isRedirecting, setIsRedirecting] = useState(false);
   const { toast } = useToast();
