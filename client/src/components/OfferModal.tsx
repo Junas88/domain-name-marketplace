@@ -5,7 +5,7 @@ import { z } from "zod";
 import { useMutation } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
-import { Domain } from "@/lib/types";
+import { Domain } from "@shared/schema";
 import { X } from "lucide-react";
 
 import {
