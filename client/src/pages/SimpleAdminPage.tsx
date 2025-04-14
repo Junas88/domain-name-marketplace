@@ -12,7 +12,7 @@ import {
   Activity, Clock, Users, ArrowUpRight, ArrowDownRight,
   Phone, Share2, MessageSquare, RefreshCw
 } from "lucide-react";
-import InquiryManagement from "@/components/admin/InquiryManagement";
+// InquiryManagement component import removed
 import { 
   Domain, PageContent, SeoSettings, Consultation, 
   EmailSubmission, Offer, InsertDomain, InsertPageContent,
@@ -1014,13 +1014,7 @@ export default function SimpleAdminPage() {
           <TabsTrigger value="analytics">Analytics</TabsTrigger>
         </TabsList>
         
-        {/* INQUIRIES TAB */}
-        <TabsContent value="inquiries" className="space-y-4">
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="text-xl font-bold text-black">Inquiry Management</h2>
-          </div>
-          <InquiryManagement />
-        </TabsContent>
+        {/* Inquiries tab removed */}
         
         {/* DOMAINS TAB */}
         <TabsContent value="domains" className="space-y-4">
