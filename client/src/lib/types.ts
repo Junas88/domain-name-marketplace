@@ -108,3 +108,19 @@ export interface Communication {
   message: string;
   sentAt: string;
 }
+
+// Domain Stats type
+export interface DomainStats {
+  totalDomains: number;
+  soldDomains: number;
+  totalViews: number;
+  domainsByCategory: Record<string, number>;
+  totalRevenue: number;
+  averagePrice: number;
+  mostViewedDomains?: Array<{
+    id: number;
+    name: string;
+    viewCount: number;
+    price: number;
+  }>;
+}

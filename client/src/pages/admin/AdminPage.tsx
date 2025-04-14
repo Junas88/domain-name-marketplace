@@ -101,6 +101,12 @@ export default function AdminPage() {
     domainsByCategory: Record<string, number>;
     totalRevenue: number;
     averagePrice: number;
+    mostViewedDomains?: Array<{
+      id: number;
+      name: string;
+      viewCount: number;
+      price: number;
+    }>;
   };
 
   // Fetch data - all queries must be before any conditional returns
@@ -638,7 +644,65 @@ export default function AdminPage() {
         </Card>
       </div>
       
-
+      {/* Most Viewed Domains Section */}
+      <div className="mb-6">
+        <h2 className="text-xl font-bold mb-4">Most Viewed Domains</h2>
+        <Card>
+          <CardContent className="pt-6">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="w-[300px]">Domain Name</TableHead>
+                  <TableHead>Views</TableHead>
+                  <TableHead>Price</TableHead>
+                  <TableHead>Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {stats.mostViewedDomains && stats.mostViewedDomains.length > 0 ? (
+                  stats.mostViewedDomains.slice(0, 10).map((domain) => (
+                    <TableRow key={domain.id}>
+                      <TableCell className="font-medium">{domain.name}</TableCell>
+                      <TableCell>{domain.viewCount}</TableCell>
+                      <TableCell>${domain.price.toLocaleString()}</TableCell>
+                      <TableCell>
+                        <div className="flex space-x-2">
+                          <Button 
+                            variant="outline" 
+                            size="sm"
+                            onClick={() => {
+                              const fullDomain = domains.find(d => d.id === domain.id);
+                              if (fullDomain) {
+                                setEditingDomain(fullDomain);
+                                setShowAddDomainDialog(true);
+                              }
+                            }}
+                          >
+                            <PenIcon className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => window.open(`/domain/${domain.id}`, '_blank')}
+                          >
+                            <EyeIcon className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                ) : (
+                  <TableRow>
+                    <TableCell colSpan={4} className="text-center py-4">
+                      No domains have been viewed yet
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
+      </div>
 
       <Tabs defaultValue="domains" value={activeTab} onValueChange={setActiveTab}>
         <TabsList className="grid w-full grid-cols-8 mb-6">

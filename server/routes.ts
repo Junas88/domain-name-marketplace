@@ -380,12 +380,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const limit = req.query.limit ? parseInt(req.query.limit as string) : 10;
       const stats = await storage.getDomainStats();
       
-      // The mostViewedDomains is already part of stats
-      if (stats.mostViewedDomains) {
+      // The mostViewedDomains is already part of stats for DatabaseStorage
+      // but we need to handle the case where it's not available (MemStorage)
+      if (stats && 'mostViewedDomains' in stats && Array.isArray(stats.mostViewedDomains)) {
         // Limit the results
         const limitedDomains = stats.mostViewedDomains.slice(0, limit);
         res.json(limitedDomains);
       } else {
+        // If mostViewedDomains is not available, return an empty array
         res.json([]);
       }
     } catch (error) {
