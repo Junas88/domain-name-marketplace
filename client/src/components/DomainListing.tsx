@@ -445,7 +445,7 @@ export default function DomainListing({ onMakeOffer }: DomainListingProps) {
                       </span>
                     </div>
                   </div>
-                  <p className="text-neutral-700 mb-4 text-justify" itemProp="description">{domain.description}</p>
+                  <p className="text-neutral-700 mb-4" itemProp="description">{domain.description}</p>
                   <div className="flex justify-between items-center">
                     <div className="text-xl font-bold text-black" itemProp="price">${domain.price.toLocaleString()}</div>
                     {domain.isSold ? (
