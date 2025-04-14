@@ -42,10 +42,10 @@ export default function RecentlySoldDomains() {
     return (
       <div className="relative py-8 mb-6 overflow-hidden bg-white">
         <div className="max-w-5xl mx-auto px-4 relative z-10">
-          {/* Skeleton for title/subtitle - smaller */}
+          {/* Skeleton for updated title/subtitle */}
           <div className="flex flex-col items-center">
-            <Skeleton className="h-10 w-64 mx-auto mb-2 bg-gray-200" />
-            <Skeleton className="h-5 w-[320px] mx-auto mb-8 bg-gray-100" />
+            <Skeleton className="h-10 w-80 mx-auto mb-2 bg-gray-200" />
+            <Skeleton className="h-5 w-[400px] mx-auto mb-8 bg-gray-100" />
           </div>
           
           {/* Skeleton for carousel navigation - more compact */}
@@ -60,7 +60,7 @@ export default function RecentlySoldDomains() {
               <div className="flex justify-center">
                 <div className="px-4 py-1 text-center">
                   <Skeleton className="h-8 w-64 mx-auto mb-1 bg-gray-200" />
-                  <Skeleton className="h-6 w-32 mx-auto bg-green-100" />
+                  <Skeleton className="h-6 w-32 mx-auto bg-gray-400" />
                 </div>
               </div>
             </div>
@@ -76,7 +76,7 @@ export default function RecentlySoldDomains() {
             {[...Array(10)].map((_, i) => (
               <Skeleton 
                 key={i} 
-                className={`w-2 h-2 rounded-full ${i === 0 ? 'bg-green-500' : 'bg-gray-200'}`} 
+                className={`w-2 h-2 rounded-full ${i === 0 ? 'bg-black' : 'bg-gray-200'}`} 
               />
             ))}
           </div>
@@ -101,7 +101,7 @@ export default function RecentlySoldDomains() {
                   href={`https://${domain.name}`} 
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="hover:text-green-600 transition-colors"
+                  className="hover:text-gray-700 transition-colors"
                 >
                   {domain.name}
                 </a>
@@ -124,14 +124,14 @@ export default function RecentlySoldDomains() {
       <div className="max-w-5xl mx-auto px-4 relative z-10">
         {/* Main content - more compact */}
         <div className="flex flex-col items-center">
-          {/* Smaller black heading */}
+          {/* Updated black heading */}
           <h2 className="text-4xl font-black text-black text-center mb-2">
-            Already Sold
+            Our Latest Domain Sales
           </h2>
           
-          {/* Smaller subtitle with less spacing */}
+          {/* Updated subtitle with less spacing */}
           <p className="text-black text-base text-center mb-8 max-w-xl">
-            use a premium domain and your business will grow faster
+            These domains opened doors for bold brands. Yours could be next.
           </p>
         </div>
         
@@ -156,12 +156,12 @@ export default function RecentlySoldDomains() {
             </CarouselNext>
           </div>
           
-          {/* Smaller dot indicators */}
+          {/* Smaller dot indicators - all black/gray */}
           <div className="flex justify-center mt-4 space-x-1">
             {Array.from({ length: Math.min(10, domains.length) }).map((_, i) => (
               <div 
                 key={i} 
-                className={`w-2 h-2 rounded-full ${i === 0 ? 'bg-green-500' : 'bg-gray-200 hover:bg-green-200'}`}
+                className={`w-2 h-2 rounded-full ${i === 0 ? 'bg-black' : 'bg-gray-200 hover:bg-gray-400'}`}
               />
             ))}
           </div>
