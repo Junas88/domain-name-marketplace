@@ -249,7 +249,7 @@ export default function DomainListing({ onMakeOffer }: DomainListingProps) {
   };
 
   return (
-    <section id="domains" className="py-12 bg-white border-t border-black" aria-labelledby="domains-heading">
+    <section id="domains" className="py-12 bg-white" aria-labelledby="domains-heading">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         {/* Hidden section title for accessibility */}
         <h2 id="domains-heading" className="sr-only">Premium Domains</h2>
