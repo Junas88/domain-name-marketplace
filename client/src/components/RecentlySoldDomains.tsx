@@ -40,44 +40,44 @@ export default function RecentlySoldDomains() {
 
   if (isLoading) {
     return (
-      <div className="relative py-12 mb-8 overflow-hidden">
-        {/* Skeleton background design elements */}
-        <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-gray-100 to-white z-0"></div>
+      <div className="relative py-16 mb-10 overflow-hidden bg-white">
+        {/* Skeleton light background with subtle green accents */}
+        <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-green-50 to-white z-0"></div>
         
-        <div className="max-w-6xl mx-auto px-4 relative z-10">
-          {/* Skeleton heading with creative styling */}
-          <div className="flex flex-col items-center mb-8 relative">
-            <Skeleton className="h-10 w-96 mx-auto mb-2" />
-            <div className="flex items-center space-x-2">
-              <Skeleton className="h-1 w-12" />
-              <Skeleton className="h-5 w-48" />
-              <Skeleton className="h-1 w-12" />
+        <div className="max-w-7xl mx-auto px-4 relative z-10">
+          {/* Skeleton heading with larger styling */}
+          <div className="flex flex-col items-center mb-12 relative">
+            <Skeleton className="h-12 w-[500px] mx-auto mb-3 bg-green-100" />
+            <div className="flex items-center space-x-3">
+              <Skeleton className="h-1.5 w-16 bg-green-100" />
+              <Skeleton className="h-6 w-64 bg-green-50" />
+              <Skeleton className="h-1.5 w-16 bg-green-100" />
             </div>
           </div>
           
-          {/* Skeleton carousel items */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {/* Skeleton carousel items - bigger and with green accent */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
             {[...Array(6)].map((_, i) => (
-              <div key={i} className="px-2 py-3">
+              <div key={i} className="px-3 py-4">
                 <div className="relative rounded-lg overflow-hidden">
                   {/* Skeleton decorative elements */}
-                  <div className="absolute -right-4 -top-4 w-20 h-20 bg-gray-200 rotate-12"></div>
-                  <div className="absolute -left-4 -bottom-4 w-16 h-16 bg-gray-100 rotate-12"></div>
+                  <div className="absolute -right-4 -top-4 w-20 h-20 bg-green-100 opacity-40 rotate-12"></div>
+                  <div className="absolute -left-4 -bottom-4 w-16 h-16 bg-green-100 opacity-30 rotate-12"></div>
                   
                   {/* Skeleton content container */}
-                  <div className="bg-white border border-gray-100 rounded-lg relative p-5">
+                  <div className="bg-white border-2 border-gray-100 rounded-lg relative p-6 shadow-sm">
                     {/* SOLD label skeleton */}
-                    <Skeleton className="absolute right-0 top-4 h-4 w-20 rotate-45" />
+                    <Skeleton className="absolute right-2 top-3 h-9 w-24 bg-black" />
                     
-                    <Skeleton className="h-7 w-full max-w-[200px] mb-4" />
+                    <Skeleton className="h-9 w-full max-w-[240px] mb-5" />
                     
                     {/* Info area skeleton */}
-                    <div className="flex items-center justify-between bg-gray-50 rounded p-2">
-                      <div className="flex items-center space-x-2">
-                        <Skeleton className="h-5 w-16 rounded" />
-                        <Skeleton className="h-5 w-20 rounded" />
+                    <div className="flex flex-col md:flex-row justify-between bg-gray-50 rounded-lg p-3 border border-gray-100">
+                      <div className="flex items-center space-x-2 mb-2 md:mb-0">
+                        <Skeleton className="h-7 w-32 rounded-full bg-white" />
+                        <Skeleton className="h-7 w-24 rounded-full bg-green-100" />
                       </div>
-                      <Skeleton className="h-7 w-20" />
+                      <Skeleton className="h-8 w-28 bg-green-100" />
                     </div>
                   </div>
                 </div>
@@ -85,15 +85,15 @@ export default function RecentlySoldDomains() {
             ))}
           </div>
           
-          {/* Skeleton navigation */}
-          <div className="flex justify-center mt-8 space-x-4">
-            <Skeleton className="h-10 w-10 rounded-full" />
-            <div className="flex items-center space-x-1">
+          {/* Skeleton navigation - bigger with green accents */}
+          <div className="flex justify-center mt-10 space-x-6">
+            <Skeleton className="h-12 w-12 rounded-full bg-gray-200 border-2 border-green-100" />
+            <div className="flex items-center space-x-2">
               {[...Array(5)].map((_, i) => (
-                <Skeleton key={i} className="w-2 h-2 rounded-full" />
+                <Skeleton key={i} className="w-3 h-3 rounded-full bg-green-100" />
               ))}
             </div>
-            <Skeleton className="h-10 w-10 rounded-full" />
+            <Skeleton className="h-12 w-12 rounded-full bg-gray-200 border-2 border-green-100" />
           </div>
         </div>
       </div>
@@ -115,38 +115,38 @@ export default function RecentlySoldDomains() {
               <div className="absolute -left-4 -bottom-4 w-16 h-16 bg-gray-900 rotate-12 z-0 opacity-80"></div>
               
               {/* Content Container */}
-              <div className="bg-white border border-gray-200 rounded-lg relative z-10">
-                {/* SOLD label - styled as a banner */}
-                <div className="absolute -right-8 top-4 bg-black text-white text-xs font-black py-1 px-10 rotate-45 shadow-md z-20">
+              <div className="bg-white border-2 border-gray-100 rounded-lg relative z-10 shadow-sm">
+                {/* SOLD label - larger with green accent */}
+                <div className="absolute right-2 top-3 bg-black text-white text-sm font-black py-2 px-6 shadow-lg z-20 rounded-lg transform scale-110 border-2 border-green-500">
                   SOLD
                 </div>
                 
-                {/* Main content with radial gradient background */}
-                <div className="p-5 bg-gradient-to-br from-white to-gray-50">
-                  <h3 className="text-xl font-black text-black mb-2 truncate">
+                {/* Main content with light background */}
+                <div className="p-6 bg-white">
+                  <h3 className="text-2xl font-black text-black mb-3 truncate">
                     <a 
                       href={`https://${domain.name}`} 
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="hover:text-gray-700 transition-colors inline-flex items-center"
+                      className="hover:text-green-600 transition-colors inline-flex items-center"
                     >
                       {domain.name}
-                      <ExternalLink className="ml-1 h-4 w-4 opacity-70" />
+                      <ExternalLink className="ml-2 h-5 w-5 text-green-500" />
                     </a>
                   </h3>
                   
-                  {/* Info area with glass-like effect */}
-                  <div className="flex items-center justify-between bg-white bg-opacity-70 backdrop-blur-sm rounded p-2 border border-gray-100">
-                    <div className="flex items-center space-x-2">
-                      <span className="inline-flex items-center text-xs font-medium bg-gray-100 px-2 py-1 rounded">
-                        {domain.length} chars
+                  {/* Larger info area */}
+                  <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 p-3 border border-gray-100 rounded-lg bg-gray-50">
+                    <div className="flex flex-wrap gap-2">
+                      <span className="inline-flex items-center text-sm font-medium bg-white px-3 py-1 rounded-full border border-gray-200">
+                        {domain.length} characters
                       </span>
-                      <span className="text-xs font-medium px-2 py-1 rounded bg-gray-800 text-white">
+                      <span className="text-sm font-medium px-3 py-1 rounded-full bg-green-100 text-green-800 border border-green-200">
                         {domain.category}
                       </span>
                     </div>
                     
-                    <div className="font-black text-xl text-black">
+                    <div className="font-black text-2xl text-green-600">
                       {formatCurrency(domain.price)}
                     </div>
                   </div>
@@ -161,53 +161,53 @@ export default function RecentlySoldDomains() {
   };
 
   return (
-    <div className="relative py-12 mb-8 overflow-hidden">
-      {/* Background design elements */}
-      <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-gray-100 to-white z-0"></div>
-      <div className="absolute top-0 right-0 w-96 h-96 bg-black rounded-full -translate-y-1/2 translate-x-1/2 opacity-5"></div>
-      <div className="absolute bottom-0 left-0 w-64 h-64 bg-black rounded-full translate-y-1/3 -translate-x-1/3 opacity-5"></div>
+    <div className="relative py-16 mb-10 overflow-hidden bg-white">
+      {/* Light background with subtle green accents */}
+      <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-green-50 to-white z-0"></div>
+      <div className="absolute top-0 right-0 w-96 h-96 rounded-full -translate-y-1/2 translate-x-1/2 bg-green-100 opacity-20"></div>
+      <div className="absolute bottom-0 left-0 w-64 h-64 rounded-full translate-y-1/3 -translate-x-1/3 bg-green-100 opacity-20"></div>
       
-      {/* Diagonal pattern */}
-      <div className="absolute inset-0 z-0 opacity-10" 
-           style={{ backgroundImage: 'linear-gradient(45deg, #000 25%, transparent 25%, transparent 50%, #000 50%, #000 75%, transparent 75%, transparent)', 
-                    backgroundSize: '8px 8px' }}>
+      {/* Subtle grid pattern */}
+      <div className="absolute inset-0 z-0 opacity-5" 
+           style={{ backgroundImage: 'linear-gradient(to right, #e5e5e5 1px, transparent 1px), linear-gradient(to bottom, #e5e5e5 1px, transparent 1px)', 
+                   backgroundSize: '20px 20px' }}>
       </div>
       
-      <div className="max-w-6xl mx-auto px-4 relative z-10">
-        {/* Heading with creative styling */}
-        <div className="flex flex-col items-center mb-8 relative">
-          <div className="absolute -top-6 left-1/2 transform -translate-x-1/2 text-6xl font-black text-black opacity-5 whitespace-nowrap">SOLD OUT</div>
-          <h2 className="text-3xl font-black text-black relative z-10 text-center mb-1">
+      <div className="max-w-7xl mx-auto px-4 relative z-10">
+        {/* Larger, bolder heading with green accent */}
+        <div className="flex flex-col items-center mb-12 relative">
+          <div className="absolute -top-6 left-1/2 transform -translate-x-1/2 text-7xl font-black text-green-50 whitespace-nowrap">PREMIUM DOMAINS</div>
+          <h2 className="text-4xl font-black text-black relative z-10 text-center mb-3">
             <span className="inline-block px-2 pb-1 relative">
               Gone Fast
-              <span className="absolute bottom-0 left-0 w-full h-1 bg-black"></span>
+              <span className="absolute bottom-0 left-0 w-full h-1.5 bg-green-500"></span>
             </span>
-            <span className="text-gray-400 mx-2">–</span>
+            <span className="text-gray-400 mx-3">–</span>
             <span className="inline-block relative">
               See What's Already Sold
             </span>
           </h2>
-          <div className="flex items-center space-x-2 text-sm text-gray-600 font-medium mt-2">
-            <span className="inline-block w-12 h-px bg-gray-300"></span>
+          <div className="flex items-center space-x-3 text-base text-gray-600 font-medium mt-3">
+            <span className="inline-block w-16 h-0.5 bg-green-200"></span>
             <span>Real market performance indicators</span>
-            <span className="inline-block w-12 h-px bg-gray-300"></span>
+            <span className="inline-block w-16 h-0.5 bg-green-200"></span>
           </div>
         </div>
         
         <Carousel className="mx-auto">
-          <CarouselContent className="-ml-2">
+          <CarouselContent className="-mx-3">
             {carouselItems()}
           </CarouselContent>
           
-          {/* Creative navigation controls */}
-          <div className="flex justify-center mt-8 space-x-4">
-            <CarouselPrevious className="bg-black hover:bg-gray-800 text-white border-none h-10 w-10 rounded-full shadow-lg relative static ml-0 transform transition-transform hover:scale-110" />
-            <div className="flex items-center space-x-1">
+          {/* Larger navigation controls with green accents */}
+          <div className="flex justify-center mt-10 space-x-6">
+            <CarouselPrevious className="bg-black hover:bg-green-700 text-white border-2 border-green-500 h-12 w-12 rounded-full shadow-lg relative static ml-0 transform transition-transform hover:scale-110" />
+            <div className="flex items-center space-x-2">
               {Array.from({ length: Math.min(5, domains.length) }).map((_, i) => (
-                <div key={i} className="w-2 h-2 rounded-full bg-gray-300"></div>
+                <div key={i} className="w-3 h-3 rounded-full bg-green-200"></div>
               ))}
             </div>
-            <CarouselNext className="bg-black hover:bg-gray-800 text-white border-none h-10 w-10 rounded-full shadow-lg relative static mr-0 transform transition-transform hover:scale-110" />
+            <CarouselNext className="bg-black hover:bg-green-700 text-white border-2 border-green-500 h-12 w-12 rounded-full shadow-lg relative static mr-0 transform transition-transform hover:scale-110" />
           </div>
         </Carousel>
       </div>
