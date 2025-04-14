@@ -1003,9 +1003,8 @@ export default function SimpleAdminPage() {
           </Tabs>
         </div>
         
-        <TabsList className="grid w-full grid-cols-9">
+        <TabsList className="grid w-full grid-cols-8">
           <TabsTrigger value="domains">Domains</TabsTrigger>
-          <TabsTrigger value="inquiries">Inquiries</TabsTrigger>
           <TabsTrigger value="offers">Offers</TabsTrigger>
           <TabsTrigger value="consultations">Consultations</TabsTrigger>
           <TabsTrigger value="emails">Email Submissions</TabsTrigger>
