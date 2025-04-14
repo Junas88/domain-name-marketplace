@@ -50,9 +50,9 @@ export default function RecentlySoldDomains() {
           
           {/* Skeleton for carousel navigation */}
           <div className="flex relative">
-            {/* Left arrow skeleton */}
-            <div className="absolute -left-12 top-1/2 transform -translate-y-1/2 bg-transparent h-16 w-16 z-20">
-              <Skeleton className="h-16 w-8 bg-green-100" />
+            {/* Left arrow skeleton - black circle */}
+            <div className="absolute -left-12 top-1/2 transform -translate-y-1/2 h-16 w-16 z-20">
+              <Skeleton className="h-16 w-16 rounded-full bg-black opacity-70" />
             </div>
             
             {/* Skeleton carousel items */}
@@ -65,9 +65,9 @@ export default function RecentlySoldDomains() {
               </div>
             </div>
             
-            {/* Right arrow skeleton */}
-            <div className="absolute -right-12 top-1/2 transform -translate-y-1/2 bg-transparent h-16 w-16 z-20">
-              <Skeleton className="h-16 w-8 ml-auto bg-green-100" />
+            {/* Right arrow skeleton - black circle */}
+            <div className="absolute -right-12 top-1/2 transform -translate-y-1/2 h-16 w-16 z-20">
+              <Skeleton className="h-16 w-16 rounded-full bg-black opacity-70" />
             </div>
           </div>
           
@@ -137,10 +137,10 @@ export default function RecentlySoldDomains() {
         
         <Carousel className="mx-auto">
           <div className="flex relative">
-            {/* Left arrow - styled like image */}
-            <CarouselPrevious className="absolute -left-12 top-1/2 transform -translate-y-1/2 bg-transparent hover:bg-transparent text-green-500 border-none shadow-none h-16 w-16 z-20">
-              <svg width="40" height="60" viewBox="0 0 40 60" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M30 10L10 30L30 50" stroke="#22c55e" strokeWidth="8" strokeLinecap="round" strokeLinejoin="round"/>
+            {/* Left arrow - black circle with white arrow */}
+            <CarouselPrevious className="absolute -left-12 top-1/2 transform -translate-y-1/2 bg-black hover:bg-black text-white border-none shadow-lg h-16 w-16 z-20 rounded-full flex items-center justify-center">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M15 6L9 12L15 18" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
             </CarouselPrevious>
             
@@ -148,10 +148,10 @@ export default function RecentlySoldDomains() {
               {carouselItems()}
             </CarouselContent>
             
-            {/* Right arrow - styled like image */}
-            <CarouselNext className="absolute -right-12 top-1/2 transform -translate-y-1/2 bg-transparent hover:bg-transparent text-green-500 border-none shadow-none h-16 w-16 z-20">
-              <svg width="40" height="60" viewBox="0 0 40 60" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M10 10L30 30L10 50" stroke="#22c55e" strokeWidth="8" strokeLinecap="round" strokeLinejoin="round"/>
+            {/* Right arrow - black circle with white arrow */}
+            <CarouselNext className="absolute -right-12 top-1/2 transform -translate-y-1/2 bg-black hover:bg-black text-white border-none shadow-lg h-16 w-16 z-20 rounded-full flex items-center justify-center">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M9 6L15 12L9 18" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
             </CarouselNext>
           </div>
