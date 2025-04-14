@@ -1,7 +1,20 @@
 import OpenAI from "openai";
 
 // Initialize the OpenAI client
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+const openai = new OpenAI({ 
+  apiKey: process.env.OPENAI_API_KEY || '' // Ensure it's always a string
+});
+
+// Safe JSON parse helper function to handle null content
+function safeJsonParse(jsonString: string | null): any {
+  if (!jsonString) return {};
+  try {
+    return JSON.parse(jsonString);
+  } catch (error) {
+    console.error("Error parsing JSON:", error);
+    return {};
+  }
+}
 
 /**
  * Analyzes domain names to extract insights using OpenAI
@@ -31,7 +44,7 @@ export async function analyzeDomains(domainNames: string[]) {
       response_format: { type: "json_object" }
     });
 
-    return JSON.parse(response.choices[0].message.content);
+    return safeJsonParse(response.choices[0].message.content);
   } catch (error) {
     console.error("Error analyzing domains with OpenAI:", error);
     throw new Error("Failed to analyze domains");
@@ -63,7 +76,7 @@ export async function getDomainIndustryNews() {
       response_format: { type: "json_object" }
     });
 
-    return JSON.parse(response.choices[0].message.content);
+    return safeJsonParse(response.choices[0].message.content);
   } catch (error) {
     console.error("Error getting domain industry news with OpenAI:", error);
     throw new Error("Failed to fetch industry news");
@@ -120,7 +133,7 @@ export async function analyzePricingTrends(yourDomains: any[]) {
       response_format: { type: "json_object" }
     });
 
-    return JSON.parse(response.choices[0].message.content);
+    return safeJsonParse(response.choices[0].message.content);
   } catch (error) {
     console.error("Error analyzing pricing trends with OpenAI:", error);
     throw new Error("Failed to analyze pricing trends");
@@ -168,7 +181,7 @@ export async function generateMarketDemandIndex(recentSales?: any[]) {
       response_format: { type: "json_object" }
     });
 
-    return JSON.parse(response.choices[0].message.content);
+    return safeJsonParse(response.choices[0].message.content);
   } catch (error) {
     console.error("Error generating market demand index with OpenAI:", error);
     throw new Error("Failed to generate market demand index");
@@ -205,7 +218,7 @@ export async function createBenchmarkComparisons(yourStats: any) {
       response_format: { type: "json_object" }
     });
 
-    return JSON.parse(response.choices[0].message.content);
+    return safeJsonParse(response.choices[0].message.content);
   } catch (error) {
     console.error("Error creating benchmark comparisons with OpenAI:", error);
     throw new Error("Failed to create benchmark comparisons");

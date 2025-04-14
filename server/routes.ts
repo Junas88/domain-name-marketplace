@@ -18,6 +18,7 @@ import multer from 'multer';
 import path from 'path';
 import fs from 'fs-extra';
 import express from 'express';
+import openaiService from './services/openaiService';
 
 // Create uploads directory if it doesn't exist
 const uploadDir = path.join(process.cwd(), 'uploads');
