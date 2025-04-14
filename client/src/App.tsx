@@ -17,7 +17,7 @@ import BuyerProtection from "@/pages/BuyerProtection";
 import EbookPage from "@/pages/EbookPage";
 import EbookSuccess from "@/pages/EbookSuccess";
 import DomainFinderPage from "@/pages/DomainFinderPage";
-import DomainValueCalculatorPage from "@/pages/DomainValueCalculatorPage";
+import CompetitiveAnalysisPage from "@/pages/CompetitiveAnalysisPage";
 import SimpleAdminPage from "@/pages/SimpleAdminPage";
 import SimpleLoginPage from "@/pages/SimpleLoginPage";
 
@@ -31,7 +31,7 @@ const DomainValuationPage = () => <SeoPageWrapper pageKey="domain-valuation"><Do
 const SellingStrategyPage = () => <SeoPageWrapper pageKey="selling-strategy"><SellingStrategy /></SeoPageWrapper>;
 const BuyerProtectionPage = () => <SeoPageWrapper pageKey="buyer-protection"><BuyerProtection /></SeoPageWrapper>;
 const DomainFinderWrapper = () => <SeoPageWrapper pageKey="domain-finder"><DomainFinderPage /></SeoPageWrapper>;
-const DomainValueCalculatorWrapper = () => <DomainValueCalculatorPage />;
+const CompetitiveAnalysisWrapper = () => <CompetitiveAnalysisPage />;
 const EbookWrapper = () => <SeoPageWrapper pageKey="ebook"><EbookPage /></SeoPageWrapper>;
 const EbookSuccessWrapper = () => <SeoPageWrapper pageKey="ebook-success"><EbookSuccess /></SeoPageWrapper>;
 const NotFoundWrapper = () => <SeoPageWrapper pageKey="not-found"><NotFound /></SeoPageWrapper>;
@@ -51,7 +51,7 @@ function Router() {
       <Route path="/selling-strategy" component={SellingStrategyPage} />
       <Route path="/buyer-protection" component={BuyerProtectionPage} />
       <Route path="/domain-finder" component={DomainFinderWrapper} />
-      <Route path="/domain-value-calculator" component={DomainValueCalculatorWrapper} />
+      <Route path="/domain-value-calculator" component={CompetitiveAnalysisWrapper} />
       <Route path="/ebook" component={EbookWrapper} />
       <Route path="/ebook-success" component={EbookSuccessWrapper} />
       <Route path="/login" component={SimpleLoginPage} />

@@ -1,16 +1,16 @@
 import React, { useEffect } from "react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import DomainValueCalculator from "@/components/DomainValueCalculator";
+import CompetitiveAnalysisTool from "@/components/CompetitiveAnalysisTool";
 
-export default function DomainValueCalculatorPage() {
+export default function DomainCompetitiveAnalysisPage() {
   // Set up meta tags for this page
   useEffect(() => {
     // Page title
-    document.title = "Domain Value Calculator | Estimate Domain Worth";
+    document.title = "Domain Competitive Analysis | Compare Domains";
     
     // Update meta description
-    const description = "Our interactive domain value calculator helps you estimate the market value of any domain name based on TLD, keywords, length, and other factors.";
+    const description = "Compare your domain to similar domains that have recently sold in terms of length, keywords, and potential value with our Competitive Analysis Tool.";
     
     // Helper function to update meta tags
     const updateMetaTag = (name: string, content: string) => {
@@ -33,7 +33,7 @@ export default function DomainValueCalculatorPage() {
     
     // Update all meta tags
     updateMetaTag('description', description);
-    updateMetaTag('keywords', 'domain value, domain valuation, domain price, domain worth, domain calculator');
+    updateMetaTag('keywords', 'domain comparison, competitive analysis, domain value, similar domains, domain market, domain length, domain keywords');
     
     // Open Graph meta tags
     updateMetaTag('og:title', document.title);
@@ -72,14 +72,14 @@ export default function DomainValueCalculatorPage() {
       <main className="flex-grow">
         <div className="bg-black text-white py-12 px-4">
           <div className="max-w-6xl mx-auto text-center">
-            <h1 className="text-4xl font-bold mb-4">Domain Value Calculator</h1>
+            <h1 className="text-4xl font-bold mb-4">Domain Competitive Analysis</h1>
             <p className="text-xl max-w-3xl mx-auto">
-              Discover what factors influence domain value and get an instant estimate for any domain name
+              Compare your domain to similar domains that have recently sold in the marketplace
             </p>
           </div>
         </div>
         
-        <DomainValueCalculator />
+        <CompetitiveAnalysisTool />
       </main>
       
       <Footer />
