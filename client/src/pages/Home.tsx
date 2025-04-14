@@ -7,6 +7,7 @@ import Reviews from "@/components/Reviews";
 import Footer from "@/components/Footer";
 import OfferModal from "@/components/OfferModal";
 import RecentlySoldDomains from "@/components/RecentlySoldDomains";
+import ActivityNotification from "@/components/ActivityNotification";
 import { Domain } from "@shared/schema";
 
 export default function Home() {
@@ -37,6 +38,8 @@ export default function Home() {
         onClose={handleCloseOfferModal}
         domain={selectedDomain}
       />
+      {/* Social proof pop-up notifications */}
+      <ActivityNotification />
     </div>
   );
 }
