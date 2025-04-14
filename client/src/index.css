@@ -32,10 +32,10 @@
   }
   
   .animate-marquee {
-    animation: marquee 30s linear infinite;
+    animation: marquee 60s linear infinite;
   }
   
   .animate-marquee2 {
-    animation: marquee2 30s linear infinite;
+    animation: marquee2 60s linear infinite;
   }
 }

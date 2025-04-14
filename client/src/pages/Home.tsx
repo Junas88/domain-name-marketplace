@@ -7,7 +7,7 @@ import Reviews from "@/components/Reviews";
 import Footer from "@/components/Footer";
 import OfferModal from "@/components/OfferModal";
 import RecentlySoldDomains from "@/components/RecentlySoldDomains";
-import { Domain } from "@/lib/types";
+import { Domain } from "@shared/schema";
 
 export default function Home() {
   const [isOfferModalOpen, setIsOfferModalOpen] = useState(false);

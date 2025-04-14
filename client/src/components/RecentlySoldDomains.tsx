@@ -43,31 +43,30 @@ export default function RecentlySoldDomains() {
     return domainItems.map((domain, index) => (
       <div 
         key={`${domain.id}-${index}`} 
-        className="inline-flex items-center whitespace-nowrap mx-6"
+        className="inline-flex items-center whitespace-nowrap mx-12"
       >
-        <span className="font-medium text-white">Domain name sold for:</span>
         <a 
           href={`https://${domain.name}`}
           target="_blank" 
           rel="noopener noreferrer" 
-          className="font-bold text-white mx-2 hover:underline"
+          className="font-bold text-white mx-3 text-xl hover:underline"
         >
           {domain.name}
         </a>
-        <span className="font-bold text-green-400">
-          {formatCurrency(domain.price)}
+        <span className="font-bold text-green-400 text-xl">
+          sold for {formatCurrency(domain.price)}
         </span>
       </div>
     ));
   };
 
   return (
-    <div className="bg-black text-white py-2 overflow-hidden">
+    <div className="bg-black text-white py-5 overflow-hidden w-full">
       {/* Hidden heading for SEO and accessibility */}
       <h2 className="sr-only">Recent Domain Sales</h2>
       
       {/* Continuous scrolling ticker */}
-      <div className="relative flex overflow-x-hidden">
+      <div className="relative flex overflow-x-hidden h-14">
         <div 
           ref={scrollerRef}
           className="animate-marquee whitespace-nowrap flex items-center"
