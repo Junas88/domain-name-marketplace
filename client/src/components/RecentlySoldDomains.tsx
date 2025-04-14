@@ -40,20 +40,34 @@ export default function RecentlySoldDomains() {
 
   if (isLoading) {
     return (
-      <div className="mb-4">
-        <h2 className="text-center text-3xl font-black mb-6">Gone Fast – See What's Already Sold</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {[1, 2, 3].map((i) => (
-            <div key={i} className="p-2">
-              <div className="overflow-hidden border border-gray-200 rounded-lg bg-gray-50 shadow-sm">
-                <div className="p-5 flex flex-col items-center justify-center">
-                  <Skeleton className="h-7 w-4/5 bg-gray-200 mb-2" />
-                  <Skeleton className="h-8 w-2/3 bg-gray-200 my-2" />
-                  <Skeleton className="h-4 w-1/4 bg-gray-200 mt-1 rounded-full" />
+      <div className="py-8 mb-4 bg-gray-50 border-y border-gray-100">
+        <div className="max-w-6xl mx-auto px-4">
+          <div className="flex justify-between items-center mb-4">
+            <Skeleton className="h-8 w-64" />
+            <Skeleton className="h-5 w-40" />
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+            {[...Array(6)].map((_, i) => (
+              <div key={i} className="bg-white border-b-2 border-gray-200 p-3">
+                <div className="flex justify-between">
+                  <div>
+                    <Skeleton className="h-6 w-40 mb-2" />
+                    <Skeleton className="h-4 w-24" />
+                  </div>
+                  <div className="flex flex-col items-end">
+                    <Skeleton className="h-6 w-20 mb-2" />
+                    <Skeleton className="h-4 w-12" />
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
+          
+          <div className="flex justify-end mt-4 space-x-2">
+            <Skeleton className="h-7 w-7" />
+            <Skeleton className="h-7 w-7" />
+          </div>
         </div>
       </div>
     );
@@ -67,27 +81,35 @@ export default function RecentlySoldDomains() {
     if (Array.isArray(domains)) {
       return domains.map((domain) => (
         <CarouselItem key={domain.id}>
-          <div className="p-2">
-            <div className="overflow-hidden border border-gray-200 rounded-lg bg-gray-50 shadow-sm hover:border-gray-300 hover:shadow-md transition-all">
-              <div className="p-5 flex flex-col items-center justify-center">
-                <h3 className="text-xl md:text-2xl font-black mb-2 text-gray-800 text-center">
-                  <a 
-                    href={`https://${domain.name}`} 
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="hover:text-gray-600 transition-colors inline-flex items-center"
-                  >
-                    {domain.name}
-                    <ExternalLink className="ml-1 h-4 w-4" />
-                  </a>
-                </h3>
-                
-                <div className="font-black text-2xl md:text-3xl text-gray-900 mt-1 mb-2">
-                  {formatCurrency(domain.price)}
+          <div className="px-2 py-1">
+            <div className="overflow-hidden border-b-2 border-black bg-white hover:bg-gray-50 transition-all duration-300">
+              <div className="p-3 flex flex-row items-center justify-between">
+                <div className="flex flex-col">
+                  <h3 className="text-lg font-black text-black">
+                    <a 
+                      href={`https://${domain.name}`} 
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="hover:text-gray-700 transition-colors inline-flex items-center"
+                    >
+                      {domain.name}
+                      <ExternalLink className="ml-1 h-3 w-3" />
+                    </a>
+                  </h3>
+                  
+                  <div className="text-sm text-gray-600">
+                    {domain.length} characters · {domain.category}
+                  </div>
                 </div>
                 
-                <div className="text-xs uppercase tracking-widest font-black text-emerald-600 mt-1 border border-emerald-200 bg-emerald-50 px-2 py-0.5 rounded-full">
-                  SOLD
+                <div className="flex flex-col items-end">
+                  <div className="font-bold text-lg text-black">
+                    {formatCurrency(domain.price)}
+                  </div>
+                  
+                  <div className="text-xs uppercase tracking-wider font-black text-white bg-black px-2 py-0.5 rounded-sm">
+                    SOLD
+                  </div>
                 </div>
               </div>
             </div>
@@ -99,15 +121,25 @@ export default function RecentlySoldDomains() {
   };
 
   return (
-    <div className="mb-4">
-      <h2 className="text-center text-3xl font-black mb-6">Gone Fast – See What's Already Sold</h2>
-      <Carousel className="mx-auto max-w-6xl">
-        <CarouselContent>
-          {carouselItems()}
-        </CarouselContent>
-        <CarouselPrevious className="bg-black hover:bg-gray-900 text-white border-none -left-2 h-8 w-8 shadow-sm" />
-        <CarouselNext className="bg-black hover:bg-gray-900 text-white border-none -right-2 h-8 w-8 shadow-sm" />
-      </Carousel>
+    <div className="py-8 mb-4 bg-gray-50 border-y border-gray-100">
+      <div className="max-w-6xl mx-auto px-4">
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-2xl font-black text-black">
+            <span className="border-b-2 border-black pb-1">Gone Fast – See What's Already Sold</span>
+          </h2>
+          <div className="text-sm text-gray-600 font-medium">Real market performance</div>
+        </div>
+        
+        <Carousel className="mx-auto">
+          <CarouselContent className="-ml-2">
+            {carouselItems()}
+          </CarouselContent>
+          <div className="flex justify-end mt-4 space-x-2">
+            <CarouselPrevious className="bg-black hover:bg-gray-800 text-white border-none h-7 w-7 rounded-none shadow-none relative static ml-0" />
+            <CarouselNext className="bg-black hover:bg-gray-800 text-white border-none h-7 w-7 rounded-none shadow-none relative static mr-0" />
+          </div>
+        </Carousel>
+      </div>
     </div>
   );
 }
