@@ -2,8 +2,15 @@ import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 import { useLocation } from "wouter";
-import { Domain, DomainFilters } from "@/lib/types";
+import { Domain } from "@shared/schema";
 import { apiRequest, queryClient } from "@/lib/queryClient";
+
+// Define DomainFilters interface directly in this file
+interface DomainFilters {
+  category: string;
+  priceRange: string;
+  length: string;
+}
 import { 
   Card, 
   CardContent 
