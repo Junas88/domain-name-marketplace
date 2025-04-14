@@ -24,6 +24,70 @@ import {
 } from 'chart.js';
 import { Line, Bar, Radar, Pie } from 'react-chartjs-2';
 
+// Define interfaces for our API responses
+interface NewsItem {
+  title: string;
+  source: string;
+  date: string;
+  summary: string;
+  impact: number;
+  domain_categories?: string[];
+}
+
+interface NewsData {
+  news: NewsItem[];
+}
+
+interface CategoryComparison {
+  category: string;
+  yourAverage: number;
+  marketAverage: number;
+}
+
+interface PricingData {
+  categoryComparison: CategoryComparison[];
+  aboveMarket: string[];
+  belowMarket: string[];
+  recommendations: string[];
+}
+
+interface CategoryDemand {
+  category: string;
+  score: number;
+}
+
+interface TldDemand {
+  tld: string;
+  score: number;
+}
+
+interface Trend {
+  keyword: string;
+  growthPercentage?: number;
+  declinePercentage?: number;
+  reason: string;
+}
+
+interface DemandData {
+  categoryDemand: CategoryDemand[];
+  tldDemand: TldDemand[];
+  risingTrends: Trend[];
+  decliningTrends: Trend[];
+  industryHotspots: Record<string, string>;
+}
+
+interface PerformanceMetric {
+  metric: string;
+  yourValue: number;
+  industryAverage: number;
+}
+
+interface BenchmarkData {
+  performanceMetrics: PerformanceMetric[];
+  keyMetrics: Record<string, { value: string, comparison: string }>;
+  recommendations: string[];
+}
+
 // Register ChartJS components
 ChartJS.register(
   CategoryScale,
@@ -61,7 +125,7 @@ const MarketResearchDashboard = () => {
     isLoading: isNewsLoading,
     error: newsError,
     refetch: refetchNews
-  } = useQuery({
+  } = useQuery<NewsData>({
     queryKey: ['/api/market-research/news'],
     staleTime: 1000 * 60 * 30, // 30 minutes
     enabled: activeTab === 'news'
@@ -73,7 +137,7 @@ const MarketResearchDashboard = () => {
     isLoading: isPricingLoading,
     error: pricingError,
     refetch: refetchPricing
-  } = useQuery({
+  } = useQuery<PricingData>({
     queryKey: ['/api/market-research/pricing-trends'],
     staleTime: 1000 * 60 * 60, // 60 minutes
     enabled: activeTab === 'pricing'
@@ -85,7 +149,7 @@ const MarketResearchDashboard = () => {
     isLoading: isDemandLoading,
     error: demandError,
     refetch: refetchDemand
-  } = useQuery({
+  } = useQuery<DemandData>({
     queryKey: ['/api/market-research/market-demand'],
     staleTime: 1000 * 60 * 60, // 60 minutes
     enabled: activeTab === 'demand'
@@ -97,7 +161,7 @@ const MarketResearchDashboard = () => {
     isLoading: isBenchmarkLoading,
     error: benchmarkError,
     refetch: refetchBenchmarks
-  } = useQuery({
+  } = useQuery<BenchmarkData>({
     queryKey: ['/api/market-research/benchmarks'],
     staleTime: 1000 * 60 * 60, // 60 minutes
     enabled: activeTab === 'benchmarks'
@@ -217,7 +281,7 @@ const MarketResearchDashboard = () => {
       );
     }
     
-    if (!newsData || !newsData.news || !Array.isArray(newsData.news)) {
+    if (!newsData || !newsData?.news || !Array.isArray(newsData?.news)) {
       return (
         <Card>
           <CardHeader>

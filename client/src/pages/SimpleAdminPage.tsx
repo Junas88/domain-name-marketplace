@@ -2148,6 +2148,11 @@ Instagram: https://instagram.com/domainnameguide`;
         </TabsContent>
         
         {/* ANALYTICS TAB */}
+        {/* MARKET RESEARCH TAB */}
+        <TabsContent value="market-research">
+          <MarketResearchDashboard />
+        </TabsContent>
+
         <TabsContent value="analytics" className="space-y-4">
           <h2 className="text-xl font-bold text-black">Page Analytics</h2>
           
