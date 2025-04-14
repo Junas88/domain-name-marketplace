@@ -41,7 +41,7 @@ export default function Header() {
               href="/domain-value-calculator" 
               className="text-neutral-800 hover:text-black font-medium cursor-pointer"
             >
-              Competitive Analysis
+              Value Calculator
             </Link>
             <Link href="/guide" className="text-neutral-800 hover:text-black font-medium">
               Domain Guide

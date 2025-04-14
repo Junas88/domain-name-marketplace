@@ -1,16 +1,16 @@
 import React, { useEffect } from "react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import CompetitiveAnalysisTool from "@/components/CompetitiveAnalysisTool";
+import DomainValueCalculator from "@/components/DomainValueCalculator";
 
-export default function DomainCompetitiveAnalysisPage() {
+export default function DomainValueCalculatorPage() {
   // Set up meta tags for this page
   useEffect(() => {
     // Page title
-    document.title = "Domain Competitive Analysis | Compare Domains";
+    document.title = "Domain Value Calculator | AI Domain Valuation";
     
     // Update meta description
-    const description = "Compare your domain to similar domains that have recently sold in terms of length, keywords, and potential value with our Competitive Analysis Tool.";
+    const description = "Our AI-powered Domain Value Calculator estimates domain worth based on keywords, TLD availability, and real market data from recently sold domains.";
     
     // Helper function to update meta tags
     const updateMetaTag = (name: string, content: string) => {
@@ -33,7 +33,7 @@ export default function DomainCompetitiveAnalysisPage() {
     
     // Update all meta tags
     updateMetaTag('description', description);
-    updateMetaTag('keywords', 'domain comparison, competitive analysis, domain value, similar domains, domain market, domain length, domain keywords');
+    updateMetaTag('keywords', 'domain value calculator, domain appraisal, domain valuation, domain price, domain worth, AI domain valuation, market-based valuation, domain TLD analysis');
     
     // Open Graph meta tags
     updateMetaTag('og:title', document.title);
@@ -72,14 +72,14 @@ export default function DomainCompetitiveAnalysisPage() {
       <main className="flex-grow">
         <div className="bg-black text-white py-12 px-4">
           <div className="max-w-6xl mx-auto text-center">
-            <h1 className="text-4xl font-bold mb-4">Domain Competitive Analysis</h1>
+            <h1 className="text-4xl font-bold mb-4">Domain Value Calculator</h1>
             <p className="text-xl max-w-3xl mx-auto">
-              Compare your domain to similar domains that have recently sold in the marketplace
+              Calculate your domain's worth with our AI-powered valuation tool
             </p>
           </div>
         </div>
         
-        <CompetitiveAnalysisTool />
+        <DomainValueCalculator />
       </main>
       
       <Footer />
