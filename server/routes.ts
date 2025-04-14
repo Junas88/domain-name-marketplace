@@ -374,6 +374,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
+  // Get most viewed domains
+  app.get("/api/admin/domains/most-viewed", async (req, res) => {
+    try {
+      const limit = req.query.limit ? parseInt(req.query.limit as string) : 10;
+      const stats = await storage.getDomainStats();
+      
+      // The mostViewedDomains is already part of stats
+      if (stats.mostViewedDomains) {
+        // Limit the results
+        const limitedDomains = stats.mostViewedDomains.slice(0, limit);
+        res.json(limitedDomains);
+      } else {
+        res.json([]);
+      }
+    } catch (error) {
+      console.error("Error fetching most viewed domains:", error);
+      res.status(500).json({ message: "Failed to fetch most viewed domains" });
+    }
+  });
+  
   // Get all offers (admin)
   app.get("/api/admin/offers", async (req, res) => {
     try {
