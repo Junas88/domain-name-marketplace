@@ -34,8 +34,18 @@ async function updateDomain(id, description, cookies) {
   return await response.json();
 }
 
+// Function to check if a description is already short enough
+function isShortDescription(description) {
+  return description.length < 100;
+}
+
 // Function to create shorter, more professional descriptions
 function createShortDescription(domain) {
+  // Skip domains that already have short descriptions
+  if (isShortDescription(domain.description)) {
+    return domain.description;
+  }
+  
   const name = domain.name.toLowerCase().replace(/\.com$|\.net$|\.org$/, '');
   
   // Create short, professional descriptions based on category
