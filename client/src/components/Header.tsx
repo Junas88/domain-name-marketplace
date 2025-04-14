@@ -37,6 +37,12 @@ export default function Header() {
             >
               Domain Finder
             </Link>
+            <Link 
+              href="/domain-value-calculator" 
+              className="text-neutral-800 hover:text-black font-medium cursor-pointer"
+            >
+              Value Calculator
+            </Link>
             <Link href="/guide" className="text-neutral-800 hover:text-black font-medium">
               Domain Guide
             </Link>
@@ -91,6 +97,13 @@ export default function Header() {
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Domain Finder
+              </Link>
+              <Link 
+                href="/domain-value-calculator" 
+                className="block px-3 py-2 text-neutral-800 hover:bg-neutral-100 rounded-md cursor-pointer"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Value Calculator
               </Link>
               <Link 
                 href="/guide" 
