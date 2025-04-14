@@ -49,7 +49,8 @@ export default function RecentlySoldDomains() {
           href={`https://${domain.name}`}
           target="_blank" 
           rel="noopener noreferrer" 
-          className="font-bold text-white mx-3 text-xl hover:underline"
+          className="font-bold text-white mx-3 text-xl transition-all duration-300 hover:underline hover:text-yellow-300"
+          aria-label={`View the domain ${domain.name}`}
         >
           {domain.name}
         </a>
@@ -61,22 +62,25 @@ export default function RecentlySoldDomains() {
   };
 
   return (
-    <div className="bg-black text-white py-5 overflow-hidden w-full">
+    <div 
+      className="bg-black text-white py-5 overflow-hidden w-full group"
+      aria-label="Recent domain sales ticker - hover to pause animation"
+    >
       {/* Hidden heading for SEO and accessibility */}
       <h2 className="sr-only">Recent Domain Sales</h2>
       
-      {/* Continuous scrolling ticker */}
+      {/* Continuous scrolling ticker with pause on hover */}
       <div className="relative flex overflow-x-hidden h-14">
         <div 
           ref={scrollerRef}
-          className="animate-marquee whitespace-nowrap flex items-center"
+          className="animate-marquee group-hover:animate-none whitespace-nowrap flex items-center cursor-default"
         >
           {renderDomainItems()}
         </div>
         
         {/* Duplicate for seamless looping */}
         <div 
-          className="animate-marquee2 whitespace-nowrap flex items-center absolute top-0"
+          className="animate-marquee2 group-hover:animate-none whitespace-nowrap flex items-center absolute top-0 cursor-default"
         >
           {renderDomainItems()}
         </div>
