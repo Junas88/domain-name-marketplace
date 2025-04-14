@@ -18,6 +18,7 @@ import {
   EmailSubmission, Offer, InsertDomain, InsertPageContent,
   InsertSeoSettings
 } from "@shared/schema";
+import { generateDomainDescription } from "@/utils/domainDescriptionGenerator";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import {
   Table,
@@ -1167,7 +1168,25 @@ export default function SimpleAdminPage() {
                       <FormItem>
                         <FormLabel>Domain Name</FormLabel>
                         <FormControl>
-                          <Input placeholder="example.com" {...field} />
+                          <Input 
+                            placeholder="example.com" 
+                            {...field} 
+                            onChange={(e) => {
+                              field.onChange(e);
+                              // Auto-generate description if category is already selected
+                              const category = domainForm.getValues("category");
+                              if (e.target.value && category) {
+                                // Capitalize first letter of category for description generator
+                                const formattedCategory = category.charAt(0).toUpperCase() + category.slice(1);
+                                const generatedDescription = generateDomainDescription(e.target.value, formattedCategory);
+                                
+                                domainForm.setValue("description", generatedDescription, { 
+                                  shouldValidate: true,
+                                  shouldDirty: true 
+                                });
+                              }
+                            }}
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -1232,7 +1251,25 @@ export default function SimpleAdminPage() {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Category</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <Select 
+                          onValueChange={(value) => {
+                            field.onChange(value);
+                            
+                            // Auto-generate description when category is selected
+                            const domainName = domainForm.getValues("name");
+                            if (domainName && value) {
+                              // Capitalize first letter of category for description generator
+                              const formattedCategory = value.charAt(0).toUpperCase() + value.slice(1);
+                              const generatedDescription = generateDomainDescription(domainName, formattedCategory);
+                              
+                              domainForm.setValue("description", generatedDescription, { 
+                                shouldValidate: true,
+                                shouldDirty: true 
+                              });
+                            }
+                          }} 
+                          defaultValue={field.value}
+                        >
                           <FormControl>
                             <SelectTrigger>
                               <SelectValue placeholder="Select a category" />
