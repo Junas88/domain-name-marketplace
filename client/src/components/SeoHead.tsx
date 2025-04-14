@@ -17,12 +17,30 @@ export default function SeoHead({ pageKey }: SeoHeadProps) {
   useEffect(() => {
     if (!seoSettings) return;
 
-    // Update title - critical for SEO
+    // Update title - critical for SEO (keep it under 60 characters for optimal display)
     document.title = seoSettings.title;
 
     // Update essential meta tags for Google search ranking
     updateMetaTag('description', seoSettings.metaDescription);
     updateMetaTag('keywords', seoSettings.metaKeywords);
+    
+    // Open Graph meta tags for better social media sharing
+    updateMetaTag('og:title', seoSettings.title);
+    updateMetaTag('og:description', seoSettings.metaDescription);
+    updateMetaTag('og:type', 'website');
+    updateMetaTag('og:url', window.location.href);
+    
+    // Twitter card meta tags
+    updateMetaTag('twitter:card', 'summary_large_image');
+    updateMetaTag('twitter:title', seoSettings.title);
+    updateMetaTag('twitter:description', seoSettings.metaDescription);
+    
+    // Mobile optimization meta tags
+    updateMetaTag('viewport', 'width=device-width, initial-scale=1, maximum-scale=5');
+
+    // Enhanced semantic tags
+    updateMetaTag('robots', 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1');
+    updateMetaTag('author', 'Domain Name Guide');
     
     // Update structured data for rich snippets in Google search results
     updateStructuredData(seoSettings.structuredData);
@@ -43,13 +61,18 @@ export default function SeoHead({ pageKey }: SeoHeadProps) {
   const updateMetaTag = (name: string, content: string | null) => {
     if (!content) return;
     
-    let metaTag = document.querySelector(`meta[name="${name}"]`);
+    // Handle OpenGraph and Twitter tags which use 'property' instead of 'name'
+    const isPropertyTag = name.startsWith('og:') || name.startsWith('twitter:');
+    const attrName = isPropertyTag ? 'property' : 'name';
+    
+    // Check for existing tag with the correct attribute
+    let metaTag = document.querySelector(`meta[${attrName}="${name}"]`);
     
     if (metaTag) {
       metaTag.setAttribute('content', content);
     } else {
       metaTag = document.createElement('meta');
-      metaTag.setAttribute('name', name);
+      metaTag.setAttribute(attrName, name);
       metaTag.setAttribute('content', content);
       document.head.appendChild(metaTag);
     }
