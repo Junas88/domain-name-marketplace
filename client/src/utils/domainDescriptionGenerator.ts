@@ -51,5 +51,5 @@ export function generateDomainDescription(domainName: string, category: string):
   };
   
   // Return the appropriate description based on category
-  return categoryDescriptions[category] || `Premium domain name with excellent branding potential.`;
+  return categoryDescriptions[category] || categoryDescriptions[normalizedCategory] || `Premium domain name with excellent branding potential.`;
 }
