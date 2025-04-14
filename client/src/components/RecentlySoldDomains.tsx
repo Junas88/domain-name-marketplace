@@ -78,9 +78,9 @@ export default function RecentlySoldDomains() {
           {renderDomainItems()}
         </div>
         
-        {/* Duplicate for seamless looping */}
+        {/* Duplicate for seamless looping - hidden when animation is paused */}
         <div 
-          className="animate-marquee2 group-hover:animate-none whitespace-nowrap flex items-center absolute top-0 cursor-default"
+          className="animate-marquee2 group-hover:opacity-0 group-hover:invisible whitespace-nowrap flex items-center absolute top-0 cursor-default transition-opacity duration-200"
         >
           {renderDomainItems()}
         </div>
