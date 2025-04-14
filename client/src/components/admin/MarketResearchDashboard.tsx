@@ -281,7 +281,9 @@ const MarketResearchDashboard = () => {
       );
     }
     
-    if (!newsData || !newsData?.news || !Array.isArray(newsData?.news)) {
+    const news = newsData as NewsData | undefined;
+    
+    if (!news || !news.news || !Array.isArray(news.news) || news.news.length === 0) {
       return (
         <Card>
           <CardHeader>
@@ -299,7 +301,7 @@ const MarketResearchDashboard = () => {
     
     return (
       <div className="space-y-4">
-        {newsData.news.map((item: any, index: number) => (
+        {news.news.map((item: NewsItem, index: number) => (
           <Card key={index} className="overflow-hidden">
             <CardHeader className="pb-2">
               <div className="flex justify-between items-start">
@@ -372,7 +374,9 @@ const MarketResearchDashboard = () => {
       );
     }
     
-    if (!pricingData || !pricingData.categoryComparison) {
+    const pricing = pricingData as PricingData | undefined;
+    
+    if (!pricing || !pricing.categoryComparison || pricing.categoryComparison.length === 0) {
       return (
         <Card>
           <CardHeader>
@@ -389,9 +393,9 @@ const MarketResearchDashboard = () => {
     }
     
     // Prepare chart data
-    const categories = pricingData.categoryComparison.map((item: any) => item.category);
-    const yourPrices = pricingData.categoryComparison.map((item: any) => item.yourAverage);
-    const marketPrices = pricingData.categoryComparison.map((item: any) => item.marketAverage);
+    const categories = pricing.categoryComparison.map((item: CategoryComparison) => item.category);
+    const yourPrices = pricing.categoryComparison.map((item: CategoryComparison) => item.yourAverage);
+    const marketPrices = pricing.categoryComparison.map((item: CategoryComparison) => item.marketAverage);
     
     const chartData = {
       labels: categories,
@@ -457,10 +461,10 @@ const MarketResearchDashboard = () => {
               <div>
                 <h4 className="font-semibold mb-2">Above Market Average</h4>
                 <div className="space-y-1">
-                  {pricingData.aboveMarket && pricingData.aboveMarket.map((category: string, i: number) => (
+                  {pricing.aboveMarket && pricing.aboveMarket.map((category: string, i: number) => (
                     <Badge key={i} variant="default" className="mr-2 mb-2">{category}</Badge>
                   ))}
-                  {(!pricingData.aboveMarket || pricingData.aboveMarket.length === 0) && (
+                  {(!pricing.aboveMarket || pricing.aboveMarket.length === 0) && (
                     <p className="text-muted-foreground text-sm">No categories above market average</p>
                   )}
                 </div>
@@ -469,10 +473,10 @@ const MarketResearchDashboard = () => {
               <div>
                 <h4 className="font-semibold mb-2">Below Market Average</h4>
                 <div className="space-y-1">
-                  {pricingData.belowMarket && pricingData.belowMarket.map((category: string, i: number) => (
+                  {pricing.belowMarket && pricing.belowMarket.map((category: string, i: number) => (
                     <Badge key={i} variant="secondary" className="mr-2 mb-2">{category}</Badge>
                   ))}
-                  {(!pricingData.belowMarket || pricingData.belowMarket.length === 0) && (
+                  {(!pricing.belowMarket || pricing.belowMarket.length === 0) && (
                     <p className="text-muted-foreground text-sm">No categories below market average</p>
                   )}
                 </div>
@@ -486,7 +490,7 @@ const MarketResearchDashboard = () => {
             </CardHeader>
             <CardContent>
               <ul className="list-disc pl-5 space-y-2">
-                {pricingData.recommendations && pricingData.recommendations.map((rec: string, i: number) => (
+                {pricing.recommendations && pricing.recommendations.map((rec: string, i: number) => (
                   <li key={i}>{rec}</li>
                 ))}
               </ul>
@@ -550,7 +554,9 @@ const MarketResearchDashboard = () => {
       );
     }
     
-    if (!demandData || !demandData.categoryDemand) {
+    const demand = demandData as DemandData | undefined;
+    
+    if (!demand || !demand.categoryDemand || demand.categoryDemand.length === 0) {
       return (
         <Card>
           <CardHeader>
@@ -567,8 +573,8 @@ const MarketResearchDashboard = () => {
     }
     
     // Prepare data for Category Demand chart
-    const categoryLabels = demandData.categoryDemand.map((item: any) => item.category);
-    const categoryScores = demandData.categoryDemand.map((item: any) => item.score);
+    const categoryLabels = demand.categoryDemand.map((item: CategoryDemand) => item.category);
+    const categoryScores = demand.categoryDemand.map((item: CategoryDemand) => item.score);
     const categoryColors = generateColors(categoryLabels.length);
     
     const categoryChartData = {
@@ -585,8 +591,8 @@ const MarketResearchDashboard = () => {
     };
     
     // Prepare data for TLD Demand chart
-    const tldLabels = demandData.tldDemand.map((item: any) => item.tld);
-    const tldScores = demandData.tldDemand.map((item: any) => item.score);
+    const tldLabels = demand.tldDemand.map((item: TldDemand) => item.tld);
+    const tldScores = demand.tldDemand.map((item: TldDemand) => item.score);
     const tldColors = generateColors(tldLabels.length);
     
     const tldChartData = {
@@ -661,11 +667,11 @@ const MarketResearchDashboard = () => {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {demandData.risingTrends && demandData.risingTrends.map((trend: any, i: number) => (
+                {demand.risingTrends && demand.risingTrends.map((trend: Trend, i: number) => (
                   <div key={i} className="border-b pb-3 last:border-0">
                     <div className="flex justify-between items-center">
                       <h4 className="font-semibold">{trend.keyword}</h4>
-                      <Badge variant="default">+{trend.growthPercentage}%</Badge>
+                      <Badge variant="default">+{trend.growthPercentage || 0}%</Badge>
                     </div>
                     <p className="text-sm text-muted-foreground mt-1">{trend.reason}</p>
                   </div>
@@ -681,11 +687,11 @@ const MarketResearchDashboard = () => {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {demandData.decliningTrends && demandData.decliningTrends.map((trend: any, i: number) => (
+                {demand.decliningTrends && demand.decliningTrends.map((trend: Trend, i: number) => (
                   <div key={i} className="border-b pb-3 last:border-0">
                     <div className="flex justify-between items-center">
                       <h4 className="font-semibold">{trend.keyword}</h4>
-                      <Badge variant="destructive">-{trend.declinePercentage}%</Badge>
+                      <Badge variant="destructive">-{trend.declinePercentage || 0}%</Badge>
                     </div>
                     <p className="text-sm text-muted-foreground mt-1">{trend.reason}</p>
                   </div>
@@ -702,7 +708,7 @@ const MarketResearchDashboard = () => {
           </CardHeader>
           <CardContent>
             <div className="grid gap-4 md:grid-cols-3">
-              {demandData.industryHotspots && Object.entries(demandData.industryHotspots).map(([industry, activity]: [string, any], i: number) => (
+              {demand.industryHotspots && Object.entries(demand.industryHotspots).map(([industry, activity], i: number) => (
                 <div key={i} className="bg-secondary/20 p-4 rounded-lg">
                   <h4 className="font-semibold">{industry}</h4>
                   <p className="text-sm">{typeof activity === 'string' ? activity : JSON.stringify(activity)}</p>
@@ -770,7 +776,9 @@ const MarketResearchDashboard = () => {
       );
     }
     
-    if (!benchmarkData || !benchmarkData.performanceMetrics) {
+    const benchmarks = benchmarkData as BenchmarkData | undefined;
+    
+    if (!benchmarks || !benchmarks.performanceMetrics || benchmarks.performanceMetrics.length === 0) {
       return (
         <Card>
           <CardHeader>
@@ -787,12 +795,16 @@ const MarketResearchDashboard = () => {
     }
     
     // Prepare data for Radar chart
+    const metrics = benchmarks.performanceMetrics.map(metric => metric.metric);
+    const yourValues = benchmarks.performanceMetrics.map(metric => metric.yourValue);
+    const industryValues = benchmarks.performanceMetrics.map(metric => metric.industryAverage);
+    
     const radarData = {
-      labels: benchmarkData.performanceMetrics.metrics,
+      labels: metrics,
       datasets: [
         {
           label: 'Your Marketplace',
-          data: benchmarkData.performanceMetrics.yourValues,
+          data: yourValues,
           backgroundColor: 'rgba(75, 192, 192, 0.2)',
           borderColor: 'rgba(75, 192, 192, 1)',
           pointBackgroundColor: 'rgba(75, 192, 192, 1)',
@@ -802,7 +814,7 @@ const MarketResearchDashboard = () => {
         },
         {
           label: 'Industry Average',
-          data: benchmarkData.performanceMetrics.industryValues,
+          data: industryValues,
           backgroundColor: 'rgba(54, 162, 235, 0.2)',
           borderColor: 'rgba(54, 162, 235, 1)',
           pointBackgroundColor: 'rgba(54, 162, 235, 1)',
@@ -843,17 +855,15 @@ const MarketResearchDashboard = () => {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {benchmarkData.keyMetrics && benchmarkData.keyMetrics.map((metric: any, i: number) => (
+                {benchmarks.keyMetrics && Object.entries(benchmarks.keyMetrics).map(([key, data], i) => (
                   <div key={i} className="border-b pb-3 last:border-0">
                     <div className="flex justify-between items-center">
-                      <h4 className="font-semibold">{metric.name}</h4>
+                      <h4 className="font-semibold">{key}</h4>
                       <div className="flex items-center gap-2">
-                        <span>Your value: <strong>{metric.yourValue}</strong></span>
-                        <span className="text-muted-foreground">|</span>
-                        <span>Industry: {metric.industryValue}</span>
+                        <span>Value: <strong>{data.value}</strong></span>
                       </div>
                     </div>
-                    <p className="text-sm text-muted-foreground mt-1">{metric.description}</p>
+                    <p className="text-sm text-muted-foreground mt-1">{data.comparison}</p>
                   </div>
                 ))}
               </div>
@@ -866,7 +876,7 @@ const MarketResearchDashboard = () => {
             </CardHeader>
             <CardContent>
               <ul className="list-disc pl-5 space-y-2">
-                {benchmarkData.recommendations && benchmarkData.recommendations.map((rec: string, i: number) => (
+                {benchmarks.recommendations && benchmarks.recommendations.map((rec: string, i: number) => (
                   <li key={i}>{rec}</li>
                 ))}
               </ul>
