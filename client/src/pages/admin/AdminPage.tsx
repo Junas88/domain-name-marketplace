@@ -919,6 +919,11 @@ export default function AdminPage() {
               </TableBody>
             </Table>
           </div>
+          
+          {/* Domain Price Verification Tool */}
+          <div className="mt-8">
+            <DomainPriceVerifier />
+          </div>
         </TabsContent>
 
         {/* OFFERS TAB */}
