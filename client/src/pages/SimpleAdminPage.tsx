@@ -2912,6 +2912,221 @@ Instagram: https://instagram.com/domainnameguide`;
           </Card>
         </TabsContent>
         
+        {/* BACKUP/RESTORE TAB */}
+        <TabsContent value="backup" className="space-y-4">
+          <div className="flex justify-between items-center">
+            <h2 className="text-xl font-bold text-black">Data Backup & Restore</h2>
+          </div>
+          
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+            {/* Backup Section */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center">
+                  <Database className="mr-2 h-5 w-5 text-green-600" />
+                  Backup Data
+                </CardTitle>
+                <CardDescription>
+                  Create a complete backup of all your website data
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="text-sm text-muted-foreground">
+                  <p>This will create a JSON file containing all your:</p>
+                  <ul className="list-disc pl-5 mt-2 space-y-1">
+                    <li>Domain listings</li>
+                    <li>Page content</li>
+                    <li>SEO settings</li>
+                    <li>User inquiries & offers</li>
+                    <li>Consultation requests</li>
+                    <li>Email submissions</li>
+                  </ul>
+                </div>
+                
+                <div className="pt-2">
+                  <Button className="w-full" asChild>
+                    <a href="/api/admin/backup" download="domain-guide-backup.json">
+                      <Download className="mr-2 h-4 w-4" />
+                      Download Full Backup
+                    </a>
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+            
+            {/* Restore Section */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center">
+                  <RefreshCw className="mr-2 h-5 w-5 text-blue-600" />
+                  Restore Data
+                </CardTitle>
+                <CardDescription>
+                  Restore your website from a previous backup
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="text-sm text-muted-foreground">
+                  <p>Upload a previously downloaded backup file to restore your website data.</p>
+                  <div className="mt-2 p-2 bg-amber-50 border border-amber-200 rounded-md flex items-start">
+                    <AlertTriangle className="h-5 w-5 text-amber-500 mr-2 flex-shrink-0 mt-0.5" />
+                    <p className="text-amber-800 text-xs">
+                      Restoring will merge your backup with existing data. Existing records with the same IDs 
+                      will be updated with the backup values.
+                    </p>
+                  </div>
+                </div>
+                
+                <div className="pt-2 space-y-4">
+                  <div className="grid w-full items-center gap-1.5">
+                    <label htmlFor="backup-file" className="text-sm text-gray-700">
+                      Select a backup file (.json)
+                    </label>
+                    <input
+                      id="backup-file"
+                      type="file"
+                      accept=".json"
+                      className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm file:border-0 file:bg-transparent file:text-gray-600 file:text-sm file:font-medium"
+                      onChange={(e) => {
+                        // Store the selected file for upload
+                        if (e.target.files && e.target.files.length > 0) {
+                          const file = e.target.files[0];
+                          // You can store the file in state if needed
+                        }
+                      }}
+                    />
+                  </div>
+                  
+                  <Button 
+                    className="w-full"
+                    variant="default"
+                    onClick={async () => {
+                      const fileInput = document.getElementById('backup-file') as HTMLInputElement;
+                      if (!fileInput?.files || fileInput.files.length === 0) {
+                        toast({
+                          title: "Error",
+                          description: "Please select a backup file to restore",
+                          variant: "destructive",
+                        });
+                        return;
+                      }
+                      
+                      const file = fileInput.files[0];
+                      if (file.type !== 'application/json' && !file.name.endsWith('.json')) {
+                        toast({
+                          title: "Invalid File",
+                          description: "Please select a valid JSON backup file",
+                          variant: "destructive",
+                        });
+                        return;
+                      }
+                      
+                      try {
+                        // Show loading message
+                        toast({
+                          title: "Processing",
+                          description: "Restoring data from backup...",
+                        });
+                        
+                        // Read file content
+                        const reader = new FileReader();
+                        reader.onload = async (event) => {
+                          try {
+                            const content = event.target?.result as string;
+                            const backupData = JSON.parse(content);
+                            
+                            // Send to restore endpoint
+                            const res = await fetch('/api/admin/restore', {
+                              method: 'POST',
+                              headers: {
+                                'Content-Type': 'application/json',
+                              },
+                              body: JSON.stringify(backupData),
+                              credentials: 'include'
+                            });
+                            
+                            if (!res.ok) {
+                              const errorData = await res.json();
+                              throw new Error(errorData.message || 'Restore failed');
+                            }
+                            
+                            const result = await res.json();
+                            
+                            // Show success message
+                            toast({
+                              title: "Success",
+                              description: `Restore completed: ${result.restored.domains} domains, ${result.restored.pageContents} pages, ${result.restored.seoSettings} SEO settings restored`,
+                            });
+                            
+                            // Force refetch of all queries to update UI
+                            queryClient.refetchQueries({ type: 'all' });
+                            
+                          } catch (error) {
+                            console.error('Error processing backup:', error);
+                            toast({
+                              title: "Restore Failed",
+                              description: error instanceof Error ? error.message : "Invalid backup format",
+                              variant: "destructive",
+                            });
+                          }
+                        };
+                        
+                        // Read the file as text
+                        reader.readAsText(file);
+                        
+                      } catch (error) {
+                        console.error('Error during restore:', error);
+                        toast({
+                          title: "Restore Failed",
+                          description: error instanceof Error ? error.message : "Unknown error occurred",
+                          variant: "destructive",
+                        });
+                      }
+                    }}
+                  >
+                    <Upload className="mr-2 h-4 w-4" />
+                    Restore from Backup
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+            
+            {/* Backup Instructions */}
+            <Card className="md:col-span-2">
+              <CardHeader>
+                <CardTitle className="flex items-center">
+                  <Info className="mr-2 h-5 w-5 text-gray-600" />
+                  Best Practices
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid gap-6 md:grid-cols-2">
+                  <div className="space-y-3">
+                    <h3 className="font-medium">When to Create Backups:</h3>
+                    <ul className="space-y-2 text-sm list-disc pl-5">
+                      <li>Before making major changes to your website</li>
+                      <li>After adding a large number of new domains</li>
+                      <li>When updating important page content</li>
+                      <li>On a regular schedule (weekly/monthly)</li>
+                      <li>Before updating the website software</li>
+                    </ul>
+                  </div>
+                  <div className="space-y-3">
+                    <h3 className="font-medium">Backup Storage Tips:</h3>
+                    <ul className="space-y-2 text-sm list-disc pl-5">
+                      <li>Keep multiple backup versions</li>
+                      <li>Store backups in multiple locations</li>
+                      <li>Use clear file naming (e.g., include dates)</li>
+                      <li>Test your backups periodically</li>
+                      <li>Keep at least one offline copy of critical data</li>
+                    </ul>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </TabsContent>
+        
         {/* ACCOUNT TAB */}
         <TabsContent value="account" className="space-y-4">
           <h2 className="text-xl font-bold text-black">Account Settings</h2>
