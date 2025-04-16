@@ -6,7 +6,7 @@ import { useEffect, useRef, useState } from "react";
 
 export default function RecentlySoldDomains() {
   const { data: domains, isLoading, refetch } = useQuery<Domain[]>({
-    queryKey: ["/api/domains/recently-sold"],
+    queryKey: ["/api/domains/recently-sold", { t: Date.now() }], // Add timestamp to prevent caching
     staleTime: 0, // Always refetch
     refetchOnWindowFocus: true,
     refetchOnMount: true,

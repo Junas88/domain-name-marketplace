@@ -169,11 +169,60 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.setHeader('Expires', '0');
       res.setHeader('Pragma', 'no-cache');
       
+      // Add a random timestamp query param to bust any caching layers
+      const timestamp = Date.now();
+      
       const domains = await storage.getAllDomains();
+      
+      // Log domains being returned to help with debugging
+      console.log(`Returning ${domains.length} domains at ${timestamp}`);
+      // Log a sample of domain prices
+      if (domains.length > 0) {
+        console.log(`Sample prices: ${domains[0].name}: $${domains[0].price}, ${domains[domains.length-1].name}: $${domains[domains.length-1].price}`);
+      }
+      
       res.json(domains);
     } catch (error) {
       console.error("Error fetching domains:", error);
       res.status(500).json({ message: "Failed to fetch domains" });
+    }
+  });
+  
+  // Special endpoint to force cache refresh and get fresh domain data
+  app.get("/api/domains/fresh", async (req, res) => {
+    try {
+      // Apply the strongest possible cache-busting headers
+      res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, private, max-age=0');
+      res.setHeader('Expires', '0');
+      res.setHeader('Pragma', 'no-cache');
+      res.setHeader('Surrogate-Control', 'no-store');
+      
+      // Generate a random cache-buster
+      const timestamp = Date.now();
+      const randomValue = Math.random().toString(36).substring(2, 15);
+      
+      // Fetch fresh data from the database
+      const domains = await storage.getAllDomains();
+      
+      // Log the request for debugging
+      console.log(`/api/domains/fresh endpoint called at ${timestamp}, returning ${domains.length} domains`);
+      
+      // Sample the data to verify the prices in logs
+      if (domains.length > 0) {
+        const sampleDomains = domains.slice(0, 5);
+        console.log('Sample of domain prices:');
+        sampleDomains.forEach(d => console.log(`${d.name}: $${d.price.toLocaleString()}`));
+      }
+      
+      // Return the domains with a cache-busting wrapper
+      res.json({
+        domains,
+        cacheBuster: `${timestamp}-${randomValue}`,
+        timestamp
+      });
+    } catch (error) {
+      console.error("Error fetching fresh domains:", error);
+      res.status(500).json({ message: "Failed to fetch fresh domains" });
     }
   });
   
