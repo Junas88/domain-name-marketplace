@@ -3,7 +3,7 @@ import { X } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 
 interface ActivityNotification {
-  type: "offer" | "purchase" | "view";
+  type: "offer" | "view";
   domain: string;
   timeAgo: string;
 }
@@ -11,13 +11,13 @@ interface ActivityNotification {
 // Demo data for notifications - in a real app, this would come from an API
 const demoNotifications: ActivityNotification[] = [
   { type: "offer", domain: "techexperts.com", timeAgo: "2 minutes ago" },
-  { type: "purchase", domain: "cryptomania.com", timeAgo: "5 minutes ago" },
   { type: "view", domain: "healthonline.com", timeAgo: "just now" },
   { type: "offer", domain: "traveldeals.net", timeAgo: "3 minutes ago" },
-  { type: "purchase", domain: "fitnesspro.org", timeAgo: "7 minutes ago" },
   { type: "view", domain: "aiservices.io", timeAgo: "just now" },
   { type: "offer", domain: "ecommercetools.com", timeAgo: "1 minute ago" },
-  { type: "purchase", domain: "investorclub.net", timeAgo: "9 minutes ago" },
+  { type: "view", domain: "marketingsolutions.com", timeAgo: "just now" },
+  { type: "offer", domain: "digitalagency.net", timeAgo: "4 minutes ago" },
+  { type: "view", domain: "webhosting.io", timeAgo: "1 minute ago" },
 ];
 
 export default function ActivityNotification() {
@@ -85,13 +85,7 @@ export default function ActivityNotification() {
                   </svg>
                 </div>
               )}
-              {currentNotification.type === "purchase" && (
-                <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-green-500">
-                    <path d="M20 6L9 17l-5-5"></path>
-                  </svg>
-                </div>
-              )}
+
               {currentNotification.type === "view" && (
                 <div className="w-10 h-10 rounded-full bg-yellow-100 flex items-center justify-center">
                   <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-yellow-500">
@@ -105,7 +99,6 @@ export default function ActivityNotification() {
             <div className="flex-1">
               <h3 className="text-sm font-medium text-gray-900">
                 {currentNotification.type === "offer" && "Someone made an offer on"}
-                {currentNotification.type === "purchase" && "Someone purchased"}
                 {currentNotification.type === "view" && "Someone is viewing"}
               </h3>
               <p className="mt-1 text-sm text-gray-500 mb-0.5">
