@@ -1,14 +1,17 @@
 import { useEffect, useState } from "react";
-import { X } from "lucide-react";
+import { X, CheckCircle } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
+import { useQuery } from "@tanstack/react-query";
+import { queryClient } from "@/lib/queryClient";
+import { Domain } from "@shared/schema";
 
 interface ActivityNotification {
-  type: "offer" | "view";
+  type: "offer" | "view" | "sold";
   domain: string;
   timeAgo: string;
 }
 
-// Demo data for notifications - in a real app, this would come from an API
+// Fallback demo data for notifications (used when no real data is available)
 const demoNotifications: ActivityNotification[] = [
   { type: "offer", domain: "techexperts.com", timeAgo: "2 minutes ago" },
   { type: "view", domain: "healthonline.com", timeAgo: "just now" },
@@ -24,6 +27,68 @@ export default function ActivityNotification() {
   const [isVisible, setIsVisible] = useState(false);
   const [currentNotification, setCurrentNotification] = useState<ActivityNotification | null>(null);
   const [isInitialDelay, setIsInitialDelay] = useState(true);
+  const [liveNotifications, setLiveNotifications] = useState<ActivityNotification[]>([]);
+
+  // Fetch recently sold domains
+  const { data: recentlySoldDomains } = useQuery<Domain[]>({
+    queryKey: ["/api/domains/recently-sold"],
+    refetchInterval: 30000, // Refetch every 30 seconds
+  });
+
+  // Fetch all domains and subscribe to them for real-time updates
+  const { data: allDomains } = useQuery<Domain[]>({
+    queryKey: ["/api/domains"],
+    refetchInterval: 30000, // Refetch every 30 seconds
+  });
+
+  // Listen for changes in recently sold domains and update notifications
+  useEffect(() => {
+    if (recentlySoldDomains && recentlySoldDomains.length > 0) {
+      const soldNotifications: ActivityNotification[] = recentlySoldDomains.map(domain => ({
+        type: "sold",
+        domain: domain.name,
+        timeAgo: "recently"
+      }));
+      
+      // Combine with view/offer notifications
+      const updatedNotifications = [
+        ...soldNotifications,
+        ...demoNotifications.filter(n => n.type !== "sold")
+      ];
+      
+      setLiveNotifications(updatedNotifications);
+    } else {
+      setLiveNotifications(demoNotifications);
+    }
+  }, [recentlySoldDomains]);
+
+  // Subscribe to domain status changes
+  useEffect(() => {
+    // Setup subscription for domain changes
+    const unsubscribe = queryClient.getQueryCache().subscribe((event) => {
+      if (event.type === 'updated' && 
+          (event.query.queryKey[0] === '/api/domains' || 
+           event.query.queryKey[0] === '/api/domains/recently-sold')) {
+        // Force update notifications when domain data changes
+        if (recentlySoldDomains) {
+          const soldNotifications: ActivityNotification[] = recentlySoldDomains.map(domain => ({
+            type: "sold",
+            domain: domain.name,
+            timeAgo: "recently"
+          }));
+          
+          setLiveNotifications(prevNotifications => {
+            const otherNotifications = prevNotifications.filter(n => n.type !== "sold");
+            return [...soldNotifications, ...otherNotifications];
+          });
+        }
+      }
+    });
+
+    return () => {
+      unsubscribe();
+    };
+  }, [recentlySoldDomains]);
 
   useEffect(() => {
     // Add initial delay before showing first notification
@@ -35,13 +100,13 @@ export default function ActivityNotification() {
   }, []);
 
   useEffect(() => {
-    if (isInitialDelay) return;
+    if (isInitialDelay || liveNotifications.length === 0) return;
 
     // Function to show a random notification
     const showRandomNotification = () => {
-      // Get a random notification from the demo data
-      const randomIndex = Math.floor(Math.random() * demoNotifications.length);
-      setCurrentNotification(demoNotifications[randomIndex]);
+      // Get a random notification from our live notifications
+      const randomIndex = Math.floor(Math.random() * liveNotifications.length);
+      setCurrentNotification(liveNotifications[randomIndex]);
       setIsVisible(true);
 
       // Auto-hide after 5 seconds
@@ -58,7 +123,7 @@ export default function ActivityNotification() {
     const intervalId = setInterval(showRandomNotification, randomInterval);
 
     return () => clearInterval(intervalId);
-  }, [isInitialDelay]);
+  }, [isInitialDelay, liveNotifications]);
 
   const handleClose = () => {
     setIsVisible(false);
@@ -94,12 +159,19 @@ export default function ActivityNotification() {
                   </svg>
                 </div>
               )}
+              
+              {currentNotification.type === "sold" && (
+                <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center">
+                  <CheckCircle className="h-5 w-5 text-green-500" />
+                </div>
+              )}
             </div>
 
             <div className="flex-1">
               <h3 className="text-sm font-medium text-gray-900">
                 {currentNotification.type === "offer" && "Someone made an offer on"}
                 {currentNotification.type === "view" && "Someone is viewing"}
+                {currentNotification.type === "sold" && "Domain was just sold"}
               </h3>
               <p className="mt-1 text-sm text-gray-500 mb-0.5">
                 <span className="font-semibold">{currentNotification.domain}</span>
