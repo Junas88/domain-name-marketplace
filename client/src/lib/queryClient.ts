@@ -57,8 +57,8 @@ export const queryClient = new QueryClient({
       refetchInterval: false,
       refetchOnWindowFocus: true, // Enable refetching when window regains focus
       refetchOnMount: 'always', // Always refetch when component mounts
-      // Shorter stale time to improve responsiveness to content changes
-      staleTime: 1000 * 60, // 1 minute
+      // Set very short stale time to improve responsiveness to content changes
+      staleTime: 0, // Always refetch
       retry: false,
     },
     mutations: {
@@ -75,4 +75,14 @@ queryClient.setQueryDefaults(['/api/page-contents/contact', '/api/page-contents/
   refetchOnWindowFocus: true,
   refetchInterval: false,
   retry: false,
+});
+
+// Never cache domain data to ensure fresh pricing
+queryClient.setQueryDefaults(['/api/domains', '/api/domains/recently-sold'], {
+  staleTime: 0, // Always refetch
+  gcTime: 0, // No caching
+  refetchOnMount: true,
+  refetchOnWindowFocus: true,
+  refetchOnReconnect: true,
+  retry: true, // Try again on failure
 });

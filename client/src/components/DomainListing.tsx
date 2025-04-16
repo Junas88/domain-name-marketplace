@@ -72,11 +72,18 @@ export default function DomainListing({ onMakeOffer }: DomainListingProps) {
   // Use either direct search text or URL search param
   const searchQuery = searchText || searchQueryFromUrl;
 
-  // Fetch domains
-  const { data: domains, isLoading, isError } = useQuery<Domain[]>({
+  // Fetch domains with forced refresh
+  const { data: domains, isLoading, isError, refetch } = useQuery<Domain[]>({
     queryKey: ['/api/domains'],
-    refetchOnWindowFocus: false,
+    staleTime: 0, // Always refetch
+    refetchOnWindowFocus: true,
+    refetchOnMount: true,
   });
+
+  // Force refetch on component mount to ensure latest data
+  useEffect(() => {
+    refetch();
+  }, [refetch]);
 
   // Apply filters and search
   const filteredDomains = domains?.filter(domain => {
@@ -305,6 +312,23 @@ export default function DomainListing({ onMakeOffer }: DomainListingProps) {
         {/* Filters */}
         <div className="max-w-4xl mx-auto mb-12 border border-gray-200 rounded-lg p-4">
           <div className="flex flex-wrap items-center gap-6" role="search" aria-label="Domain filter options">
+            {/* Force refresh button */}
+            <Button 
+              onClick={() => {
+                queryClient.invalidateQueries({ queryKey: ['/api/domains'] });
+                queryClient.invalidateQueries({ queryKey: ['/api/domains/recently-sold'] });
+                refetch();
+                toast({
+                  title: "Refreshed!",
+                  description: "Domain listings have been refreshed with the latest data.",
+                });
+              }}
+              className="bg-green-600 hover:bg-green-700 text-white"
+              size="sm"
+            >
+              Refresh Prices
+            </Button>
+            
             <div className="w-full md:w-auto">
               <label htmlFor="price-range-select" className="block text-sm font-medium text-neutral-800 mb-1">Price Range</label>
               <Select 
