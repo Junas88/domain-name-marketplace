@@ -474,7 +474,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
           try {
             let newPrice;
             
-            if (adjustmentType === 'fixed') {
+            // Make sure domain is defined
+          if (!domain) {
+            throw new Error(`Domain not found`);
+          }
+          
+          if (adjustmentType === 'fixed') {
               // Add or subtract a fixed amount
               newPrice = domain.price + Number(adjustmentValue);
             } else {
@@ -1190,6 +1195,141 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error: any) {
       console.error('Error getting ebook info:', error);
       res.status(500).json({ error: error?.message || 'Unknown error retrieving ebook info' });
+    }
+  });
+  
+  // Export domains to CSV
+  app.get("/api/admin/domains/export", async (req, res) => {
+    try {
+      // Check if user is authenticated and an admin
+      if (!req.isAuthenticated() || !(req.user?.isAdmin)) {
+        return res.status(403).json({ message: "Unauthorized" });
+      }
+      
+      const domains = await storage.getAllDomains();
+      
+      // Create CSV header
+      const csvHeader = [
+        "ID", "Name", "Description", "Price", "Category", 
+        "Length", "IsSold", "ViewCount", "CreatedAt", "UpdatedAt"
+      ].join(",");
+      
+      // Format domain rows
+      const domainRows = domains.map(domain => {
+        return [
+          domain.id,
+          `"${domain.name.replace(/"/g, '""')}"`,  // Escape quotes in CSV
+          `"${(domain.description || '').replace(/"/g, '""')}"`,
+          domain.price,
+          `"${domain.category || ''}"`,
+          domain.length,
+          domain.isSold ? "true" : "false",
+          domain.viewCount || 0,
+          domain.createdAt ? new Date(domain.createdAt).toISOString() : "",
+          domain.updatedAt ? new Date(domain.updatedAt).toISOString() : ""
+        ].join(",");
+      });
+      
+      // Combine header and rows
+      const csvContent = [csvHeader, ...domainRows].join("\n");
+      
+      // Set response headers for CSV download
+      res.setHeader("Content-Type", "text/csv");
+      res.setHeader("Content-Disposition", "attachment; filename=domains-export.csv");
+      
+      res.send(csvContent);
+    } catch (error) {
+      console.error("Error exporting domains:", error);
+      res.status(500).json({ message: "Failed to export domains" });
+    }
+  });
+  
+  // Import domains from CSV
+  app.post("/api/admin/domains/import", upload.single('csv'), async (req, res) => {
+    try {
+      // Check if user is authenticated and an admin
+      if (!req.isAuthenticated() || !(req.user?.isAdmin)) {
+        return res.status(403).json({ message: "Unauthorized" });
+      }
+      
+      if (!req.file) {
+        return res.status(400).json({ message: "No CSV file uploaded" });
+      }
+      
+      // Read CSV file
+      const fileContent = fs.readFileSync(req.file.path, 'utf8');
+      const rows = fileContent.split('\n');
+      
+      // First row is header
+      const header = rows[0].split(',');
+      
+      // Process each row from 2nd row onward
+      const results = {
+        total: rows.length - 1,
+        success: 0,
+        failed: 0,
+        errors: []
+      };
+      
+      for (let i = 1; i < rows.length; i++) {
+        if (!rows[i].trim()) continue; // Skip empty rows
+        
+        const values = rows[i].split(',');
+        
+        try {
+          // Map CSV values to domain object
+          // Basic CSV parsing (doesn't handle quoted values with commas)
+          // For a real implementation, consider using a CSV parsing library
+          const domainData = {
+            name: values[1]?.replace(/^"(.*)"$/, '$1') || '',  // Remove quotes if present
+            description: values[2]?.replace(/^"(.*)"$/, '$1') || '',
+            price: parseFloat(values[3] || '0'),
+            category: values[4]?.replace(/^"(.*)"$/, '$1') || '',
+            length: parseInt(values[5] || '0'),
+            isSold: values[6]?.toLowerCase() === 'true'
+          };
+          
+          // Validate data
+          if (!domainData.name) {
+            throw new Error("Domain name is required");
+          }
+          
+          // Check if domain with this name already exists
+          const domains = await storage.searchDomains(domainData.name);
+          const existingDomain = domains.find(d => d.name.toLowerCase() === domainData.name.toLowerCase());
+          
+          if (existingDomain) {
+            // Update existing domain
+            await storage.updateDomain(existingDomain.id, domainData);
+          } else {
+            // Create new domain
+            await storage.createDomain(domainData);
+          }
+          
+          results.success++;
+        } catch (error) {
+          results.failed++;
+          results.errors.push(`Row ${i}: ${error.message}`);
+        }
+      }
+      
+      // Delete the uploaded file
+      fs.unlinkSync(req.file.path);
+      
+      res.json({
+        success: true,
+        message: `Import completed: ${results.success} domains imported/updated, ${results.failed} failed`,
+        results
+      });
+    } catch (error) {
+      console.error("Error importing domains:", error);
+      
+      // Delete the uploaded file if it exists
+      if (req.file && fs.existsSync(req.file.path)) {
+        fs.unlinkSync(req.file.path);
+      }
+      
+      res.status(500).json({ message: "Failed to import domains", error: error.message });
     }
   });
 
