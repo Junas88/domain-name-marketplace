@@ -370,7 +370,13 @@ export default function SimpleAdminPage() {
       setDomainDialogOpen(false);
       domainForm.reset();
       setEditingDomain(null);
+      
+      // Invalidate both admin and public domain queries
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/domains'] });
       queryClient.invalidateQueries({ queryKey: ['/api/domains'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/domains/recently-sold'] });
+      
+      // Force refetch to ensure data consistency
       refetchDomains();
     },
     onError: (error: Error) => {
@@ -410,8 +416,19 @@ export default function SimpleAdminPage() {
       });
       setConfirmDeleteDialogOpen(false);
       setItemToDelete(null);
+      
+      // Invalidate all domain-related queries to ensure data consistency
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/domains'] });
       queryClient.invalidateQueries({ queryKey: ['/api/domains'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/domains/recently-sold'] });
+      
+      // Force refetch to ensure consistent data view
       refetchDomains();
+      
+      // Force refetch of all queries after a short delay
+      setTimeout(() => {
+        queryClient.refetchQueries({ type: 'all' });
+      }, 300);
     },
     onError: (error: Error) => {
       toast({
@@ -451,8 +468,19 @@ export default function SimpleAdminPage() {
         title: "Success",
         description: "Domain marked as sold",
       });
+      
+      // Invalidate all domain queries
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/domains'] });
       queryClient.invalidateQueries({ queryKey: ['/api/domains'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/domains/recently-sold'] });
+      
+      // Force refetches
       refetchDomains();
+      
+      // Delayed refetch to ensure update propagation
+      setTimeout(() => {
+        queryClient.refetchQueries({ type: 'all' });
+      }, 300);
     },
     onError: (error: Error) => {
       toast({
