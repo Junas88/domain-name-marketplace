@@ -463,24 +463,32 @@ export default function SimpleAdminPage() {
       const errorData = await res.json().catch(() => ({ message: "Unknown error occurred" }));
       throw new Error(errorData.message || "Failed to mark domain as sold");
     },
-    onSuccess: () => {
+    onSuccess: (_, domainId) => {
+      // Find the domain that was marked as sold from our current state
+      const soldDomain = domains.find(d => d.id === domainId);
+      const domainName = soldDomain ? soldDomain.name : `Domain #${domainId}`;
+      
       toast({
         title: "Success",
-        description: "Domain marked as sold",
+        description: `${domainName} marked as sold`,
       });
       
-      // Invalidate all domain queries
+      // Invalidate all domain queries to update everywhere in the UI
       queryClient.invalidateQueries({ queryKey: ['/api/admin/domains'] });
       queryClient.invalidateQueries({ queryKey: ['/api/domains'] });
       queryClient.invalidateQueries({ queryKey: ['/api/domains/recently-sold'] });
       
-      // Force refetches
+      // Force immediate refetch
       refetchDomains();
       
-      // Delayed refetch to ensure update propagation
+      // Delayed refetch to ensure update propagation through the system
       setTimeout(() => {
+        // Force refresh all queries to update the UI everywhere
         queryClient.refetchQueries({ type: 'all' });
-      }, 300);
+        
+        // Specifically refetch the recently sold domains to trigger the notification system
+        queryClient.refetchQueries({ queryKey: ['/api/domains/recently-sold'] });
+      }, 500);
     },
     onError: (error: Error) => {
       toast({
@@ -922,12 +930,27 @@ export default function SimpleAdminPage() {
     onSuccess: (data) => {
       toast({
         title: "Success",
-        description: data.message || "Domains marked as sold successfully",
+        description: data.message || `${selectedDomains.length} domains marked as sold successfully`,
       });
       setSelectedDomains([]);
       setSelectAll(false);
+      
+      // Invalidate all domain-related queries to update UI everywhere
       queryClient.invalidateQueries({ queryKey: ['/api/domains'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/domains'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/domains/recently-sold'] });
+      
+      // Force immediate refetch
       refetchDomains();
+      
+      // Delayed refetch to ensure all notifications update properly
+      setTimeout(() => {
+        // Force refresh all queries to update the UI everywhere
+        queryClient.refetchQueries({ type: 'all' });
+        
+        // Specifically refetch the recently sold domains to trigger notifications
+        queryClient.refetchQueries({ queryKey: ['/api/domains/recently-sold'] });
+      }, 500);
     },
     onError: (error: Error) => {
       toast({
