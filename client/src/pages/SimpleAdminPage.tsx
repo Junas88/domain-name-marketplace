@@ -1755,6 +1755,40 @@ export default function SimpleAdminPage() {
               </Form>
             </DialogContent>
           </Dialog>
+          
+          {/* Hidden file input for CSV upload */}
+          <input
+            id="csv-upload-input"
+            type="file"
+            accept=".csv"
+            className="hidden"
+            onChange={handleCsvUpload}
+          />
+          
+          {/* Bulk Delete Confirmation Dialog */}
+          <AlertDialog 
+            open={confirmBulkDeleteDialogOpen} 
+            onOpenChange={setConfirmBulkDeleteDialogOpen}
+          >
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  This action will permanently delete {itemsToDelete.length} domains.
+                  This cannot be undone.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction
+                  className="bg-red-600 hover:bg-red-700"
+                  onClick={executeBulkDelete}
+                >
+                  Delete
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </TabsContent>
         
         {/* OFFERS TAB */}
