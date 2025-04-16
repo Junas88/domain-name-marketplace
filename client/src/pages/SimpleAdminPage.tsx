@@ -1389,7 +1389,7 @@ export default function SimpleAdminPage() {
           </Tabs>
         </div>
         
-        <TabsList className="grid w-full grid-cols-9">
+        <TabsList className="grid w-full grid-cols-10">
           <TabsTrigger value="domains">Domains</TabsTrigger>
           <TabsTrigger value="offers">Offers</TabsTrigger>
           <TabsTrigger value="consultations">Consultations</TabsTrigger>
@@ -1398,6 +1398,7 @@ export default function SimpleAdminPage() {
           <TabsTrigger value="editor">Website Editor</TabsTrigger>
           <TabsTrigger value="ebooks">Ebook Files</TabsTrigger>
           <TabsTrigger value="analytics">Analytics</TabsTrigger>
+          <TabsTrigger value="backup">Backup/Restore</TabsTrigger>
           <TabsTrigger value="account">Account</TabsTrigger>
         </TabsList>
         

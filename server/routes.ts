@@ -1586,6 +1586,189 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ message: "Failed to fetch inquiries by status" });
     }
   });
+  
+  // Middleware to check if user is authenticated and an admin
+  const authMiddleware = (req: Request, res: Response, next: NextFunction) => {
+    if (!req.isAuthenticated()) {
+      return res.status(401).json({ message: "Not authenticated" });
+    }
+    next();
+  };
+  
+  const adminMiddleware = (req: Request, res: Response, next: NextFunction) => {
+    if (!req.user?.isAdmin) {
+      return res.status(403).json({ message: "Not authorized" });
+    }
+    next();
+  };
+  
+  // Data Backup & Restore Endpoints
+  app.get("/api/admin/backup", authMiddleware, adminMiddleware, async (req, res) => {
+    try {
+      // Get all data from each collection
+      const allDomains = await storage.getAllDomains();
+      const allPageContents = await storage.getAllPageContents();
+      const allSeoSettings = await storage.getAllSeoSettings();
+      const allConsultations = await storage.getAllConsultations();
+      const allEmailSubmissions = await storage.getAllEmailSubmissions();
+      const allOffers = []; // We'll need to get offers for each domain
+      
+      // Get offers for each domain
+      for (const domain of allDomains) {
+        const domainOffers = await storage.getOffersByDomainId(domain.id);
+        allOffers.push(...domainOffers);
+      }
+      
+      // Create a single backup object with all data
+      const backupData = {
+        timestamp: new Date().toISOString(),
+        version: "1.0.0",
+        domains: allDomains,
+        pageContents: allPageContents,
+        seoSettings: allSeoSettings,
+        consultations: allConsultations,
+        emailSubmissions: allEmailSubmissions,
+        offers: allOffers,
+      };
+      
+      // Set appropriate headers for file download
+      res.setHeader('Content-Type', 'application/json');
+      res.setHeader('Content-Disposition', `attachment; filename=domain-guide-backup-${new Date().toISOString().split('T')[0]}.json`);
+      
+      // Send the backup data as a downloadable file
+      res.json(backupData);
+    } catch (error) {
+      console.error("Backup error:", error);
+      res.status(500).json({ 
+        message: "Failed to create backup", 
+        error: error instanceof Error ? error.message : String(error) 
+      });
+    }
+  });
+  
+  app.post("/api/admin/restore", authMiddleware, adminMiddleware, async (req, res) => {
+    try {
+      const backupData = req.body;
+      
+      if (!backupData || !backupData.domains || !backupData.pageContents) {
+        return res.status(400).json({ message: "Invalid backup data format" });
+      }
+      
+      // Start a transaction or implement a way to rollback if something fails
+      let restoredItems = {
+        domains: 0,
+        pageContents: 0,
+        seoSettings: 0,
+        consultations: 0,
+        emailSubmissions: 0,
+        offers: 0
+      };
+      
+      // Restore domains (without overwriting existing by default)
+      for (const domain of backupData.domains) {
+        try {
+          // Check if domain exists
+          const existingDomain = await storage.getDomain(domain.id);
+          
+          if (existingDomain) {
+            // Update existing domain
+            await storage.updateDomain(domain.id, domain);
+          } else {
+            // Create new domain
+            await storage.createDomain(domain);
+          }
+          restoredItems.domains++;
+        } catch (e) {
+          console.error("Error restoring domain:", domain.id, e);
+        }
+      }
+      
+      // Restore page contents
+      for (const content of backupData.pageContents) {
+        try {
+          const existingContent = await storage.getPageContent(content.pageKey);
+          
+          if (existingContent) {
+            // Update existing content
+            await storage.updatePageContent(content.pageKey, content);
+          } else {
+            // Create new content
+            await storage.createPageContent(content);
+          }
+          restoredItems.pageContents++;
+        } catch (e) {
+          console.error("Error restoring page content:", content.pageKey, e);
+        }
+      }
+      
+      // Restore SEO settings
+      if (backupData.seoSettings) {
+        for (const seo of backupData.seoSettings) {
+          try {
+            const existingSeo = await storage.getSeoSettingByPageKey(seo.pageKey);
+            
+            if (existingSeo) {
+              // Update existing SEO
+              await storage.updateSeoSetting(seo.pageKey, seo);
+            } else {
+              // Create new SEO
+              await storage.createSeoSetting(seo);
+            }
+            restoredItems.seoSettings++;
+          } catch (e) {
+            console.error("Error restoring SEO setting:", seo.pageKey, e);
+          }
+        }
+      }
+      
+      // Restore consultations
+      if (backupData.consultations) {
+        for (const consultation of backupData.consultations) {
+          try {
+            await storage.createConsultation(consultation);
+            restoredItems.consultations++;
+          } catch (e) {
+            console.error("Error restoring consultation:", consultation.id, e);
+          }
+        }
+      }
+      
+      // Restore email submissions
+      if (backupData.emailSubmissions) {
+        for (const submission of backupData.emailSubmissions) {
+          try {
+            await storage.createEmailSubmission(submission);
+            restoredItems.emailSubmissions++;
+          } catch (e) {
+            console.error("Error restoring email submission:", submission.id, e);
+          }
+        }
+      }
+      
+      // Restore offers
+      if (backupData.offers) {
+        for (const offer of backupData.offers) {
+          try {
+            await storage.createOffer(offer);
+            restoredItems.offers++;
+          } catch (e) {
+            console.error("Error restoring offer:", offer.id, e);
+          }
+        }
+      }
+      
+      res.json({ 
+        message: "Backup restored successfully", 
+        restored: restoredItems
+      });
+    } catch (error) {
+      console.error("Restore error:", error);
+      res.status(500).json({ 
+        message: "Failed to restore backup", 
+        error: error instanceof Error ? error.message : String(error) 
+      });
+    }
+  });
 
   const httpServer = createServer(app);
   return httpServer;
