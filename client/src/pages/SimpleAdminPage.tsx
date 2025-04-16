@@ -10,8 +10,20 @@ import {
   Layout, ListChecks, Quote, Award, BookOpen, Contact,
   HelpCircle, Info, BarChart, LineChart, PieChart, 
   Activity, Clock, Users, ArrowUpRight, ArrowDownRight,
-  Phone, Share2, MessageSquare, RefreshCw
+  Phone, Share2, MessageSquare, RefreshCw, 
+  DollarSign, PlusCircle, ChevronDown, CheckCircle, XCircle,
+  Trash2, FileDown, FileUp, Database
 } from "lucide-react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 // InquiryManagement component import removed
 import { 
   Domain, PageContent, SeoSettings, Consultation, 
@@ -96,6 +108,12 @@ export default function SimpleAdminPage() {
   const [editingSeo, setEditingSeo] = useState<SeoSettings | null>(null);
   const [confirmDeleteDialogOpen, setConfirmDeleteDialogOpen] = useState(false);
   const [itemToDelete, setItemToDelete] = useState<{id: number, type: string} | null>(null);
+  const [selectedDomains, setSelectedDomains] = useState<number[]>([]);
+  const [selectAll, setSelectAll] = useState(false);
+  const [bulkAdjustmentType, setBulkAdjustmentType] = useState<'fixed' | 'percentage'>('fixed');
+  const [bulkAdjustmentValue, setBulkAdjustmentValue] = useState<number>(0);
+  const [itemsToDelete, setItemsToDelete] = useState<number[]>([]);
+  const [confirmBulkDeleteDialogOpen, setConfirmBulkDeleteDialogOpen] = useState(false);
   const [csvData, setCsvData] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 20;
@@ -776,6 +794,242 @@ export default function SimpleAdminPage() {
       deleteDomainMutation.mutate(itemToDelete.id);
     }
     // Can add other delete types here in the future
+  };
+  
+  // Bulk operation mutations and handlers
+  const bulkMarkAsSoldMutation = useMutation({
+    mutationFn: async (ids: number[]) => {
+      const res = await fetch(`/api/admin/domains/bulk/mark-sold`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ ids }),
+        credentials: 'include'
+      });
+      
+      if (res.ok) {
+        return await res.json();
+      }
+      
+      const errorData = await res.json().catch(() => ({ message: "Unknown error occurred" }));
+      throw new Error(errorData.message || "Failed to mark domains as sold");
+    },
+    onSuccess: (data) => {
+      toast({
+        title: "Success",
+        description: data.message || "Domains marked as sold successfully",
+      });
+      setSelectedDomains([]);
+      setSelectAll(false);
+      queryClient.invalidateQueries({ queryKey: ['/api/domains'] });
+      refetchDomains();
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Error",
+        description: `Failed to mark domains as sold: ${error.message}`,
+        variant: "destructive",
+      });
+    },
+  });
+  
+  const bulkCancelSoldMutation = useMutation({
+    mutationFn: async (ids: number[]) => {
+      const res = await fetch(`/api/admin/domains/bulk/cancel-sold`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ ids }),
+        credentials: 'include'
+      });
+      
+      if (res.ok) {
+        return await res.json();
+      }
+      
+      const errorData = await res.json().catch(() => ({ message: "Unknown error occurred" }));
+      throw new Error(errorData.message || "Failed to cancel sold status");
+    },
+    onSuccess: (data) => {
+      toast({
+        title: "Success",
+        description: data.message || "Sold status canceled successfully",
+      });
+      setSelectedDomains([]);
+      setSelectAll(false);
+      queryClient.invalidateQueries({ queryKey: ['/api/domains'] });
+      refetchDomains();
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Error",
+        description: `Failed to cancel sold status: ${error.message}`,
+        variant: "destructive",
+      });
+    },
+  });
+  
+  const bulkDeleteMutation = useMutation({
+    mutationFn: async (ids: number[]) => {
+      const res = await fetch(`/api/admin/domains/bulk`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ ids }),
+        credentials: 'include'
+      });
+      
+      if (res.ok) {
+        return await res.json();
+      }
+      
+      const errorData = await res.json().catch(() => ({ message: "Unknown error occurred" }));
+      throw new Error(errorData.message || "Failed to delete domains");
+    },
+    onSuccess: (data) => {
+      toast({
+        title: "Success",
+        description: data.message || "Domains deleted successfully",
+      });
+      setConfirmBulkDeleteDialogOpen(false);
+      setItemsToDelete([]);
+      setSelectedDomains([]);
+      setSelectAll(false);
+      queryClient.invalidateQueries({ queryKey: ['/api/domains'] });
+      refetchDomains();
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Error",
+        description: `Failed to delete domains: ${error.message}`,
+        variant: "destructive",
+      });
+    },
+  });
+  
+  const bulkPriceUpdateMutation = useMutation({
+    mutationFn: async (data: { ids: number[], adjustmentType: 'fixed' | 'percentage', adjustmentValue: number }) => {
+      const res = await fetch(`/api/admin/domains/bulk/update-prices`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+        credentials: 'include'
+      });
+      
+      if (res.ok) {
+        return await res.json();
+      }
+      
+      const errorData = await res.json().catch(() => ({ message: "Unknown error occurred" }));
+      throw new Error(errorData.message || "Failed to update prices");
+    },
+    onSuccess: (data) => {
+      toast({
+        title: "Success",
+        description: data.message || "Prices updated successfully",
+      });
+      setSelectedDomains([]);
+      setSelectAll(false);
+      queryClient.invalidateQueries({ queryKey: ['/api/domains'] });
+      refetchDomains();
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Error",
+        description: `Failed to update prices: ${error.message}`,
+        variant: "destructive",
+      });
+    },
+  });
+  
+  // CSV Import mutation
+  const importCsvMutation = useMutation({
+    mutationFn: async (formData: FormData) => {
+      const res = await fetch('/api/admin/domains/import', {
+        method: 'POST',
+        body: formData,
+        credentials: 'include'
+      });
+      
+      if (res.ok) {
+        return await res.json();
+      }
+      
+      const errorData = await res.json().catch(() => ({ message: "Unknown error occurred" }));
+      throw new Error(errorData.message || "Failed to import domains");
+    },
+    onSuccess: (data) => {
+      toast({
+        title: "Import Complete",
+        description: data.message || `Successfully imported ${data.results?.success || 0} domains`,
+      });
+      queryClient.invalidateQueries({ queryKey: ['/api/domains'] });
+      refetchDomains();
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Import Failed",
+        description: `Failed to import domains: ${error.message}`,
+        variant: "destructive",
+      });
+    },
+  });
+  
+  // Bulk operation handlers
+  const handleBulkMarkAsSold = () => {
+    if (selectedDomains.length === 0) return;
+    
+    bulkMarkAsSoldMutation.mutate(selectedDomains);
+  };
+  
+  const handleBulkCancelSold = () => {
+    if (selectedDomains.length === 0) return;
+    
+    bulkCancelSoldMutation.mutate(selectedDomains);
+  };
+  
+  const executeBulkDelete = () => {
+    if (itemsToDelete.length === 0) return;
+    
+    bulkDeleteMutation.mutate(itemsToDelete);
+  };
+  
+  const handleBulkPriceUpdate = () => {
+    if (selectedDomains.length === 0 || isNaN(bulkAdjustmentValue)) return;
+    
+    bulkPriceUpdateMutation.mutate({
+      ids: selectedDomains,
+      adjustmentType: bulkAdjustmentType,
+      adjustmentValue: bulkAdjustmentValue
+    });
+  };
+  
+  const handleCsvUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (!event.target.files || event.target.files.length === 0) return;
+    
+    const file = event.target.files[0];
+    
+    if (file.type !== 'text/csv' && !file.name.endsWith('.csv')) {
+      toast({
+        title: "Invalid File Type",
+        description: "Please upload a CSV file",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    const formData = new FormData();
+    formData.append('csv', file);
+    
+    importCsvMutation.mutate(formData);
+    
+    // Reset the file input
+    event.target.value = '';
   };
   
   // Export email submissions to CSV
