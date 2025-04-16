@@ -30,6 +30,7 @@ import {
   TrashIcon 
 } from "lucide-react";
 import EmailSubmissionsTable from "@/components/admin/EmailSubmissionsTable";
+import ForceSync from "@/components/admin/ForceSync";
 import { Domain, PageContent, SeoSettings, Consultation } from "@/lib/types";
 import { formatDistanceToNow } from "date-fns";
 

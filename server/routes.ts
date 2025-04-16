@@ -161,6 +161,49 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   // prefix all routes with /api
   
+  // Special production sync endpoint - forces database refresh
+  app.post("/api/admin/force-sync", async (req, res) => {
+    try {
+      // Check if user is authenticated and an admin
+      if (!req.isAuthenticated() || !(req.user?.isAdmin)) {
+        return res.status(403).json({ message: "Unauthorized" });
+      }
+
+      console.log("⚠️ FORCE SYNC REQUESTED - Refreshing all domain data");
+
+      // Perform a complete refresh of all domain data
+      const domains = await storage.getAllDomains();
+      
+      // Force update each domain with its current data to refresh timestamps
+      const refreshResults = await Promise.all(
+        domains.map(async (domain) => {
+          try {
+            // Add current timestamp to force update
+            const updatedDomain = await storage.updateDomain(domain.id, {
+              price: domain.price, // Force price update
+              _timestamp: new Date().toISOString() // This field doesn't exist in the model but triggers an update
+            });
+            return { id: domain.id, success: true, domain: updatedDomain };
+          } catch (error) {
+            console.error(`Error refreshing domain ${domain.id}:`, error);
+            return { id: domain.id, success: false };
+          }
+        })
+      );
+
+      const successCount = refreshResults.filter(r => r.success).length;
+
+      res.json({
+        success: true,
+        message: `Successfully refreshed ${successCount} out of ${domains.length} domains`,
+        refreshed: successCount
+      });
+    } catch (error) {
+      console.error("Error with force sync:", error);
+      res.status(500).json({ message: "Failed to force sync domain data" });
+    }
+  });
+  
   // Get all domains
   app.get("/api/domains", async (req, res) => {
     try {
