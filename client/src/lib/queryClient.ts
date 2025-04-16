@@ -37,10 +37,41 @@ export const getQueryFn: <T>(options: {
 }) => QueryFunction<T> =
   ({ on401: unauthorizedBehavior }) =>
   async ({ queryKey }) => {
-    const res = await fetch(queryKey[0] as string, {
+    // Determine if this is a domain-related endpoint that should never be cached
+    const url = queryKey[0] as string;
+    const isDomainEndpoint = url.includes('/api/domains') || 
+                            url.includes('/api/admin/domains');
+    
+    // Set up request options with credentials
+    const requestOptions: RequestInit = {
       credentials: "include",
-    });
-
+    };
+    
+    // Add cache-busting headers for domain endpoints to ensure we always get fresh data
+    if (isDomainEndpoint) {
+      requestOptions.headers = {
+        'Cache-Control': 'no-cache, no-store, must-revalidate',
+        'Pragma': 'no-cache',
+        'Expires': '0'
+      };
+      
+      // Add a cache-busting query parameter for extra insurance
+      const separator = url.includes('?') ? '&' : '?';
+      const urlWithCacheBuster = `${url}${separator}_t=${Date.now()}`;
+      
+      const res = await fetch(urlWithCacheBuster, requestOptions);
+      
+      if (unauthorizedBehavior === "returnNull" && res.status === 401) {
+        return null;
+      }
+      
+      await throwIfResNotOk(res);
+      return await res.json();
+    }
+    
+    // Regular fetch for non-domain endpoints
+    const res = await fetch(url, requestOptions);
+    
     if (unauthorizedBehavior === "returnNull" && res.status === 401) {
       return null;
     }
@@ -74,13 +105,23 @@ export const queryClient = new QueryClient({
   },
 });
 
-// Special handling for admin-specific queries to improve data persistence
-queryClient.setQueryDefaults(['/api/admin/domains', '/api/domains', '/api/admin/page-contents', '/api/admin/seo-settings'], {
+// Special handling for admin-specific non-domain queries to improve data persistence
+queryClient.setQueryDefaults(['/api/admin/page-contents', '/api/admin/seo-settings'], {
   staleTime: 1000 * 60 * 30, // 30 minutes - long stale time for admin data
   gcTime: 1000 * 60 * 60, // 60 minutes - long cache time for admin data
   refetchOnMount: false,
   refetchOnWindowFocus: false,
   retry: false,
+});
+
+// Domain-specific endpoints should have different caching behavior
+// Always refetch domains on mount to ensure price accuracy
+queryClient.setQueryDefaults(['/api/admin/domains', '/api/domains'], {
+  staleTime: 0, // Treat as always stale to ensure fresh data
+  gcTime: 1000 * 60 * 5, // Only cache for 5 minutes
+  refetchOnMount: true, // Always refetch when component mounts
+  refetchOnWindowFocus: true, // Refetch when window regains focus
+  retry: true, // Retry failed requests
 });
 
 // Special handling for contact-related queries to never cache them

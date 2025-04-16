@@ -164,6 +164,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Get all domains
   app.get("/api/domains", async (req, res) => {
     try {
+      // Set cache-control headers to prevent caching of domain data
+      // This ensures pricing is always fresh
+      res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+      res.setHeader('Pragma', 'no-cache');
+      res.setHeader('Expires', '0');
+      res.setHeader('Surrogate-Control', 'no-store');
+      
       const domains = await storage.getAllDomains();
       res.json(domains);
     } catch (error) {
@@ -175,6 +182,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Get recently sold domains
   app.get("/api/domains/recently-sold", async (req, res) => {
     try {
+      // Set cache-control headers to prevent caching of domain data
+      // This ensures pricing and sold status is always fresh
+      res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+      res.setHeader('Pragma', 'no-cache');
+      res.setHeader('Expires', '0');
+      res.setHeader('Surrogate-Control', 'no-store');
+      
       const limit = req.query.limit ? parseInt(req.query.limit as string) : 6;
       const domains = await storage.getRecentlySoldDomains(limit);
       res.json(domains);
@@ -187,6 +201,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Get a specific domain by ID
   app.get("/api/domains/:id", async (req, res) => {
     try {
+      // Set cache-control headers to prevent caching of domain data
+      res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+      res.setHeader('Pragma', 'no-cache');
+      res.setHeader('Expires', '0');
+      res.setHeader('Surrogate-Control', 'no-store');
+      
       const id = parseInt(req.params.id);
       if (isNaN(id)) {
         return res.status(400).json({ message: "Invalid domain ID" });
