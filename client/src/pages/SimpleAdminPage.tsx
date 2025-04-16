@@ -12,7 +12,7 @@ import {
   Activity, Clock, Users, ArrowUpRight, ArrowDownRight,
   Phone, Share2, MessageSquare, RefreshCw, 
   DollarSign, PlusCircle, ChevronDown, CheckCircle, XCircle,
-  Trash2, FileDown, FileUp, Database
+  Trash2, FileDown, FileUp, Database, ShieldCheck, User
 } from "lucide-react";
 import {
   AlertDialog,
@@ -78,6 +78,7 @@ import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -2876,6 +2877,146 @@ Instagram: https://instagram.com/domainnameguide`;
                     ))}
                 </TableBody>
               </Table>
+            </CardContent>
+          </Card>
+        </TabsContent>
+        
+        {/* ACCOUNT TAB */}
+        <TabsContent value="account" className="space-y-4">
+          <h2 className="text-xl font-bold text-black">Account Settings</h2>
+          
+          <div className="grid md:grid-cols-2 gap-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Account Information</CardTitle>
+                <CardDescription>View your current account details</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-1">
+                  <Label>Username</Label>
+                  <div className="p-2 border rounded bg-gray-50">{user?.username}</div>
+                </div>
+                <div className="space-y-1">
+                  <Label>Role</Label>
+                  <div className="p-2 border rounded bg-gray-50">
+                    {user?.isAdmin ? (
+                      <span className="inline-flex items-center rounded-full bg-green-50 px-2 py-1 text-xs font-medium text-green-700">
+                        <ShieldCheck className="h-3 w-3 mr-1" />
+                        Administrator
+                      </span>
+                    ) : (
+                      <span className="inline-flex items-center rounded-full bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700">
+                        <User className="h-3 w-3 mr-1" />
+                        User
+                      </span>
+                    )}
+                  </div>
+                </div>
+                <div className="space-y-1">
+                  <Label>Last Login</Label>
+                  <div className="p-2 border rounded bg-gray-50">
+                    {new Date().toLocaleString()}
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+            
+            <Card>
+              <CardHeader>
+                <CardTitle>Change Password</CardTitle>
+                <CardDescription>Update your account password</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Form {...passwordForm}>
+                  <form onSubmit={passwordForm.handleSubmit(onPasswordSubmit)} className="space-y-4">
+                    <FormField
+                      control={passwordForm.control}
+                      name="currentPassword"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Current Password</FormLabel>
+                          <FormControl>
+                            <Input type="password" placeholder="Enter your current password" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={passwordForm.control}
+                      name="newPassword"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>New Password</FormLabel>
+                          <FormControl>
+                            <Input type="password" placeholder="Enter new password" {...field} />
+                          </FormControl>
+                          <FormDescription>
+                            Password must be at least 8 characters long
+                          </FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={passwordForm.control}
+                      name="confirmPassword"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Confirm New Password</FormLabel>
+                          <FormControl>
+                            <Input type="password" placeholder="Confirm new password" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <Button 
+                      type="submit" 
+                      className="w-full"
+                      disabled={changePasswordMutation.isPending}
+                    >
+                      {changePasswordMutation.isPending && (
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      )}
+                      Update Password
+                    </Button>
+                  </form>
+                </Form>
+              </CardContent>
+            </Card>
+          </div>
+          
+          <Card>
+            <CardHeader>
+              <CardTitle>Security Settings</CardTitle>
+              <CardDescription>Manage your account security settings</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="font-medium">Session Timeout</h3>
+                    <p className="text-sm text-muted-foreground">
+                      Your session will expire after 24 hours of inactivity
+                    </p>
+                  </div>
+                  <Switch checked={true} disabled />
+                </div>
+                
+                <Separator />
+                
+                <div>
+                  <h3 className="font-medium mb-2">Account Actions</h3>
+                  <Button 
+                    variant="destructive" 
+                    onClick={handleLogout}
+                  >
+                    <LogOut className="h-4 w-4 mr-2" />
+                    Logout
+                  </Button>
+                </div>
+              </div>
             </CardContent>
           </Card>
         </TabsContent>
