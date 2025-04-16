@@ -50,12 +50,14 @@ const main = async () => {
       fs.createReadStream(csvFilePath)
         .pipe(csvParser())
         .on('data', (row) => {
-          // Extract domain name and price from CSV
+          // Extract domain name and price from CSV - use exact values
           const domainName = row.Domain?.toLowerCase();
-          const price = parseFloat(row['Buy Now Price']?.replace(/,/g, ''));
+          // Use the exact price without modification
+          const price = parseInt(row['Buy Now Price']);
           
           if (domainName && !isNaN(price) && price > 0) {
             domains.push({ name: domainName, price });
+            console.log(`Reading domain: ${domainName} with exact price: ${price}`);
           }
           
           // Only process first 50 domains
