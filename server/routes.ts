@@ -164,6 +164,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Get all domains
   app.get("/api/domains", async (req, res) => {
     try {
+      // Add no-cache headers to prevent browser caching
+      res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, private');
+      res.setHeader('Expires', '0');
+      res.setHeader('Pragma', 'no-cache');
+      
       const domains = await storage.getAllDomains();
       res.json(domains);
     } catch (error) {
@@ -175,6 +180,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Get recently sold domains
   app.get("/api/domains/recently-sold", async (req, res) => {
     try {
+      // Add no-cache headers to prevent browser caching
+      res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, private');
+      res.setHeader('Expires', '0');
+      res.setHeader('Pragma', 'no-cache');
+      
       const limit = req.query.limit ? parseInt(req.query.limit as string) : 6;
       const domains = await storage.getRecentlySoldDomains(limit);
       res.json(domains);
