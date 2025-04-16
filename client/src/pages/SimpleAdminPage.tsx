@@ -76,6 +76,14 @@ import { useToast } from "@/hooks/use-toast";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 export default function SimpleAdminPage() {
   const { user, isLoading, logoutMutation } = useAuth();
@@ -1300,38 +1308,170 @@ export default function SimpleAdminPage() {
         <TabsContent value="domains" className="space-y-4">
           <div className="flex justify-between items-center">
             <h2 className="text-xl font-bold text-black">Domain Management</h2>
-            <Button onClick={() => {
-              setEditingDomain(null);
-              domainForm.reset({
-                name: "",
-                description: "",
-                price: 0,
-                category: "",
-                length: 0,
-                isSold: false,
-              });
-              setDomainDialogOpen(true);
-            }}>
-              <Plus className="h-4 w-4 mr-2" />
-              Add Domain
-            </Button>
+            <div className="flex items-center gap-2">
+              <Button onClick={() => {
+                setEditingDomain(null);
+                domainForm.reset({
+                  name: "",
+                  description: "",
+                  price: 0,
+                  category: "",
+                  length: 0,
+                  isSold: false,
+                });
+                setDomainDialogOpen(true);
+              }}>
+                <PlusCircle className="h-4 w-4 mr-2" />
+                Add Domain
+              </Button>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline">
+                    <FileText className="h-4 w-4 mr-2" />
+                    Export/Import
+                    <ChevronDown className="h-4 w-4 ml-2" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent>
+                  <DropdownMenuItem asChild>
+                    <a href="/api/admin/domains/export" download="domains.csv">
+                      <FileDown className="h-4 w-4 mr-2" />
+                      Export to CSV
+                    </a>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => document.getElementById('csv-upload-input')?.click()}>
+                    <FileUp className="h-4 w-4 mr-2" />
+                    Import from CSV
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
           </div>
+          
+          {/* Bulk Operations Card */}
+          <Card className="mb-4">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-base">Bulk Operations</CardTitle>
+              <CardDescription>Perform actions on multiple domains at once</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="flex flex-wrap gap-4">
+                <div className="flex-1 min-w-[200px]">
+                  <Label htmlFor="bulk-price-adjustment-type">Price Adjustment</Label>
+                  <div className="flex items-center gap-2 mt-2">
+                    <Select 
+                      defaultValue="fixed" 
+                      onValueChange={(value) => setBulkAdjustmentType(value as 'fixed' | 'percentage')}
+                    >
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Adjustment Type" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="fixed">Fixed Amount ($ ±)</SelectItem>
+                        <SelectItem value="percentage">Percentage (%)</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <Input 
+                      id="bulk-price-adjustment"
+                      type="number" 
+                      placeholder={bulkAdjustmentType === 'fixed' ? "±100" : "±10%"}
+                      onChange={(e) => setBulkAdjustmentValue(parseFloat(e.target.value))}
+                      className="w-24"
+                    />
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      disabled={!selectedDomains.length || isNaN(bulkAdjustmentValue)}
+                      onClick={handleBulkPriceUpdate}
+                    >
+                      Apply
+                    </Button>
+                  </div>
+                </div>
+                <div className="flex-1 min-w-[200px]">
+                  <Label>Status Actions</Label>
+                  <div className="flex items-center gap-2 mt-2">
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      disabled={!selectedDomains.length}
+                      onClick={handleBulkMarkAsSold}
+                    >
+                      <CheckCircle className="h-4 w-4 mr-2" />
+                      Mark as Sold
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      disabled={!selectedDomains.length}
+                      onClick={handleBulkCancelSold}
+                    >
+                      <XCircle className="h-4 w-4 mr-2" />
+                      Cancel Sold
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      className="text-red-500"
+                      disabled={!selectedDomains.length}
+                      onClick={() => {
+                        setItemsToDelete(selectedDomains);
+                        setConfirmBulkDeleteDialogOpen(true);
+                      }}
+                    >
+                      <Trash2 className="h-4 w-4 mr-2" />
+                      Delete Selected
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
           
           <div className="rounded-md border overflow-hidden shadow-sm">
             <Table>
               <TableHeader>
                 <TableRow>
+                  <TableHead className="w-[50px]">
+                    <Checkbox 
+                      checked={selectAll} 
+                      onCheckedChange={(checked) => {
+                        setSelectAll(!!checked);
+                        if (checked) {
+                          setSelectedDomains(domains.map(d => d.id));
+                        } else {
+                          setSelectedDomains([]);
+                        }
+                      }} 
+                    />
+                  </TableHead>
                   <TableHead>Name</TableHead>
                   <TableHead>Category</TableHead>
                   <TableHead>Price</TableHead>
+                  <TableHead>Length</TableHead>
                   <TableHead>Status</TableHead>
+                  <TableHead>Views</TableHead>
                   <TableHead>Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {domains.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage).map((domain) => (
-                  <TableRow key={domain.id}>
-                    <TableCell className="font-medium">{domain.name}</TableCell>
+                  <TableRow key={domain.id} className={domain.isSold ? "bg-gray-50" : ""}>
+                    <TableCell>
+                      <Checkbox 
+                        checked={selectedDomains.includes(domain.id)}
+                        onCheckedChange={(checked) => {
+                          if (checked) {
+                            setSelectedDomains(prev => [...prev, domain.id]);
+                          } else {
+                            setSelectedDomains(prev => prev.filter(id => id !== domain.id));
+                          }
+                        }}
+                      />
+                    </TableCell>
+                    <TableCell className="font-medium max-w-[200px] truncate">
+                      {domain.name}
+                    </TableCell>
                     <TableCell>
                       <span className="inline-flex items-center rounded-full px-2 py-1 text-xs font-medium bg-gray-100">
                         <Tag className="h-3 w-3 mr-1 text-gray-500" />
@@ -1339,6 +1479,7 @@ export default function SimpleAdminPage() {
                       </span>
                     </TableCell>
                     <TableCell>${domain.price.toLocaleString()}</TableCell>
+                    <TableCell>{domain.length}</TableCell>
                     <TableCell>
                       {domain.isSold ? (
                         <span className="inline-flex items-center rounded-full bg-green-50 px-2 py-1 text-xs font-medium text-green-700">
@@ -1351,13 +1492,25 @@ export default function SimpleAdminPage() {
                         </span>
                       )}
                     </TableCell>
+                    <TableCell>{domain.viewCount || 0}</TableCell>
                     <TableCell>
                       <div className="flex items-center space-x-2">
                         <Button
                           variant="ghost"
                           size="icon"
                           className="h-8 w-8"
-                          onClick={() => handleEditDomain(domain)}
+                          onClick={() => {
+                            setEditingDomain(domain);
+                            domainForm.reset({
+                              name: domain.name,
+                              description: domain.description,
+                              price: domain.price,
+                              category: domain.category,
+                              length: domain.length,
+                              isSold: domain.isSold,
+                            });
+                            setDomainDialogOpen(true);
+                          }}
                         >
                           <Pencil className="h-4 w-4" />
                         </Button>
@@ -1365,9 +1518,12 @@ export default function SimpleAdminPage() {
                           variant="ghost"
                           size="icon"
                           className="h-8 w-8"
-                          onClick={() => handleDeleteConfirm(domain.id, 'domain')}
+                          onClick={() => {
+                            setItemToDelete({ id: domain.id, type: 'domain' });
+                            setConfirmDeleteDialogOpen(true);
+                          }}
                         >
-                          <Trash className="h-4 w-4" />
+                          <Trash2 className="h-4 w-4" />
                         </Button>
                         {!domain.isSold && (
                           <Button
@@ -1376,7 +1532,7 @@ export default function SimpleAdminPage() {
                             className="h-8 w-8"
                             onClick={() => markAsSoldMutation.mutate(domain.id)}
                           >
-                            <Check className="h-4 w-4" />
+                            <DollarSign className="h-4 w-4" />
                           </Button>
                         )}
                       </div>
