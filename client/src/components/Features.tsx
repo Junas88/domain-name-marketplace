@@ -44,8 +44,8 @@ export default function Features() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {/* Feature 1 */}
             <div className="bg-white p-6 border border-black text-center">
-              <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 border border-black">
-                <Check className="text-black text-2xl" />
+              <div className="w-16 h-16 flex items-center justify-center mx-auto mb-4">
+                <Check className="text-green-600 h-12 w-12" />
               </div>
               <h3 className="text-xl font-semibold mb-3">Verified Domains</h3>
               <p className="text-neutral-700">All our domains are verified for quality and legitimacy before listing.</p>
@@ -53,8 +53,8 @@ export default function Features() {
             
             {/* Feature 2 */}
             <div className="bg-white p-6 border border-black text-center">
-              <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 border border-black">
-                <ShieldCheck className="text-black text-2xl" />
+              <div className="w-16 h-16 flex items-center justify-center mx-auto mb-4">
+                <ShieldCheck className="text-green-600 h-12 w-12" />
               </div>
               <h3 className="text-xl font-semibold mb-3">Secure Transfers</h3>
               <p className="text-neutral-700">We ensure safe and secure domain transfers with our trusted partner GoDaddy.</p>
@@ -62,8 +62,8 @@ export default function Features() {
             
             {/* Feature 3 */}
             <div className="bg-white p-6 border border-black text-center">
-              <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 border border-black">
-                <Headphones className="text-black text-2xl" />
+              <div className="w-16 h-16 flex items-center justify-center mx-auto mb-4">
+                <Headphones className="text-green-600 h-12 w-12" />
               </div>
               <h3 className="text-xl font-semibold mb-3">Expert Support</h3>
               <p className="text-neutral-700">Our domain experts are available to help you find the perfect domain for your needs.</p>
