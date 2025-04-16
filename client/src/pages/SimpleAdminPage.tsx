@@ -1160,6 +1160,8 @@ export default function SimpleAdminPage() {
       }
     });
   };
+  
+  // No duplicate function declaration needed - we already have onPasswordSubmit at line 660
     
   // Show loading state
   if (isLoading || isRedirecting) {
