@@ -341,7 +341,20 @@ export default function SimpleAdminPage() {
         method: "DELETE",
         credentials: 'include'
       });
-      return await res.json();
+      
+      // Handle 204 No Content responses
+      if (res.status === 204) {
+        return { success: true };
+      }
+      
+      // For other successful responses, try to parse JSON
+      if (res.ok) {
+        return await res.json();
+      }
+      
+      // Handle error responses
+      const errorData = await res.json().catch(() => ({ message: "Unknown error occurred" }));
+      throw new Error(errorData.message || "Failed to delete domain");
     },
     onSuccess: () => {
       toast({
@@ -371,7 +384,20 @@ export default function SimpleAdminPage() {
         },
         credentials: 'include'
       });
-      return await res.json();
+      
+      // Handle 204 No Content responses
+      if (res.status === 204) {
+        return { success: true };
+      }
+      
+      // For other successful responses, try to parse JSON
+      if (res.ok) {
+        return await res.json();
+      }
+      
+      // Handle error responses
+      const errorData = await res.json().catch(() => ({ message: "Unknown error occurred" }));
+      throw new Error(errorData.message || "Failed to mark domain as sold");
     },
     onSuccess: () => {
       toast({
