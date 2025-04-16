@@ -262,6 +262,16 @@ export default function SimpleAdminPage() {
     metaKeywords: z.string().min(1, "Meta keywords are required"),
   });
   
+  // Password change form schema
+  const passwordFormSchema = z.object({
+    currentPassword: z.string().min(1, "Current password is required"),
+    newPassword: z.string().min(8, "New password must be at least 8 characters"),
+    confirmPassword: z.string().min(1, "Please confirm your new password"),
+  }).refine((data) => data.newPassword === data.confirmPassword, {
+    message: "Passwords do not match",
+    path: ["confirmPassword"],
+  });
+  
   // Domain form
   const domainForm = useForm<z.infer<typeof domainFormSchema>>({
     resolver: zodResolver(domainFormSchema),
@@ -1291,7 +1301,7 @@ export default function SimpleAdminPage() {
           </Tabs>
         </div>
         
-        <TabsList className="grid w-full grid-cols-8">
+        <TabsList className="grid w-full grid-cols-9">
           <TabsTrigger value="domains">Domains</TabsTrigger>
           <TabsTrigger value="offers">Offers</TabsTrigger>
           <TabsTrigger value="consultations">Consultations</TabsTrigger>
@@ -1300,6 +1310,7 @@ export default function SimpleAdminPage() {
           <TabsTrigger value="editor">Website Editor</TabsTrigger>
           <TabsTrigger value="ebooks">Ebook Files</TabsTrigger>
           <TabsTrigger value="analytics">Analytics</TabsTrigger>
+          <TabsTrigger value="account">Account</TabsTrigger>
         </TabsList>
         
         {/* Inquiries tab removed */}

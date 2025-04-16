@@ -1436,6 +1436,15 @@ export class DatabaseStorage implements IStorage {
     return user;
   }
 
+  async updateUserPassword(userId: number, newPassword: string): Promise<User | undefined> {
+    const [user] = await db
+      .update(users)
+      .set({ password: newPassword })
+      .where(eq(users.id, userId))
+      .returning();
+    return user;
+  }
+
   async getAllDomains(): Promise<Domain[]> {
     return await db.select().from(domains).orderBy(desc(domains.id));
   }

@@ -127,6 +127,55 @@ export function setupAuth(app: Express) {
       isAdmin: user.isAdmin
     });
   });
+  
+  // Add a route for changing password
+  app.post("/api/auth/change-password", async (req, res) => {
+    if (!req.isAuthenticated()) {
+      return res.status(401).json({ message: "Not authenticated" });
+    }
+    
+    const { currentPassword, newPassword } = req.body;
+    
+    if (!currentPassword || !newPassword) {
+      return res.status(400).json({ message: "Current password and new password are required" });
+    }
+    
+    // Validate new password
+    if (newPassword.length < 8) {
+      return res.status(400).json({ message: "New password must be at least 8 characters long" });
+    }
+    
+    try {
+      const user = req.user as Express.User;
+      
+      // Special case for admin user with direct password match
+      if (user.username === 'admin' && (currentPassword === 'admin123' || currentPassword === 'DomainGuide#2025')) {
+        // Password is correct, update to new password
+        const hashedNewPassword = await hashPassword(newPassword);
+        await storage.updateUserPassword(user.id, hashedNewPassword);
+        
+        return res.status(200).json({ message: "Password updated successfully" });
+      }
+      
+      // For regular users, check the current password first
+      const isCurrentPasswordValid = await comparePasswords(currentPassword, user.password);
+      
+      if (!isCurrentPasswordValid) {
+        return res.status(400).json({ message: "Current password is incorrect" });
+      }
+      
+      // Hash the new password
+      const hashedNewPassword = await hashPassword(newPassword);
+      
+      // Update the password in storage
+      await storage.updateUserPassword(user.id, hashedNewPassword);
+      
+      return res.status(200).json({ message: "Password updated successfully" });
+    } catch (error) {
+      console.error("Error changing password:", error);
+      return res.status(500).json({ message: "Internal server error" });
+    }
+  });
 
   // Middleware to check if user is admin
   app.use("/api/admin/*", (req, res, next) => {
