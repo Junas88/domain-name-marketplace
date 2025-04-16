@@ -719,6 +719,9 @@ export default function AdminPage() {
         
         {/* DOMAINS TAB */}
         <TabsContent value="domains" className="space-y-6">
+          {/* Add ForceSync component at the top of domains tab */}
+          <ForceSync />
+          
           <div className="flex justify-between items-center">
             <h2 className="text-xl font-bold">Domain Management</h2>
             <Dialog open={showAddDomainDialog} onOpenChange={setShowAddDomainDialog}>

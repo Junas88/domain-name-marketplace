@@ -178,10 +178,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const refreshResults = await Promise.all(
         domains.map(async (domain) => {
           try {
-            // Add current timestamp to force update
+            // Add timestamp to force update with current price
             const updatedDomain = await storage.updateDomain(domain.id, {
-              price: domain.price, // Force price update
-              _timestamp: new Date().toISOString() // This field doesn't exist in the model but triggers an update
+              price: domain.price, // Force price update - rewriting the same price forces a DB update
             });
             return { id: domain.id, success: true, domain: updatedDomain };
           } catch (error) {
