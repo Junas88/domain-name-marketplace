@@ -308,6 +308,16 @@ export default function SimpleAdminPage() {
     },
   });
   
+  // Password change form
+  const passwordForm = useForm<z.infer<typeof passwordFormSchema>>({
+    resolver: zodResolver(passwordFormSchema),
+    defaultValues: {
+      currentPassword: "",
+      newPassword: "",
+      confirmPassword: "",
+    },
+  });
+  
   // Domain mutations
   const createDomainMutation = useMutation({
     mutationFn: async (data: InsertDomain) => {
@@ -549,6 +559,48 @@ export default function SimpleAdminPage() {
     },
   });
   
+  // Password change mutation
+  const changePasswordMutation = useMutation({
+    mutationFn: async (data: z.infer<typeof passwordFormSchema>) => {
+      const res = await fetch('/api/auth/change-password', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          currentPassword: data.currentPassword,
+          newPassword: data.newPassword
+        }),
+        credentials: 'include'
+      });
+      
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.message || 'Failed to change password');
+      }
+      
+      return await res.json();
+    },
+    onSuccess: () => {
+      toast({
+        title: 'Success',
+        description: 'Your password has been successfully updated',
+      });
+      passwordForm.reset({
+        currentPassword: '',
+        newPassword: '',
+        confirmPassword: '',
+      });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: 'Error',
+        description: `Failed to change password: ${error.message}`,
+        variant: 'destructive',
+      });
+    },
+  });
+  
   // Count stats directly from domains array
   const totalDomains = domains.length;
   const soldDomains = domains.filter(domain => domain.isSold).length;
@@ -601,6 +653,11 @@ export default function SimpleAdminPage() {
         seo: values,
       });
     }
+  };
+  
+  // Password Form Submit
+  const onPasswordSubmit = (values: z.infer<typeof passwordFormSchema>) => {
+    changePasswordMutation.mutate(values);
   };
   
   // Handle editing domain
