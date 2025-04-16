@@ -72,38 +72,14 @@ export default function DomainListing({ onMakeOffer }: DomainListingProps) {
   // Use either direct search text or URL search param
   const searchQuery = searchText || searchQueryFromUrl;
 
-  // Define the type for our fresh domains response
-  interface FreshDomainsResponse {
-    domains: Domain[];
-    cacheBuster: string;
-    timestamp: number;
-  }
-
-  // Use the new fresh domains endpoint that includes cache busting
-  const { data: freshDomainData, isLoading, isError, refetch } = useQuery<FreshDomainsResponse>({
-    queryKey: ['/api/domains/fresh', { t: Date.now() }], // Add timestamp to prevent caching
-    staleTime: 0, // Always refetch
-    refetchOnWindowFocus: true,
-    refetchOnMount: true,
+  // Fetch domains
+  const { data: domains, isLoading, isError } = useQuery<Domain[]>({
+    queryKey: ['/api/domains'],
+    refetchOnWindowFocus: false,
   });
 
-  // Extract domains from the fresh domain data wrapper
-  const domains = freshDomainData?.domains || [];
-  
-  // Force refetch on component mount to ensure latest data
-  useEffect(() => {
-    refetch();
-    
-    // Set up a timer to refetch every minute to ensure fresh data
-    const intervalId = setInterval(() => {
-      refetch();
-    }, 60000); // every minute
-    
-    return () => clearInterval(intervalId);
-  }, [refetch]);
-
   // Apply filters and search
-  const filteredDomains = domains?.filter((domain: Domain) => {
+  const filteredDomains = domains?.filter(domain => {
     let matches = true;
     
     // Apply search filter if query exists
@@ -329,29 +305,6 @@ export default function DomainListing({ onMakeOffer }: DomainListingProps) {
         {/* Filters */}
         <div className="max-w-4xl mx-auto mb-12 border border-gray-200 rounded-lg p-4">
           <div className="flex flex-wrap items-center gap-6" role="search" aria-label="Domain filter options">
-            {/* Force refresh button */}
-            <Button 
-              onClick={() => {
-                // Clear all domain-related caches
-                queryClient.invalidateQueries({ queryKey: ['/api/domains'] });
-                queryClient.invalidateQueries({ queryKey: ['/api/domains/fresh'] });
-                queryClient.invalidateQueries({ queryKey: ['/api/domains/recently-sold'] });
-                
-                // Force a refetch with a new timestamp to bust cache
-                refetch();
-                
-                // Notify user
-                toast({
-                  title: "Refreshed!",
-                  description: "Domain listings have been refreshed with the latest data from the server.",
-                });
-              }}
-              className="bg-green-600 hover:bg-green-700 text-white"
-              size="sm"
-            >
-              Refresh Prices
-            </Button>
-            
             <div className="w-full md:w-auto">
               <label htmlFor="price-range-select" className="block text-sm font-medium text-neutral-800 mb-1">Price Range</label>
               <Select 
@@ -475,7 +428,7 @@ export default function DomainListing({ onMakeOffer }: DomainListingProps) {
             role="region" 
             aria-label="Premium domains"
           >
-            {currentDomains.map((domain: Domain) => (
+            {currentDomains.map((domain) => (
               <Card 
                 key={domain.id} 
                 className="overflow-hidden transition-transform hover:shadow-md hover:-translate-y-1 border border-black"

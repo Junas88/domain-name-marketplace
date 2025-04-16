@@ -5,17 +5,9 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useEffect, useRef, useState } from "react";
 
 export default function RecentlySoldDomains() {
-  const { data: domains, isLoading, refetch } = useQuery<Domain[]>({
-    queryKey: ["/api/domains/recently-sold", { t: Date.now() }], // Add timestamp to prevent caching
-    staleTime: 0, // Always refetch
-    refetchOnWindowFocus: true,
-    refetchOnMount: true,
+  const { data: domains, isLoading } = useQuery<Domain[]>({
+    queryKey: ["/api/domains/recently-sold"],
   });
-  
-  // Force refetch on component mount to ensure latest data
-  useEffect(() => {
-    refetch();
-  }, [refetch]);
   
   // State to duplicate domains for seamless infinite scrolling
   const [domainItems, setDomainItems] = useState<Domain[]>([]);

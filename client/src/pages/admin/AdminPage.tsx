@@ -30,7 +30,6 @@ import {
   TrashIcon 
 } from "lucide-react";
 import EmailSubmissionsTable from "@/components/admin/EmailSubmissionsTable";
-import DomainPriceVerifier from "@/components/admin/DomainPriceVerifier";
 import { Domain, PageContent, SeoSettings, Consultation } from "@/lib/types";
 import { formatDistanceToNow } from "date-fns";
 
@@ -918,11 +917,6 @@ export default function AdminPage() {
                 ))}
               </TableBody>
             </Table>
-          </div>
-          
-          {/* Domain Price Verification Tool */}
-          <div className="mt-8">
-            <DomainPriceVerifier />
           </div>
         </TabsContent>
 
