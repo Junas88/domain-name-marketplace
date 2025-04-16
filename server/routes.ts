@@ -343,6 +343,173 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
+  // Bulk mark domains as sold
+  app.patch("/api/admin/domains/bulk/mark-sold", async (req, res) => {
+    try {
+      const { ids } = req.body;
+      
+      if (!Array.isArray(ids) || ids.length === 0) {
+        return res.status(400).json({ message: "Invalid domain IDs" });
+      }
+      
+      const results = await Promise.all(
+        ids.map(async (id) => {
+          try {
+            return await storage.markDomainAsSold(id);
+          } catch (error) {
+            console.error(`Error marking domain ${id} as sold:`, error);
+            return null;
+          }
+        })
+      );
+      
+      const successCount = results.filter(Boolean).length;
+      
+      res.json({
+        success: true,
+        message: `Successfully marked ${successCount} out of ${ids.length} domains as sold`,
+        results: results.filter(Boolean)
+      });
+    } catch (error) {
+      console.error("Error with bulk mark as sold:", error);
+      res.status(500).json({ message: "Failed to process bulk mark as sold" });
+    }
+  });
+  
+  // Bulk cancel sold status (mark as not sold)
+  app.patch("/api/admin/domains/bulk/cancel-sold", async (req, res) => {
+    try {
+      const { ids } = req.body;
+      
+      if (!Array.isArray(ids) || ids.length === 0) {
+        return res.status(400).json({ message: "Invalid domain IDs" });
+      }
+      
+      const results = await Promise.all(
+        ids.map(async (id) => {
+          try {
+            // Update domain to set isSold to false
+            return await storage.updateDomain(id, { isSold: false });
+          } catch (error) {
+            console.error(`Error canceling sold status for domain ${id}:`, error);
+            return null;
+          }
+        })
+      );
+      
+      const successCount = results.filter(Boolean).length;
+      
+      res.json({
+        success: true,
+        message: `Successfully canceled sold status for ${successCount} out of ${ids.length} domains`,
+        results: results.filter(Boolean)
+      });
+    } catch (error) {
+      console.error("Error with bulk cancel sold status:", error);
+      res.status(500).json({ message: "Failed to process bulk cancel sold status" });
+    }
+  });
+  
+  // Bulk delete domains
+  app.delete("/api/admin/domains/bulk", async (req, res) => {
+    try {
+      const { ids } = req.body;
+      
+      if (!Array.isArray(ids) || ids.length === 0) {
+        return res.status(400).json({ message: "Invalid domain IDs" });
+      }
+      
+      const results = await Promise.all(
+        ids.map(async (id) => {
+          try {
+            const success = await storage.deleteDomain(id);
+            return { id, success };
+          } catch (error) {
+            console.error(`Error deleting domain ${id}:`, error);
+            return { id, success: false };
+          }
+        })
+      );
+      
+      const successCount = results.filter(r => r.success).length;
+      
+      res.json({
+        success: true,
+        message: `Successfully deleted ${successCount} out of ${ids.length} domains`,
+        results
+      });
+    } catch (error) {
+      console.error("Error with bulk delete:", error);
+      res.status(500).json({ message: "Failed to process bulk delete" });
+    }
+  });
+  
+  // Bulk update domain prices
+  app.patch("/api/admin/domains/bulk/update-prices", async (req, res) => {
+    try {
+      const { ids, adjustmentType, adjustmentValue } = req.body;
+      
+      if (!Array.isArray(ids) || ids.length === 0) {
+        return res.status(400).json({ message: "Invalid domain IDs" });
+      }
+      
+      if (!adjustmentType || !['fixed', 'percentage'].includes(adjustmentType)) {
+        return res.status(400).json({ message: "Invalid adjustment type" });
+      }
+      
+      if (isNaN(adjustmentValue)) {
+        return res.status(400).json({ message: "Invalid adjustment value" });
+      }
+      
+      // Get all domains to update
+      const domainsToUpdate = await Promise.all(
+        ids.map(id => storage.getDomain(id))
+      );
+      
+      // Filter out non-existent domains
+      const validDomains = domainsToUpdate.filter(Boolean);
+      
+      const results = await Promise.all(
+        validDomains.map(async (domain) => {
+          try {
+            let newPrice;
+            
+            if (adjustmentType === 'fixed') {
+              // Add or subtract a fixed amount
+              newPrice = domain.price + Number(adjustmentValue);
+            } else {
+              // Apply percentage change
+              newPrice = domain.price * (1 + Number(adjustmentValue) / 100);
+            }
+            
+            // Ensure price is never negative
+            newPrice = Math.max(0, newPrice);
+            
+            // Round to 2 decimal places
+            newPrice = Math.round(newPrice * 100) / 100;
+            
+            // Update the domain with new price
+            return await storage.updateDomain(domain.id, { price: newPrice });
+          } catch (error) {
+            console.error(`Error updating price for domain ${domain.id}:`, error);
+            return null;
+          }
+        })
+      );
+      
+      const successCount = results.filter(Boolean).length;
+      
+      res.json({
+        success: true,
+        message: `Successfully updated prices for ${successCount} out of ${ids.length} domains`,
+        results: results.filter(Boolean)
+      });
+    } catch (error) {
+      console.error("Error with bulk price update:", error);
+      res.status(500).json({ message: "Failed to process bulk price update" });
+    }
+  });
+  
   // Increment view count
   app.patch("/api/domains/:id/view", async (req, res) => {
     try {
