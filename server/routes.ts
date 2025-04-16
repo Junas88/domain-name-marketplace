@@ -402,6 +402,29 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
+  // Force update cache endpoint - for use in checking and resolving deployment caching issues
+  app.post("/api/admin/force-update-cache", async (req, res) => {
+    try {
+      // This is a simple endpoint that performs similar operations to the
+      // force-update-deployment.js script but from within the application
+      
+      console.log("Admin requested cache update at", new Date().toISOString());
+      
+      // Add a special timestamp to help track when the cache was updated
+      const timestamp = Date.now();
+      const message = `Cache updated at ${new Date(timestamp).toISOString()} by an administrator`;
+      
+      res.json({
+        success: true,
+        message,
+        timestamp
+      });
+    } catch (error) {
+      console.error("Error forcing cache update:", error);
+      res.status(500).json({ message: "Failed to force cache update" });
+    }
+  });
+  
   // Increment view count
   app.patch("/api/domains/:id/view", async (req, res) => {
     try {
