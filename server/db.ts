@@ -156,35 +156,15 @@ try {
   
   if (databaseUrl) {
     console.log(`Initializing database connection ${isDeployment ? 'in deployment' : 'in development'}`);
-    
-    const retryAttempts = 5;
-    const retryDelay = 2000;
-    
-    for (let attempt = 1; attempt <= retryAttempts; attempt++) {
-      try {
-        pool = new Pool({ 
-          connectionString: databaseUrl,
-          ssl: isDeployment ? { rejectUnauthorized: false } : false,
-          connectionTimeoutMillis: 30000,
-          max: 10,
-          idleTimeoutMillis: 30000,
-          statement_timeout: 30000,
-        });
-
-        // Test connection immediately
-        await pool.query('SELECT 1');
-        console.log(`✅ Database connection established on attempt ${attempt}`);
-        break;
-      } catch (err) {
-        console.error(`Connection attempt ${attempt} failed:`, err.message);
-        
-        if (attempt === retryAttempts) {
-          throw new Error(`Failed to connect to database after ${retryAttempts} attempts`);
-        }
-        
-        await new Promise(resolve => setTimeout(resolve, retryDelay));
-      }
-    }
+    pool = new Pool({ 
+      connectionString: databaseUrl,
+      ssl: isDeployment ? { rejectUnauthorized: false } : false,
+      connectionTimeoutMillis: 10000, // Increased timeout
+      max: 20,                        // Increased max connections
+      idleTimeoutMillis: 30000,       // How long a client is allowed to remain idle before being closed
+      retryDelay: 1000,               // Delay between connection retries
+      maxConnAttempts: 5              // Maximum connection attempts
+    });
     
     // Test the connection and get version at the same time
     const result = await pool.query(`
