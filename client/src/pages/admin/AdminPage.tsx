@@ -871,126 +871,117 @@ export default function AdminPage() {
           </div>
           </div>
 
-          <div className="flex justify-between items-center mb-4">
-            <div className="flex-1">
-              <Card className="border shadow-sm">
-                <CardContent className="p-4">
-                  <div className="grid grid-cols-1 gap-4">
+          <Card className="mb-4">
+            <CardHeader className="pb-3">
+              <div className="flex justify-between items-center">
+                <div>
+                  <CardTitle className="text-base">Domain Management</CardTitle>
+                  <CardDescription>
+                    Search, edit, and manage your domain inventory
+                  </CardDescription>
+                </div>
+                <Button
+                  variant="outline"
+                  onClick={() => setShowBulkOperations(!showBulkOperations)}
+                  className="flex items-center gap-2"
+                >
+                  <SlidersHorizontal className="h-4 w-4" /> 
+                  {showBulkOperations ? "Hide Advanced Options" : "Show Advanced Options"}
+                </Button>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                  <Label htmlFor="domain-search" className="font-medium">Search Domains</Label>
+                  <div className="flex items-center mt-1.5">
+                    <div className="relative flex-1">
+                      <Search className="absolute left-2.5 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-500" />
+                      <Input
+                        id="domain-search"
+                        type="text"
+                        placeholder="Search by domain name..."
+                        value={domainSearch}
+                        onChange={(e) => setDomainSearch(e.target.value)}
+                        className="pl-9"
+                      />
+                      {domainSearch && (
+                        <Button 
+                          variant="ghost" 
+                          size="sm"
+                          onClick={() => setDomainSearch("")}
+                          className="absolute right-0.5 top-1/2 transform -translate-y-1/2 h-7 w-7 p-0"
+                        >
+                          <X className="h-4 w-4" />
+                        </Button>
+                      )}
+                    </div>
+                  </div>
+                </div>
+                
+                {showBulkOperations && (
+                  <>
                     <div>
-                      <h3 className="font-medium mb-2">Bulk Operations</h3>
-                      <p className="text-sm text-gray-500 mb-3">Perform actions on multiple domains at once</p>
-                      
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div className="space-y-2">
-                          <Label htmlFor="domain-search" className="font-medium">Search Domains</Label>
-                          <div className="flex">
-                            <div className="relative flex-1">
-                              <Search className="absolute left-2.5 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-500" />
-                              <Input
-                                id="domain-search"
-                                type="text"
-                                placeholder="Search by domain name..."
-                                value={domainSearch}
-                                onChange={(e) => setDomainSearch(e.target.value)}
-                                className="pl-9"
-                              />
-                              {domainSearch && (
-                                <Button 
-                                  variant="ghost" 
-                                  size="icon"
-                                  onClick={() => setDomainSearch("")}
-                                  className="absolute right-0 top-0 h-full rounded-l-none"
-                                >
-                                  <X className="h-4 w-4" />
-                                </Button>
-                              )}
-                            </div>
-                          </div>
-                        </div>
-                        
-                        <div className="flex items-end">
-                          <div className="flex gap-2 w-full justify-end">
-                            <Button 
-                              variant="outline"
-                              onClick={() => setShowBulkOperations(!showBulkOperations)}
-                              className="flex items-center gap-2"
-                            >
-                              <SlidersHorizontal className="h-4 w-4" /> 
-                              {showBulkOperations ? "Hide Advanced Options" : "Show Advanced Options"}
-                            </Button>
-                          </div>
-                        </div>
+                      <Label htmlFor="domain-price-adjust">Price Adjustment</Label>
+                      <div className="flex gap-2 mt-1.5">
+                        <Select>
+                          <SelectTrigger id="domain-price-adjust">
+                            <SelectValue placeholder="Select action" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="increase">Increase by %</SelectItem>
+                            <SelectItem value="decrease">Decrease by %</SelectItem>
+                            <SelectItem value="set">Set fixed amount</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <Input type="number" placeholder="Value" className="w-24" />
+                        <Button>Apply</Button>
                       </div>
                     </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          </div>
-
-          {showBulkOperations && (
-            <Card className="mb-4">
-              <CardHeader className="pb-3">
-                <CardTitle className="text-base">Bulk Operations</CardTitle>
-                <CardDescription>
-                  Perform operations on multiple domains at once
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  <div>
-                    <Label htmlFor="bulk-category">Update Category</Label>
-                    <div className="flex gap-2 mt-1.5">
-                      <Select>
-                        <SelectTrigger id="bulk-category">
-                          <SelectValue placeholder="Select category" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="premium">Premium</SelectItem>
-                          <SelectItem value="business">Business</SelectItem>
-                          <SelectItem value="tech">Tech</SelectItem>
-                          <SelectItem value="ecommerce">E-commerce</SelectItem>
-                          <SelectItem value="health">Health</SelectItem>
-                          <SelectItem value="finance">Finance</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <Button>Apply</Button>
+                    
+                    <div>
+                      <Label htmlFor="bulk-category">Update Category</Label>
+                      <div className="flex gap-2 mt-1.5">
+                        <Select>
+                          <SelectTrigger id="bulk-category">
+                            <SelectValue placeholder="Select category" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="premium">Premium</SelectItem>
+                            <SelectItem value="business">Business</SelectItem>
+                            <SelectItem value="tech">Tech</SelectItem>
+                            <SelectItem value="ecommerce">E-commerce</SelectItem>
+                            <SelectItem value="health">Health</SelectItem>
+                            <SelectItem value="finance">Finance</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <Button>Apply</Button>
+                      </div>
                     </div>
-                  </div>
-                  
-                  <div>
-                    <Label htmlFor="domain-price-adjust">Price Adjustment</Label>
-                    <div className="flex gap-2 mt-1.5">
-                      <Select>
-                        <SelectTrigger id="domain-price-adjust">
-                          <SelectValue placeholder="Select action" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="increase">Increase by %</SelectItem>
-                          <SelectItem value="decrease">Decrease by %</SelectItem>
-                          <SelectItem value="set">Set fixed amount</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <Input type="number" placeholder="Value" className="w-24" />
-                      <Button>Apply</Button>
-                    </div>
-                  </div>
-                  
-                  <div>
-                    <Label>Quick Actions</Label>
-                    <div className="flex gap-2 mt-1.5">
-                      <Button variant="outline" className="flex items-center gap-1.5">
-                        <Download className="h-4 w-4" /> Export
+                  </>
+                )}
+              </div>
+              
+              {showBulkOperations && (
+                <div className="mt-4 pt-4 border-t">
+                  <div className="flex justify-between items-center">
+                    <h4 className="text-sm font-medium">Bulk Actions</h4>
+                    <div className="flex gap-2">
+                      <Button variant="outline" size="sm" className="flex items-center gap-1.5">
+                        <Download className="h-4 w-4" /> Export CSV
                       </Button>
-                      <Button variant="outline" className="flex items-center gap-1.5 text-red-500 hover:text-red-600">
-                        <Trash2 className="h-4 w-4" /> Delete
+                      <Button variant="outline" size="sm" className="flex items-center gap-1.5">
+                        <Check className="h-4 w-4" /> Mark Selected as Sold
+                      </Button>
+                      <Button variant="outline" size="sm" className="flex items-center gap-1.5 text-red-500 hover:text-red-600">
+                        <Trash2 className="h-4 w-4" /> Delete Selected
                       </Button>
                     </div>
                   </div>
                 </div>
-              </CardContent>
-            </Card>
-          )}
+              )}
+            </CardContent>
+          </Card>
 
           <div className="rounded-md border">
             <Table>

@@ -1427,7 +1427,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           results.success++;
         } catch (error) {
           results.failed++;
-          results.errors.push(`Row ${i}: ${error.message}`);
+          results.errors.push(`Row ${i}: ${error instanceof Error ? error.message : String(error)}`);
         }
       }
       
@@ -1447,7 +1447,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         fs.unlinkSync(req.file.path);
       }
       
-      res.status(500).json({ message: "Failed to import domains", error: error.message });
+      res.status(500).json({ message: "Failed to import domains", error: error instanceof Error ? error.message : String(error) });
     }
   });
 
