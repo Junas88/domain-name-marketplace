@@ -730,26 +730,25 @@ export default function AdminPage() {
         {/* DOMAINS TAB */}
         <TabsContent value="domains" className="space-y-6">
           
-          <div className="flex flex-col gap-4">
-            <div className="flex justify-between items-center">
-              <h2 className="text-xl font-bold">Domain Management</h2>
-              <div className="flex gap-2">
-                <Button 
-                  variant="outline"
-                  onClick={() => window.location.href = "/admin/sync"}
-                  className="flex items-center gap-2"
-                >
-                  <Database className="h-4 w-4" />
-                  Data Sync & Backup
-                </Button>
-                <Dialog open={showAddDomainDialog} onOpenChange={setShowAddDomainDialog}>
-                  <DialogTrigger asChild>
-                    <Button
-                      onClick={() => {
-                        setEditingDomain(null);
-                        domainForm.reset({
-                          name: "",
-                          description: "",
+          <div className="flex justify-between items-center">
+            <h2 className="text-xl font-bold">Domain Management</h2>
+            <div className="flex gap-2">
+              <Button 
+                variant="outline"
+                onClick={() => window.location.href = "/admin/sync"}
+                className="flex items-center gap-2"
+              >
+                <Database className="h-4 w-4" />
+                Data Sync & Backup
+              </Button>
+              <Dialog open={showAddDomainDialog} onOpenChange={setShowAddDomainDialog}>
+                <DialogTrigger asChild>
+                  <Button
+                    onClick={() => {
+                      setEditingDomain(null);
+                      domainForm.reset({
+                        name: "",
+                        description: "",
                         price: 0,
                         category: "",
                         length: 0,
@@ -941,25 +940,23 @@ export default function AdminPage() {
                   <div>
                     <Label htmlFor="domain-search">Search Domains</Label>
                     <div className="flex gap-2 mt-1.5">
-                      <div className="relative w-full">
-                        <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500" />
-                        <Input 
-                          id="domain-search"
-                          type="text" 
-                          placeholder="Search by domain name..." 
-                          className="w-full pl-9"
-                          value={domainSearch}
-                          onChange={(e) => setDomainSearch(e.target.value)}
-                        />
-                        {domainSearch && (
-                          <button
-                            onClick={() => setDomainSearch("")}
-                            className="absolute right-2.5 top-2.5 text-gray-500 hover:text-gray-700"
-                          >
-                            <X className="h-4 w-4" />
-                          </button>
-                        )}
-                      </div>
+                      <Input 
+                        id="domain-search"
+                        type="text" 
+                        placeholder="Search by domain name..." 
+                        className="w-full"
+                        value={domainSearch}
+                        onChange={(e) => setDomainSearch(e.target.value)}
+                      />
+                      {domainSearch && (
+                        <Button 
+                          variant="outline" 
+                          size="icon"
+                          onClick={() => setDomainSearch("")}
+                        >
+                          <X className="h-4 w-4" />
+                        </Button>
+                      )}
                     </div>
                   </div>
                   
