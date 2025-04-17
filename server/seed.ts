@@ -178,11 +178,18 @@ async function seedAdminUser() {
 
 export async function seedDatabase() {
   try {
+    console.log("Starting database initialization...");
+    // Always clear domains first
+    console.log("Clearing all domains from database...");
+    await db.delete(domains);
+    console.log("✓ All domains cleared successfully");
+
     await seedAdminUser();
-    await deleteDomains(); // Delete existing domains
     await seedPageContents();
     console.log("Database seeding completed successfully.");
   } catch (error) {
     console.error("Error seeding database:", error);
+    // Re-throw to ensure error is not silently caught
+    throw error;
   }
 }
