@@ -2117,6 +2117,52 @@ export async function registerRoutes(app: Express): Promise<Server> {
     next();
   };
   
+  // Production Sync Endpoint
+  app.post("/api/admin/sync-with-local", authMiddleware, adminMiddleware, async (req, res) => {
+    try {
+      // Verify environment and prevent executing in production
+      const environment = getEnvironment();
+      if (environment === 'production') {
+        // Check for confirmation code
+        const { confirmationCode } = req.body;
+        if (confirmationCode !== 'SYNC-PRODUCTION') {
+          return res.status(400).json({ 
+            message: "Invalid confirmation code. To sync production with local, you must provide the confirmation code 'SYNC-PRODUCTION'." 
+          });
+        }
+      }
+
+      console.log(`[${new Date().toISOString()}] Starting production sync process...`);
+      
+      // Create backups before deleting anything
+      console.log("Creating backups of all data...");
+      const allDomains = await storage.getAllDomains();
+      const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+      const backupFilename = await backupDataToFile(allDomains, `domains-presync-${timestamp}`);
+      console.log(`Created backup: ${backupFilename}`);
+      
+      // Delete all domains
+      console.log("Deleting all domains...");
+      await db.delete(schema.priceChangeLogs);
+      await db.delete(schema.offers);
+      await db.delete(schema.domains);
+      
+      console.log("All domains deleted. Database sync complete.");
+      
+      return res.status(200).json({ 
+        success: true, 
+        message: "Production environment synchronized with local. All domains have been removed.",
+        backup: backupFilename
+      });
+    } catch (error) {
+      console.error("Error during production sync:", error);
+      return res.status(500).json({ 
+        message: "Failed to synchronize production environment", 
+        error: error instanceof Error ? error.message : String(error) 
+      });
+    }
+  });
+
   // Data Backup & Restore Endpoints
   app.get("/api/admin/backup", authMiddleware, adminMiddleware, async (req, res) => {
     try {
