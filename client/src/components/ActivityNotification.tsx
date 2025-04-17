@@ -41,57 +41,30 @@ export default function ActivityNotification() {
     refetchInterval: 30000, // Refetch every 30 seconds
   });
 
-  // Listen for changes in recently sold domains and update notifications
+  // Initialize notifications with only offer and view types
   useEffect(() => {
-    if (recentlySoldDomains && recentlySoldDomains.length > 0) {
-      const soldNotifications: ActivityNotification[] = recentlySoldDomains.slice(0, 3).map(domain => ({
-        type: "sold",
-        domain: domain.name,
-        timeAgo: "recently"
-      }));
-      
-      // Include a mix of sold domains and demo notifications
-      const updatedNotifications = [
-        ...soldNotifications,
-        ...demoNotifications.filter(n => n.type !== "sold")
-      ];
-      
-      console.log("Updated activity notifications with sold domains:", soldNotifications.length);
-      setLiveNotifications(updatedNotifications);
-    } else {
-      console.log("No recently sold domains found, using demo notifications");
-      setLiveNotifications(demoNotifications);
-    }
-  }, [recentlySoldDomains]);
+    // Only use offer and view notifications (no sold ones)
+    const filteredNotifications = demoNotifications.filter(n => n.type !== "sold");
+    console.log("Setting up activity notifications (without sold domains)");
+    setLiveNotifications(filteredNotifications);
+  }, []);
 
-  // Subscribe to domain status changes
+  // Subscribe to domain status changes - keeping only for future extensions
   useEffect(() => {
     // Setup subscription for domain changes
     const unsubscribe = queryClient.getQueryCache().subscribe((event) => {
-      if (event.type === 'updated' && 
-          (event.query.queryKey[0] === '/api/domains' || 
-           event.query.queryKey[0] === '/api/domains/recently-sold')) {
-        // Force update notifications when domain data changes
-        if (recentlySoldDomains) {
-          const soldNotifications: ActivityNotification[] = recentlySoldDomains.slice(0, 3).map(domain => ({
-            type: "sold",
-            domain: domain.name,
-            timeAgo: "recently"
-          }));
-          
-          setLiveNotifications(prevNotifications => {
-            const otherNotifications = prevNotifications.filter(n => n.type !== "sold");
-            console.log("Data change detected - updating notifications with sold domains");
-            return [...soldNotifications, ...otherNotifications];
-          });
-        }
+      // We're no longer processing sold domains, but keeping the subscription
+      // mechanism in place for future extensions if needed
+      if (event.type === 'updated' && event.query.queryKey[0] === '/api/domains') {
+        // Could add dynamic notification updates here in the future
+        console.log("Domain data updated, no changes to notifications needed");
       }
     });
 
     return () => {
       unsubscribe();
     };
-  }, [recentlySoldDomains]);
+  }, []);
 
   useEffect(() => {
     // Add initial delay before showing first notification
@@ -163,18 +136,14 @@ export default function ActivityNotification() {
                 </div>
               )}
               
-              {currentNotification.type === "sold" && (
-                <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center">
-                  <CheckCircle className="h-5 w-5 text-green-500" />
-                </div>
-              )}
+              {/* Sold notification type removed as requested */}
             </div>
 
             <div className="flex-1">
               <h3 className="text-sm font-medium text-gray-900">
                 {currentNotification.type === "offer" && "Someone made an offer on"}
                 {currentNotification.type === "view" && "Someone is viewing"}
-                {currentNotification.type === "sold" && "Domain just sold"}
+                {/* Sold notification type removed as requested */}
               </h3>
               <p className="mt-1 text-sm text-gray-500 mb-0.5">
                 <span className="font-semibold">{currentNotification.domain}</span>
