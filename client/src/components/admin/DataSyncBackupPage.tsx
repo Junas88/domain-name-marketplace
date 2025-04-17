@@ -122,63 +122,58 @@ export default function DataSyncBackupPage() {
       </Alert>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <Card className="border-green-100 shadow-sm">
-          <CardHeader className="pb-2 border-b border-green-100">
-            <CardTitle className="text-sm font-medium text-green-800">Complete Backup</CardTitle>
-          </CardHeader>
-          <CardContent className="pt-4">
-            <div className="text-3xl font-bold flex items-center">
-              <Download className="mr-2 h-6 w-6 text-green-600" />
-              <span>1-Click Export</span>
-            </div>
-            <p className="mt-2 text-sm text-gray-600">
-              Export all your website data for safekeeping
-            </p>
-          </CardContent>
-          <CardFooter>
-            <Button className="w-full bg-green-600 hover:bg-green-700" asChild>
-              <a href="/api/admin/backup" download="domain-guide-backup.json">
-                Download Full Backup
-              </a>
-            </Button>
-          </CardFooter>
-        </Card>
+        <div className="border rounded-md bg-white p-4">
+          <div className="mb-2 text-sm font-medium text-green-800">Complete Backup</div>
+          
+          <div className="flex items-center mb-2">
+            <Download className="mr-2 h-5 w-5 text-green-600" />
+            <h3 className="text-xl font-bold">1-Click Export</h3>
+          </div>
+          
+          <p className="text-sm text-gray-600 mb-4">
+            Export all your website data for safekeeping
+          </p>
+          
+          <Button 
+            className="w-full bg-green-600 hover:bg-green-700 h-9 px-3" 
+            size="sm"
+            asChild
+          >
+            <a href="/api/admin/backup" download="domain-guide-backup.json">
+              Download Full Backup
+            </a>
+          </Button>
+        </div>
 
-        <Card className="border-blue-100 shadow-sm">
-          <CardHeader className="pb-2 border-b border-blue-100">
-            <CardTitle className="text-sm font-medium text-blue-800">Restore Data</CardTitle>
-          </CardHeader>
-          <CardContent className="pt-4">
-            <div className="text-3xl font-bold flex items-center">
-              <Upload className="mr-2 h-6 w-6 text-blue-600" />
-              <span>Recovery</span>
-            </div>
-            <p className="mt-2 text-sm text-gray-600">
-              Restore your website from a previous backup
-            </p>
-          </CardContent>
-          <CardFooter>
-            <BackupRestore />
-          </CardFooter>
-        </Card>
+        <div className="border rounded-md bg-white p-4">
+          <div className="mb-2 text-sm font-medium text-blue-800">Restore Data</div>
+          
+          <div className="flex items-center mb-2">
+            <Upload className="mr-2 h-5 w-5 text-blue-600" />
+            <h3 className="text-xl font-bold">Recovery</h3>
+          </div>
+          
+          <p className="text-sm text-gray-600 mb-4">
+            Restore your website from a previous backup
+          </p>
+          
+          <BackupRestore />
+        </div>
 
-        <Card className="border-purple-100 shadow-sm">
-          <CardHeader className="pb-2 border-b border-purple-100">
-            <CardTitle className="text-sm font-medium text-purple-800">Force Refresh</CardTitle>
-          </CardHeader>
-          <CardContent className="pt-4">
-            <div className="text-3xl font-bold flex items-center">
-              <RefreshCw className="mr-2 h-6 w-6 text-purple-600" />
-              <span>Clear Cache</span>
-            </div>
-            <p className="mt-2 text-sm text-gray-600">
-              Force client-side data refresh when changes aren't showing
-            </p>
-          </CardContent>
-          <CardFooter>
-            <ForceSync />
-          </CardFooter>
-        </Card>
+        <div className="border rounded-md bg-white p-4">
+          <div className="mb-2 text-sm font-medium text-purple-800">Force Refresh</div>
+          
+          <div className="flex items-center mb-2">
+            <RefreshCw className="mr-2 h-5 w-5 text-purple-600" />
+            <h3 className="text-xl font-bold">Clear Cache</h3>
+          </div>
+          
+          <p className="text-sm text-gray-600 mb-4">
+            Force client-side data refresh when changes aren't showing
+          </p>
+          
+          <ForceSync />
+        </div>
       </div>
 
       <Tabs defaultValue="backup" value={activeTab} onValueChange={setActiveTab} className="w-full">
@@ -190,212 +185,265 @@ export default function DataSyncBackupPage() {
 
         <TabsContent value="backup" className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>What Gets Backed Up</CardTitle>
-                <CardDescription>
-                  The backup system captures all essential data from your website
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <ul className="space-y-2">
-                  <li className="flex items-start">
-                    <CheckCircle2 className="h-5 w-5 text-green-500 mr-2 mt-0.5" />
-                    <div>
-                      <span className="font-medium">Domain Listings</span>
-                      <p className="text-sm text-gray-500">All domain properties including names, descriptions, prices, and status</p>
-                    </div>
-                  </li>
-                  <li className="flex items-start">
-                    <CheckCircle2 className="h-5 w-5 text-green-500 mr-2 mt-0.5" />
-                    <div>
-                      <span className="font-medium">Page Content</span>
-                      <p className="text-sm text-gray-500">All website pages content including homepage, about, guide and contact</p>
-                    </div>
-                  </li>
-                  <li className="flex items-start">
-                    <CheckCircle2 className="h-5 w-5 text-green-500 mr-2 mt-0.5" />
-                    <div>
-                      <span className="font-medium">SEO Settings</span>
-                      <p className="text-sm text-gray-500">Title, description and meta tags for all pages</p>
-                    </div>
-                  </li>
-                  <li className="flex items-start">
-                    <CheckCircle2 className="h-5 w-5 text-green-500 mr-2 mt-0.5" />
-                    <div>
-                      <span className="font-medium">User Inquiries</span>
-                      <p className="text-sm text-gray-500">Contact submissions and domain consultation requests</p>
-                    </div>
-                  </li>
-                  <li className="flex items-start">
-                    <CheckCircle2 className="h-5 w-5 text-green-500 mr-2 mt-0.5" />
-                    <div>
-                      <span className="font-medium">Email Subscriptions</span>
-                      <p className="text-sm text-gray-500">Email list subscribers and ebook download information</p>
-                    </div>
-                  </li>
-                </ul>
-              </CardContent>
-            </Card>
+            <div className="border rounded-md p-4">
+              <h3 className="text-base font-medium mb-3 flex items-center">
+                <CheckCircle2 className="h-4 w-4 text-green-600 mr-2" />
+                What Gets Backed Up
+              </h3>
+              
+              <div className="grid grid-cols-2 gap-3">
+                <div className="border rounded p-2">
+                  <span className="text-sm font-medium block mb-1">Domain Listings</span>
+                  <span className="text-xs text-gray-600">Names, descriptions, prices, status</span>
+                </div>
+                
+                <div className="border rounded p-2">
+                  <span className="text-sm font-medium block mb-1">Page Content</span>
+                  <span className="text-xs text-gray-600">All website pages and sections</span>
+                </div>
+                
+                <div className="border rounded p-2">
+                  <span className="text-sm font-medium block mb-1">SEO Settings</span>
+                  <span className="text-xs text-gray-600">Title, description, meta tags</span>
+                </div>
+                
+                <div className="border rounded p-2">
+                  <span className="text-sm font-medium block mb-1">User Data</span>
+                  <span className="text-xs text-gray-600">Inquiries, offers, subscriptions</span>
+                </div>
+              </div>
+              
+              <div className="mt-3 text-xs text-blue-600 bg-blue-50 p-2 rounded border border-blue-100">
+                Backups create a complete snapshot of all your website's data - nothing is left out
+              </div>
+            </div>
 
-            <Card>
-              <CardHeader>
-                <CardTitle>Backup Strategy</CardTitle>
-                <CardDescription>
-                  Recommended backup schedule and management
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <ul className="space-y-2">
-                  <li className="flex items-start">
-                    <Clock className="h-5 w-5 text-blue-500 mr-2 mt-0.5" />
-                    <div>
-                      <span className="font-medium">Regular Schedule</span>
-                      <p className="text-sm text-gray-500">Create weekly backups to protect against data loss</p>
-                    </div>
-                  </li>
-                  <li className="flex items-start">
-                    <ShieldAlert className="h-5 w-5 text-blue-500 mr-2 mt-0.5" />
-                    <div>
-                      <span className="font-medium">Before Major Changes</span>
-                      <p className="text-sm text-gray-500">Always backup before importing domains, changing settings, or updating pages</p>
-                    </div>
-                  </li>
-                  <li className="flex items-start">
-                    <HardDrive className="h-5 w-5 text-blue-500 mr-2 mt-0.5" />
-                    <div>
-                      <span className="font-medium">Multiple Storage Locations</span>
-                      <p className="text-sm text-gray-500">Store backups in more than one location (local drive, cloud storage)</p>
-                    </div>
-                  </li>
-                  <li className="flex items-start">
-                    <FileDown className="h-5 w-5 text-blue-500 mr-2 mt-0.5" />
-                    <div>
-                      <span className="font-medium">Version Control</span>
-                      <p className="text-sm text-gray-500">Use dates in filenames to maintain multiple versions</p>
-                    </div>
-                  </li>
-                  <li className="flex items-start">
-                    <Info className="h-5 w-5 text-blue-500 mr-2 mt-0.5" />
-                    <div>
-                      <span className="font-medium">Documentation</span>
-                      <p className="text-sm text-gray-500">Note major changes when creating backups for future reference</p>
-                    </div>
-                  </li>
-                </ul>
-              </CardContent>
-            </Card>
+            <div className="border rounded-md p-4">
+              <h3 className="text-base font-medium mb-3 flex items-center">
+                <Clock className="h-4 w-4 text-blue-600 mr-2" />
+                Backup Strategy
+              </h3>
+              
+              <div className="space-y-2 text-sm">
+                <div className="flex items-start gap-2">
+                  <div className="bg-amber-50 text-amber-700 p-1 rounded">
+                    <ShieldAlert className="h-3.5 w-3.5" />
+                  </div>
+                  <div>
+                    <span className="font-medium text-sm">Before Changes</span>
+                    <p className="text-xs text-gray-600">Always backup before importing domains or updating content</p>
+                  </div>
+                </div>
+                
+                <div className="flex items-start gap-2">
+                  <div className="bg-green-50 text-green-700 p-1 rounded">
+                    <HardDrive className="h-3.5 w-3.5" />
+                  </div>
+                  <div>
+                    <span className="font-medium text-sm">Multiple Locations</span>
+                    <p className="text-xs text-gray-600">Store backups in more than one secure location</p>
+                  </div>
+                </div>
+                
+                <div className="flex items-start gap-2">
+                  <div className="bg-blue-50 text-blue-700 p-1 rounded">
+                    <FileDown className="h-3.5 w-3.5" />
+                  </div>
+                  <div>
+                    <span className="font-medium text-sm">Version Control</span>
+                    <p className="text-xs text-gray-600">Use dates in filenames for multiple versions</p>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="mt-3 text-xs flex items-center gap-1">
+                <Info className="h-3.5 w-3.5 text-gray-500" />
+                <span className="text-gray-600">Weekly backups recommended for best protection</span>
+              </div>
+            </div>
           </div>
         </TabsContent>
 
         <TabsContent value="sync" className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>Data Synchronization Tools</CardTitle>
-              <CardDescription>
-                Tools to ensure your website data is in sync across all environments
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="border rounded-md p-6">
-                <h3 className="text-lg font-medium mb-4">Cache Management</h3>
-                <p className="mb-4 text-gray-600">
-                  If changes to domains or content aren't appearing on your site, you may need to force a client-side refresh.
-                  This will clear all cached data and fetch fresh data from the server.
-                </p>
-                <div className="mt-4">
-                  <ForceSync />
-                </div>
-              </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="border rounded-md p-4">
+              <h3 className="text-base font-medium mb-3 flex items-center">
+                <RefreshCw className="h-4 w-4 text-purple-600 mr-2" />
+                Force Data Sync
+              </h3>
               
-              <div className="border rounded-md p-6">
-                <h3 className="text-lg font-medium mb-4">Production Deployment Sync</h3>
-                <p className="mb-4 text-gray-600">
-                  When deploying to production, you'll need to transfer your development database to the production environment.
-                  Download a backup from development and restore it in production after deployment.
-                </p>
-                <div className="mt-4 space-y-2">
-                  <Button className="w-full" asChild>
-                    <a href="/api/admin/backup" download="domain-guide-production-backup.json">
-                      <Download className="mr-2 h-4 w-4" />
-                      Download Production Backup
-                    </a>
-                  </Button>
+              <div className="mb-4">
+                <div className="bg-purple-50 border border-purple-100 p-3 rounded-md mb-4">
+                  <p className="text-sm text-purple-800">
+                    <strong>When to use:</strong> If domain prices or availability aren't showing correctly in the frontend despite being updated in the admin panel.
+                  </p>
                 </div>
+                
+                <div className="bg-gray-50 p-3 rounded-md text-xs text-gray-700 mb-4">
+                  This tool bypasses browser cache and forces a refresh of all domain data from the database. Use when changes to domain prices aren't showing properly.
+                </div>
+                
+                <ForceSync />
               </div>
-            </CardContent>
-          </Card>
+            </div>
+            
+            <div className="border rounded-md p-4">
+              <h3 className="text-base font-medium mb-3 flex items-center">
+                <HardDrive className="h-4 w-4 text-blue-600 mr-2" />
+                Production Deployment Sync
+              </h3>
+              
+              <div className="mb-4">
+                <div className="bg-blue-50 border border-blue-100 p-3 rounded-md mb-4">
+                  <p className="text-sm text-blue-800">
+                    <strong>When to use:</strong> When deploying to a new environment or syncing development and production databases.
+                  </p>
+                </div>
+                
+                <div className="flex gap-2 mb-4">
+                  <div className="flex-1 border border-gray-200 rounded-md p-2">
+                    <span className="text-xs font-medium block mb-1 text-gray-600">Step 1</span>
+                    <span className="text-sm">Download backup from source environment</span>
+                  </div>
+                  
+                  <div className="flex-1 border border-gray-200 rounded-md p-2">
+                    <span className="text-xs font-medium block mb-1 text-gray-600">Step 2</span>
+                    <span className="text-sm">Restore backup in target environment</span>
+                  </div>
+                </div>
+                
+                <Button className="w-full" size="sm" asChild>
+                  <a href="/api/admin/backup" download="domain-guide-production-backup.json">
+                    <Download className="mr-2 h-4 w-4" />
+                    Download Production Backup
+                  </a>
+                </Button>
+              </div>
+            </div>
+          </div>
         </TabsContent>
 
         <TabsContent value="best-practices" className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>Database Maintenance Best Practices</CardTitle>
-              <CardDescription>
-                Guidelines for maintaining a healthy database and avoiding common issues
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="space-y-4">
-                  <div className="border rounded-md p-4">
-                    <h3 className="font-medium mb-2 flex items-center">
-                      <AlertTriangle className="h-4 w-4 text-amber-500 mr-2" />
-                      Common Issues to Avoid
-                    </h3>
-                    <ul className="space-y-2 text-sm list-disc pl-5">
-                      <li>Deleting domain records that are referenced elsewhere</li>
-                      <li>Uploading malformed JSON files during restore</li>
-                      <li>Ignoring database errors or warnings</li>
-                      <li>Operating without recent backups</li>
-                      <li>Making bulk changes without testing first</li>
-                    </ul>
-                  </div>
-                  <div className="border rounded-md p-4">
-                    <h3 className="font-medium mb-2 flex items-center">
-                      <CheckCircle2 className="h-4 w-4 text-green-500 mr-2" />
-                      Performance Optimization
-                    </h3>
-                    <ul className="space-y-2 text-sm list-disc pl-5">
-                      <li>Regularly clean up old or unused domain listings</li>
-                      <li>Only store necessary data in each record</li>
-                      <li>Use appropriate data types for each field</li>
-                      <li>Avoid extremely large text fields when possible</li>
-                      <li>Monitor database performance periodically</li>
-                    </ul>
-                  </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="border rounded-md p-4">
+              <h3 className="text-base font-medium mb-3 flex items-center text-amber-800">
+                <AlertTriangle className="h-4 w-4 text-amber-600 mr-2" />
+                Common Issues to Avoid
+              </h3>
+              
+              <ul className="space-y-1.5">
+                <li className="flex gap-1.5 text-sm">
+                  <span className="text-amber-600">•</span>
+                  <span>Deleting domain records referenced elsewhere</span>
+                </li>
+                <li className="flex gap-1.5 text-sm">
+                  <span className="text-amber-600">•</span>
+                  <span>Uploading malformed JSON files during restore</span>
+                </li>
+                <li className="flex gap-1.5 text-sm">
+                  <span className="text-amber-600">•</span>
+                  <span>Ignoring database errors or warnings</span>
+                </li>
+                <li className="flex gap-1.5 text-sm">
+                  <span className="text-amber-600">•</span>
+                  <span>Operating without recent backups</span>
+                </li>
+                <li className="flex gap-1.5 text-sm">
+                  <span className="text-amber-600">•</span>
+                  <span>Making bulk changes without testing first</span>
+                </li>
+              </ul>
+            </div>
+            
+            <div className="border rounded-md p-4">
+              <h3 className="text-base font-medium mb-3 flex items-center text-blue-800">
+                <Save className="h-4 w-4 text-blue-600 mr-2" />
+                Backup Success Checklist
+              </h3>
+              
+              <div className="space-y-2">
+                <div className="flex items-center text-sm">
+                  <div className="h-5 w-5 rounded border border-blue-200 bg-blue-50 flex items-center justify-center mr-2 text-blue-600">1</div>
+                  <span>Verify download completed successfully</span>
                 </div>
-                <div className="space-y-4">
-                  <div className="border rounded-md p-4">
-                    <h3 className="font-medium mb-2 flex items-center">
-                      <Save className="h-4 w-4 text-blue-500 mr-2" />
-                      Backup Success Checklist
-                    </h3>
-                    <ul className="space-y-2 text-sm list-disc pl-5">
-                      <li>Verify download completed successfully</li>
-                      <li>Check backup file size is reasonable (not 0KB)</li>
-                      <li>Spot-check file contents for expected data</li>
-                      <li>Store in a secure location with proper naming</li>
-                      <li>Test restore process periodically</li>
-                    </ul>
-                  </div>
-                  <div className="border rounded-md p-4">
-                    <h3 className="font-medium mb-2 flex items-center">
-                      <Info className="h-4 w-4 text-gray-500 mr-2" />
-                      When to Contact Support
-                    </h3>
-                    <ul className="space-y-2 text-sm list-disc pl-5">
-                      <li>Database or backup restoration errors</li>
-                      <li>Unexpected data loss despite backups</li>
-                      <li>Significant performance degradation</li>
-                      <li>Need for advanced database operations</li>
-                      <li>Assistance with large data migrations</li>
-                    </ul>
-                  </div>
+                <div className="flex items-center text-sm">
+                  <div className="h-5 w-5 rounded border border-blue-200 bg-blue-50 flex items-center justify-center mr-2 text-blue-600">2</div>
+                  <span>Check backup file size is reasonable (not 0KB)</span>
+                </div>
+                <div className="flex items-center text-sm">
+                  <div className="h-5 w-5 rounded border border-blue-200 bg-blue-50 flex items-center justify-center mr-2 text-blue-600">3</div>
+                  <span>Spot-check file contents for expected data</span>
+                </div>
+                <div className="flex items-center text-sm">
+                  <div className="h-5 w-5 rounded border border-blue-200 bg-blue-50 flex items-center justify-center mr-2 text-blue-600">4</div>
+                  <span>Store in a secure location with proper naming</span>
+                </div>
+                <div className="flex items-center text-sm">
+                  <div className="h-5 w-5 rounded border border-blue-200 bg-blue-50 flex items-center justify-center mr-2 text-blue-600">5</div>
+                  <span>Test restore process periodically</span>
                 </div>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+            
+            <div className="border rounded-md p-4">
+              <h3 className="text-base font-medium mb-3 flex items-center text-green-800">
+                <CheckCircle2 className="h-4 w-4 text-green-600 mr-2" />
+                Performance Optimization
+              </h3>
+              
+              <div className="grid grid-cols-2 gap-2">
+                <div className="border border-green-100 bg-green-50 rounded-md p-2">
+                  <span className="text-xs font-medium text-green-800">Regular cleanup</span>
+                  <p className="text-xs text-green-700 mt-1">Clean up old or unused domain listings</p>
+                </div>
+                <div className="border border-green-100 bg-green-50 rounded-md p-2">
+                  <span className="text-xs font-medium text-green-800">Data efficiency</span>
+                  <p className="text-xs text-green-700 mt-1">Only store necessary data in each record</p>
+                </div>
+                <div className="border border-green-100 bg-green-50 rounded-md p-2">
+                  <span className="text-xs font-medium text-green-800">Appropriate types</span>
+                  <p className="text-xs text-green-700 mt-1">Use correct data types for each field</p>
+                </div>
+                <div className="border border-green-100 bg-green-50 rounded-md p-2">
+                  <span className="text-xs font-medium text-green-800">Size limits</span>
+                  <p className="text-xs text-green-700 mt-1">Avoid extremely large text fields</p>
+                </div>
+              </div>
+            </div>
+            
+            <div className="border rounded-md p-4">
+              <h3 className="text-base font-medium mb-3 flex items-center text-gray-800">
+                <Info className="h-4 w-4 text-gray-600 mr-2" />
+                When to Contact Support
+              </h3>
+              
+              <div className="bg-gray-50 border border-gray-100 rounded-md p-3">
+                <ul className="space-y-1.5 text-sm">
+                  <li className="flex gap-1.5">
+                    <span className="text-gray-400">•</span>
+                    <span>Database or backup restoration errors</span>
+                  </li>
+                  <li className="flex gap-1.5">
+                    <span className="text-gray-400">•</span>
+                    <span>Unexpected data loss despite backups</span>
+                  </li>
+                  <li className="flex gap-1.5">
+                    <span className="text-gray-400">•</span>
+                    <span>Significant performance degradation</span>
+                  </li>
+                  <li className="flex gap-1.5">
+                    <span className="text-gray-400">•</span>
+                    <span>Need for advanced database operations</span>
+                  </li>
+                </ul>
+              </div>
+              
+              <div className="mt-2 text-xs text-gray-500 flex items-center">
+                <AlertCircle className="h-3 w-3 mr-1" />
+                <span>Support available at support@domainguide.com</span>
+              </div>
+            </div>
+          </div>
         </TabsContent>
       </Tabs>
     </div>

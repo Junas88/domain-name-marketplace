@@ -49,27 +49,19 @@ export default function ForceSync() {
   };
   
   return (
-    <Card>
-      <CardHeader className="pb-2">
-        <CardTitle className="text-lg">Force Data Sync</CardTitle>
-        <CardDescription>Refresh all domain data to ensure latest prices are displayed</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <p className="text-sm text-muted-foreground">
-          Use this when domain prices or availability aren't updating correctly in production.
-          This will force a refresh of all domain data by bypassing the cache.
-        </p>
-      </CardContent>
-      <CardFooter>
-        <Button 
-          onClick={handleForceSync} 
-          disabled={isSyncing}
-          className="flex items-center gap-2"
-        >
-          <RefreshCw className={`h-4 w-4 ${isSyncing ? 'animate-spin' : ''}`} />
-          {isSyncing ? 'Syncing Data...' : 'Force Sync Now'}
-        </Button>
-      </CardFooter>
-    </Card>
+    <div>
+      <p className="text-xs text-gray-600 mb-3">
+        Use when domain prices aren't updating correctly. Forces a refresh by bypassing the cache.
+      </p>
+      <Button 
+        onClick={handleForceSync} 
+        disabled={isSyncing}
+        className="w-full flex items-center justify-center gap-2"
+        size="sm"
+      >
+        <RefreshCw className={`h-4 w-4 ${isSyncing ? 'animate-spin' : ''}`} />
+        {isSyncing ? 'Syncing...' : 'Force Sync Now'}
+      </Button>
+    </div>
   );
 }

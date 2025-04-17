@@ -162,127 +162,71 @@ export default function BackupRestore() {
   };
   
   return (
-    <Card>
-      <CardHeader className="pb-2">
-        <CardTitle className="text-lg">Backup & Restore</CardTitle>
-        <CardDescription>Create and restore backups of your domain data</CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {/* Backup Card */}
-          <Card className="border border-muted">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-base flex items-center">
-                <Download className="h-4 w-4 mr-2" />
-                Create Backup
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-muted-foreground">
-                Download a complete backup of all domain data, content, and settings.
-              </p>
-            </CardContent>
-            <CardFooter>
-              <Button 
-                onClick={handleBackup} 
-                disabled={isBackingUp}
-                className="w-full"
-              >
-                {isBackingUp ? 'Creating Backup...' : 'Download Backup'}
-              </Button>
-            </CardFooter>
-          </Card>
-          
-          {/* Restore Card */}
-          <Card className="border border-muted">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-base flex items-center">
-                <Upload className="h-4 w-4 mr-2" />
-                Restore Backup
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              <p className="text-sm text-muted-foreground">
-                Upload and restore a previously created backup file.
-              </p>
-              
-              <div>
-                <Label htmlFor="backup-file">Select backup file</Label>
-                <div className="mt-1">
-                  <input
-                    ref={fileInputRef}
-                    id="backup-file"
-                    type="file"
-                    accept=".json"
-                    onChange={handleFileChange}
-                    className="block w-full text-sm text-slate-500
-                      file:mr-4 file:py-2 file:px-4
-                      file:rounded-md file:border-0
-                      file:text-sm file:font-semibold
-                      file:bg-secondary file:text-foreground
-                      hover:file:bg-secondary/80
-                      cursor-pointer"
-                  />
-                </div>
-                {selectedFile && (
-                  <p className="text-xs text-muted-foreground mt-1">
-                    Selected: {selectedFile.name}
-                  </p>
-                )}
-              </div>
-              
-              {isRestoring && (
-                <div className="space-y-1">
-                  <Progress value={progress} className="h-2" />
-                  <p className="text-xs text-muted-foreground text-right">
-                    {progress}% complete
-                  </p>
-                </div>
-              )}
-            </CardContent>
-            <CardFooter>
-              <AlertDialog>
-                <AlertDialogTrigger asChild>
-                  <Button 
-                    variant="outline"
-                    disabled={!selectedFile || isRestoring}
-                    className="w-full"
-                  >
-                    {isRestoring ? 'Restoring...' : 'Restore from Backup'}
-                  </Button>
-                </AlertDialogTrigger>
-                <AlertDialogContent>
-                  <AlertDialogHeader>
-                    <AlertDialogTitle className="flex items-center">
-                      <AlertTriangle className="h-5 w-5 mr-2 text-amber-500" />
-                      Confirm Restore Operation
-                    </AlertDialogTitle>
-                    <AlertDialogDescription>
-                      This will replace all current data with the data from the backup file.
-                      This action cannot be undone. Are you sure you want to continue?
-                    </AlertDialogDescription>
-                  </AlertDialogHeader>
-                  <AlertDialogFooter>
-                    <AlertDialogCancel>Cancel</AlertDialogCancel>
-                    <AlertDialogAction onClick={handleRestore}>
-                      Yes, Restore Data
-                    </AlertDialogAction>
-                  </AlertDialogFooter>
-                </AlertDialogContent>
-              </AlertDialog>
-            </CardFooter>
-          </Card>
+    <div>
+      <div className="flex flex-col space-y-3">
+        <div>
+          <Label htmlFor="backup-file" className="text-sm mb-1.5">Select backup file (.json)</Label>
+          <div className="flex items-center gap-2">
+            <input
+              ref={fileInputRef}
+              id="backup-file"
+              type="file"
+              accept=".json"
+              onChange={handleFileChange}
+              className="flex-1 text-xs text-slate-500 border border-slate-200 rounded py-1 px-2
+                file:mr-2 file:py-1 file:px-2
+                file:rounded file:border-0
+                file:text-xs file:font-medium
+                file:bg-blue-50 file:text-blue-600
+                hover:file:bg-blue-100"
+            />
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button 
+                  variant="outline"
+                  size="sm"
+                  disabled={!selectedFile || isRestoring}
+                  className="h-8 whitespace-nowrap"
+                >
+                  {isRestoring ? 'Restoring...' : 'Restore'}
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle className="flex items-center">
+                    <AlertTriangle className="h-5 w-5 mr-2 text-amber-500" />
+                    Confirm Restore Operation
+                  </AlertDialogTitle>
+                  <AlertDialogDescription>
+                    This will replace all current data with the data from the backup file.
+                    This action cannot be undone. Are you sure you want to continue?
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction onClick={handleRestore}>
+                    Yes, Restore Data
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          </div>
+          {selectedFile && (
+            <p className="text-xs text-blue-600 mt-1 font-medium">
+              Selected: {selectedFile.name}
+            </p>
+          )}
         </div>
         
-        <div className="text-sm text-muted-foreground bg-muted p-3 rounded-md">
-          <p className="font-medium">Important Notes:</p>
-          <ul className="list-disc list-inside mt-1 space-y-1">
-            <li>Backups include all domains, content, settings, and relationships</li>
-            <li>Restoring will replace existing data that matches IDs in the backup</li>
-            <li>Restore operations cannot be undone - create a new backup before restoring</li>
-          </ul>
-        </div>
-      </CardContent>
-    </Card>
+        {isRestoring && (
+          <div className="space-y-1">
+            <Progress value={progress} className="h-1.5" />
+            <p className="text-xs text-slate-500 text-right">
+              {progress}% complete
+            </p>
+          </div>
+        )}
+      </div>
+    </div>
   );
 }
