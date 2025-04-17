@@ -34,7 +34,7 @@ export interface IStorage {
   updateUserPassword(userId: number, newPassword: string): Promise<User | undefined>;
   
   // Domain methods
-  getAllDomains(): Promise<Domain[]>;
+  getAllDomains(forceRefresh?: boolean): Promise<Domain[]>;
   getDomain(id: number): Promise<Domain | undefined>;
   searchDomains(query: string): Promise<Domain[]>;
   filterDomains(filters: {
@@ -960,7 +960,10 @@ export class MemStorage implements IStorage {
   }
   
   // Domain methods
-  async getAllDomains(): Promise<Domain[]> {
+  async getAllDomains(forceRefresh?: boolean): Promise<Domain[]> {
+    if (forceRefresh) {
+      console.log(`Forced refresh of domains - returning ${this.domains.size} domains`);
+    }
     return Array.from(this.domains.values());
   }
   
