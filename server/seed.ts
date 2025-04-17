@@ -328,17 +328,36 @@ async function seedPageContents() {
 }
 
 async function seedAdminUser() {
+  // Create a strong admin password
+  const ADMIN_PASSWORD = "DomainAdmin#2025!SecureAccess";
+  
   // Check if admin user already exists
   const existingAdmin = await db.select().from(users).where(eq(users.username, 'admin'));
+  
   if (existingAdmin.length > 0) {
-    console.log("Admin user already exists, skipping...");
+    console.log("Admin user already exists, updating password for security...");
+    
+    // Check if we need to update to the secure password (don't expose the existing one in logs)
+    try {
+      // Update the admin password for enhanced security
+      const hashedPassword = await hashPassword(ADMIN_PASSWORD);
+      
+      await db.update(users)
+        .set({ password: hashedPassword })
+        .where(eq(users.username, 'admin'));
+      
+      console.log("Admin password has been updated to a secure value");
+    } catch (updateError) {
+      console.error("Failed to update admin password:", updateError);
+    }
+    
     return;
   }
 
-  console.log("Creating admin user...");
+  console.log("Creating admin user with secure password...");
   
-  // Create admin user
-  const hashedPassword = await hashPassword('admin123');
+  // Create admin user with strong password
+  const hashedPassword = await hashPassword(ADMIN_PASSWORD);
   
   await db.insert(users).values({
     username: 'admin',
@@ -346,7 +365,8 @@ async function seedAdminUser() {
     isAdmin: true
   });
   
-  console.log("Admin user created - Username: admin, Password: admin123");
+  console.log("Admin user created - Username: admin with secure password");
+  console.log("IMPORTANT: Admin password is " + ADMIN_PASSWORD);
 }
 
 export async function seedDatabase() {
