@@ -663,6 +663,65 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
+  // DELETE all domains (bulk operation)
+  app.delete("/api/admin/domains/all", async (req, res) => {
+    try {
+      // Check if user is authenticated and an admin
+      if (!req.isAuthenticated() || !(req.user?.isAdmin)) {
+        return res.status(403).json({ message: "Unauthorized" });
+      }
+      
+      // Get confirmation code from request
+      const { confirmationCode } = req.body;
+      
+      if (confirmationCode !== 'DELETE-ALL-DOMAINS') {
+        return res.status(400).json({ 
+          success: false, 
+          message: 'Invalid confirmation code. Please provide the correct code to confirm this irreversible action.' 
+        });
+      }
+      
+      console.log('⚠️ DELETING ALL DOMAINS as requested by admin user');
+      
+      // Get all domains first to count them
+      const allDomains = await storage.getAllDomains();
+      const count = allDomains.length;
+      
+      // Create a backup before deletion
+      await backupDataToFile(allDomains, 'domains-pre-deletion-backup');
+      
+      // Delete all domains one by one to trigger proper hooks and events
+      let deletedCount = 0;
+      for (const domain of allDomains) {
+        const success = await storage.deleteDomain(domain.id);
+        if (success) deletedCount++;
+      }
+      
+      // Log the deletion operation
+      await db.insert(schema.dataVersions).values({
+        dataType: 'domains',
+        operation: 'bulk-delete',
+        recordCount: deletedCount,
+        lastUpdated: new Date(),
+        checksum: Date.now().toString(),
+        details: `Admin requested deletion of all domains. ${deletedCount} of ${count} domains were deleted.`
+      });
+      
+      res.json({
+        success: true,
+        message: `Successfully deleted ${deletedCount} out of ${count} domains`,
+        deletedCount,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error("Error deleting all domains:", error);
+      res.status(500).json({ 
+        success: false, 
+        message: "Failed to delete domains. Please try again or contact support." 
+      });
+    }
+  });
+  
   // Delete a domain
   app.delete("/api/admin/domains/:id", async (req, res) => {
     try {
@@ -682,7 +741,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ message: "Failed to delete domain" });
     }
   });
-  
+
   // Mark domain as sold
   app.patch("/api/admin/domains/:id/mark-sold", async (req, res) => {
     try {
