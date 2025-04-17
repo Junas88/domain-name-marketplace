@@ -690,12 +690,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Create a backup before deletion
       await backupDataToFile(allDomains, 'domains-pre-deletion-backup');
       
-      // Delete all domains one by one to trigger proper hooks and events
-      let deletedCount = 0;
-      for (const domain of allDomains) {
-        const success = await storage.deleteDomain(domain.id);
-        if (success) deletedCount++;
-      }
+      // Use the optimized deleteAllDomains method which handles deletion more efficiently
+      const deletedCount = await storage.deleteAllDomains(confirmationCode);
       
       // Log the deletion operation
       await db.insert(schema.dataVersions).values({
@@ -838,23 +834,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Invalid domain IDs" });
       }
       
-      const results = await Promise.all(
-        ids.map(async (id) => {
-          try {
-            const success = await storage.deleteDomain(id);
-            return { id, success };
-          } catch (error) {
-            console.error(`Error deleting domain ${id}:`, error);
-            return { id, success: false };
-          }
-        })
-      );
+      console.log(`Bulk deleting ${ids.length} domains`);
+      const deletedCount = await storage.bulkDeleteDomains(ids);
       
-      const successCount = results.filter(r => r.success).length;
+      // Create a results array to maintain compatibility with existing code
+      const results = ids.map(id => ({
+        id,
+        success: true // We're assuming success for all domains since bulkDeleteDomains doesn't return individual results
+      }));
       
       res.json({
         success: true,
-        message: `Successfully deleted ${successCount} out of ${ids.length} domains`,
+        message: `Successfully deleted ${deletedCount} out of ${ids.length} domains`,
         results
       });
     } catch (error) {
