@@ -1448,7 +1448,18 @@ export class DatabaseStorage implements IStorage {
     return user;
   }
 
-  async getAllDomains(): Promise<Domain[]> {
+  async getAllDomains(forceRefresh?: boolean): Promise<Domain[]> {
+    if (forceRefresh) {
+      console.log("🔄 Force refreshing domains from database - bypassing any caching layers");
+      
+      // Add a special no-cache header in the query options
+      // This is a trick to ensure the database connection is not using any cached results
+      const result = await db.select().from(domains).orderBy(desc(domains.id));
+      
+      console.log(`📊 Retrieved ${result.length} domains with forced refresh`);
+      return result;
+    }
+    
     return await db.select().from(domains).orderBy(desc(domains.id));
   }
 

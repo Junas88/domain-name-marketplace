@@ -278,9 +278,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.setHeader('Surrogate-Control', 'no-store');
       
       // Clear any existing domain cache in memory
-      if (typeof global.__domainCache !== 'undefined') {
-        console.log("Clearing global domain cache");
-        global.__domainCache = null;
+      try {
+        // Using a safe type-casting approach to access potential global cache
+        const globalObj = global as any;
+        if (globalObj.__domainCache) {
+          console.log("Clearing global domain cache");
+          globalObj.__domainCache = null;
+        }
+      } catch (e) {
+        console.log("No global domain cache to clear");
       }
 
       // Clear any CDN or proxy caches with a special header
@@ -299,9 +305,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
             const newPrice = parseFloat((domain.price + randomAdjustment).toFixed(2));
             
             // Update the domain with the slightly adjusted price
+            // Note: Domain model has built-in timestamps that will be updated automatically
             const updatedDomain = await storage.updateDomain(domain.id, {
               price: newPrice,
-              updatedAt: new Date().toISOString(), // Force timestamp update
+              // The server will automatically update timestamps
             });
             
             console.log(`Force updated domain ${domain.id} (${domain.name}): $${domain.price} -> $${newPrice}`);
@@ -340,7 +347,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.setHeader('Expires', '0');
       res.setHeader('Surrogate-Control', 'no-store');
       
-      const domains = await storage.getAllDomains();
+      // Check if force refresh is requested via header or query parameter
+      const forceRefresh = 
+        req.headers['x-force-refresh'] === 'true' || 
+        req.query.forceRefresh === 'true' ||
+        req.query.t !== undefined; // Timestamp in URL is another indicator of desired force refresh
+      
+      if (forceRefresh) {
+        console.log('Force refreshing domains due to explicit request');
+      }
+      
+      const domains = await storage.getAllDomains(forceRefresh);
       res.json(domains);
     } catch (error) {
       console.error("Error fetching domains:", error);
@@ -357,6 +374,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.setHeader('Pragma', 'no-cache');
       res.setHeader('Expires', '0');
       res.setHeader('Surrogate-Control', 'no-store');
+      
+      // Check if force refresh is requested via header or query parameter
+      const forceRefresh = 
+        req.headers['x-force-refresh'] === 'true' || 
+        req.query.forceRefresh === 'true' ||
+        req.query.t !== undefined; // Timestamp in URL is another indicator of desired force refresh
+      
+      if (forceRefresh) {
+        console.log('Force refreshing recently sold domains due to explicit request');
+        
+        // First refresh all domains to ensure we're working with fresh data
+        await storage.getAllDomains(true);
+      }
       
       const limit = req.query.limit ? parseInt(req.query.limit as string) : 6;
       const domains = await storage.getRecentlySoldDomains(limit);
