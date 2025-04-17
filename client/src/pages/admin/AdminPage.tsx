@@ -12,6 +12,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useToast } from "@/hooks/use-toast";
@@ -21,14 +22,18 @@ import { z } from "zod";
 import { 
   Check, 
   Database,
+  Download,
   EyeIcon, 
   FileText, 
   Loader2, 
   LogOut, 
   PenIcon, 
-  PlusIcon, 
+  PlusIcon,
+  SlidersHorizontal,
   TagIcon, 
-  TrashIcon 
+  Trash2,
+  TrashIcon,
+  X
 } from "lucide-react";
 import EmailSubmissionsTable from "@/components/admin/EmailSubmissionsTable";
 import BackupRestore from "@/components/admin/BackupRestore";
@@ -865,6 +870,106 @@ export default function AdminPage() {
           </div>
           </div>
 
+          <div className="flex flex-col space-y-4 md:flex-row md:space-y-0 md:space-x-4 md:items-end mb-4">
+            <div className="flex-1">
+              <Label htmlFor="domain-search">Search Domains</Label>
+              <div className="flex items-center mt-1.5">
+                <Input
+                  id="domain-search"
+                  type="text"
+                  placeholder="Search by domain name..."
+                  value={domainSearch}
+                  onChange={(e) => setDomainSearch(e.target.value)}
+                  className="max-w-sm"
+                />
+                {domainSearch && (
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    onClick={() => setDomainSearch("")}
+                    className="ml-2"
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
+                )}
+              </div>
+            </div>
+            <div>
+              <Button
+                variant="outline"
+                onClick={() => setShowBulkOperations(!showBulkOperations)}
+                className="flex items-center gap-2"
+              >
+                <SlidersHorizontal className="h-4 w-4" /> 
+                {showBulkOperations ? "Hide Bulk Operations" : "Show Bulk Operations"}
+              </Button>
+            </div>
+          </div>
+
+          {showBulkOperations && (
+            <Card className="mb-4">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-base">Bulk Operations</CardTitle>
+                <CardDescription>
+                  Perform operations on multiple domains at once
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  <div>
+                    <Label htmlFor="bulk-category">Update Category</Label>
+                    <div className="flex gap-2 mt-1.5">
+                      <Select>
+                        <SelectTrigger id="bulk-category">
+                          <SelectValue placeholder="Select category" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="premium">Premium</SelectItem>
+                          <SelectItem value="business">Business</SelectItem>
+                          <SelectItem value="tech">Tech</SelectItem>
+                          <SelectItem value="ecommerce">E-commerce</SelectItem>
+                          <SelectItem value="health">Health</SelectItem>
+                          <SelectItem value="finance">Finance</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <Button>Apply</Button>
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <Label htmlFor="bulk-price-action">Price Action</Label>
+                    <div className="flex gap-2 mt-1.5">
+                      <Select>
+                        <SelectTrigger id="bulk-price-action">
+                          <SelectValue placeholder="Select action" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="increase">Increase by %</SelectItem>
+                          <SelectItem value="decrease">Decrease by %</SelectItem>
+                          <SelectItem value="set">Set fixed amount</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <Input type="number" placeholder="Value" className="w-24" />
+                      <Button>Apply</Button>
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <Label>Quick Actions</Label>
+                    <div className="flex gap-2 mt-1.5">
+                      <Button variant="outline" className="flex items-center gap-1.5">
+                        <Download className="h-4 w-4" /> Export
+                      </Button>
+                      <Button variant="outline" className="flex items-center gap-1.5 text-red-500 hover:text-red-600">
+                        <Trash2 className="h-4 w-4" /> Delete
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
           <div className="rounded-md border">
             <Table>
               <TableHeader>
@@ -877,7 +982,12 @@ export default function AdminPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {domains.map((domain) => (
+                {domains
+                  .filter(domain => 
+                    domainSearch === "" || 
+                    domain.name.toLowerCase().includes(domainSearch.toLowerCase())
+                  )
+                  .map((domain) => (
                   <TableRow key={domain.id}>
                     <TableCell className="font-medium">{domain.name}</TableCell>
                     <TableCell>
