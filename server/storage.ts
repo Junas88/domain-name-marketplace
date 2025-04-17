@@ -14,7 +14,7 @@ import session from "express-session";
 import createMemoryStore from "memorystore";
 // Use optional chaining to prevent errors when db or pool is null
 import { db, pool } from "./db";
-import { eq, desc, count, sum, avg, and, like, or, not, gt, lt, between } from "drizzle-orm";
+import { eq, desc, count, sum, avg, and, like, or, not, gt, lt, between, inArray } from "drizzle-orm";
 import connectPgSimple from "connect-pg-simple";
 
 const MemoryStore = createMemoryStore(session);
@@ -1055,6 +1055,40 @@ export class MemStorage implements IStorage {
     return this.domains.delete(id);
   }
   
+  async bulkDeleteDomains(ids: number[]): Promise<number> {
+    if (ids.length === 0) return 0;
+    
+    // Log the operation for safety
+    console.log(`Bulk deleting ${ids.length} domains with IDs: ${ids.join(', ')}`);
+    
+    let deletedCount = 0;
+    for (const id of ids) {
+      if (this.domains.delete(id)) {
+        deletedCount++;
+      }
+    }
+    
+    return deletedCount;
+  }
+  
+  async deleteAllDomains(confirmationCode: string): Promise<number> {
+    // Security check - require exact confirmation code
+    if (confirmationCode !== "DELETE-ALL-DOMAINS") {
+      throw new Error("Invalid confirmation code. Please enter the exact code: DELETE-ALL-DOMAINS");
+    }
+    
+    // Get count before deletion
+    const count = this.domains.size;
+    
+    // Safety log
+    console.log(`Executing DELETE ALL DOMAINS operation. Deleting ${count} domains.`);
+    
+    // Clear all domains
+    this.domains.clear();
+    
+    return count;
+  }
+  
   async getRecentlySoldDomains(limit: number = 6): Promise<Domain[]> {
     const domains = Array.from(this.domains.values());
     
@@ -1538,6 +1572,39 @@ export class DatabaseStorage implements IStorage {
   async deleteDomain(id: number): Promise<boolean> {
     const result = await db.delete(domains).where(eq(domains.id, id));
     return true; // Drizzle doesn't return affected rows, so we assume success
+  }
+  
+  async bulkDeleteDomains(ids: number[]): Promise<number> {
+    if (ids.length === 0) return 0;
+    
+    // Log the operation for safety
+    console.log(`Bulk deleting ${ids.length} domains with IDs: ${ids.join(', ')}`);
+    
+    // Delete all domains with IDs in the provided array
+    const result = await db.delete(domains).where(inArray(domains.id, ids));
+    
+    // Since Drizzle doesn't return affected rows, we'll return the number of IDs provided
+    return ids.length;
+  }
+  
+  async deleteAllDomains(confirmationCode: string): Promise<number> {
+    // Security check - require exact confirmation code
+    if (confirmationCode !== "DELETE-ALL-DOMAINS") {
+      throw new Error("Invalid confirmation code. Please enter the exact code: DELETE-ALL-DOMAINS");
+    }
+    
+    // Get a count of all domains before deletion for reporting
+    const allDomains = await this.getAllDomains(true);
+    const count = allDomains.length;
+    
+    // Safety log
+    console.log(`Executing DELETE ALL DOMAINS operation. Deleting ${count} domains.`);
+    
+    // Delete all domains
+    const result = await db.delete(domains);
+    
+    // Return the number of domains that were deleted
+    return count;
   }
 
   async markDomainAsSold(id: number): Promise<Domain | undefined> {
