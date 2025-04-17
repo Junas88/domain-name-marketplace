@@ -46,6 +46,8 @@ export interface IStorage {
   createDomain(domain: InsertDomain): Promise<Domain>;
   updateDomain(id: number, domain: Partial<Domain>): Promise<Domain | undefined>;
   deleteDomain(id: number): Promise<boolean>;
+  bulkDeleteDomains(ids: number[]): Promise<number>;
+  deleteAllDomains(confirmationCode: string): Promise<number>;
   markDomainAsSold(id: number): Promise<Domain | undefined>;
   incrementViewCount(id: number): Promise<Domain | undefined>;
   getDomainStats(): Promise<{

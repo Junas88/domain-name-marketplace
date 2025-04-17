@@ -2028,6 +2028,49 @@ export default function SimpleAdminPage() {
               </AlertDialogFooter>
             </AlertDialogContent>
           </AlertDialog>
+
+          {/* Delete All Domains Confirmation Dialog */}
+          <AlertDialog 
+            open={deleteAllDomainsDialogOpen} 
+            onOpenChange={setDeleteAllDomainsDialogOpen}
+          >
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle className="text-red-600">DANGER: Delete ALL Domains</AlertDialogTitle>
+                <AlertDialogDescription className="space-y-4">
+                  <p>This action will permanently delete <strong>ALL</strong> domains in the database.
+                  This is a destructive action that <strong>CANNOT</strong> be undone.</p>
+                  
+                  <div className="border border-red-300 bg-red-50 p-4 rounded-md">
+                    <p className="text-sm text-red-800 font-medium">Type <strong>DELETE-ALL-DOMAINS</strong> in the box below to confirm:</p>
+                    <Input 
+                      className="mt-2 border-red-300 focus:border-red-500 focus:ring-red-500"
+                      value={deleteAllConfirmationCode}
+                      onChange={(e) => setDeleteAllConfirmationCode(e.target.value)}
+                      placeholder="DELETE-ALL-DOMAINS"
+                    />
+                  </div>
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel disabled={isDeletingAllDomains}>Cancel</AlertDialogCancel>
+                <AlertDialogAction
+                  className="bg-red-600 hover:bg-red-700"
+                  onClick={executeDeleteAllDomains}
+                  disabled={isDeletingAllDomains}
+                >
+                  {isDeletingAllDomains ? (
+                    <>
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      Deleting...
+                    </>
+                  ) : (
+                    "Delete All Domains"
+                  )}
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </TabsContent>
         
         {/* OFFERS TAB */}
