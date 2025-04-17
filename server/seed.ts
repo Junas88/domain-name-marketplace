@@ -12,203 +12,10 @@ async function hashPassword(password: string) {
   return `${buf.toString("hex")}.${salt}`;
 }
 
-async function seedDomains() {
-  // Check if domains already exist
-  const existingDomains = await db.select().from(domains);
-  if (existingDomains.length > 0) {
-    console.log("Domains already seeded, skipping...");
-    return;
-  }
-
-  console.log("Seeding domains...");
-  
-  // Sample domains
-  const domainData = [
-    {
-      name: "iptvhd.com",
-      description: "Perfect for streaming services or IPTV providers. Short, memorable, and descriptive.",
-      price: 2995,
-      category: "Entertainment",
-      length: 7,
-      viewCount: 0,
-      isSold: false
-    },
-    {
-      name: "lakome.com",
-      description: "Short, brandable domain suitable for various industries. Easy to remember and type.",
-      price: 1795,
-      category: "Brandable",
-      length: 6,
-      viewCount: 0,
-      isSold: false
-    },
-    {
-      name: "expired-website.com",
-      description: "Useful for services related to domain expiration, website maintenance, or renewals.",
-      price: 995,
-      category: "Business",
-      length: 17,
-      viewCount: 0,
-      isSold: false
-    },
-    {
-      name: "grape-website.com",
-      description: "Perfect for vineyards, wine retailers, or grape-related businesses. Memorable and descriptive.",
-      price: 1195,
-      category: "Food & Beverage",
-      length: 15,
-      viewCount: 0,
-      isSold: false
-    },
-    {
-      name: "highchips.com",
-      description: "Great for premium snack brands, technology products, or gambling services.",
-      price: 2495,
-      category: "Food & Beverage",
-      length: 9,
-      viewCount: 0,
-      isSold: false
-    },
-    {
-      name: "allgreenplants.com",
-      description: "Ideal for plant nurseries, gardening supplies, or sustainable products businesses.",
-      price: 1895,
-      category: "Home & Garden",
-      length: 15,
-      viewCount: 0,
-      isSold: false
-    },
-    {
-      name: "freshmasks.com",
-      description: "Perfect for face mask retailers, beauty products, or healthcare supplies.",
-      price: 3995,
-      category: "Health",
-      length: 10,
-      viewCount: 0,
-      isSold: false
-    },
-    {
-      name: "cloudsync.io",
-      description: "Excellent for cloud storage, data synchronization, or SaaS startups.",
-      price: 4995,
-      category: "Technology",
-      length: 9,
-      viewCount: 0,
-      isSold: false
-    },
-    {
-      name: "smartliving.app",
-      description: "Perfect for smart home technologies, IoT devices, or lifestyle applications.",
-      price: 3495,
-      category: "Technology",
-      length: 11,
-      viewCount: 0,
-      isSold: false
-    },
-    {
-      name: "digitalhealth.co",
-      description: "Great for telemedicine, health tech startups, or digital healthcare services.",
-      price: 5995,
-      category: "Health",
-      length: 12,
-      viewCount: 0,
-      isSold: false
-    },
-    {
-      name: "investpro.com",
-      description: "Perfect for investment services, financial advisors, or trading platforms.",
-      price: 7995,
-      category: "Finance",
-      length: 9,
-      viewCount: 0,
-      isSold: false
-    },
-    {
-      name: "ecotravel.co",
-      description: "Ideal for sustainable tourism, eco-friendly travel agencies, or green adventures.",
-      price: 2995,
-      category: "Travel",
-      length: 9,
-      viewCount: 0,
-      isSold: false
-    },
-    {
-      name: "fitnesshub.net",
-      description: "Great for fitness centers, workout apps, or health coaching services.",
-      price: 1795,
-      category: "Health",
-      length: 10,
-      viewCount: 0,
-      isSold: false
-    },
-    {
-      name: "petlovers.org",
-      description: "Perfect for pet adoption agencies, animal charities, or pet care services.",
-      price: 1295,
-      category: "Pets",
-      length: 9,
-      viewCount: 0,
-      isSold: false
-    },
-    {
-      name: "learnfast.co",
-      description: "Ideal for online education, quick courses, or accelerated learning platforms.",
-      price: 2195,
-      category: "Education",
-      length: 9,
-      viewCount: 0,
-      isSold: false
-    },
-    {
-      name: "craftbeer.store",
-      description: "Perfect for craft beer retailers, breweries, or beer subscription services.",
-      price: 3295,
-      category: "Food & Beverage",
-      length: 10,
-      viewCount: 0,
-      isSold: false
-    },
-    {
-      name: "homechef.recipes",
-      description: "Great for recipe websites, cooking services, or culinary content creators.",
-      price: 2495,
-      category: "Food & Beverage",
-      length: 13,
-      viewCount: 0,
-      isSold: false
-    },
-    {
-      name: "gamezone.net",
-      description: "Ideal for gaming websites, esports organizations, or game development studios.",
-      price: 4795,
-      category: "Entertainment",
-      length: 8,
-      viewCount: 0,
-      isSold: false
-    },
-    {
-      name: "localartists.com",
-      description: "Perfect for art marketplaces, local galleries, or artist communities.",
-      price: 3195,
-      category: "Arts",
-      length: 12,
-      viewCount: 0,
-      isSold: false
-    },
-    {
-      name: "luxuryhomes.co",
-      description: "Excellent for high-end real estate agencies, luxury property listings, or premium rentals.",
-      price: 5795,
-      category: "Real Estate",
-      length: 11,
-      viewCount: 0,
-      isSold: false
-    }
-  ];
-
-  // Insert domains
-  await db.insert(domains).values(domainData);
-  console.log(`Added ${domainData.length} domains to the database`);
+async function deleteDomains() {
+  console.log("Deleting existing domains...");
+  await db.delete(domains);
+  console.log("Domains deleted successfully.");
 }
 
 async function seedPageContents() {
@@ -220,7 +27,7 @@ async function seedPageContents() {
   }
 
   console.log("Seeding page contents...");
-  
+
   // Sample page contents
   const pageContentData = [
     {
@@ -330,41 +137,41 @@ async function seedPageContents() {
 async function seedAdminUser() {
   // Create a strong admin password
   const ADMIN_PASSWORD = "DomainAdmin#2025!SecureAccess";
-  
+
   // Check if admin user already exists
   const existingAdmin = await db.select().from(users).where(eq(users.username, 'admin'));
-  
+
   if (existingAdmin.length > 0) {
     console.log("Admin user already exists, updating password for security...");
-    
+
     // Check if we need to update to the secure password (don't expose the existing one in logs)
     try {
       // Update the admin password for enhanced security
       const hashedPassword = await hashPassword(ADMIN_PASSWORD);
-      
+
       await db.update(users)
         .set({ password: hashedPassword })
         .where(eq(users.username, 'admin'));
-      
+
       console.log("Admin password has been updated to a secure value");
     } catch (updateError) {
       console.error("Failed to update admin password:", updateError);
     }
-    
+
     return;
   }
 
   console.log("Creating admin user with secure password...");
-  
+
   // Create admin user with strong password
   const hashedPassword = await hashPassword(ADMIN_PASSWORD);
-  
+
   await db.insert(users).values({
     username: 'admin',
     password: hashedPassword,
     isAdmin: true
   });
-  
+
   console.log("Admin user created - Username: admin with secure password");
   console.log("IMPORTANT: Admin password is " + ADMIN_PASSWORD);
 }
@@ -372,7 +179,7 @@ async function seedAdminUser() {
 export async function seedDatabase() {
   try {
     await seedAdminUser();
-    await seedDomains();
+    await deleteDomains(); // Delete existing domains
     await seedPageContents();
     console.log("Database seeding completed successfully.");
   } catch (error) {

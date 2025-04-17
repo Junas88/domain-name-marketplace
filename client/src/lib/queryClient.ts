@@ -18,16 +18,16 @@ export async function apiRequest(
     },
     credentials: "include",
   };
-  
+
   const mergedOptions = { ...defaultOptions, ...options };
-  
+
   const res = await fetch(endpoint, mergedOptions);
-  
+
   // Don't throw for 401 - caller will handle
   if (res.status !== 401) {
     await throwIfResNotOk(res);
   }
-  
+
   return res;
 }
 
@@ -41,12 +41,12 @@ export const getQueryFn: <T>(options: {
     const url = queryKey[0] as string;
     const isDomainEndpoint = url.includes('/api/domains') || 
                             url.includes('/api/admin/domains');
-    
+
     // Set up request options with credentials
     const requestOptions: RequestInit = {
       credentials: "include",
     };
-    
+
     // Add cache-busting headers for domain endpoints to ensure we always get fresh data
     if (isDomainEndpoint) {
       requestOptions.headers = {
@@ -54,24 +54,24 @@ export const getQueryFn: <T>(options: {
         'Pragma': 'no-cache',
         'Expires': '0'
       };
-      
+
       // Add a cache-busting query parameter for extra insurance
       const separator = url.includes('?') ? '&' : '?';
       const urlWithCacheBuster = `${url}${separator}_t=${Date.now()}`;
-      
+
       const res = await fetch(urlWithCacheBuster, requestOptions);
-      
+
       if (unauthorizedBehavior === "returnNull" && res.status === 401) {
         return null;
       }
-      
+
       await throwIfResNotOk(res);
       return await res.json();
     }
-    
+
     // Regular fetch for non-domain endpoints
     const res = await fetch(url, requestOptions);
-    
+
     if (unauthorizedBehavior === "returnNull" && res.status === 401) {
       return null;
     }
@@ -89,8 +89,8 @@ export const queryClient = new QueryClient({
       refetchOnWindowFocus: false, // Don't refetch on window focus to maintain data persistence
       refetchOnMount: false, // Don't refetch when component mounts to maintain data persistence
       // Longer stale time to improve data persistence across navigation
-      staleTime: 1000 * 60 * 10, // 10 minutes
-      gcTime: 1000 * 60 * 15, // Keep data in cache for 15 minutes (formerly called cacheTime in v4)
+      staleTime: 0, //Always refetch
+      gcTime: 0, //Immediately remove from cache
       retry: false,
     },
     mutations: {
