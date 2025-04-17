@@ -697,6 +697,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       await db.insert(schema.dataVersions).values({
         dataType: 'domains',
         operation: 'bulk-delete',
+        version: schema.DB_VERSION, // Add the missing version value
         recordCount: deletedCount,
         lastUpdated: new Date(),
         checksum: Date.now().toString(),
