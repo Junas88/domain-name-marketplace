@@ -3,7 +3,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { RefreshCw } from 'lucide-react';
-import { apiRequest } from '@/lib/queryClient';
+
 
 export default function ForceSync() {
   const { toast } = useToast();
@@ -14,7 +14,14 @@ export default function ForceSync() {
     
     try {
       // Call the server's dedicated force sync API endpoint
-      const response = await apiRequest('POST', '/api/admin/force-sync');
+      const response = await fetch('/api/admin/force-sync', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Cache-Control': 'no-cache'
+        },
+        credentials: 'include'
+      });
       
       if (!response.ok) {
         const error = await response.json();

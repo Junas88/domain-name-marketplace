@@ -1443,7 +1443,16 @@ export default function SimpleAdminPage() {
         <TabsContent value="domains" className="space-y-4">
           <div className="flex justify-between items-center">
             <h2 className="text-xl font-bold text-black">Domain Management</h2>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-3">
+              <div className="relative">
+                <Search className="absolute left-2 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-500" />
+                <Input
+                  placeholder="Search domains..."
+                  className="pl-8 w-[200px]"
+                  value={domainSearchQuery}
+                  onChange={(e) => setDomainSearchQuery(e.target.value)}
+                />
+              </div>
               <Button onClick={() => {
                 setEditingDomain(null);
                 domainForm.reset({
@@ -1590,7 +1599,15 @@ export default function SimpleAdminPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {domains.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage).map((domain) => (
+                {domains
+                  .filter(domain => 
+                    domainSearchQuery === "" ||
+                    domain.name.toLowerCase().includes(domainSearchQuery.toLowerCase()) ||
+                    domain.category.toLowerCase().includes(domainSearchQuery.toLowerCase()) ||
+                    domain.description.toLowerCase().includes(domainSearchQuery.toLowerCase())
+                  )
+                  .slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
+                  .map((domain) => (
                   <TableRow key={domain.id} className={domain.isSold ? "bg-gray-50" : ""}>
                     <TableCell>
                       <Checkbox 
@@ -1674,10 +1691,15 @@ export default function SimpleAdminPage() {
                     </TableCell>
                   </TableRow>
                 ))}
-                {domains.length === 0 && (
+                {(domains.length === 0 || domains.filter(domain => 
+                    domainSearchQuery === "" ||
+                    domain.name.toLowerCase().includes(domainSearchQuery.toLowerCase()) ||
+                    domain.category.toLowerCase().includes(domainSearchQuery.toLowerCase()) ||
+                    domain.description.toLowerCase().includes(domainSearchQuery.toLowerCase())
+                  ).length === 0) && (
                   <TableRow>
-                    <TableCell colSpan={5} className="h-24 text-center">
-                      No domains found.
+                    <TableCell colSpan={8} className="h-24 text-center">
+                      {domains.length === 0 ? "No domains found." : "No domains match your search."}
                     </TableCell>
                   </TableRow>
                 )}
@@ -1685,33 +1707,43 @@ export default function SimpleAdminPage() {
             </Table>
             
             {/* Pagination Controls */}
-            {domains.length > itemsPerPage && (
-              <div className="flex items-center justify-between px-4 py-4 border-t">
-                <div className="text-sm text-gray-700">
-                  Showing <span className="font-medium">{Math.min((currentPage - 1) * itemsPerPage + 1, domains.length)}</span> to{" "}
-                  <span className="font-medium">{Math.min(currentPage * itemsPerPage, domains.length)}</span> of{" "}
-                  <span className="font-medium">{domains.length}</span> domains
+            {(() => {
+              const filteredDomains = domains.filter(domain => 
+                domainSearchQuery === "" ||
+                domain.name.toLowerCase().includes(domainSearchQuery.toLowerCase()) ||
+                domain.category.toLowerCase().includes(domainSearchQuery.toLowerCase()) ||
+                domain.description.toLowerCase().includes(domainSearchQuery.toLowerCase())
+              );
+              
+              return filteredDomains.length > itemsPerPage && (
+                <div className="flex items-center justify-between px-4 py-4 border-t">
+                  <div className="text-sm text-gray-700">
+                    Showing <span className="font-medium">{Math.min((currentPage - 1) * itemsPerPage + 1, filteredDomains.length)}</span> to{" "}
+                    <span className="font-medium">{Math.min(currentPage * itemsPerPage, filteredDomains.length)}</span> of{" "}
+                    <span className="font-medium">{filteredDomains.length}</span> domains
+                    {domainSearchQuery && ` (filtered from ${domains.length})`}
+                  </div>
+                  <div className="flex space-x-2">
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                      disabled={currentPage === 1}
+                    >
+                      Previous
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      onClick={() => setCurrentPage(p => Math.min(Math.ceil(filteredDomains.length / itemsPerPage), p + 1))}
+                      disabled={currentPage >= Math.ceil(filteredDomains.length / itemsPerPage)}
+                    >
+                      Next
+                    </Button>
+                  </div>
                 </div>
-                <div className="flex space-x-2">
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
-                    onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
-                    disabled={currentPage === 1}
-                  >
-                    Previous
-                  </Button>
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
-                    onClick={() => setCurrentPage(p => Math.min(Math.ceil(domains.length / itemsPerPage), p + 1))}
-                    disabled={currentPage >= Math.ceil(domains.length / itemsPerPage)}
-                  >
-                    Next
-                  </Button>
-                </div>
-              </div>
-            )}
+              );
+            })()}
           </div>
           
           {/* Domain Edit/Add Dialog */}
