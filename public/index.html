@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    
+    <!-- Force no caching -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <meta name="cache-buster" content="<%- Date.now() %>">
+    
+    <title>Domain Name Guide - Premium Domain Name Marketplace</title>
+    <meta name="description" content="Discover premium, brandable domain names for your business. Our curated marketplace features high-quality domains with instant purchasing options." />
+    
+    <!-- SEO metadata -->
+    <meta name="keywords" content="domain names, premium domains, brandable domains, domain marketplace, buy domains, domain broker" />
+    <meta name="author" content="Domain Name Guide" />
+    
+    <!-- Open Graph tags for social sharing -->
+    <meta property="og:title" content="Domain Name Guide - Premium Domain Name Marketplace" />
+    <meta property="og:description" content="Discover premium, brandable domain names for your business. Our curated marketplace features high-quality domains with instant purchasing options." />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://domainnameguide.com" />
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.ico" />
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+    
+    <!-- Prevent caching with query string -->
+    <script>
+      // Add cache-busting parameter to all fetch requests
+      const originalFetch = window.fetch;
+      window.fetch = function(url, options) {
+        if (typeof url === 'string') {
+          const separator = url.includes('?') ? '&' : '?';
+          url = `${url}${separator}_t=${Date.now()}`;
+        }
+        return originalFetch.apply(this, arguments);
+      };
+      
+      // Force cache refresh on page load
+      window.addEventListener('load', function() {
+        console.log('[Cache-Buster] Page loaded with cache-busting enabled');
+      });
+    </script>
+  </body>
+</html>

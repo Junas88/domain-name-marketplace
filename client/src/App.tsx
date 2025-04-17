@@ -1,10 +1,12 @@
 import { Switch, Route } from "wouter";
+import { useEffect } from "react";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { AuthProvider } from "@/hooks/use-auth";
 import { ScrollManager } from "@/components/ScrollManager";
 import SeoPageWrapper from "@/components/SeoPageWrapper";
+import { CACHE_BUSTER } from "./cache-buster"; // Import our cache buster utility
 import NotFound from "@/pages/not-found";
 import Home from "@/pages/Home";
 import Contact from "@/pages/Contact";
@@ -68,6 +70,20 @@ function Router() {
 }
 
 function App() {
+  // Log cache buster to help with debugging
+  console.log(`[App] Initialized with cache buster: ${CACHE_BUSTER}`);
+  
+  // Add a cache-busting meta tag to force fresh data
+  const metaTag = document.createElement('meta');
+  metaTag.name = 'cache-buster';
+  metaTag.content = CACHE_BUSTER;
+  document.head.appendChild(metaTag);
+  
+  // Invalidate all queries to force fresh data
+  queryClient.invalidateQueries();
+  
+  console.log('[App] Cache invalidation complete');
+  
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
