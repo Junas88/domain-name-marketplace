@@ -90,6 +90,7 @@ export default function SimpleAdminPage() {
   const { user, isLoading, logoutMutation } = useAuth();
   const [activeTab, setActiveTab] = useState("domains");
   const [activeGoogleTab, setActiveGoogleTab] = useState("search-console");
+  const [domainSearchQuery, setDomainSearchQuery] = useState("");
   
   // Analytics state
   const [pageViewsData, setPageViewsData] = useState<{
