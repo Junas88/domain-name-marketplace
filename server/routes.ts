@@ -409,18 +409,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.setHeader('Expires', '0');
       res.setHeader('Surrogate-Control', 'no-store');
       
-      // Check if force refresh is requested via header or query parameter
-      const forceRefresh = 
-        req.headers['x-force-refresh'] === 'true' || 
-        req.query.forceRefresh === 'true' ||
-        req.query.t !== undefined; // Timestamp in URL is another indicator of desired force refresh
+      // ALWAYS force refresh the domains data from database
+      // This will bypass any caching layer to ensure we get the latest data
+      console.log('🔄 Force refreshing domains from database - bypassing any caching layers');
       
-      if (forceRefresh) {
-        console.log('Force refreshing domains due to explicit request');
-      }
+      // Set forceRefresh to true to guarantee a fresh database pull
+      const domains = await storage.getAllDomains(true);
       
-      const domains = await storage.getAllDomains(forceRefresh);
-      res.json(domains);
+      // Add a timestamp to each domain to force client-side cache busting
+      const domainsWithTimestamp = domains.map(domain => ({
+        ...domain,
+        _cacheTime: Date.now() // This won't be visible in the UI but forces a change in the data
+      }));
+      
+      res.json(domainsWithTimestamp);
     } catch (error) {
       console.error("Error fetching domains:", error);
       res.status(500).json({ message: "Failed to fetch domains" });
@@ -437,22 +439,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.setHeader('Expires', '0');
       res.setHeader('Surrogate-Control', 'no-store');
       
-      // Check if force refresh is requested via header or query parameter
-      const forceRefresh = 
-        req.headers['x-force-refresh'] === 'true' || 
-        req.query.forceRefresh === 'true' ||
-        req.query.t !== undefined; // Timestamp in URL is another indicator of desired force refresh
+      // ALWAYS force refresh the domains data to ensure fresh results
+      console.log('🔄 Force refreshing recently sold domains from database');
       
-      if (forceRefresh) {
-        console.log('Force refreshing recently sold domains due to explicit request');
-        
-        // First refresh all domains to ensure we're working with fresh data
-        await storage.getAllDomains(true);
-      }
+      // First refresh all domains to ensure we're working with fresh data
+      await storage.getAllDomains(true);
       
       const limit = req.query.limit ? parseInt(req.query.limit as string) : 6;
       const domains = await storage.getRecentlySoldDomains(limit);
-      res.json(domains);
+      
+      // Add a timestamp to each domain to force client-side cache busting
+      const domainsWithTimestamp = domains.map(domain => ({
+        ...domain,
+        _cacheTime: Date.now() // This won't be visible in the UI but forces a change in the data
+      }));
+      
+      res.json(domainsWithTimestamp);
     } catch (error) {
       console.error("Error fetching recently sold domains:", error);
       res.status(500).json({ message: "Failed to fetch recently sold domains" });
