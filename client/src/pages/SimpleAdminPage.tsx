@@ -1098,6 +1098,57 @@ export default function SimpleAdminPage() {
     },
   });
   
+  // Mutation for syncing production database with local (clears all domains in production)
+  const syncWithLocalMutation = useMutation({
+    mutationFn: async (confirmationCode: string) => {
+      setIsSyncingProduction(true);
+      const res = await fetch(`/api/admin/sync-with-local`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ confirmationCode }),
+        credentials: 'include'
+      });
+      
+      if (res.ok) {
+        return await res.json();
+      }
+      
+      const errorData = await res.json().catch(() => ({ message: "Unknown error occurred" }));
+      throw new Error(errorData.message || "Failed to sync production with local");
+    },
+    onSuccess: (data) => {
+      toast({
+        title: "Success",
+        description: data.message || "Production database successfully synced with local",
+        duration: 5000,
+      });
+      setSyncWithLocalDialogOpen(false);
+      setSyncConfirmationCode("");
+      setIsSyncingProduction(false);
+      
+      // Invalidate all domain-related queries
+      queryClient.invalidateQueries({ queryKey: ['/api/domains'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/domains/recently-sold'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/domains/stats'] });
+      
+      // Force refetch all queries after a short delay
+      setTimeout(() => {
+        queryClient.refetchQueries({ type: 'all' });
+      }, 300);
+    },
+    onError: (error: Error) => {
+      setIsSyncingProduction(false);
+      toast({
+        title: "Error",
+        description: `Failed to sync production: ${error.message}`,
+        variant: "destructive",
+        duration: 5000,
+      });
+    },
+  });
+  
   const bulkPriceUpdateMutation = useMutation({
     mutationFn: async (data: { ids: number[], adjustmentType: 'fixed' | 'percentage', adjustmentValue: number }) => {
       const res = await fetch(`/api/admin/domains/bulk/update-prices`, {
@@ -1198,6 +1249,20 @@ export default function SimpleAdminPage() {
     }
     
     deleteAllDomainsMutation.mutate(deleteAllConfirmationCode);
+  };
+  
+  // Execute production sync handler
+  const executeSyncWithLocal = () => {
+    if (!syncConfirmationCode || syncConfirmationCode !== "SYNC-PRODUCTION") {
+      toast({
+        title: "Confirmation Failed",
+        description: "You must type the exact confirmation code: SYNC-PRODUCTION",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    syncWithLocalMutation.mutate(syncConfirmationCode);
   };
   
   const handleBulkPriceUpdate = () => {
