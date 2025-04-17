@@ -29,6 +29,7 @@ import {
   LogOut, 
   PenIcon, 
   PlusIcon,
+  Search,
   SlidersHorizontal,
   TagIcon, 
   Trash2,
@@ -937,20 +938,27 @@ export default function AdminPage() {
                   </div>
                   
                   <div>
-                    <Label htmlFor="bulk-price-action">Price Action</Label>
+                    <Label htmlFor="domain-search">Search Domains</Label>
                     <div className="flex gap-2 mt-1.5">
-                      <Select>
-                        <SelectTrigger id="bulk-price-action">
-                          <SelectValue placeholder="Select action" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="increase">Increase by %</SelectItem>
-                          <SelectItem value="decrease">Decrease by %</SelectItem>
-                          <SelectItem value="set">Set fixed amount</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <Input type="number" placeholder="Value" className="w-24" />
-                      <Button>Apply</Button>
+                      <div className="relative w-full">
+                        <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500" />
+                        <Input 
+                          id="domain-search"
+                          type="text" 
+                          placeholder="Search by domain name..." 
+                          className="w-full pl-9"
+                          value={domainSearch}
+                          onChange={(e) => setDomainSearch(e.target.value)}
+                        />
+                        {domainSearch && (
+                          <button
+                            onClick={() => setDomainSearch("")}
+                            className="absolute right-2.5 top-2.5 text-gray-500 hover:text-gray-700"
+                          >
+                            <X className="h-4 w-4" />
+                          </button>
+                        )}
+                      </div>
                     </div>
                   </div>
                   
