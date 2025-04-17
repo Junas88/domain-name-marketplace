@@ -30,7 +30,7 @@ import {
   TrashIcon 
 } from "lucide-react";
 import EmailSubmissionsTable from "@/components/admin/EmailSubmissionsTable";
-import ForceSync from "@/components/admin/ForceSync";
+import BackupRestore from "@/components/admin/BackupRestore";
 import { Domain, PageContent, SeoSettings, Consultation } from "@/lib/types";
 import { formatDistanceToNow } from "date-fns";
 
@@ -719,8 +719,8 @@ export default function AdminPage() {
         
         {/* DOMAINS TAB */}
         <TabsContent value="domains" className="space-y-6">
-          {/* Add ForceSync component at the top of domains tab */}
-          <ForceSync />
+          {/* Add BackupRestore component at the top of domains tab */}
+          <BackupRestore />
           
           <div className="flex justify-between items-center">
             <h2 className="text-xl font-bold">Domain Management</h2>

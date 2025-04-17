@@ -161,6 +161,106 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   // prefix all routes with /api
   
+  // Export domains data as JSON for backup or deploying
+  app.get("/api/admin/domains/export", async (req, res) => {
+    try {
+      // Check if user is authenticated and an admin
+      if (!req.isAuthenticated() || !(req.user?.isAdmin)) {
+        return res.status(403).json({ message: "Unauthorized" });
+      }
+
+      const domains = await storage.getAllDomains();
+      
+      // Set filename for download
+      const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
+      const filename = `domain-data-backup-${timestamp}.json`;
+      
+      // Set headers for file download
+      res.setHeader('Content-Type', 'application/json');
+      res.setHeader('Content-Disposition', `attachment; filename=${filename}`);
+      
+      // Return the domains as JSON file
+      res.json({
+        domains,
+        exportDate: new Date().toISOString(),
+        count: domains.length
+      });
+    } catch (error) {
+      console.error("Error exporting domains:", error);
+      res.status(500).json({ message: "Failed to export domains" });
+    }
+  });
+
+  // Import domains from JSON backup
+  app.post("/api/admin/domains/import", async (req, res) => {
+    try {
+      // Check if user is authenticated and an admin
+      if (!req.isAuthenticated() || !(req.user?.isAdmin)) {
+        return res.status(403).json({ message: "Unauthorized" });
+      }
+
+      const { domains } = req.body;
+      
+      if (!domains || !Array.isArray(domains) || domains.length === 0) {
+        return res.status(400).json({ message: "Invalid or empty domains data" });
+      }
+      
+      console.log(`📥 Importing ${domains.length} domains from backup...`);
+      
+      // Update each domain
+      const results = await Promise.all(
+        domains.map(async (domainData) => {
+          try {
+            // Find if domain already exists
+            const existingDomain = await storage.getDomain(domainData.id);
+            
+            if (existingDomain) {
+              // Update existing domain
+              const updatedDomain = await storage.updateDomain(domainData.id, {
+                name: domainData.name,
+                description: domainData.description,
+                price: domainData.price,
+                category: domainData.category,
+                length: domainData.length,
+                isSold: domainData.isSold,
+                viewCount: domainData.viewCount
+              });
+              return { id: domainData.id, action: "updated", success: true };
+            } else {
+              // Create new domain with default values
+              const newDomain = await storage.createDomain({
+                name: domainData.name,
+                description: domainData.description,
+                price: domainData.price,
+                category: domainData.category,
+                length: domainData.length,
+                isSold: domainData.isSold || false
+                // viewCount will be set to 0 by default in the schema
+              });
+              return { id: newDomain.id, action: "created", success: true };
+            }
+          } catch (error) {
+            console.error(`Error processing domain ${domainData.id}:`, error);
+            return { id: domainData.id, action: "failed", success: false };
+          }
+        })
+      );
+      
+      const successCount = results.filter(r => r.success).length;
+      
+      res.json({
+        success: true,
+        message: `Successfully processed ${successCount} out of ${domains.length} domains`,
+        created: results.filter(r => r.action === "created").length,
+        updated: results.filter(r => r.action === "updated").length,
+        failed: results.filter(r => !r.success).length
+      });
+    } catch (error) {
+      console.error("Error importing domains:", error);
+      res.status(500).json({ message: "Failed to import domains" });
+    }
+  });
+  
   // Special production sync endpoint - forces database refresh
   app.post("/api/admin/force-sync", async (req, res) => {
     try {
