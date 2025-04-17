@@ -1129,12 +1129,16 @@ export default function SimpleAdminPage() {
   };
   
   const handleBulkPriceUpdate = () => {
-    if (selectedDomains.length === 0 || isNaN(bulkAdjustmentValue)) return;
+    if (selectedDomains.length === 0 || isNaN(bulkAdjustmentValue) || bulkAdjustmentValue <= 0) return;
     
+    // For direct price update, we use the 'fixed' type and provide the exact new price
     bulkPriceUpdateMutation.mutate({
       ids: selectedDomains,
-      adjustmentType: bulkAdjustmentType,
-      adjustmentValue: bulkAdjustmentValue
+      // Always use fixed type now, since we're directly setting prices
+      adjustmentType: 'fixed',
+      // In the backend, we need to distinguish between adjustment and direct update
+      // A negative value indicates direct price set rather than adjustment
+      adjustmentValue: -bulkAdjustmentValue // Negative signals direct price update
     });
   };
   
@@ -1502,34 +1506,26 @@ export default function SimpleAdminPage() {
             <CardContent>
               <div className="flex flex-wrap gap-4">
                 <div className="flex-1 min-w-[200px]">
-                  <Label htmlFor="bulk-price-adjustment-type">Price Adjustment</Label>
+                  <Label htmlFor="bulk-price-update">Price Update</Label>
                   <div className="flex items-center gap-2 mt-2">
-                    <Select 
-                      defaultValue="fixed" 
-                      onValueChange={(value) => setBulkAdjustmentType(value as 'fixed' | 'percentage')}
-                    >
-                      <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Adjustment Type" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="fixed">Fixed Amount ($ ±)</SelectItem>
-                        <SelectItem value="percentage">Percentage (%)</SelectItem>
-                      </SelectContent>
-                    </Select>
                     <Input 
-                      id="bulk-price-adjustment"
+                      id="bulk-price-update"
                       type="number" 
-                      placeholder={bulkAdjustmentType === 'fixed' ? "±100" : "±10%"}
+                      placeholder="Enter new price"
                       onChange={(e) => setBulkAdjustmentValue(parseFloat(e.target.value))}
-                      className="w-24"
+                      className="w-36"
                     />
                     <Button 
                       variant="outline" 
                       size="sm"
-                      disabled={!selectedDomains.length || isNaN(bulkAdjustmentValue)}
-                      onClick={handleBulkPriceUpdate}
+                      disabled={!selectedDomains.length || isNaN(bulkAdjustmentValue) || bulkAdjustmentValue <= 0}
+                      onClick={() => {
+                        // Force fixed type for direct price updates
+                        setBulkAdjustmentType('fixed');
+                        handleBulkPriceUpdate();
+                      }}
                     >
-                      Apply
+                      Update Price
                     </Button>
                   </div>
                 </div>

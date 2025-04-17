@@ -694,16 +694,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
             let newPrice;
             
             // Make sure domain is defined
-          if (!domain) {
-            throw new Error(`Domain not found`);
-          }
-          
-          if (adjustmentType === 'fixed') {
-              // Add or subtract a fixed amount
+            if (!domain) {
+              throw new Error(`Domain not found`);
+            }
+            
+            // Check if this is a direct price update (adjustmentValue is negative)
+            // In our updated UI, we're sending negative values to indicate "set price to this absolute value"
+            if (adjustmentValue < 0 && adjustmentType === 'fixed') {
+              // Direct price update - set the price to the absolute value
+              newPrice = Math.abs(adjustmentValue);
+              console.log(`Direct price update for domain ${domain.id}: Setting price to $${newPrice}`);
+            } else if (adjustmentType === 'fixed') {
+              // Traditional adjustment - add or subtract a fixed amount
               newPrice = domain.price + Number(adjustmentValue);
+              console.log(`Price adjustment for domain ${domain.id}: ${adjustmentValue > 0 ? 'Adding' : 'Subtracting'} $${Math.abs(adjustmentValue)}`);
             } else {
-              // Apply percentage change
+              // Percentage change
               newPrice = domain.price * (1 + Number(adjustmentValue) / 100);
+              console.log(`Price adjustment for domain ${domain.id}: ${adjustmentValue > 0 ? 'Increasing' : 'Decreasing'} by ${Math.abs(adjustmentValue)}%`);
             }
             
             // Ensure price is never negative
