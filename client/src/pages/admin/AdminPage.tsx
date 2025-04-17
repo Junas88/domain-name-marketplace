@@ -723,24 +723,33 @@ export default function AdminPage() {
           
           <div className="flex justify-between items-center">
             <h2 className="text-xl font-bold">Domain Management</h2>
-            <Dialog open={showAddDomainDialog} onOpenChange={setShowAddDomainDialog}>
-              <DialogTrigger asChild>
-                <Button
-                  onClick={() => {
-                    setEditingDomain(null);
-                    domainForm.reset({
-                      name: "",
-                      description: "",
-                      price: 0,
-                      category: "",
-                      length: 0,
-                    });
-                  }}
-                >
-                  <PlusIcon className="h-4 w-4 mr-2" />
-                  Add Domain
-                </Button>
-              </DialogTrigger>
+            <div className="flex gap-2">
+              <Button 
+                variant="outline"
+                onClick={() => window.location.href = "/admin/sync"}
+                className="flex items-center gap-2"
+              >
+                <Database className="h-4 w-4" />
+                Data Sync & Backup
+              </Button>
+              <Dialog open={showAddDomainDialog} onOpenChange={setShowAddDomainDialog}>
+                <DialogTrigger asChild>
+                  <Button
+                    onClick={() => {
+                      setEditingDomain(null);
+                      domainForm.reset({
+                        name: "",
+                        description: "",
+                        price: 0,
+                        category: "",
+                        length: 0,
+                      });
+                    }}
+                  >
+                    <PlusIcon className="h-4 w-4 mr-2" />
+                    Add Domain
+                  </Button>
+                </DialogTrigger>
               <DialogContent className="sm:max-w-[600px]">
                 <DialogHeader>
                   <DialogTitle>{editingDomain ? "Edit Domain" : "Add New Domain"}</DialogTitle>

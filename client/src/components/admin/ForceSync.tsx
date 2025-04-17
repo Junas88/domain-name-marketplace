@@ -1,96 +1,74 @@
 import { useState } from 'react';
-import { useMutation } from '@tanstack/react-query';
-import { apiRequest, queryClient } from '@/lib/queryClient';
-import { AlertTriangle, RefreshCcw, Check, Loader2 } from 'lucide-react';
+import { useToast } from "@/hooks/use-toast";
 import { Button } from '@/components/ui/button';
-import { useToast } from '@/hooks/use-toast';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { RefreshCw } from 'lucide-react';
+import { apiRequest } from '@/lib/queryClient';
 
 export default function ForceSync() {
   const { toast } = useToast();
-  const [lastSyncTime, setLastSyncTime] = useState<string | null>(null);
-
-  const forceSyncMutation = useMutation({
-    mutationFn: async () => {
-      const res = await apiRequest('/api/admin/force-sync', {
-        method: 'POST',
-        body: JSON.stringify({}),
-      });
-      return res.json();
-    },
-    onSuccess: (data) => {
-      // Invalidate all domain-related queries to force a fresh fetch
-      queryClient.invalidateQueries({ queryKey: ['/api/domains'] });
-      queryClient.invalidateQueries({ queryKey: ['/api/admin/domains'] });
-      queryClient.invalidateQueries({ queryKey: ['/api/domains/recently-sold'] });
-      queryClient.invalidateQueries({ queryKey: ['/api/admin/domains/stats'] });
+  const [isSyncing, setIsSyncing] = useState(false);
+  
+  const handleForceSync = async () => {
+    setIsSyncing(true);
+    
+    try {
+      const cacheParam = `?t=${Date.now()}`; // Add cache-busting timestamp
       
-      setLastSyncTime(new Date().toLocaleTimeString());
+      // Fetch all domains with cache-busting
+      const response = await apiRequest('GET', `/api/domains${cacheParam}`, undefined, {
+        headers: {
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          'Pragma': 'no-cache',
+          'Expires': '0',
+        }
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to sync domains');
+      }
+      
+      // Force refresh the browser cache and DOM
+      window.location.reload();
       
       toast({
-        title: 'Sync Completed',
-        description: `${data.message || 'All domain data has been refreshed'}`,
+        title: "Data Sync Successful",
+        description: "All domain data has been refreshed",
       });
-    },
-    onError: (error: any) => {
-      console.error('Force sync error:', error);
+    } catch (error) {
+      console.error('Data sync error:', error);
       toast({
-        title: 'Sync Failed',
-        description: 'Failed to sync domain data. Please try again.',
-        variant: 'destructive',
+        title: "Sync Failed",
+        description: error instanceof Error ? error.message : "An unknown error occurred",
+        variant: "destructive",
       });
-    },
-  });
-
+    } finally {
+      setIsSyncing(false);
+    }
+  };
+  
   return (
-    <div className="mb-6">
-      <Card>
-        <CardHeader className="pb-3">
-          <CardTitle>Production Sync</CardTitle>
-          <CardDescription>
-            Force a complete refresh of all domain data to ensure pricing is up-to-date everywhere
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <Alert className="bg-amber-50 border-amber-200">
-            <AlertTriangle className="h-4 w-4 text-amber-600" />
-            <AlertTitle className="text-amber-800">Seeing stale prices in production?</AlertTitle>
-            <AlertDescription className="text-amber-700">
-              If domain prices aren't refreshing in production, use this tool to force a complete data refresh. 
-              This will update all domains with their current data.
-            </AlertDescription>
-          </Alert>
-          
-          <div className="flex items-center justify-between">
-            <div>
-              {lastSyncTime && (
-                <div className="flex items-center gap-2 text-sm text-gray-500">
-                  <Check className="h-4 w-4 text-green-500" />
-                  Last synced at {lastSyncTime}
-                </div>
-              )}
-            </div>
-            <Button 
-              onClick={() => forceSyncMutation.mutate()}
-              disabled={forceSyncMutation.isPending}
-              className="flex items-center gap-2"
-            >
-              {forceSyncMutation.isPending ? (
-                <>
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                  Syncing...
-                </>
-              ) : (
-                <>
-                  <RefreshCcw className="h-4 w-4" />
-                  Force Sync All Domains
-                </>
-              )}
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
-    </div>
+    <Card>
+      <CardHeader className="pb-2">
+        <CardTitle className="text-lg">Force Data Sync</CardTitle>
+        <CardDescription>Refresh all domain data to ensure latest prices are displayed</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <p className="text-sm text-muted-foreground">
+          Use this when domain prices or availability aren't updating correctly in production.
+          This will force a refresh of all domain data by bypassing the cache.
+        </p>
+      </CardContent>
+      <CardFooter>
+        <Button 
+          onClick={handleForceSync} 
+          disabled={isSyncing}
+          className="flex items-center gap-2"
+        >
+          <RefreshCw className={`h-4 w-4 ${isSyncing ? 'animate-spin' : ''}`} />
+          {isSyncing ? 'Syncing Data...' : 'Force Sync Now'}
+        </Button>
+      </CardFooter>
+    </Card>
   );
 }

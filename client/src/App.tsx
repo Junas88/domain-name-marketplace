@@ -19,6 +19,7 @@ import EbookSuccess from "@/pages/EbookSuccess";
 import DomainFinderPage from "@/pages/DomainFinderPage";
 import SimpleAdminPage from "@/pages/SimpleAdminPage";
 import SimpleLoginPage from "@/pages/SimpleLoginPage";
+import DataSyncBackupPage from "@/components/admin/DataSyncBackupPage";
 
 // Enhanced components with SEO metadata
 const HomePage = () => <SeoPageWrapper pageKey="home"><Home /></SeoPageWrapper>;
@@ -59,6 +60,8 @@ function Router() {
       <Route path="/dashboard" component={SimpleAdminPage} />
       <Route path="/admin/index.html" component={SimpleAdminPage} />
       <Route path="/dashboard/index.html" component={SimpleAdminPage} />
+      <Route path="/admin/sync" component={DataSyncBackupPage} />
+      <Route path="/admin/backup" component={DataSyncBackupPage} />
       <Route component={NotFoundWrapper} />
     </Switch>
   );

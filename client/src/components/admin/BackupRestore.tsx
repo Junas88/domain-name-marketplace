@@ -1,206 +1,284 @@
 import { useState, useRef } from 'react';
-import { useMutation } from '@tanstack/react-query';
-import { apiRequest, queryClient } from '@/lib/queryClient';
+import { useToast } from "@/hooks/use-toast";
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Loader2, Download, Upload, RefreshCw } from 'lucide-react';
-import { useToast } from '@/hooks/use-toast';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import ForceSync from './ForceSync';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Download, Upload, AlertTriangle } from 'lucide-react';
+import { Label } from '@/components/ui/label';
+import { Progress } from '@/components/ui/progress';
+import { apiRequest } from '@/lib/queryClient';
+import { 
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 export default function BackupRestore() {
   const { toast } = useToast();
-  const [isExporting, setIsExporting] = useState(false);
-  const [isImporting, setIsImporting] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [isBackingUp, setIsBackingUp] = useState(false);
+  const [isRestoring, setIsRestoring] = useState(false);
+  const [progress, setProgress] = useState(0);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Export domains
-  const handleExport = async () => {
+  const handleBackup = async () => {
+    setIsBackingUp(true);
+    
     try {
-      setIsExporting(true);
-      // Use window.open for direct download
-      window.open('/api/admin/domains/export', '_blank');
-      toast({
-        title: 'Domain Data Exported',
-        description: 'The domain data has been exported successfully.',
+      const timestamp = new Date().toISOString().split('T')[0];
+      
+      const response = await apiRequest('GET', '/api/admin/backup', undefined, {
+        headers: {
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          'Pragma': 'no-cache',
+          'Expires': '0',
+        }
       });
-      setTimeout(() => setIsExporting(false), 1000);
-    } catch (error) {
-      console.error('Error exporting domains:', error);
-      toast({
-        title: 'Export Failed',
-        description: 'Failed to export domain data.',
-        variant: 'destructive',
-      });
-      setIsExporting(false);
-    }
-  };
-
-  // Handle file selection
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (files && files.length > 0) {
-      setSelectedFile(files[0]);
-    }
-  };
-
-  // Import domains mutation
-  const importMutation = useMutation({
-    mutationFn: async (domains: any[]) => {
-      const res = await apiRequest('/api/admin/domains/import', {
-        method: 'POST',
-        body: JSON.stringify({ domains }),
-      });
-      return res.json();
-    },
-    onSuccess: (data) => {
-      // Invalidate all domain-related queries
-      queryClient.invalidateQueries({ queryKey: ['/api/domains'] });
-      queryClient.invalidateQueries({ queryKey: ['/api/admin/domains'] });
-      queryClient.invalidateQueries({ queryKey: ['/api/domains/recently-sold'] });
-      queryClient.invalidateQueries({ queryKey: ['/api/admin/domains/stats'] });
+      
+      if (!response.ok) {
+        throw new Error(`Failed to create backup: ${response.statusText}`);
+      }
+      
+      const data = await response.json();
+      
+      // Create and download backup file
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.style.display = 'none';
+      a.href = url;
+      a.download = `domain-guide-backup-${timestamp}.json`;
+      document.body.appendChild(a);
+      a.click();
+      
+      // Cleanup
+      window.URL.revokeObjectURL(url);
+      a.remove();
       
       toast({
-        title: 'Import Successful',
-        description: data.message || `Successfully imported domain data`,
+        title: "Backup Created Successfully",
+        description: "Your backup file has been downloaded",
       });
-      setSelectedFile(null);
-      setIsImporting(false);
-      if (fileInputRef.current) {
-        fileInputRef.current.value = '';
-      }
-    },
-    onError: (error: any) => {
-      console.error('Import error:', error);
+    } catch (error) {
+      console.error('Backup error:', error);
       toast({
-        title: 'Import Failed',
-        description: 'Failed to import domain data. Please check the file format.',
-        variant: 'destructive',
+        title: "Backup Failed",
+        description: error instanceof Error ? error.message : "An unknown error occurred",
+        variant: "destructive",
       });
-      setIsImporting(false);
-    },
-  });
-
-  // Handle import
-  const handleImport = async () => {
+    } finally {
+      setIsBackingUp(false);
+    }
+  };
+  
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      setSelectedFile(e.target.files[0]);
+    }
+  };
+  
+  const handleRestore = async () => {
     if (!selectedFile) {
       toast({
-        title: 'No File Selected',
-        description: 'Please select a backup file to import.',
-        variant: 'destructive',
+        title: "No File Selected",
+        description: "Please select a backup file to restore",
+        variant: "destructive",
       });
       return;
     }
-
+    
+    setIsRestoring(true);
+    setProgress(10);
+    
     try {
-      setIsImporting(true);
-      const fileContent = await selectedFile.text();
-      const parsedData = JSON.parse(fileContent);
+      // Read the file content
+      const reader = new FileReader();
       
-      if (!parsedData.domains || !Array.isArray(parsedData.domains)) {
-        throw new Error('Invalid backup file format');
+      const filePromise = new Promise<string>((resolve, reject) => {
+        reader.onload = () => resolve(reader.result as string);
+        reader.onerror = reject;
+      });
+      
+      reader.readAsText(selectedFile);
+      const fileContent = await filePromise;
+      
+      setProgress(30);
+      
+      // Parse the JSON
+      const backupData = JSON.parse(fileContent);
+      
+      setProgress(50);
+      
+      // Send it to the API
+      const response = await apiRequest('POST', '/api/admin/restore', backupData, {
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      });
+      
+      setProgress(80);
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Restore failed');
       }
       
-      importMutation.mutate(parsedData.domains);
-    } catch (error) {
-      console.error('Error parsing import file:', error);
+      setProgress(100);
+      
+      // Reset file input
+      setSelectedFile(null);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+      
       toast({
-        title: 'Invalid Backup File',
-        description: 'The selected file is not a valid domain backup.',
-        variant: 'destructive',
+        title: "Restore Completed Successfully",
+        description: "Your data has been restored from the backup",
       });
-      setIsImporting(false);
+      
+      // Force page reload after short delay
+      setTimeout(() => {
+        window.location.reload();
+      }, 1500);
+      
+    } catch (error) {
+      console.error('Restore error:', error);
+      toast({
+        title: "Restore Failed",
+        description: error instanceof Error ? error.message : "An unknown error occurred",
+        variant: "destructive",
+      });
+    } finally {
+      setIsRestoring(false);
     }
   };
-
+  
   return (
-    <Card className="mb-6">
-      <CardHeader>
-        <CardTitle>Data Synchronization & Backup</CardTitle>
-        <CardDescription>
-          Keep your data in sync between environments and create backups
-        </CardDescription>
+    <Card>
+      <CardHeader className="pb-2">
+        <CardTitle className="text-lg">Backup & Restore</CardTitle>
+        <CardDescription>Create and restore backups of your domain data</CardDescription>
       </CardHeader>
-      <CardContent>
-        <Tabs defaultValue="sync">
-          <TabsList className="mb-4">
-            <TabsTrigger value="sync">Sync Data</TabsTrigger>
-            <TabsTrigger value="backup">Backup & Restore</TabsTrigger>
-          </TabsList>
+      <CardContent className="space-y-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {/* Backup Card */}
+          <Card className="border border-muted">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-base flex items-center">
+                <Download className="h-4 w-4 mr-2" />
+                Create Backup
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-muted-foreground">
+                Download a complete backup of all domain data, content, and settings.
+              </p>
+            </CardContent>
+            <CardFooter>
+              <Button 
+                onClick={handleBackup} 
+                disabled={isBackingUp}
+                className="w-full"
+              >
+                {isBackingUp ? 'Creating Backup...' : 'Download Backup'}
+              </Button>
+            </CardFooter>
+          </Card>
           
-          <TabsContent value="sync">
-            <ForceSync />
-          </TabsContent>
-          
-          <TabsContent value="backup">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-4">
-                <h3 className="text-lg font-medium">Export Domain Data</h3>
-                <p className="text-muted-foreground mb-3">
-                  Download a backup of all domain data. Use this to transfer data between environments.
-                </p>
-                <Button 
-                  onClick={handleExport} 
-                  disabled={isExporting}
-                  variant="default"
-                  className="w-full flex items-center justify-center gap-2"
-                >
-                  {isExporting ? (
-                    <>
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                      Exporting...
-                    </>
-                  ) : (
-                    <>
-                      <Download className="h-4 w-4" />
-                      Export Domain Data
-                    </>
-                  )}
-                </Button>
-              </div>
+          {/* Restore Card */}
+          <Card className="border border-muted">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-base flex items-center">
+                <Upload className="h-4 w-4 mr-2" />
+                Restore Backup
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <p className="text-sm text-muted-foreground">
+                Upload and restore a previously created backup file.
+              </p>
               
-              <div className="space-y-4">
-                <h3 className="text-lg font-medium">Import Domain Data</h3>
-                <p className="text-muted-foreground mb-3">
-                  Restore from a backup or import data from another environment.
-                </p>
-                <div className="flex flex-col space-y-2">
+              <div>
+                <Label htmlFor="backup-file">Select backup file</Label>
+                <div className="mt-1">
                   <input
-                    type="file"
                     ref={fileInputRef}
-                    onChange={handleFileChange}
+                    id="backup-file"
+                    type="file"
                     accept=".json"
-                    className="block w-full text-sm text-gray-500
+                    onChange={handleFileChange}
+                    className="block w-full text-sm text-slate-500
                       file:mr-4 file:py-2 file:px-4
                       file:rounded-md file:border-0
                       file:text-sm file:font-semibold
-                      file:bg-primary file:text-primary-foreground
-                      hover:file:bg-primary/90"
+                      file:bg-secondary file:text-foreground
+                      hover:file:bg-secondary/80
+                      cursor-pointer"
                   />
-                  <Button 
-                    onClick={handleImport} 
-                    disabled={isImporting || !selectedFile}
-                    variant="default"
-                    className="w-full flex items-center justify-center gap-2"
-                  >
-                    {isImporting ? (
-                      <>
-                        <Loader2 className="h-4 w-4 animate-spin" />
-                        Importing...
-                      </>
-                    ) : (
-                      <>
-                        <Upload className="h-4 w-4" />
-                        Import Domain Data
-                      </>
-                    )}
-                  </Button>
                 </div>
+                {selectedFile && (
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Selected: {selectedFile.name}
+                  </p>
+                )}
               </div>
-            </div>
-          </TabsContent>
-        </Tabs>
+              
+              {isRestoring && (
+                <div className="space-y-1">
+                  <Progress value={progress} className="h-2" />
+                  <p className="text-xs text-muted-foreground text-right">
+                    {progress}% complete
+                  </p>
+                </div>
+              )}
+            </CardContent>
+            <CardFooter>
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button 
+                    variant="outline"
+                    disabled={!selectedFile || isRestoring}
+                    className="w-full"
+                  >
+                    {isRestoring ? 'Restoring...' : 'Restore from Backup'}
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle className="flex items-center">
+                      <AlertTriangle className="h-5 w-5 mr-2 text-amber-500" />
+                      Confirm Restore Operation
+                    </AlertDialogTitle>
+                    <AlertDialogDescription>
+                      This will replace all current data with the data from the backup file.
+                      This action cannot be undone. Are you sure you want to continue?
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction onClick={handleRestore}>
+                      Yes, Restore Data
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+            </CardFooter>
+          </Card>
+        </div>
+        
+        <div className="text-sm text-muted-foreground bg-muted p-3 rounded-md">
+          <p className="font-medium">Important Notes:</p>
+          <ul className="list-disc list-inside mt-1 space-y-1">
+            <li>Backups include all domains, content, settings, and relationships</li>
+            <li>Restoring will replace existing data that matches IDs in the backup</li>
+            <li>Restore operations cannot be undone - create a new backup before restoring</li>
+          </ul>
+        </div>
       </CardContent>
     </Card>
   );
