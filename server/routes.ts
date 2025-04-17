@@ -1383,7 +1383,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const header = rows[0].split(',');
       
       // Process each row from 2nd row onward
-      const results = {
+      const results: {
+        total: number;
+        success: number;
+        failed: number;
+        errors: string[];
+      } = {
         total: rows.length - 1,
         success: 0,
         failed: 0,
