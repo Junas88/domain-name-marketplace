@@ -2,6 +2,9 @@ import { pgTable, text, serial, integer, boolean, timestamp, json } from "drizzl
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
+// Version tracking for domain data to ensure persistence
+export const DB_VERSION = "1.2.0"; // Update this when schema changes
+
 // User table with admin privileges
 export const users = pgTable("users", {
   id: serial("id").primaryKey(),
@@ -236,3 +239,53 @@ export const insertCommunicationSchema = createInsertSchema(communications).pick
 
 export type InsertCommunication = z.infer<typeof insertCommunicationSchema>;
 export type Communication = typeof communications.$inferSelect;
+
+// Price change log for tracking all price updates
+export const priceChangeLogs = pgTable("price_change_logs", {
+  id: serial("id").primaryKey(),
+  domainId: integer("domain_id").references(() => domains.id).notNull(),
+  domainName: text("domain_name").notNull(),
+  oldPrice: integer("old_price").notNull(),
+  newPrice: integer("new_price").notNull(),
+  changePercentage: integer("change_percentage"),
+  userId: integer("user_id"), // Which admin made the change
+  ipAddress: text("ip_address"),
+  reason: text("reason"), // Why the price was changed
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+
+export const insertPriceChangeLogSchema = createInsertSchema(priceChangeLogs).pick({
+  domainId: true,
+  domainName: true,
+  oldPrice: true,
+  newPrice: true,
+  changePercentage: true,
+  userId: true, 
+  ipAddress: true,
+  reason: true,
+});
+
+export type InsertPriceChangeLog = z.infer<typeof insertPriceChangeLogSchema>;
+export type PriceChangeLog = typeof priceChangeLogs.$inferSelect;
+
+// Domain data persistence version control table
+export const dataVersions = pgTable("data_versions", {
+  id: serial("id").primaryKey(),
+  dataType: text("data_type").notNull(), // "domains", "pageContents", etc.
+  version: text("version").notNull(),
+  lastUpdated: timestamp("last_updated").notNull().defaultNow(),
+  checksum: text("checksum"), // Optional checksum of data
+  recordCount: integer("record_count"), // How many records were updated
+  details: text("details"), // Additional information
+});
+
+export const insertDataVersionSchema = createInsertSchema(dataVersions).pick({
+  dataType: true,
+  version: true,
+  checksum: true,
+  recordCount: true,
+  details: true,
+});
+
+export type InsertDataVersion = z.infer<typeof insertDataVersionSchema>;
+export type DataVersion = typeof dataVersions.$inferSelect;
