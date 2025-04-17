@@ -3,7 +3,10 @@ import { useToast } from "@/hooks/use-toast";
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { useQueryClient } from '@tanstack/react-query';
-import { RefreshCw, Check, AlertCircle, Zap } from 'lucide-react';
+import { Card } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { RefreshCw, Check, AlertCircle, Zap, Database, Shield } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
 
 export default function ForceSync() {
   const { toast } = useToast();

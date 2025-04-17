@@ -70,14 +70,84 @@ async function backupDataToFile(data: any, type: string): Promise<string> {
       checksum,
       timestamp,
       type,
-      version: schema.DB_VERSION
+      version: schema.DB_VERSION,
+      recordCount: Array.isArray(data) ? data.length : 1
     }, null, 2));
+    
+    // Also log this backup in the database if connection exists
+    try {
+      if (db) {
+        await db.insert(schema.dataVersions).values({
+          dataType: type,
+          version: schema.DB_VERSION,
+          checksum,
+          recordCount: Array.isArray(data) ? data.length : 1,
+          details: `Manual backup created: ${backupPath}`,
+          lastUpdated: new Date()
+        });
+        console.log(`📊 Backup metadata saved to database`);
+      }
+    } catch (dbError) {
+      console.error("Failed to log backup in database:", dbError);
+      // Continue anyway - the file backup is still valid
+    }
     
     console.log(`✅ Created backup of ${type} data at ${backupPath}`);
     return checksum;
   } catch (err) {
     console.error(`❌ Failed to backup ${type} data:`, err);
     return '';
+  }
+}
+
+// Function to verify data persistence by checking if it exists in the database
+async function verifyDataPersistence(type: string, data: any): Promise<boolean> {
+  if (!db || !pool) {
+    console.warn("⚠️ Cannot verify data persistence: database connection not available");
+    return false;
+  }
+  
+  try {
+    // Different verification strategies based on data type
+    switch (type) {
+      case 'domains':
+        // For domains, verify a sample of the domains exist with correct prices
+        if (Array.isArray(data) && data.length > 0) {
+          // Take a random sampling of domains to check (up to 5)
+          const samplesToCheck = Math.min(5, data.length);
+          const sampleIndices = Array.from({ length: samplesToCheck }, () => 
+            Math.floor(Math.random() * data.length)
+          );
+          
+          // Check each sampled domain
+          for (const index of sampleIndices) {
+            const domain = data[index];
+            const result = await db.query.domains.findFirst({
+              where: (domains, { eq }) => eq(domains.id, domain.id)
+            });
+            
+            if (!result) {
+              console.error(`❌ Domain #${domain.id} (${domain.name}) not found in database`);
+              return false;
+            }
+            
+            if (result.price !== domain.price) {
+              console.error(`❌ Price mismatch for domain #${domain.id}: expected $${domain.price}, got $${result.price}`);
+              return false;
+            }
+          }
+          console.log(`✅ Verified ${samplesToCheck} sample domains in database`);
+          return true;
+        }
+        return false;
+      
+      default:
+        console.warn(`⚠️ No verification strategy for data type: ${type}`);
+        return false;
+    }
+  } catch (error) {
+    console.error(`❌ Error verifying data persistence:`, error);
+    return false;
   }
 }
 
@@ -162,4 +232,4 @@ try {
 }
 
 // Export database entities and utility functions
-export { pool, db, backupDataToFile };
+export { pool, db, backupDataToFile, verifyDataPersistence };

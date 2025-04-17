@@ -2,7 +2,7 @@ import type { Express, Request, Response, NextFunction } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { setupAuth } from "./auth";
-import { db, backupDataToFile } from "./db";
+import { db, backupDataToFile, verifyDataPersistence } from "./db";
 import * as schema from "@shared/schema";
 import { sql } from "drizzle-orm";
 import { 
@@ -21,6 +21,7 @@ import multer from 'multer';
 import path from 'path';
 import fs from 'fs-extra';
 import express from 'express';
+import crypto from 'crypto';
 
 // Create uploads directory if it doesn't exist
 const uploadDir = path.join(process.cwd(), 'uploads');
@@ -902,6 +903,36 @@ export async function registerRoutes(app: Express): Promise<Server> {
       );
       
       const successCount = results.filter(Boolean).length;
+      
+      // Create a record of this bulk price update in data versions
+      try {
+        const timestamp = new Date();
+        await db.insert(schema.dataVersions).values({
+          dataType: "domains-bulk-price-update",
+          version: schema.DB_VERSION,
+          recordCount: successCount,
+          details: `Bulk price update by ${req.user?.username || 'unknown'}: ${adjustmentType} adjustment of ${adjustmentValue}`,
+          lastUpdated: timestamp,
+          checksum: crypto.createHash('sha256').update(`${timestamp.toISOString()}-${ids.join(',')}`).digest('hex')
+        });
+        
+        // Create a backup of the successful updates
+        const updatedDomains = results.filter(Boolean);
+        if (updatedDomains.length > 0) {
+          await backupDataToFile(updatedDomains, 'domains-after-bulk-update');
+          
+          // Verify persistence
+          const isVerified = await verifyDataPersistence('domains', updatedDomains);
+          console.log(`🔍 Data persistence verification: ${isVerified ? 'PASSED ✅' : 'FAILED ❌'}`);
+          
+          if (!isVerified) {
+            console.error("⚠️ Data persistence verification failed after bulk price update");
+          }
+        }
+      } catch (backupError) {
+        console.error("Failed to log/backup bulk price update:", backupError);
+        // Continue anyway - the updates themselves succeeded
+      }
       
       res.json({
         success: true,
