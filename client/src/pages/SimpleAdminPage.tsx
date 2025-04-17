@@ -128,11 +128,6 @@ export default function SimpleAdminPage() {
   const [deleteAllDomainsDialogOpen, setDeleteAllDomainsDialogOpen] = useState(false);
   const [deleteAllConfirmationCode, setDeleteAllConfirmationCode] = useState("");
   const [isDeletingAllDomains, setIsDeletingAllDomains] = useState(false);
-  
-  // Production sync state
-  const [syncWithLocalDialogOpen, setSyncWithLocalDialogOpen] = useState(false);
-  const [syncConfirmationCode, setSyncConfirmationCode] = useState("");
-  const [isSyncingProduction, setIsSyncingProduction] = useState(false);
   const [csvData, setCsvData] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 20;
@@ -1098,57 +1093,6 @@ export default function SimpleAdminPage() {
     },
   });
   
-  // Mutation for syncing production database with local (clears all domains in production)
-  const syncWithLocalMutation = useMutation({
-    mutationFn: async (confirmationCode: string) => {
-      setIsSyncingProduction(true);
-      const res = await fetch(`/api/admin/sync-with-local`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ confirmationCode }),
-        credentials: 'include'
-      });
-      
-      if (res.ok) {
-        return await res.json();
-      }
-      
-      const errorData = await res.json().catch(() => ({ message: "Unknown error occurred" }));
-      throw new Error(errorData.message || "Failed to sync production with local");
-    },
-    onSuccess: (data) => {
-      toast({
-        title: "Success",
-        description: data.message || "Production database successfully synced with local",
-        duration: 5000,
-      });
-      setSyncWithLocalDialogOpen(false);
-      setSyncConfirmationCode("");
-      setIsSyncingProduction(false);
-      
-      // Invalidate all domain-related queries
-      queryClient.invalidateQueries({ queryKey: ['/api/domains'] });
-      queryClient.invalidateQueries({ queryKey: ['/api/domains/recently-sold'] });
-      queryClient.invalidateQueries({ queryKey: ['/api/admin/domains/stats'] });
-      
-      // Force refetch all queries after a short delay
-      setTimeout(() => {
-        queryClient.refetchQueries({ type: 'all' });
-      }, 300);
-    },
-    onError: (error: Error) => {
-      setIsSyncingProduction(false);
-      toast({
-        title: "Error",
-        description: `Failed to sync production: ${error.message}`,
-        variant: "destructive",
-        duration: 5000,
-      });
-    },
-  });
-  
   const bulkPriceUpdateMutation = useMutation({
     mutationFn: async (data: { ids: number[], adjustmentType: 'fixed' | 'percentage', adjustmentValue: number }) => {
       const res = await fetch(`/api/admin/domains/bulk/update-prices`, {
@@ -1249,65 +1193,6 @@ export default function SimpleAdminPage() {
     }
     
     deleteAllDomainsMutation.mutate(deleteAllConfirmationCode);
-  };
-  
-  // Production sync mutation
-  const syncProductionMutation = useMutation({
-    mutationFn: async (confirmationCode: string) => {
-      setIsSyncingProduction(true);
-      const res = await fetch('/api/admin/sync-with-local', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ confirmationCode }),
-        credentials: 'include'
-      });
-      
-      if (!res.ok) {
-        const errorData = await res.json();
-        throw new Error(errorData.message || 'Failed to sync production with local environment');
-      }
-      
-      return await res.json();
-    },
-    onSuccess: (data) => {
-      setIsSyncingProduction(false);
-      setSyncWithLocalDialogOpen(false);
-      setSyncConfirmationCode("");
-      
-      toast({
-        title: "Success",
-        description: "Production database has been synchronized with local environment. All domains have been removed.",
-      });
-      
-      // Force refetch all queries to update UI
-      queryClient.invalidateQueries({ queryKey: ['/api/admin/domains'] });
-      queryClient.invalidateQueries({ queryKey: ['/api/domains'] });
-      queryClient.invalidateQueries({ queryKey: ['/api/domains/recently-sold'] });
-    },
-    onError: (error: Error) => {
-      setIsSyncingProduction(false);
-      toast({
-        title: "Sync Failed",
-        description: error.message,
-        variant: "destructive",
-      });
-    },
-  });
-  
-  // Execute production sync handler
-  const executeSyncWithLocal = () => {
-    if (!syncConfirmationCode || syncConfirmationCode !== "SYNC-PRODUCTION") {
-      toast({
-        title: "Confirmation Failed",
-        description: "You must type the exact confirmation code: SYNC-PRODUCTION",
-        variant: "destructive"
-      });
-      return;
-    }
-    
-    syncProductionMutation.mutate(syncConfirmationCode);
   };
   
   const handleBulkPriceUpdate = () => {
@@ -2181,56 +2066,6 @@ export default function SimpleAdminPage() {
                     </>
                   ) : (
                     "Delete All Domains"
-                  )}
-                </AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
-
-          {/* Production Sync Confirmation Dialog */}
-          <AlertDialog 
-            open={syncWithLocalDialogOpen} 
-            onOpenChange={setSyncWithLocalDialogOpen}
-          >
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle className="text-amber-600">CAUTION: Sync Production with Local</AlertDialogTitle>
-                <AlertDialogDescription className="space-y-4">
-                  <p>This action will clear all domains in the production database to match your local environment.</p>
-                  
-                  <div className="border border-amber-300 bg-amber-50 p-4 rounded-md">
-                    <h3 className="font-bold flex items-center text-amber-800 mb-2">
-                      <AlertTriangle className="h-5 w-5 mr-2" />
-                      Environment Synchronization
-                    </h3>
-                    <p className="text-sm text-amber-700 mb-3">
-                      This will remove all domains from the production database, allowing you to add them back through the admin panel. A database backup will be created automatically.
-                    </p>
-                  </div>
-                  
-                  <p>Please type <strong>SYNC-PRODUCTION</strong> to confirm:</p>
-                  <Input 
-                    value={syncConfirmationCode}
-                    onChange={(e) => setSyncConfirmationCode(e.target.value)}
-                    placeholder="Type SYNC-PRODUCTION to confirm"
-                    className="border-amber-300"
-                  />
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                <AlertDialogAction
-                  className="bg-amber-600 hover:bg-amber-700"
-                  onClick={executeSyncWithLocal}
-                  disabled={isSyncingProduction}
-                >
-                  {isSyncingProduction ? (
-                    <>
-                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                      Syncing...
-                    </>
-                  ) : (
-                    "Sync Production"
                   )}
                 </AlertDialogAction>
               </AlertDialogFooter>
@@ -3263,24 +3098,14 @@ Instagram: https://instagram.com/domainnameguide`;
         <TabsContent value="backup" className="space-y-4">
           <div className="flex justify-between items-center">
             <h2 className="text-xl font-bold text-black">Data Backup & Restore</h2>
-            <div className="flex items-center gap-2">
-              <Button
-                variant="outline"
-                className="border-amber-500 text-amber-600 hover:bg-amber-50"
-                onClick={() => setSyncWithLocalDialogOpen(true)}
-              >
-                <RefreshCw className="h-4 w-4 mr-2" />
-                Sync Production with Local
-              </Button>
-              <Button
-                variant="default"
-                className="bg-green-600 hover:bg-green-700"
-                onClick={() => window.location.href = "/admin/sync"}
-              >
-                <Database className="h-4 w-4 mr-2" />
-                Open Full Backup & Sync
-              </Button>
-            </div>
+            <Button
+              variant="default"
+              className="bg-green-600 hover:bg-green-700"
+              onClick={() => window.location.href = "/admin/sync"}
+            >
+              <Database className="h-4 w-4 mr-2" />
+              Open Full Backup & Sync Page
+            </Button>
           </div>
           
           {/* Domain Sync Card */}
