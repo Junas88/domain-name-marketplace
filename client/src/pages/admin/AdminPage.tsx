@@ -706,7 +706,7 @@ export default function AdminPage() {
       </div>
 
       <Tabs defaultValue="domains" value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="grid w-full grid-cols-8 mb-6">
+        <TabsList className="grid w-full grid-cols-9 mb-6">
           <TabsTrigger value="domains">Domains</TabsTrigger>
           <TabsTrigger value="offers">Offers</TabsTrigger>
           <TabsTrigger value="consultations">Consultations</TabsTrigger>
@@ -715,12 +715,11 @@ export default function AdminPage() {
           <TabsTrigger value="emails">Email Submissions</TabsTrigger>
           <TabsTrigger value="seo">SEO Settings</TabsTrigger>
           <TabsTrigger value="ebooks">Ebook Files</TabsTrigger>
+          <TabsTrigger value="backup">Backup/Restore</TabsTrigger>
         </TabsList>
         
         {/* DOMAINS TAB */}
         <TabsContent value="domains" className="space-y-6">
-          {/* Add BackupRestore component at the top of domains tab */}
-          <BackupRestore />
           
           <div className="flex justify-between items-center">
             <h2 className="text-xl font-bold">Domain Management</h2>
@@ -2380,6 +2379,15 @@ export default function AdminPage() {
           <EmailSubmissionsTable />
         </TabsContent>
 
+        {/* BACKUP/RESTORE TAB */}
+        <TabsContent value="backup" className="space-y-6">
+          <div className="flex justify-between items-center">
+            <h2 className="text-xl font-bold">Data Synchronization & Backup</h2>
+          </div>
+          
+          <BackupRestore />
+        </TabsContent>
+        
         {/* EBOOKS TAB */}
         <TabsContent value="ebooks" className="space-y-6">
           <div className="flex justify-between items-center">
