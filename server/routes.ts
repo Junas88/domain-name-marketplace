@@ -5,6 +5,7 @@ import { setupAuth } from "./auth";
 import { db, backupDataToFile, verifyDataPersistence } from "./db";
 import * as schema from "@shared/schema";
 import { sql } from "drizzle-orm";
+import { getEnvironment, isProduction } from "./utils";
 import { 
   insertOfferSchema, 
   insertConsultationSchema,
@@ -66,52 +67,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Set up authentication
   setupAuth(app);
   
-  // Production data synchronization - clear domains in production
-  app.post("/api/admin/sync-with-local", async (req, res) => {
-    try {
-      // Check for admin authorization
-      if (!req.isAuthenticated() || !(req.user?.isAdmin)) {
-        return res.status(403).json({ message: "Unauthorized" });
-      }
-      
-      console.log("🚨 PRODUCTION SYNC REQUEST: Clearing all domains to match local environment");
-      
-      // Create backups
-      const allDomains = await storage.getAllDomains();
-      await backupDataToFile(allDomains, 'domains-pre-sync-backup');
-      
-      // Delete related tables first
-      await db.delete(schema.priceChangeLogs);
-      await db.delete(schema.offers);
-      
-      // Delete all domains
-      const result = await db.delete(schema.domains);
-      console.log(`✅ Production sync: Removed ${result.length} domains`);
-      
-      // Log this operation
-      await db.insert(schema.dataVersions).values({
-        dataType: 'domains-sync',
-        operation: 'production-local-sync',
-        version: schema.DB_VERSION,
-        recordCount: result.length,
-        lastUpdated: new Date(),
-        checksum: Date.now().toString(),
-        details: `Admin requested production-local sync. ${result.length} domains were deleted.`
-      });
-      
-      res.json({
-        success: true,
-        message: `Successfully removed all domains from the database (${result.length} domains)`,
-        timestamp: new Date().toISOString()
-      });
-    } catch (error) {
-      console.error("Error syncing production with local:", error);
-      res.status(500).json({ 
-        success: false, 
-        message: "Failed to sync production with local environment" 
-      });
-    }
-  });
+  // We've moved the production sync endpoint to the end of the file
   
   // Serve static files from public/downloads
   app.use('/downloads', express.static(path.join(process.cwd(), 'public/downloads')));

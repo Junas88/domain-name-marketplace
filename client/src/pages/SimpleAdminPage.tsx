@@ -1251,6 +1251,51 @@ export default function SimpleAdminPage() {
     deleteAllDomainsMutation.mutate(deleteAllConfirmationCode);
   };
   
+  // Production sync mutation
+  const syncProductionMutation = useMutation({
+    mutationFn: async (confirmationCode: string) => {
+      setIsSyncingProduction(true);
+      const res = await fetch('/api/admin/sync-with-local', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ confirmationCode }),
+        credentials: 'include'
+      });
+      
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.message || 'Failed to sync production with local environment');
+      }
+      
+      return await res.json();
+    },
+    onSuccess: (data) => {
+      setIsSyncingProduction(false);
+      setSyncWithLocalDialogOpen(false);
+      setSyncConfirmationCode("");
+      
+      toast({
+        title: "Success",
+        description: "Production database has been synchronized with local environment. All domains have been removed.",
+      });
+      
+      // Force refetch all queries to update UI
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/domains'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/domains'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/domains/recently-sold'] });
+    },
+    onError: (error: Error) => {
+      setIsSyncingProduction(false);
+      toast({
+        title: "Sync Failed",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+  
   // Execute production sync handler
   const executeSyncWithLocal = () => {
     if (!syncConfirmationCode || syncConfirmationCode !== "SYNC-PRODUCTION") {
@@ -1262,7 +1307,7 @@ export default function SimpleAdminPage() {
       return;
     }
     
-    syncWithLocalMutation.mutate(syncConfirmationCode);
+    syncProductionMutation.mutate(syncConfirmationCode);
   };
   
   const handleBulkPriceUpdate = () => {
