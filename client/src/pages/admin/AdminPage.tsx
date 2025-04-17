@@ -730,25 +730,26 @@ export default function AdminPage() {
         {/* DOMAINS TAB */}
         <TabsContent value="domains" className="space-y-6">
           
-          <div className="flex justify-between items-center">
-            <h2 className="text-xl font-bold">Domain Management</h2>
-            <div className="flex gap-2">
-              <Button 
-                variant="outline"
-                onClick={() => window.location.href = "/admin/sync"}
-                className="flex items-center gap-2"
-              >
-                <Database className="h-4 w-4" />
-                Data Sync & Backup
-              </Button>
-              <Dialog open={showAddDomainDialog} onOpenChange={setShowAddDomainDialog}>
-                <DialogTrigger asChild>
-                  <Button
-                    onClick={() => {
-                      setEditingDomain(null);
-                      domainForm.reset({
-                        name: "",
-                        description: "",
+          <div className="flex flex-col gap-4">
+            <div className="flex justify-between items-center">
+              <h2 className="text-xl font-bold">Domain Management</h2>
+              <div className="flex gap-2">
+                <Button 
+                  variant="outline"
+                  onClick={() => window.location.href = "/admin/sync"}
+                  className="flex items-center gap-2"
+                >
+                  <Database className="h-4 w-4" />
+                  Data Sync & Backup
+                </Button>
+                <Dialog open={showAddDomainDialog} onOpenChange={setShowAddDomainDialog}>
+                  <DialogTrigger asChild>
+                    <Button
+                      onClick={() => {
+                        setEditingDomain(null);
+                        domainForm.reset({
+                          name: "",
+                          description: "",
                         price: 0,
                         category: "",
                         length: 0,
