@@ -2,7 +2,16 @@ import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 import { seedDatabase } from "./seed";
-import path from 'path'; // Import path module
+import path from 'path'; 
+import { db } from "./db"; 
+import fs from 'fs'; 
+import * as schema from "@shared/schema"; // Import schema for database operations
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+
+// ES Module compatible __dirname equivalent
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 const app = express();
 app.use(express.json());
@@ -39,6 +48,31 @@ app.use((req, res, next) => {
 });
 
 (async () => {
+  // Check if this is a deployment that needs to clear domains
+  const isDeployment = process.env.REPLIT_DEPLOYMENT !== undefined;
+  const productionCleanupFlag = path.join(__dirname, '../clear-domains-on-deploy.flag');
+  
+  if (isDeployment || fs.existsSync(productionCleanupFlag)) {
+    console.log('🚨 DEPLOYMENT DETECTED: Clearing all domains from database to match local environment');
+    try {
+      // Delete related records first
+      await db.delete(schema.priceChangeLogs);
+      await db.delete(schema.offers);
+      
+      // Delete all domains
+      const result = await db.delete(schema.domains);
+      console.log(`✅ Successfully removed all domains from production database (${result.length} domains)`);
+      
+      // Remove the flag file if it exists
+      if (fs.existsSync(productionCleanupFlag)) {
+        fs.unlinkSync(productionCleanupFlag);
+        console.log('✅ Removed deployment flag file');
+      }
+    } catch (error) {
+      console.error('❌ Error clearing production domains:', error);
+    }
+  }
+  
   // Seed the database with initial data
   await seedDatabase();
 
