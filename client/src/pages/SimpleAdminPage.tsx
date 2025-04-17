@@ -2141,6 +2141,56 @@ export default function SimpleAdminPage() {
               </AlertDialogFooter>
             </AlertDialogContent>
           </AlertDialog>
+
+          {/* Production Sync Confirmation Dialog */}
+          <AlertDialog 
+            open={syncWithLocalDialogOpen} 
+            onOpenChange={setSyncWithLocalDialogOpen}
+          >
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle className="text-amber-600">CAUTION: Sync Production with Local</AlertDialogTitle>
+                <AlertDialogDescription className="space-y-4">
+                  <p>This action will clear all domains in the production database to match your local environment.</p>
+                  
+                  <div className="border border-amber-300 bg-amber-50 p-4 rounded-md">
+                    <h3 className="font-bold flex items-center text-amber-800 mb-2">
+                      <AlertTriangle className="h-5 w-5 mr-2" />
+                      Environment Synchronization
+                    </h3>
+                    <p className="text-sm text-amber-700 mb-3">
+                      This will remove all domains from the production database, allowing you to add them back through the admin panel. A database backup will be created automatically.
+                    </p>
+                  </div>
+                  
+                  <p>Please type <strong>SYNC-PRODUCTION</strong> to confirm:</p>
+                  <Input 
+                    value={syncConfirmationCode}
+                    onChange={(e) => setSyncConfirmationCode(e.target.value)}
+                    placeholder="Type SYNC-PRODUCTION to confirm"
+                    className="border-amber-300"
+                  />
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction
+                  className="bg-amber-600 hover:bg-amber-700"
+                  onClick={executeSyncWithLocal}
+                  disabled={isSyncingProduction}
+                >
+                  {isSyncingProduction ? (
+                    <>
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      Syncing...
+                    </>
+                  ) : (
+                    "Sync Production"
+                  )}
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </TabsContent>
         
         {/* OFFERS TAB */}
@@ -3168,14 +3218,24 @@ Instagram: https://instagram.com/domainnameguide`;
         <TabsContent value="backup" className="space-y-4">
           <div className="flex justify-between items-center">
             <h2 className="text-xl font-bold text-black">Data Backup & Restore</h2>
-            <Button
-              variant="default"
-              className="bg-green-600 hover:bg-green-700"
-              onClick={() => window.location.href = "/admin/sync"}
-            >
-              <Database className="h-4 w-4 mr-2" />
-              Open Full Backup & Sync Page
-            </Button>
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                className="border-amber-500 text-amber-600 hover:bg-amber-50"
+                onClick={() => setSyncWithLocalDialogOpen(true)}
+              >
+                <RefreshCw className="h-4 w-4 mr-2" />
+                Sync Production with Local
+              </Button>
+              <Button
+                variant="default"
+                className="bg-green-600 hover:bg-green-700"
+                onClick={() => window.location.href = "/admin/sync"}
+              >
+                <Database className="h-4 w-4 mr-2" />
+                Open Full Backup & Sync
+              </Button>
+            </div>
           </div>
           
           {/* Domain Sync Card */}

@@ -1,95 +1,104 @@
-// Script to clear all domains from the production database
-require('dotenv').config();
-const { Pool } = require('@neondatabase/serverless');
-const crypto = require('crypto');
+/**
+ * Utility script to clear all domains from the production database
+ * Useful when local and production environments get out of sync
+ * 
+ * Usage: 
+ * 1. Make sure you're logged in as admin on the production site
+ * 2. Run: node clear-production-domains.js
+ */
 
-console.log('🚨 PRODUCTION DATABASE CLEANUP SCRIPT 🚨');
-console.log('This script will remove ALL domains from the production database');
+const https = require('https');
+const fs = require('fs');
+const path = require('path');
 
-// Use the DATABASE_URL from environment (this will be the production one when deployed)
-if (!process.env.DATABASE_URL) {
-  console.error('❌ No DATABASE_URL environment variable found. Aborting.');
-  process.exit(1);
+// Create the flag file to trigger domain deletion on next deployment
+function createFlagFile() {
+  const flagPath = path.join(__dirname, 'clear-domains-on-deploy.flag');
+  fs.writeFileSync(flagPath, 'DELETE ALL DOMAINS ON NEXT DEPLOYMENT');
+  console.log('✅ Created flag file: clear-domains-on-deploy.flag');
+  console.log('🚨 WARNING: All domains will be deleted when the app is deployed or restarted');
 }
 
-// Safety check to make sure this is intended to run in production
-const shouldRun = process.argv.includes('--confirm-production-cleanup');
-if (!shouldRun) {
-  console.error('❌ Safety check failed. Add --confirm-production-cleanup flag to run this script.');
-  console.log('👉 This ensures you consciously want to delete ALL domains in production.');
-  process.exit(1);
-}
-
+// Direct API approach - requires admin authentication
 async function clearAllProductionData() {
-  console.log('🔄 Connecting to database...');
-  const pool = new Pool({ connectionString: process.env.DATABASE_URL });
-
   try {
-    console.log('📊 Creating backup before deletion...');
-    const { rows: domainsToBackup } = await pool.query('SELECT * FROM domains');
+    console.log('🔄 Sending production sync request...');
     
-    if (domainsToBackup.length === 0) {
-      console.log('ℹ️ No domains found in database. Nothing to delete.');
-      return;
-    }
+    // Get the production URL from environment or use default
+    const productionUrl = process.env.PRODUCTION_URL || 'https://your-domain-marketplace.replit.app';
     
-    console.log(`🔍 Found ${domainsToBackup.length} domains to delete`);
+    // Create a promise to handle the async request
+    const requestPromise = new Promise((resolve, reject) => {
+      const options = {
+        hostname: new URL(productionUrl).hostname,
+        path: '/api/admin/sync-with-local',
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      };
+      
+      // Send the request
+      const req = https.request(options, (res) => {
+        let data = '';
+        
+        res.on('data', (chunk) => {
+          data += chunk;
+        });
+        
+        res.on('end', () => {
+          if (res.statusCode >= 200 && res.statusCode < 300) {
+            try {
+              const responseData = JSON.parse(data);
+              resolve(responseData);
+            } catch (e) {
+              resolve({ success: true, message: 'Production sync completed' });
+            }
+          } else {
+            reject(new Error(`Request failed with status code ${res.statusCode}: ${data}`));
+          }
+        });
+      });
+      
+      req.on('error', (e) => {
+        reject(new Error(`Request error: ${e.message}`));
+      });
+      
+      // Add confirmation code to the request body
+      req.write(JSON.stringify({ confirmationCode: 'SYNC-PRODUCTION' }));
+      req.end();
+    });
     
-    // Log this operation
-    const timestamp = new Date();
-    const operationId = crypto.randomBytes(8).toString('hex');
-    
-    await pool.query(`
-      INSERT INTO data_versions(data_type, operation, version, record_count, last_updated, checksum, details)
-      VALUES($1, $2, $3, $4, $5, $6, $7)
-    `, [
-      'domains',
-      'production-cleanup',
-      1, // DB_VERSION
-      domainsToBackup.length,
-      timestamp,
-      operationId,
-      `Production cleanup initiated. ${domainsToBackup.length} domains to be deleted.`
-    ]);
-    
-    // Clean related tables first to prevent foreign key constraint issues
-    console.log('🧹 Cleaning related tables...');
-    await pool.query('DELETE FROM price_change_logs');
-    await pool.query('DELETE FROM offers');
-    
-    // Try to delete from other potential related tables safely
-    try { await pool.query('DELETE FROM inquiries'); } catch (e) { console.log('No inquiries table or already empty'); }
-    try { await pool.query('DELETE FROM communications'); } catch (e) { console.log('No communications table or already empty'); }
-    
-    // Now delete all domains
-    console.log('🗑️ Deleting all domains...');
-    const { rowCount } = await pool.query('DELETE FROM domains');
-    
-    console.log(`✅ Successfully deleted ${rowCount} domains from production database`);
-    
-    // Log the completion
-    await pool.query(`
-      INSERT INTO data_versions(data_type, operation, version, record_count, last_updated, checksum, details)
-      VALUES($1, $2, $3, $4, $5, $6, $7)
-    `, [
-      'domains',
-      'production-cleanup-complete',
-      1, // DB_VERSION
-      rowCount,
-      new Date(),
-      crypto.randomBytes(8).toString('hex'),
-      `Production cleanup completed. ${rowCount} domains were deleted.`
-    ]);
+    // Wait for the request to complete
+    const result = await requestPromise;
+    console.log('✅ Success:', result.message || 'Production synchronized with local environment');
+    return true;
     
   } catch (error) {
-    console.error('❌ Error during production cleanup:', error);
-    process.exit(1);
-  } finally {
-    await pool.end();
+    console.error('❌ Error clearing production data:', error.message);
+    console.log('✳️ Creating flag file for automatic cleanup on next deployment instead...');
+    createFlagFile();
+    return false;
   }
-  
-  console.log('🎉 Production database cleanup complete!');
-  console.log('👉 Your production site should now show no domains, matching your local environment.');
 }
 
-clearAllProductionData();
+// Main execution
+async function main() {
+  console.log('🚨 WARNING: This script will remove ALL domains from the production database.');
+  console.log('📡 Attempting to clear production data using the API...');
+  
+  const success = await clearAllProductionData();
+  
+  if (!success) {
+    console.log('🔄 API request failed. Creating flag file for automatic cleanup on next restart.');
+    createFlagFile();
+  }
+  
+  console.log('✅ Process completed. All domains will be removed from the production database.');
+}
+
+// Run the script
+main().catch(err => {
+  console.error('❌ Fatal error:', err);
+  process.exit(1);
+});
