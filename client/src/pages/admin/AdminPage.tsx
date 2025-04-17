@@ -861,6 +861,7 @@ export default function AdminPage() {
               </DialogContent>
             </Dialog>
           </div>
+          </div>
 
           <div className="rounded-md border">
             <Table>
