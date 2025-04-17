@@ -76,6 +76,8 @@ export default function AdminPage() {
   const [editingPageContent, setEditingPageContent] = useState<PageContent | null>(null);
   const [showSeoSettingsDialog, setShowSeoSettingsDialog] = useState(false);
   const [editingSeoSettings, setEditingSeoSettings] = useState<SeoSettings | null>(null);
+  const [domainSearch, setDomainSearch] = useState("");
+  const [showBulkOperations, setShowBulkOperations] = useState(false);
   
   // Hooks
   const { toast } = useToast();
