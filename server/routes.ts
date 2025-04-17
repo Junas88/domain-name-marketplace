@@ -1360,54 +1360,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
-  // Export domains to CSV
-  app.get("/api/admin/domains/export", async (req, res) => {
-    try {
-      // Check if user is authenticated and an admin
-      if (!req.isAuthenticated() || !(req.user?.isAdmin)) {
-        return res.status(403).json({ message: "Unauthorized" });
-      }
-      
-      const domains = await storage.getAllDomains();
-      
-      // Create CSV header
-      const csvHeader = [
-        "ID", "Name", "Description", "Price", "Category", 
-        "Length", "IsSold", "ViewCount", "CreatedAt", "UpdatedAt"
-      ].join(",");
-      
-      // Format domain rows
-      const domainRows = domains.map(domain => {
-        return [
-          domain.id,
-          `"${domain.name.replace(/"/g, '""')}"`,  // Escape quotes in CSV
-          `"${(domain.description || '').replace(/"/g, '""')}"`,
-          domain.price,
-          `"${domain.category || ''}"`,
-          domain.length,
-          domain.isSold ? "true" : "false",
-          domain.viewCount || 0,
-          domain.createdAt ? new Date(domain.createdAt).toISOString() : "",
-          domain.updatedAt ? new Date(domain.updatedAt).toISOString() : ""
-        ].join(",");
-      });
-      
-      // Combine header and rows
-      const csvContent = [csvHeader, ...domainRows].join("\n");
-      
-      // Set response headers for CSV download
-      res.setHeader("Content-Type", "text/csv");
-      res.setHeader("Content-Disposition", "attachment; filename=domains-export.csv");
-      
-      res.send(csvContent);
-    } catch (error) {
-      console.error("Error exporting domains:", error);
-      res.status(500).json({ message: "Failed to export domains" });
-    }
-  });
+  // NOTE: Export and import domains functionality is already defined above
   
-  // Import domains from CSV
-  app.post("/api/admin/domains/import", upload.single('csv'), async (req, res) => {
+  // Handle file uploads for additional import methods
+  app.post("/api/admin/domains/import-csv", upload.single('csv'), async (req, res) => {
     try {
       // Check if user is authenticated and an admin
       if (!req.isAuthenticated() || !(req.user?.isAdmin)) {
