@@ -125,6 +125,9 @@ export default function SimpleAdminPage() {
   const [bulkAdjustmentValue, setBulkAdjustmentValue] = useState<number>(0);
   const [itemsToDelete, setItemsToDelete] = useState<number[]>([]);
   const [confirmBulkDeleteDialogOpen, setConfirmBulkDeleteDialogOpen] = useState(false);
+  const [deleteAllDomainsDialogOpen, setDeleteAllDomainsDialogOpen] = useState(false);
+  const [deleteAllConfirmationCode, setDeleteAllConfirmationCode] = useState("");
+  const [isDeletingAllDomains, setIsDeletingAllDomains] = useState(false);
   const [csvData, setCsvData] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 20;
@@ -1039,6 +1042,57 @@ export default function SimpleAdminPage() {
     },
   });
   
+  // Mutation for deleting ALL domains (dangerous operation)
+  const deleteAllDomainsMutation = useMutation({
+    mutationFn: async (confirmationCode: string) => {
+      setIsDeletingAllDomains(true);
+      const res = await fetch(`/api/admin/domains/all`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ confirmationCode }),
+        credentials: 'include'
+      });
+      
+      if (res.ok) {
+        return await res.json();
+      }
+      
+      const errorData = await res.json().catch(() => ({ message: "Unknown error occurred" }));
+      throw new Error(errorData.message || "Failed to delete all domains");
+    },
+    onSuccess: (data) => {
+      toast({
+        title: "Success",
+        description: data.message || "All domains deleted successfully",
+        duration: 5000,
+      });
+      setDeleteAllDomainsDialogOpen(false);
+      setDeleteAllConfirmationCode("");
+      setIsDeletingAllDomains(false);
+      
+      // Invalidate all domain-related queries
+      queryClient.invalidateQueries({ queryKey: ['/api/domains'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/domains/recently-sold'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/domains/stats'] });
+      
+      // Force refetch all queries after a short delay
+      setTimeout(() => {
+        queryClient.refetchQueries({ type: 'all' });
+      }, 300);
+    },
+    onError: (error: Error) => {
+      setIsDeletingAllDomains(false);
+      toast({
+        title: "Error",
+        description: `Failed to delete all domains: ${error.message}`,
+        variant: "destructive",
+        duration: 5000,
+      });
+    },
+  });
+  
   const bulkPriceUpdateMutation = useMutation({
     mutationFn: async (data: { ids: number[], adjustmentType: 'fixed' | 'percentage', adjustmentValue: number }) => {
       const res = await fetch(`/api/admin/domains/bulk/update-prices`, {
@@ -1126,6 +1180,19 @@ export default function SimpleAdminPage() {
     if (itemsToDelete.length === 0) return;
     
     bulkDeleteMutation.mutate(itemsToDelete);
+  };
+  
+  const executeDeleteAllDomains = () => {
+    if (!deleteAllConfirmationCode || deleteAllConfirmationCode !== "DELETE-ALL-DOMAINS") {
+      toast({
+        title: "Confirmation Failed",
+        description: "You must type the exact confirmation code: DELETE-ALL-DOMAINS",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    deleteAllDomainsMutation.mutate(deleteAllConfirmationCode);
   };
   
   const handleBulkPriceUpdate = () => {
@@ -1494,6 +1561,14 @@ export default function SimpleAdminPage() {
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
+              <Button 
+                variant="outline" 
+                className="border-red-600 text-red-600 hover:bg-red-50"
+                onClick={() => setDeleteAllDomainsDialogOpen(true)}
+              >
+                <Trash2 className="h-4 w-4 mr-2" />
+                Delete All Domains
+              </Button>
             </div>
           </div>
           
