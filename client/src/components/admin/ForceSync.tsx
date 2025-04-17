@@ -16,7 +16,8 @@ export default function ForceSync() {
       const cacheParam = `?t=${Date.now()}`; // Add cache-busting timestamp
       
       // Fetch all domains with cache-busting
-      const response = await apiRequest('GET', `/api/domains${cacheParam}`, undefined, {
+      const response = await fetch(`/api/domains${cacheParam}`, {
+        method: 'GET',
         headers: {
           'Cache-Control': 'no-cache, no-store, must-revalidate',
           'Pragma': 'no-cache',

@@ -32,7 +32,8 @@ export default function BackupRestore() {
     try {
       const timestamp = new Date().toISOString().split('T')[0];
       
-      const response = await apiRequest('GET', '/api/admin/backup', undefined, {
+      const response = await fetch('/api/admin/backup', {
+        method: 'GET',
         headers: {
           'Cache-Control': 'no-cache, no-store, must-revalidate',
           'Pragma': 'no-cache',
@@ -115,10 +116,12 @@ export default function BackupRestore() {
       setProgress(50);
       
       // Send it to the API
-      const response = await apiRequest('POST', '/api/admin/restore', backupData, {
+      const response = await fetch('/api/admin/restore', {
+        method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-        }
+        },
+        body: JSON.stringify(backupData)
       });
       
       setProgress(80);

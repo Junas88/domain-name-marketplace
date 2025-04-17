@@ -20,6 +20,7 @@ import { apiRequest, queryClient } from "@/lib/queryClient";
 import { z } from "zod";
 import { 
   Check, 
+  Database,
   EyeIcon, 
   FileText, 
   Loader2, 
@@ -750,7 +751,7 @@ export default function AdminPage() {
                     Add Domain
                   </Button>
                 </DialogTrigger>
-              <DialogContent className="sm:max-w-[600px]">
+                <DialogContent className="sm:max-w-[600px]">
                 <DialogHeader>
                   <DialogTitle>{editingDomain ? "Edit Domain" : "Add New Domain"}</DialogTitle>
                   <DialogDescription>
