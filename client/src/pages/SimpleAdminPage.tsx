@@ -75,6 +75,7 @@ import { useForm } from "react-hook-form";
 import { useToast } from "@/hooks/use-toast";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import { Badge } from "@/components/ui/badge";
+import ForceSync from "@/components/admin/ForceSync";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
@@ -2992,6 +2993,19 @@ Instagram: https://instagram.com/domainnameguide`;
               Open Full Backup & Sync Page
             </Button>
           </div>
+          
+          {/* Domain Sync Card */}
+          <Card className="mb-4">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-base">Force Domain Price Sync</CardTitle>
+              <CardDescription>
+                Use this when domain prices aren't updating correctly on the live site
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ForceSync />
+            </CardContent>
+          </Card>
           
           <Alert className="bg-amber-50 border-amber-200">
             <AlertTriangle className="h-4 w-4 text-amber-600" />
