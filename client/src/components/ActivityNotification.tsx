@@ -44,20 +44,22 @@ export default function ActivityNotification() {
   // Listen for changes in recently sold domains and update notifications
   useEffect(() => {
     if (recentlySoldDomains && recentlySoldDomains.length > 0) {
-      const soldNotifications: ActivityNotification[] = recentlySoldDomains.map(domain => ({
+      const soldNotifications: ActivityNotification[] = recentlySoldDomains.slice(0, 3).map(domain => ({
         type: "sold",
         domain: domain.name,
         timeAgo: "recently"
       }));
       
-      // Combine with view/offer notifications
+      // Include a mix of sold domains and demo notifications
       const updatedNotifications = [
         ...soldNotifications,
         ...demoNotifications.filter(n => n.type !== "sold")
       ];
       
+      console.log("Updated activity notifications with sold domains:", soldNotifications.length);
       setLiveNotifications(updatedNotifications);
     } else {
+      console.log("No recently sold domains found, using demo notifications");
       setLiveNotifications(demoNotifications);
     }
   }, [recentlySoldDomains]);
@@ -71,7 +73,7 @@ export default function ActivityNotification() {
            event.query.queryKey[0] === '/api/domains/recently-sold')) {
         // Force update notifications when domain data changes
         if (recentlySoldDomains) {
-          const soldNotifications: ActivityNotification[] = recentlySoldDomains.map(domain => ({
+          const soldNotifications: ActivityNotification[] = recentlySoldDomains.slice(0, 3).map(domain => ({
             type: "sold",
             domain: domain.name,
             timeAgo: "recently"
@@ -79,6 +81,7 @@ export default function ActivityNotification() {
           
           setLiveNotifications(prevNotifications => {
             const otherNotifications = prevNotifications.filter(n => n.type !== "sold");
+            console.log("Data change detected - updating notifications with sold domains");
             return [...soldNotifications, ...otherNotifications];
           });
         }
@@ -171,7 +174,7 @@ export default function ActivityNotification() {
               <h3 className="text-sm font-medium text-gray-900">
                 {currentNotification.type === "offer" && "Someone made an offer on"}
                 {currentNotification.type === "view" && "Someone is viewing"}
-                {currentNotification.type === "sold" && "Domain was just sold"}
+                {currentNotification.type === "sold" && "Domain just sold"}
               </h3>
               <p className="mt-1 text-sm text-gray-500 mb-0.5">
                 <span className="font-semibold">{currentNotification.domain}</span>
