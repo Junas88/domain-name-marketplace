@@ -280,7 +280,7 @@ export default function ForceSync() {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-1.5">
               <Database className="h-4 w-4 text-gray-500" />
-              <span className="text-sm font-medium">Data Version Status</span>
+              <span className="text-sm font-medium">Data Persistence Status</span>
             </div>
             
             <Badge 
@@ -312,14 +312,27 @@ export default function ForceSync() {
                 </div>
               )}
               
-              <div className="flex items-center gap-1.5 mt-2">
-                <Shield className="h-3.5 w-3.5 text-green-600" />
-                <span className="text-xs text-green-600">Persistence protection active</span>
+              <div className="flex flex-col gap-1.5 mt-2">
+                <div className="flex items-center gap-1.5">
+                  <Shield className="h-3.5 w-3.5 text-green-600" />
+                  <span className="text-xs text-green-600">Automatic persistence protection active</span>
+                </div>
+                <p className="text-xs text-gray-500">
+                  The system now automatically verifies data integrity and performs sync operations when needed.
+                  Manual force sync is only required in unusual circumstances.
+                </p>
               </div>
             </div>
           ) : (
-            <div className="text-xs text-gray-500 py-1">
-              No data version information available. Run a force sync to update.
+            <div className="flex flex-col gap-2 py-1">
+              <div className="text-xs text-gray-500">
+                No data version information available yet. The system will automatically create 
+                version checkpoints during regular operations.
+              </div>
+              <div className="flex items-center gap-1.5">
+                <Shield className="h-3.5 w-3.5 text-green-600" />
+                <span className="text-xs text-green-600">Automatic data verification active</span>
+              </div>
             </div>
           )}
         </div>

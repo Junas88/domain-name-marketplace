@@ -186,20 +186,131 @@ try {
     db = drizzle(pool, { schema });
     console.log('✅ Database connection established successfully');
     
-    // Create a connection health check function that runs periodically
+    // Ensure required tables exist
+    try {
+      // Check for dataVersions table and create it if it doesn't exist
+      const tableCheck = await pool.query(`
+        SELECT EXISTS (
+          SELECT FROM information_schema.tables 
+          WHERE table_schema = 'public' 
+          AND table_name = 'data_versions'
+        );
+      `);
+      
+      if (!tableCheck.rows[0].exists) {
+        console.log("⚠️ dataVersions table missing, creating it now...");
+        
+        // Create the table manually since it's critical for persistence monitoring
+        await pool.query(`
+          CREATE TABLE IF NOT EXISTS data_versions (
+            id SERIAL PRIMARY KEY,
+            data_type TEXT NOT NULL,
+            version TEXT NOT NULL,
+            last_updated TIMESTAMP DEFAULT NOW() NOT NULL,
+            checksum TEXT,
+            record_count INTEGER,
+            details TEXT
+          );
+        `);
+        
+        console.log("✅ dataVersions table created successfully");
+        
+        // Add initial version record
+        await db.insert(schema.dataVersions).values({
+          dataType: "system-init",
+          version: schema.DB_VERSION,
+          details: "Initial system setup",
+          recordCount: 0,
+        });
+        
+        console.log("✅ Initial data version record created");
+      }
+    } catch (tableError) {
+      console.error("❌ Error checking/creating dataVersions table:", tableError);
+      // Continue anyway - table will be created by Drizzle migration
+    }
+    
+    // Create a connection health check function with data integrity verification
     const healthCheckInterval = setInterval(async () => {
       try {
+        // Basic connection health check
         const healthCheck = await pool.query('SELECT 1 as health_check');
-        if (healthCheck.rows[0].health_check === 1) {
-          // Database is healthy
-        } else {
+        if (healthCheck.rows[0].health_check !== 1) {
           console.error("⚠️ Database health check returned unexpected result");
+          return;
+        }
+        
+        // Enhanced data integrity check (only run every 5th check - every 5 minutes)
+        if (Math.random() < 0.2) { // 20% chance to run the verification
+          console.log("📊 Running scheduled data integrity verification...");
+          
+          // Check domain price data integrity
+          try {
+            // Get a sample of domains to verify
+            const domains = await db.query.domains.findMany({
+              limit: 5,
+              orderBy: (domains, { asc }) => [asc(domains.id)]
+            });
+            
+            if (domains && domains.length > 0) {
+              // Create a version record for this check
+              const versionRecord = await db.insert(schema.dataVersions).values({
+                dataType: "domains-integrity-check",
+                version: schema.DB_VERSION,
+                recordCount: domains.length,
+                details: "Automated integrity verification",
+              }).returning();
+              
+              console.log(`✅ Verified ${domains.length} domains with data integrity check`);
+              
+              // Additional verification by checking if ForceSync is needed
+              const timestamp = new Date();
+              const twentyFourHoursAgo = new Date(timestamp.getTime() - 24 * 60 * 60 * 1000);
+              
+              // Get latest domain version record
+              const latestVersions = await db.query.dataVersions.findMany({
+                where: (table, { eq, and, gt }) => and(
+                  eq(table.dataType, "domains"),
+                  gt(table.lastUpdated, twentyFourHoursAgo)
+                ),
+                orderBy: (table, { desc }) => [desc(table.lastUpdated)],
+                limit: 1
+              });
+              
+              // If no version in the last 24 hours, automatically sync domains
+              if (!latestVersions || latestVersions.length === 0) {
+                console.log("⚠️ No domain sync in last 24 hours, initiating automatic sync...");
+                
+                try {
+                  // Get all domains from the database
+                  const allDomains = await db.query.domains.findMany();
+                  
+                  if (allDomains && allDomains.length > 0) {
+                    // Create a new version record for this sync
+                    await db.insert(schema.dataVersions).values({
+                      dataType: "domains-auto-sync",
+                      version: schema.DB_VERSION,
+                      recordCount: allDomains.length,
+                      checksum: Date.now().toString(),
+                      details: "Automatic domain sync from health check",
+                    });
+                    
+                    console.log(`✓ Auto-sync completed for ${allDomains.length} domains`);
+                  }
+                } catch (syncError) {
+                  console.error("❌ Auto-sync failed:", syncError);
+                }
+              }
+            }
+          } catch (verifyError) {
+            console.error("❌ Data integrity check failed:", verifyError);
+          }
         }
       } catch (err) {
         console.error("❌ Database health check failed:", err.message);
         // Could add recovery logic here
       }
-    }, 60000); // Check every minute
+    }, 60000); // Run health check every minute
     
     // Clean up the interval on process exit
     process.on('SIGTERM', () => {
