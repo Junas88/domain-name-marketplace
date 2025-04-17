@@ -656,9 +656,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
             newPrice = Math.round(newPrice * 100) / 100;
             
             // Update the domain with new price
+            if (!domain) return null;
             return await storage.updateDomain(domain.id, { price: newPrice });
           } catch (error) {
-            console.error(`Error updating price for domain ${domain.id}:`, error);
+            console.error(`Error updating price for domain ${domain?.id ?? 'unknown'}:`, error);
             return null;
           }
         })
