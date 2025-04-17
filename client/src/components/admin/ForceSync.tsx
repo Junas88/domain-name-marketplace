@@ -8,12 +8,54 @@ import { Badge } from '@/components/ui/badge';
 import { RefreshCw, Check, AlertCircle, Zap, Database, Shield } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 
+// Data version type
+interface DataVersion {
+  id: number;
+  dataType: string;
+  version: string;
+  lastUpdated: string;
+  checksum?: string;
+  recordCount?: number;
+  details?: string;
+  createdAt?: string;
+}
+
 export default function ForceSync() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [isSyncing, setIsSyncing] = useState(false);
   const [syncProgress, setSyncProgress] = useState(0);
   const [syncResult, setSyncResult] = useState<{success: boolean; message: string} | null>(null);
+  
+  // Fetch the latest data versions
+  const { data: dataVersions, isLoading: isLoadingVersions, refetch: refetchVersions } = useQuery<DataVersion[]>({ 
+    queryKey: ['/api/admin/data-versions'],
+    queryFn: async () => {
+      try {
+        const timestamp = Date.now();
+        const response = await fetch(`/api/admin/data-versions?t=${timestamp}`, {
+          method: 'GET',
+          headers: {
+            'Cache-Control': 'no-cache, no-store, must-revalidate',
+            'Pragma': 'no-cache',
+            'Expires': '0'
+          },
+          credentials: 'include'
+        });
+        
+        if (!response.ok) {
+          console.warn('Could not fetch data versions');
+          return [];
+        }
+        
+        return await response.json();
+      } catch (err) {
+        console.error('Error fetching data versions:', err);
+        return [];
+      }
+    },
+    refetchInterval: 60000, // Refresh every minute
+  });
   
   // Reset sync result after displaying
   useEffect(() => {
@@ -102,6 +144,9 @@ export default function ForceSync() {
       // Invalidate all queries
       await invalidateAllQueries();
       
+      // Also refresh data versions information
+      await refetchVersions();
+      
       setSyncProgress(90);
       
       // Small delay to ensure server side changes have propagated
@@ -146,49 +191,139 @@ export default function ForceSync() {
     }
   };
   
+  // Check for recent data version updates (in last 24 hours)
+  const getLatestDomainVersion = () => {
+    if (!dataVersions || dataVersions.length === 0) return null;
+    
+    // Filter for domain data versions
+    const domainVersions = dataVersions.filter(v => 
+      v.dataType === 'domains' || v.dataType === 'domains-bulk-price-update'
+    );
+    
+    // Sort by most recent
+    return domainVersions.sort((a, b) => 
+      new Date(b.lastUpdated).getTime() - new Date(a.lastUpdated).getTime()
+    )[0] || null;
+  };
+
+  const latestVersion = getLatestDomainVersion();
+  
+  // Format time difference from now
+  const getTimeSince = (dateStr: string) => {
+    const date = new Date(dateStr);
+    const now = new Date();
+    const diffMs = now.getTime() - date.getTime();
+    const diffMinutes = Math.floor(diffMs / 60000);
+    
+    if (diffMinutes < 60) {
+      return `${diffMinutes} minute${diffMinutes !== 1 ? 's' : ''} ago`;
+    }
+    
+    const diffHours = Math.floor(diffMinutes / 60);
+    if (diffHours < 24) {
+      return `${diffHours} hour${diffHours !== 1 ? 's' : ''} ago`;
+    }
+    
+    const diffDays = Math.floor(diffHours / 24);
+    return `${diffDays} day${diffDays !== 1 ? 's' : ''} ago`;
+  };
+  
   return (
-    <div className="space-y-3">
-      <p className="text-xs text-gray-600">
-        Use when domain prices aren't updating correctly in production. Forces a refresh by bypassing all caches.
-      </p>
-      
-      {syncProgress > 0 && (
-        <Progress value={syncProgress} className="h-1 mb-3" />
-      )}
-      
-      {syncResult && (
-        <div className={`text-xs p-2 rounded ${syncResult.success ? 'bg-green-50 text-green-800' : 'bg-red-50 text-red-800'} flex items-start gap-2 mb-2`}>
-          {syncResult.success ? (
-            <Check className="h-4 w-4 flex-shrink-0 text-green-600" />
-          ) : (
-            <AlertCircle className="h-4 w-4 flex-shrink-0 text-red-600" />
-          )}
-          <span>{syncResult.message}</span>
+    <div className="space-y-4">
+      <div className="space-y-3">
+        <p className="text-xs text-gray-600">
+          Use when domain prices aren't updating correctly in production. Forces a refresh by bypassing all caches.
+        </p>
+        
+        {syncProgress > 0 && (
+          <Progress value={syncProgress} className="h-1 mb-3" />
+        )}
+        
+        {syncResult && (
+          <div className={`text-xs p-2 rounded ${syncResult.success ? 'bg-green-50 text-green-800' : 'bg-red-50 text-red-800'} flex items-start gap-2 mb-2`}>
+            {syncResult.success ? (
+              <Check className="h-4 w-4 flex-shrink-0 text-green-600" />
+            ) : (
+              <AlertCircle className="h-4 w-4 flex-shrink-0 text-red-600" />
+            )}
+            <span>{syncResult.message}</span>
+          </div>
+        )}
+        
+        <div className="flex gap-2">
+          <Button 
+            onClick={handleForceSync} 
+            disabled={isSyncing}
+            className="w-full flex items-center justify-center gap-1.5"
+            size="sm"
+            variant={isSyncing ? "outline" : "default"}
+          >
+            {isSyncing ? (
+              <RefreshCw className="h-3.5 w-3.5 animate-spin" />
+            ) : (
+              <Zap className="h-3.5 w-3.5" />
+            )}
+            {isSyncing ? 'Syncing...' : 'Force Sync All Domains'}
+          </Button>
         </div>
-      )}
-      
-      <div className="flex gap-2">
-        <Button 
-          onClick={handleForceSync} 
-          disabled={isSyncing}
-          className="w-full flex items-center justify-center gap-1.5"
-          size="sm"
-          variant={isSyncing ? "outline" : "default"}
-        >
-          {isSyncing ? (
-            <RefreshCw className="h-3.5 w-3.5 animate-spin" />
-          ) : (
-            <Zap className="h-3.5 w-3.5" />
-          )}
-          {isSyncing ? 'Syncing...' : 'Force Sync All Domains'}
-        </Button>
+        
+        {isSyncing && (
+          <p className="text-xs text-gray-500 animate-pulse">
+            Updating prices... this may take a few moments
+          </p>
+        )}
       </div>
       
-      {isSyncing && (
-        <p className="text-xs text-gray-500 animate-pulse">
-          Updating prices... this may take a few moments
-        </p>
-      )}
+      {/* Data Persistence Status */}
+      <Card className="p-3">
+        <div className="space-y-2">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-1.5">
+              <Database className="h-4 w-4 text-gray-500" />
+              <span className="text-sm font-medium">Data Version Status</span>
+            </div>
+            
+            <Badge 
+              variant={latestVersion ? "outline" : "destructive"} 
+              className="text-xs"
+            >
+              {isLoadingVersions ? 'Checking...' : (latestVersion ? 'v' + latestVersion.version : 'No Data')}
+            </Badge>
+          </div>
+          
+          {latestVersion ? (
+            <div className="space-y-1.5">
+              <div className="flex items-center justify-between text-xs">
+                <span className="text-gray-500">Last Update:</span>
+                <span className="font-medium">{getTimeSince(latestVersion.lastUpdated)}</span>
+              </div>
+              
+              {latestVersion.recordCount !== undefined && (
+                <div className="flex items-center justify-between text-xs">
+                  <span className="text-gray-500">Domains Tracked:</span>
+                  <span className="font-medium">{latestVersion.recordCount}</span>
+                </div>
+              )}
+              
+              {latestVersion.details && (
+                <div className="text-xs text-gray-500 mt-1">
+                  <span className="font-medium text-gray-700">Notes:</span>{' '}
+                  {latestVersion.details}
+                </div>
+              )}
+              
+              <div className="flex items-center gap-1.5 mt-2">
+                <Shield className="h-3.5 w-3.5 text-green-600" />
+                <span className="text-xs text-green-600">Persistence protection active</span>
+              </div>
+            </div>
+          ) : (
+            <div className="text-xs text-gray-500 py-1">
+              No data version information available. Run a force sync to update.
+            </div>
+          )}
+        </div>
+      </Card>
     </div>
   );
 }

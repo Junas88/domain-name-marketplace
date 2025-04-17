@@ -265,6 +265,32 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
+  // Get data versions information for tracking domain persistence
+  app.get("/api/admin/data-versions", async (req, res) => {
+    try {
+      // Check if user is authenticated and an admin
+      if (!req.isAuthenticated() || !(req.user?.isAdmin)) {
+        return res.status(403).json({ message: "Unauthorized" });
+      }
+      
+      // Set cache-busting headers
+      res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+      res.setHeader('Pragma', 'no-cache');
+      res.setHeader('Expires', '0');
+      
+      // Query the latest data versions
+      const dataVersions = await db.query.dataVersions.findMany({
+        orderBy: (dataVersions, { desc }) => [desc(dataVersions.lastUpdated)],
+        limit: 20
+      });
+      
+      res.json(dataVersions);
+    } catch (error) {
+      console.error("Error fetching data versions:", error);
+      res.status(500).json({ message: "Failed to fetch data versions" });
+    }
+  });
+  
   // Special production sync endpoint - forces database refresh with transaction logging
   app.post("/api/admin/force-sync", async (req, res) => {
     try {
