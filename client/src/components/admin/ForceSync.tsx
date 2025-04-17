@@ -13,28 +13,37 @@ export default function ForceSync() {
     setIsSyncing(true);
     
     try {
-      const cacheParam = `?t=${Date.now()}`; // Add cache-busting timestamp
+      // Call the server's dedicated force sync API endpoint
+      const response = await apiRequest('POST', '/api/admin/force-sync');
       
-      // Fetch all domains with cache-busting
-      const response = await fetch(`/api/domains${cacheParam}`, {
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'Failed to sync domains');
+      }
+      
+      const result = await response.json();
+      
+      // Fetch fresh domain data with cache-busting
+      const domainResponse = await fetch(`/api/domains?t=${Date.now()}`, {
         method: 'GET',
         headers: {
           'Cache-Control': 'no-cache, no-store, must-revalidate',
           'Pragma': 'no-cache',
           'Expires': '0',
-        }
+        },
+        credentials: 'include'
       });
       
-      if (!response.ok) {
-        throw new Error('Failed to sync domains');
+      if (!domainResponse.ok) {
+        throw new Error('Failed to refresh domain data');
       }
       
-      // Force refresh the browser cache and DOM
+      // Force a complete page refresh to update everything
       window.location.reload();
       
       toast({
         title: "Data Sync Successful",
-        description: "All domain data has been refreshed",
+        description: `Refreshed ${result.refreshed} domains with updated prices`,
       });
     } catch (error) {
       console.error('Data sync error:', error);
