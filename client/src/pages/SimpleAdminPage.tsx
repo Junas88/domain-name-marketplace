@@ -1238,15 +1238,26 @@ export default function SimpleAdminPage() {
           <h1 className="text-3xl font-bold text-black">Admin Dashboard</h1>
           <p className="text-gray-500">Manage your domain listings, track offers, and monitor website stats</p>
         </div>
-        <Button 
-          variant="outline" 
-          size="sm"
-          className="mt-4 md:mt-0 border-black" 
-          onClick={handleLogout}
-        >
-          <LogOut className="h-4 w-4 mr-2" />
-          Logout
-        </Button>
+        <div className="flex gap-2 mt-4 md:mt-0">
+          <Button 
+            variant="outline" 
+            size="sm"
+            className="border-green-600 border-2 hover:bg-green-50" 
+            onClick={() => window.location.href = "/admin/sync"}
+          >
+            <Database className="h-4 w-4 mr-2 text-green-600" />
+            <span className="text-green-600">Backup & Sync</span>
+          </Button>
+          <Button 
+            variant="outline" 
+            size="sm"
+            className="border-black" 
+            onClick={handleLogout}
+          >
+            <LogOut className="h-4 w-4 mr-2" />
+            Logout
+          </Button>
+        </div>
       </header>
       
       {/* Stats Cards */}
@@ -2939,7 +2950,23 @@ Instagram: https://instagram.com/domainnameguide`;
         <TabsContent value="backup" className="space-y-4">
           <div className="flex justify-between items-center">
             <h2 className="text-xl font-bold text-black">Data Backup & Restore</h2>
+            <Button
+              variant="default"
+              className="bg-green-600 hover:bg-green-700"
+              onClick={() => window.location.href = "/admin/sync"}
+            >
+              <Database className="h-4 w-4 mr-2" />
+              Open Full Backup & Sync Page
+            </Button>
           </div>
+          
+          <Alert className="bg-amber-50 border-amber-200">
+            <AlertTriangle className="h-4 w-4 text-amber-600" />
+            <AlertTitle className="text-amber-800">For better access to backup features</AlertTitle>
+            <AlertDescription className="text-amber-700">
+              We've created a dedicated page for backup and restore operations. Click the button above to access all features.
+            </AlertDescription>
+          </Alert>
           
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
             {/* Backup Section */}
