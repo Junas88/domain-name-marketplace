@@ -2,6 +2,8 @@ import type { Express, Request, Response, NextFunction } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { setupAuth } from "./auth";
+import { db, backupDataToFile } from "./db";
+import * as schema from "@shared/schema";
 import { 
   insertOfferSchema, 
   insertConsultationSchema,
@@ -502,7 +504,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
-  // Update a domain
+  // Update a domain with enhanced persistence and logging
   app.patch("/api/admin/domains/:id", async (req, res) => {
     try {
       const id = parseInt(req.params.id);
@@ -510,15 +512,94 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Invalid domain ID" });
       }
       
-      const domain = await storage.updateDomain(id, req.body);
-      if (!domain) {
+      // Get existing domain data for comparison
+      const existingDomain = await storage.getDomain(id);
+      if (!existingDomain) {
         return res.status(404).json({ message: "Domain not found" });
       }
       
-      res.json(domain);
+      console.log(`📝 Domain update request - ID: ${id}, Name: ${existingDomain.name}, User: ${req.user?.username || 'unknown'}`);
+      
+      // Calculate percentage change if price is being updated
+      let changePercentage = null;
+      if (req.body.price !== undefined && existingDomain.price !== undefined) {
+        changePercentage = Math.round(((req.body.price - existingDomain.price) / existingDomain.price) * 100);
+      }
+      
+      // Log price changes in dedicated table
+      if (req.body.price !== undefined && req.body.price !== existingDomain.price) {
+        try {
+          // Log the price change in our audit table
+          await db.insert(schema.priceChangeLogs).values({
+            domainId: id,
+            domainName: existingDomain.name,
+            oldPrice: existingDomain.price,
+            newPrice: req.body.price,
+            changePercentage,
+            userId: req.user?.id || null,
+            ipAddress: req.ip,
+            reason: req.body.reason || "Manual price update",
+          });
+          
+          console.log(`📊 Price change logged for ${existingDomain.name}: $${existingDomain.price} → $${req.body.price} (${changePercentage}%)`);
+        } catch (logErr) {
+          console.error("⚠️ Failed to log price change:", logErr);
+          // Continue with update even if logging fails
+        }
+      }
+      
+      // Apply the update with extra resilience measures
+      let updatedDomain = null;
+      let retryCount = 0;
+      const maxRetries = 3;
+      
+      while (retryCount < maxRetries && !updatedDomain) {
+        try {
+          updatedDomain = await storage.updateDomain(id, req.body);
+          
+          // Verify the update was applied correctly for price changes
+          if (req.body.price !== undefined) {
+            const verifyDomain = await storage.getDomain(id);
+            
+            if (verifyDomain && verifyDomain.price !== req.body.price) {
+              console.error(`⚠️ Price verification failed! Expected ${req.body.price}, got ${verifyDomain.price}`);
+              throw new Error("Price verification failed");
+            }
+          }
+          
+          console.log(`✅ Domain ${existingDomain.name} updated successfully`);
+        } catch (updateErr) {
+          retryCount++;
+          console.error(`❌ Update attempt ${retryCount} failed:`, updateErr);
+          
+          if (retryCount >= maxRetries) {
+            throw new Error(`Failed to update domain after ${maxRetries} attempts`);
+          }
+          
+          // Wait before retrying
+          await new Promise(resolve => setTimeout(resolve, 1000));
+        }
+      }
+      
+      // Set cache-busting headers
+      res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+      res.setHeader('Pragma', 'no-cache');
+      res.setHeader('Expires', '0');
+      res.setHeader('Surrogate-Control', 'no-store');
+      
+      // Clear any CDN or proxy caches with a special header
+      res.setHeader('X-Cache-Invalidate', `domains/${id}`);
+      
+      // Force cache refresh for all domain-related queries
+      res.setHeader('X-Force-Refresh', 'true');
+      
+      res.json(updatedDomain);
     } catch (error) {
       console.error("Error updating domain:", error);
-      res.status(500).json({ message: "Failed to update domain" });
+      res.status(500).json({ 
+        message: "Failed to update domain", 
+        error: error instanceof Error ? error.message : String(error)
+      });
     }
   });
   
@@ -663,7 +744,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
-  // Bulk update domain prices
+  // Bulk update domain prices with enhanced persistence and logging
   app.patch("/api/admin/domains/bulk/update-prices", async (req, res) => {
     try {
       const { ids, adjustmentType, adjustmentValue } = req.body;
@@ -671,6 +752,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (!Array.isArray(ids) || ids.length === 0) {
         return res.status(400).json({ message: "Invalid domain IDs" });
       }
+      
+      // Log this bulk operation for audit purposes
+      console.log(`📊 BULK PRICE UPDATE: ${ids.length} domains, type: ${adjustmentType}, value: ${adjustmentValue}, user: ${req.user?.username || 'unknown'}, time: ${new Date().toISOString()}`);
+      
       
       if (!adjustmentType || !['fixed', 'percentage'].includes(adjustmentType)) {
         return res.status(400).json({ message: "Invalid adjustment type" });
@@ -720,9 +805,62 @@ export async function registerRoutes(app: Express): Promise<Server> {
             // Round to 2 decimal places
             newPrice = Math.round(newPrice * 100) / 100;
             
-            // Update the domain with new price
+            // Log price change before applying it
+            if (domain.price !== newPrice) {
+              try {
+                const changePercentage = Math.round(((newPrice - domain.price) / domain.price) * 100);
+                
+                // Log the price change in our audit table
+                await db.insert(schema.priceChangeLogs).values({
+                  domainId: domain.id,
+                  domainName: domain.name,
+                  oldPrice: domain.price,
+                  newPrice: newPrice,
+                  changePercentage,
+                  userId: req.user?.id || null,
+                  ipAddress: req.ip,
+                  reason: "Bulk price update",
+                });
+                
+                console.log(`📊 Bulk update: Price change for ${domain.name}: $${domain.price} → $${newPrice} (${changePercentage}%)`);
+              } catch (logErr) {
+                console.error(`⚠️ Failed to log bulk price change for ${domain.name}:`, logErr);
+                // Continue with update even if logging fails
+              }
+            }
+            
+            // Update the domain with new price with retry mechanism
             if (!domain) return null;
-            return await storage.updateDomain(domain.id, { price: newPrice });
+            
+            let updatedDomain = null;
+            let retryCount = 0;
+            const maxRetries = 3;
+            
+            while (retryCount < maxRetries && !updatedDomain) {
+              try {
+                updatedDomain = await storage.updateDomain(domain.id, { price: newPrice });
+                
+                // Verify the update was applied correctly
+                const verifyDomain = await storage.getDomain(domain.id);
+                
+                if (verifyDomain && verifyDomain.price !== newPrice) {
+                  console.error(`⚠️ Bulk price verification failed for ${domain.name}! Expected ${newPrice}, got ${verifyDomain.price}`);
+                  throw new Error("Price verification failed");
+                }
+              } catch (updateErr) {
+                retryCount++;
+                console.error(`❌ Bulk update attempt ${retryCount} failed for ${domain.name}:`, updateErr);
+                
+                if (retryCount >= maxRetries) {
+                  throw new Error(`Failed to update domain ${domain.name} after ${maxRetries} attempts`);
+                }
+                
+                // Wait before retrying
+                await new Promise(resolve => setTimeout(resolve, 1000));
+              }
+            }
+            
+            return updatedDomain;
           } catch (error) {
             console.error(`Error updating price for domain ${domain?.id ?? 'unknown'}:`, error);
             return null;
