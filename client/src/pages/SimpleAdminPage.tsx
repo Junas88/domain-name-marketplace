@@ -128,6 +128,11 @@ export default function SimpleAdminPage() {
   const [deleteAllDomainsDialogOpen, setDeleteAllDomainsDialogOpen] = useState(false);
   const [deleteAllConfirmationCode, setDeleteAllConfirmationCode] = useState("");
   const [isDeletingAllDomains, setIsDeletingAllDomains] = useState(false);
+  
+  // Production sync state
+  const [syncWithLocalDialogOpen, setSyncWithLocalDialogOpen] = useState(false);
+  const [syncConfirmationCode, setSyncConfirmationCode] = useState("");
+  const [isSyncingProduction, setIsSyncingProduction] = useState(false);
   const [csvData, setCsvData] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 20;
