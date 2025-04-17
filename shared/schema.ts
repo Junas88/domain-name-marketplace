@@ -3,7 +3,7 @@ import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
 // Version tracking for domain data to ensure persistence
-export const DB_VERSION = "1.2.0"; // Update this when schema changes
+export const DB_VERSION = "1.3.0"; // Update this when schema changes
 
 // User table with admin privileges
 export const users = pgTable("users", {

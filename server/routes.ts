@@ -4,6 +4,7 @@ import { storage } from "./storage";
 import { setupAuth } from "./auth";
 import { db, backupDataToFile } from "./db";
 import * as schema from "@shared/schema";
+import { sql } from "drizzle-orm";
 import { 
   insertOfferSchema, 
   insertConsultationSchema,
@@ -263,7 +264,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
-  // Special production sync endpoint - forces database refresh
+  // Special production sync endpoint - forces database refresh with transaction logging
   app.post("/api/admin/force-sync", async (req, res) => {
     try {
       // Check if user is authenticated and an admin
@@ -272,6 +273,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       console.log("⚠️ FORCE SYNC REQUESTED - Refreshing all domain data");
+      
+      // Log this major operation in the transaction log
+      try {
+        await db.insert(schema.dataVersions).values({
+          dataType: "domains",
+          version: schema.DB_VERSION,
+          details: "Force sync initiated by admin",
+          recordCount: -1, // Will be updated after we get the domains
+        });
+      } catch (logErr) {
+        console.error("Failed to log data version for force sync:", logErr);
+        // Continue anyway
+      }
 
       // Set cache-busting headers
       res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
@@ -326,6 +340,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Apply a short delay to ensure DB writes are complete
       await new Promise(resolve => setTimeout(resolve, 500));
+      
+      // Log the completion of this force sync operation
+      try {
+        await db.update(schema.dataVersions)
+          .set({
+            recordCount: successCount,
+            lastUpdated: new Date(),
+            checksum: Date.now().toString(), // Simple checksum using current timestamp
+            details: `Force sync completed. Updated ${successCount} of ${domains.length} domains.`
+          })
+          .where(sql`data_type = 'domains' AND created_at = (SELECT MAX(created_at) FROM data_versions WHERE data_type = 'domains')`);
+          
+        // Create a full backup of domain data for safety
+        const domainData = refreshResults.filter(r => r.success).map(r => r.domain);
+        await backupDataToFile(domainData, 'domains-after-sync');
+      } catch (e) {
+        console.error("Error updating dataVersions after force sync:", e);
+        // Continue anyway
+      }
 
       res.json({
         success: true,

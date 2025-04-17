@@ -1,30 +1,33 @@
-import { pgTable, serial, integer, text, timestamp } from "drizzle-orm/pg-core";
+import { pgTable, text, timestamp, serial, integer, jsonb } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
-// Transaction log table to track all domain updates
 export const transactionLogs = pgTable("transaction_logs", {
   id: serial("id").primaryKey(),
-  domainId: integer("domain_id").notNull(),
-  domainName: text("domain_name").notNull(),
-  action: text("action").notNull(), // "price_update", "mark_sold", etc.
-  oldValue: text("old_value"), // JSON string of old values
-  newValue: text("new_value"), // JSON string of new values
-  userId: integer("user_id"), // Optional user who made the change
-  ipAddress: text("ip_address"),
-  userAgent: text("user_agent"),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
+  entityType: text("entity_type").notNull(), // E.g., "domain", "page_content"
+  entityId: integer("entity_id").notNull(),   // ID of the entity being modified
+  operation: text("operation").notNull(),     // E.g., "update", "create", "delete"
+  oldValue: jsonb("old_value"),               // Previous state (JSON)
+  newValue: jsonb("new_value"),               // New state (JSON)
+  userId: integer("user_id"),                 // Who made the change
+  ipAddress: text("ip_address"),              // IP address of the user
+  userAgent: text("user_agent"),              // Browser/client information
+  metadata: jsonb("metadata"),                // Any additional information
+  status: text("status").notNull().default("completed"), // "pending", "completed", "failed"
+  createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 
 export const insertTransactionLogSchema = createInsertSchema(transactionLogs).pick({
-  domainId: true,
-  domainName: true,
-  action: true,
+  entityType: true,
+  entityId: true,
+  operation: true,
   oldValue: true,
   newValue: true,
   userId: true,
   ipAddress: true,
   userAgent: true,
+  metadata: true,
+  status: true,
 });
 
 export type InsertTransactionLog = z.infer<typeof insertTransactionLogSchema>;
