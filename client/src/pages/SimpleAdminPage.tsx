@@ -3487,13 +3487,22 @@ Instagram: https://instagram.com/domainnameguide`;
                 
                 <div>
                   <h3 className="font-medium mb-2">Account Actions</h3>
-                  <Button 
-                    variant="destructive" 
-                    onClick={handleLogout}
-                  >
-                    <LogOut className="h-4 w-4 mr-2" />
-                    Logout
-                  </Button>
+                  <div className="flex flex-wrap gap-2">
+                    <Button 
+                      variant="secondary"
+                      onClick={() => window.open('/api/download-project', '_blank')}
+                    >
+                      <Download className="h-4 w-4 mr-2" />
+                      Download Project ZIP
+                    </Button>
+                    <Button 
+                      variant="destructive" 
+                      onClick={handleLogout}
+                    >
+                      <LogOut className="h-4 w-4 mr-2" />
+                      Logout
+                    </Button>
+                  </div>
                 </div>
               </div>
             </CardContent>
