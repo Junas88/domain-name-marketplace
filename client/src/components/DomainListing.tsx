@@ -25,11 +25,29 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ChevronLeft, ChevronRight, Shield, Check, Search, TrendingUp } from "lucide-react";
+import { ChevronLeft, ChevronRight, Shield, Check, Search } from "lucide-react";
 
-// Import the new CategoryBadge component
-import { CategoryBadge } from './CategoryBadge';
-import { DOMAIN_CATEGORIES } from '../../../shared/schema';
+// Helper function to get colors for different categories
+const getCategoryColor = (category: string): string => {
+  switch (category) {
+    case "Technology":
+      return "bg-blue-100 text-blue-800 border border-blue-300";
+    case "Business":
+      return "bg-green-100 text-green-800 border border-green-300";
+    case "Health":
+      return "bg-red-100 text-red-800 border border-red-300";
+    case "Education":
+      return "bg-yellow-100 text-yellow-800 border border-yellow-300";
+    case "Entertainment":
+      return "bg-purple-100 text-purple-800 border border-purple-300";
+    case "Finance":
+      return "bg-teal-100 text-teal-800 border border-teal-300";
+    case "Crypto":
+      return "bg-orange-100 text-orange-800 border border-orange-300";
+    default:
+      return "bg-gray-100 text-gray-800 border border-gray-300";
+  }
+};
 
 interface DomainListingProps {
   onMakeOffer: (domain: Domain) => void;
@@ -319,16 +337,13 @@ export default function DomainListing({ onMakeOffer }: DomainListingProps) {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="All Categories">All Categories</SelectItem>
-                  {Object.entries(DOMAIN_CATEGORIES).map(([key, data]) => (
-                    <SelectItem key={key} value={data.label}>
-                      <div className="flex items-center">
-                        {data.isTrending && (
-                          <TrendingUp className="w-3.5 h-3.5 mr-1.5 text-gray-500" />
-                        )}
-                        {data.label}
-                      </div>
-                    </SelectItem>
-                  ))}
+                  <SelectItem value="Technology">Technology</SelectItem>
+                  <SelectItem value="Business">Business</SelectItem>
+                  <SelectItem value="Health">Health</SelectItem>
+                  <SelectItem value="Education">Education</SelectItem>
+                  <SelectItem value="Entertainment">Entertainment</SelectItem>
+                  <SelectItem value="Finance">Finance</SelectItem>
+                  <SelectItem value="Crypto">Crypto</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -429,8 +444,11 @@ export default function DomainListing({ onMakeOffer }: DomainListingProps) {
                           Sold
                         </span>
                       )}
-                      <span itemProp="category">
-                        <CategoryBadge category={domain.category.toLowerCase()} showTrending={true} />
+                      <span 
+                        className={`px-2 py-1 rounded-sm text-sm font-medium ${getCategoryColor(domain.category)}`}
+                        itemProp="category"
+                      >
+                        {domain.category}
                       </span>
                     </div>
                   </div>

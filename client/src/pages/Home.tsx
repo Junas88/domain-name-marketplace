@@ -8,7 +8,6 @@ import Footer from "@/components/Footer";
 import OfferModal from "@/components/OfferModal";
 import RecentlySoldDomains from "@/components/RecentlySoldDomains";
 import ActivityNotification from "@/components/ActivityNotification";
-import { TrendingCategories } from "@/components/CategoryBadge";
 import { Domain } from "@shared/schema";
 
 export default function Home() {
@@ -29,14 +28,6 @@ export default function Home() {
     <div className="min-h-screen flex flex-col">
       <Header />
       <Hero />
-      
-      {/* Display Trending Categories */}
-      <div className="bg-white py-8">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <TrendingCategories />
-        </div>
-      </div>
-      
       <RecentlySoldDomains />
       <DomainListing onMakeOffer={handleMakeOffer} />
       <Features />

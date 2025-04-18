@@ -5,8 +5,6 @@ import { setupAuth } from "./auth";
 import { db, backupDataToFile, verifyDataPersistence } from "./db";
 import * as schema from "@shared/schema";
 import { sql } from "drizzle-orm";
-import { fetchAfternicDomains, syncAfternicDomains, checkAfternicConnection } from "./integrations/afternic";
-import { AFTERNIC_CONFIG } from "./config/constants";
 import { 
   insertOfferSchema, 
   insertConsultationSchema,
