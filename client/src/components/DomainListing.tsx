@@ -25,7 +25,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ChevronLeft, ChevronRight, Shield, Check, Search } from "lucide-react";
+import { ChevronLeft, ChevronRight, Shield, Check, Search, TrendingUp } from "lucide-react";
 
 // Import the new CategoryBadge component
 import { CategoryBadge } from './CategoryBadge';
@@ -319,13 +319,16 @@ export default function DomainListing({ onMakeOffer }: DomainListingProps) {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="All Categories">All Categories</SelectItem>
-                  <SelectItem value="Technology">Technology</SelectItem>
-                  <SelectItem value="Business">Business</SelectItem>
-                  <SelectItem value="Health">Health</SelectItem>
-                  <SelectItem value="Education">Education</SelectItem>
-                  <SelectItem value="Entertainment">Entertainment</SelectItem>
-                  <SelectItem value="Finance">Finance</SelectItem>
-                  <SelectItem value="Crypto">Crypto</SelectItem>
+                  {Object.entries(DOMAIN_CATEGORIES).map(([key, data]) => (
+                    <SelectItem key={key} value={data.label}>
+                      <div className="flex items-center">
+                        {data.isTrending && (
+                          <TrendingUp className="w-3.5 h-3.5 mr-1.5 text-gray-500" />
+                        )}
+                        {data.label}
+                      </div>
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>

@@ -11,12 +11,14 @@ interface CategoryBadgeProps {
 export function CategoryBadge({ category, className, showTrending = true }: CategoryBadgeProps) {
   // Use type assertion to ensure TypeScript accepts the dynamic property access
   // Default to 'other' if the category doesn't exist
+  // Convert category to lowercase and ensure it's a valid key
   const normalizedCategory = category.toLowerCase();
-  const categoryKey = Object.keys(DOMAIN_CATEGORIES).includes(normalizedCategory) 
-    ? normalizedCategory 
-    : 'other';
+  const isValidCategory = Object.prototype.hasOwnProperty.call(DOMAIN_CATEGORIES, normalizedCategory);
   
-  const categoryInfo = DOMAIN_CATEGORIES[categoryKey as keyof typeof DOMAIN_CATEGORIES];
+  // Use the category if it exists, otherwise use 'other'
+  const categoryInfo = isValidCategory 
+    ? DOMAIN_CATEGORIES[normalizedCategory as keyof typeof DOMAIN_CATEGORIES]
+    : DOMAIN_CATEGORIES['other'];
   
   // Get color from category info
   const backgroundColor = categoryInfo.color;
