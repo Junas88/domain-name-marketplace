@@ -60,16 +60,27 @@ app.use((req, res, next) => {
   } else {
     // Serve static assets from the 'dist' directory in production
     const distPath = path.resolve(process.cwd(), 'dist');
-    app.use(express.static(distPath));
     
-    // Add a catch-all route to serve the index.html for client-side routing
+    // Serve static files first
+    app.use(express.static(distPath, {
+      maxAge: '1y',
+      etag: true,
+    }));
+
+    // Handle API routes
+    app.all('/api/*', (req, res) => {
+      res.status(404).json({ message: 'API endpoint not found' });
+    });
+
+    // Serve index.html for all other routes (client-side routing)
     app.get('*', (req, res) => {
-      // Skip API routes
-      if (req.path.startsWith('/api/')) {
-        return res.status(404).json({ message: 'API endpoint not found' });
-      }
-      
-      res.sendFile(path.join(distPath, 'index.html'));
+      res.sendFile(path.join(distPath, 'index.html'), {
+        headers: {
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          'Pragma': 'no-cache',
+          'Expires': '0'
+        }
+      });
     });
   }
 
