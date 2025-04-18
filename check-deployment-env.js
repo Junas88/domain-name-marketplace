@@ -1,78 +1,159 @@
-import { Pool, neonConfig } from '@neondatabase/serverless';
-import ws from 'ws';
-import * as dotenv from 'dotenv';
+/**
+ * This script checks if all required environment variables are present for deployment.
+ * Run this before deploying to verify your environment is correctly configured.
+ */
 
-dotenv.config();
+// Define required environment variables for production
+const REQUIRED_ENV_VARS = [
+  'DATABASE_URL',
+  'SESSION_SECRET',
+];
 
-neonConfig.webSocketConstructor = ws;
+// Define conditionally required variables (based on features enabled)
+const CONDITIONAL_ENV_VARS = {
+  'AI Features': ['OPENAI_API_KEY'],
+  'Payment Processing': ['STRIPE_SECRET_KEY', 'VITE_STRIPE_PUBLIC_KEY'],
+};
 
-async function main() {
-  console.log('Checking deployment environment variables...');
-  
-  // Check if DATABASE_URL exists
-  if (!process.env.DATABASE_URL) {
-    console.error('❌ DATABASE_URL is not defined in the environment!');
-    process.exit(1);
-  }
-  
+// Define recommended environment variables
+const RECOMMENDED_ENV_VARS = [
+  'NODE_ENV',
+];
+
+// Function to check if an environment variable is set
+function isEnvVarSet(varName) {
+  return process.env[varName] !== undefined && process.env[varName] !== '';
+}
+
+// Function to load .env file for testing
+function loadEnvFile() {
   try {
-    // Try connecting to the database
-    const pool = new Pool({ connectionString: process.env.DATABASE_URL });
+    const fs = require('fs');
+    const path = require('path');
+    const dotenv = require('dotenv');
     
-    // Get database information
-    const { rows: serverInfo } = await pool.query('SELECT version(), current_timestamp, inet_server_addr() as server_ip');
-    console.log('\n📊 Database server info:');
-    console.log(`PostgreSQL version: ${serverInfo[0].version}`);
-    console.log(`Server time: ${serverInfo[0].current_timestamp}`);
-    console.log(`Server IP: ${serverInfo[0].server_ip || 'Not available'}`);
-    
-    // Check if we're seeing a different connection in production
-    const { rows: dbSize } = await pool.query('SELECT pg_database_size(current_database()) as size');
-    console.log(`Database size: ${Math.round(dbSize[0].size / 1024)} KB`);
-    
-    // Count domains in this database connection
-    const { rows: domainCount } = await pool.query('SELECT COUNT(*) as count FROM domains');
-    console.log(`\n📋 Domain count: ${domainCount[0].count}`);
-    
-    if (parseInt(domainCount[0].count) > 0) {
-      // List the first 5 domains if any exist
-      const { rows: domains } = await pool.query('SELECT id, name, price, is_sold, updated_at FROM domains LIMIT 5');
-      console.log('\n⚠️ Found domains in this database connection:');
-      domains.forEach(domain => {
-        console.log(`- ID: ${domain.id}, Name: ${domain.name}, Price: $${domain.price}, Sold: ${domain.is_sold ? 'Yes' : 'No'}, Updated: ${domain.updated_at}`);
-      });
+    // Try to load .env file if it exists
+    const envPath = path.resolve(process.cwd(), '.env');
+    if (fs.existsSync(envPath)) {
+      const envConfig = dotenv.parse(fs.readFileSync(envPath));
       
-      console.log('\n🔄 These domains might be from a different database than your development environment.');
-      console.log('Consider checking if you have multiple database connections or if production is using a different database URL.');
+      // Add env vars to process.env
+      for (const key in envConfig) {
+        if (!process.env[key]) {
+          process.env[key] = envConfig[key];
+        }
+      }
+      
+      console.log('📄 Loaded environment variables from .env file');
     } else {
-      console.log('\n✅ No domains found in this database. This confirms your deletion operation worked as expected.');
+      console.log('⚠️ No .env file found. Using process environment only.');
     }
-    
-    // Check environment variables related to deployment
-    console.log('\n🔧 Environment variables:');
-    const deploymentVars = Object.keys(process.env).filter(key => 
-      key.includes('REPLIT') || 
-      key.includes('DEPLOYMENT') || 
-      key.includes('PROD') || 
-      key.includes('STAGING')
-    );
-    
-    if (deploymentVars.length > 0) {
-      console.log('Found deployment-related environment variables:');
-      deploymentVars.forEach(key => {
-        console.log(`- ${key}`);
-      });
-    } else {
-      console.log('No deployment-specific environment variables found.');
-    }
-    
-    await pool.end();
-    console.log('\n✅ All required environment variables are set.');
-    
   } catch (error) {
-    console.error('❌ Error connecting to database:', error);
-    process.exit(1);
+    console.error('⚠️ Error loading .env file:', error.message);
+    console.log('ℹ️ Continuing with existing environment variables...');
   }
 }
 
-main().catch(console.error);
+// Main function
+async function main() {
+  console.log('🔍 Checking environment variables for deployment...');
+  
+  // Try to load .env file
+  try {
+    loadEnvFile();
+  } catch (error) {
+    // If dotenv isn't installed, continue with existing env vars
+    console.warn('⚠️ dotenv package not found. Skipping .env file loading.');
+  }
+  
+  let hasErrors = false;
+  let hasWarnings = false;
+  
+  // Check required environment variables
+  console.log('\n📋 Checking required environment variables:');
+  
+  REQUIRED_ENV_VARS.forEach(varName => {
+    if (isEnvVarSet(varName)) {
+      console.log(`✓ ${varName}: Found`);
+    } else {
+      console.error(`❌ ${varName}: Missing (REQUIRED)`);
+      hasErrors = true;
+    }
+  });
+  
+  // Check conditional environment variables
+  console.log('\n📋 Checking feature-specific environment variables:');
+  
+  Object.entries(CONDITIONAL_ENV_VARS).forEach(([feature, vars]) => {
+    console.log(`\n🔹 ${feature}:`);
+    
+    let allVarsPresent = true;
+    vars.forEach(varName => {
+      if (isEnvVarSet(varName)) {
+        console.log(`  ✓ ${varName}: Found`);
+      } else {
+        console.log(`  ✗ ${varName}: Missing`);
+        allVarsPresent = false;
+      }
+    });
+    
+    if (!allVarsPresent) {
+      console.log(`  ⚠️ Some variables missing for ${feature}. This feature may not work correctly.`);
+      hasWarnings = true;
+    }
+  });
+  
+  // Check recommended environment variables
+  console.log('\n📋 Checking recommended environment variables:');
+  
+  RECOMMENDED_ENV_VARS.forEach(varName => {
+    if (isEnvVarSet(varName)) {
+      console.log(`✓ ${varName}: Found (${process.env[varName]})`);
+    } else {
+      console.log(`⚠️ ${varName}: Missing (recommended)`);
+      hasWarnings = true;
+    }
+  });
+  
+  // Print summary
+  console.log('\n📊 Environment check summary:');
+  
+  if (hasErrors) {
+    console.error('❌ CRITICAL ISSUES FOUND: Missing required environment variables');
+    console.log('   Your application will not function correctly without these variables.');
+    console.log('   Please add them to your deployment environment before continuing.');
+  } else if (hasWarnings) {
+    console.log('⚠️ WARNINGS FOUND: Some recommended or feature-specific variables are missing');
+    console.log('   Your application may have limited functionality.');
+    console.log('   Consider adding these variables for full functionality.');
+  } else {
+    console.log('✅ ALL CHECKS PASSED: Your environment is correctly configured');
+  }
+  
+  // Print instructions
+  console.log('\n📝 Next steps:');
+  
+  if (hasErrors) {
+    console.log('1. Add the missing required environment variables to your deployment');
+    console.log('2. Run this check again to verify all variables are set');
+    console.log('3. Proceed with deployment once all critical issues are resolved');
+  } else {
+    console.log('1. Proceed with deployment');
+    if (hasWarnings) {
+      console.log('2. Consider adding the recommended variables for full functionality');
+    }
+  }
+  
+  // Return proper exit code
+  if (hasErrors) {
+    process.exit(1);
+  } else {
+    process.exit(0);
+  }
+}
+
+// Run the script
+main().catch(error => {
+  console.error('❌ Error checking environment variables:', error);
+  process.exit(1);
+});

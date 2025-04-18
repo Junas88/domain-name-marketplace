@@ -3,64 +3,125 @@
  * is shown in both development and production environments.
  */
 
-import fs from 'fs';
-import path from 'path';
-import { Pool, neonConfig } from '@neondatabase/serverless';
-import { drizzle } from 'drizzle-orm/neon-serverless';
-import ws from 'ws';
-import * as dotenv from 'dotenv';
+const fs = require('fs');
+const path = require('path');
+const crypto = require('crypto');
 
-dotenv.config();
-
-// Configure Neon PostgreSQL connection
-neonConfig.webSocketConstructor = ws;
-
-if (!process.env.DATABASE_URL) {
-  throw new Error("DATABASE_URL must be set. Did you forget to provision a database?");
+// Function to create a unique cache buster
+function generateCacheBuster() {
+  const timestamp = Date.now();
+  const random = Math.floor(Math.random() * 1000000);
+  return `${timestamp}${random}`;
 }
 
-// Create database connection
-const pool = new Pool({ connectionString: process.env.DATABASE_URL });
-const db = drizzle(pool);
-
-async function main() {
-  console.log('🧹 Starting cache clearing operations...');
+// Function to update cache buster file
+function updateCacheBusterFile() {
+  const cacheBuster = generateCacheBuster();
+  const filePath = path.join(process.cwd(), `.cache-buster-${cacheBuster}`);
   
-  try {
-    // 1. Clear domains table
-    console.log('Deleting all domains from database...');
-    await pool.query('DELETE FROM domains');
-    console.log('✅ All domains deleted successfully');
-    
-    // 2. Clear related tables
-    console.log('Cleaning up related tables...');
-    await pool.query('DELETE FROM price_change_logs');
-    await pool.query('DELETE FROM offers');
-    await pool.query('DELETE FROM inquiries');
-    await pool.query('DELETE FROM communications');
-    console.log('✅ Related tables cleaned successfully');
-    
-    // 3. Add a cache invalidation record to data_versions
-    console.log('Adding cache invalidation record...');
-    await pool.query(`
-      INSERT INTO data_versions (data_type, operation, version, record_count, details, last_updated, checksum)
-      VALUES ('cache-invalidation', 'clear-all', 1, 0, 'Manual cache clearing operation', NOW(), $1)
-    `, [Date.now().toString()]);
-    console.log('✅ Cache invalidation record added');
-    
-    // 4. Log cleanup completion
-    console.log('\n🎉 Cache clearing complete! The database has been reset.\n');
-    console.log('If you still see old data in production:');
-    console.log('1. Make sure to hard-refresh your browser (Ctrl+F5)');
-    console.log('2. Try clearing your browser cache completely');
-    console.log('3. Try accessing the site in an incognito/private window');
-    console.log('4. If using a custom domain, DNS caching might be an issue');
-    
-  } catch (error) {
-    console.error('❌ Error while clearing cache:', error);
-  } finally {
-    await pool.end();
-  }
+  // Remove any existing cache buster files
+  const files = fs.readdirSync(process.cwd());
+  files.forEach(file => {
+    if (file.startsWith('.cache-buster-')) {
+      fs.unlinkSync(path.join(process.cwd(), file));
+      console.log(`✓ Removed old cache buster file: ${file}`);
+    }
+  });
+  
+  // Create new cache buster file
+  fs.writeFileSync(filePath, cacheBuster.toString());
+  console.log(`✓ Created new cache buster file: ${path.basename(filePath)}`);
+  
+  return cacheBuster;
 }
 
-main().catch(console.error);
+// Function to update client cache utility
+function updateClientCacheUtility(cacheBuster) {
+  const filePath = path.join(process.cwd(), 'client', 'src', 'cache-buster.ts');
+  
+  // Ensure the file exists
+  if (!fs.existsSync(filePath)) {
+    console.log('⚠️ Client cache utility file not found. Skipping update.');
+    return;
+  }
+  
+  let content = fs.readFileSync(filePath, 'utf8');
+  
+  // Update the CACHE_BUSTER_VALUE
+  content = content.replace(
+    /export const CACHE_BUSTER_VALUE = .*;/,
+    `export const CACHE_BUSTER_VALUE = '${cacheBuster}';`
+  );
+  
+  fs.writeFileSync(filePath, content);
+  console.log(`✓ Updated client cache utility with new value: ${cacheBuster}`);
+}
+
+// Main function
+async function main() {
+  console.log('🔄 Starting deployment cache clearing process...');
+  
+  // Update cache buster
+  const cacheBuster = updateCacheBusterFile();
+  updateClientCacheUtility(cacheBuster);
+  
+  // Add HTTP cache headers to .vercel/output/config.json if it exists
+  const vercelConfigPath = path.join(process.cwd(), '.vercel', 'output', 'config.json');
+  if (fs.existsSync(vercelConfigPath)) {
+    try {
+      const configJson = JSON.parse(fs.readFileSync(vercelConfigPath, 'utf8'));
+      
+      // Ensure headers exist
+      if (!configJson.headers) {
+        configJson.headers = [];
+      }
+      
+      // Add/update cache control headers
+      const rootHeaderConfig = configJson.headers.find(h => h.source === '/(.*)?');
+      if (rootHeaderConfig) {
+        // Update existing header config
+        const cacheHeader = rootHeaderConfig.headers.find(h => h.key === 'Cache-Control');
+        if (cacheHeader) {
+          cacheHeader.value = 'public, max-age=0, must-revalidate';
+        } else {
+          rootHeaderConfig.headers.push({
+            key: 'Cache-Control',
+            value: 'public, max-age=0, must-revalidate'
+          });
+        }
+      } else {
+        // Add new header config
+        configJson.headers.push({
+          source: '/(.*)?',
+          headers: [
+            {
+              key: 'Cache-Control',
+              value: 'public, max-age=0, must-revalidate'
+            }
+          ]
+        });
+      }
+      
+      fs.writeFileSync(vercelConfigPath, JSON.stringify(configJson, null, 2));
+      console.log(`✓ Updated Vercel config with cache control headers`);
+    } catch (error) {
+      console.error(`⚠️ Error updating Vercel config: ${error.message}`);
+    }
+  } else {
+    console.log('ℹ️ Vercel config not found. No cache headers were updated.');
+  }
+  
+  console.log('✅ Deployment cache clearing completed successfully!');
+  console.log(`💡 New cache buster value: ${cacheBuster}`);
+  console.log('');
+  console.log('After deployment, verify that:');
+  console.log('1. The API returns fresh data (check timestamps or version numbers)');
+  console.log('2. The frontend shows the latest content and styles');
+  console.log('3. No stale cache warnings appear in the browser console');
+}
+
+// Run the script
+main().catch(error => {
+  console.error('❌ Error clearing deployment cache:', error);
+  process.exit(1);
+});

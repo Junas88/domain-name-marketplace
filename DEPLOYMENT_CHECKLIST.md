@@ -1,75 +1,76 @@
 # Deployment Checklist for Domain Name Guide
 
-This file provides a checklist to ensure your website deploys correctly.
+## Pre-Deployment Tasks
 
-## Required Environment Variables
+1. **Database Preparation**
+   - [ ] Ensure all tables are created in your production database
+   - [ ] Use `npm run db:push` to synchronize schema if needed
+   - [ ] Create admin user if not already created by seed script
 
-When deploying to Replit, you should add the following environment variables to your deployment configuration for optimal functionality:
+2. **Environment Variables**
+   - [ ] Set up DATABASE_URL in production environment
+   - [ ] Configure SESSION_SECRET for secure sessions
+   - [ ] Add OPENAI_API_KEY if using AI features
+   - [ ] Add any other required environment variables from .env.example
 
-### Database Variables 
-These are recommended for persistent database connection:
-- [ ] `DATABASE_URL` (main database connection string)
+3. **Static Assets**
+   - [ ] Ensure all images and assets are properly referenced
+   - [ ] Check that public directory files are accessible
 
-OR alternatively, you can provide individual connection parameters:
-- [ ] `PGUSER` (database username)
-- [ ] `PGPASSWORD` (database password)
-- [ ] `PGHOST` (database host)
-- [ ] `PGPORT` (database port)
-- [ ] `PGDATABASE` (database name)
+4. **SEO Preparation**
+   - [ ] Verify meta tags are properly set for all pages
+   - [ ] Confirm robots.txt settings are appropriate
+   - [ ] Check canonical URLs are correct
 
-## Important Update - April 2025:
-This application now runs in two modes:
-1. **Database Mode** - When database credentials are available, uses PostgreSQL for data storage (full 369 domains)
-2. **Fallback Mode** - When no database credentials are provided, falls back to in-memory storage with 200+ sample domains
+## Deployment Process
 
-The fallback in-memory storage has been enhanced to include 200+ domains, providing a near-complete experience even without a database connection.
+1. **Build Application**
+   - [ ] Run `npm run build` to create production bundle
+   - [ ] Verify build completes without errors
 
-Note: In fallback mode, data will not persist between application restarts, but the application will automatically reseed with the large set of sample domains.
+2. **Deploy Application**
+   - [ ] Upload files to hosting provider or deploy to Vercel
+   - [ ] Set environment variables in hosting dashboard
+   - [ ] Verify application starts correctly
 
-## How to Add Environment Variables in Replit Deployment
+3. **Post-Deployment Verification**
+   - [ ] Test admin login functionality
+   - [ ] Verify domain listing display
+   - [ ] Test domain creation and management
+   - [ ] Confirm search functionality works
+   - [ ] Check recently sold domains display
+   - [ ] Test all page content displays correctly
+   - [ ] Verify cache busting works in production
 
-1. Click the "Deploy" button in Replit
-2. In the deployment configuration screen, look for a section labeled "Environment Variables" or "Secrets"
-3. Add database variables listed above with their corresponding values
-4. These values should be the same as the ones you're using in your development environment
-5. Click "Deploy" to start the deployment process
+4. **Domain and SSL Setup**
+   - [ ] Configure custom domain if applicable
+   - [ ] Set up SSL certificate
+   - [ ] Test site with HTTPS enabled
+   - [ ] Verify redirects from HTTP to HTTPS
 
-## Troubleshooting
+5. **Monitoring and Analytics**
+   - [ ] Set up error logging and monitoring
+   - [ ] Configure analytics to track user behavior
+   - [ ] Verify data collection is working
 
-If your deployment seems to lose data after restarting:
-- This indicates you're running in fallback mode with in-memory storage
-- Add the database environment variables to enable persistent storage
+## Regular Maintenance Tasks
 
-For database connection issues:
-- Check if your database variables have been added correctly
-- Verify that the values are correct (no typos)
-- Make sure the database is accessible from the Replit deployment environment
+1. **Database Maintenance**
+   - [ ] Schedule regular backups
+   - [ ] Monitor database performance
+   - [ ] Check for and fix data integrity issues
 
-## Admin Access
+2. **Application Updates**
+   - [ ] Plan for regular security updates
+   - [ ] Schedule feature deployments
+   - [ ] Test updates in staging before production
 
-After deployment, you can access the admin dashboard with these credentials:
-- Username: `admin`
-- Password: `admin123`
+3. **Performance Monitoring**
+   - [ ] Check application response times
+   - [ ] Monitor server resource usage
+   - [ ] Optimize as needed
 
-These credentials work in both database mode and fallback mode.
-
-## Post-Deployment Verification
-
-After successful deployment, verify:
-- [ ] Website loads correctly
-- [ ] Domain listings appear (from in-memory or database storage)
-- [ ] Free ebook downloads work correctly
-- [ ] Login to admin dashboard works with credentials above
-- [ ] Admin dashboard displays data correctly
-
-## Performance & Reliability Notes
-
-1. **Domain Count**: In database mode, all 369 domains will be available. In fallback mode, 200+ sample domains will be displayed.
-
-2. **Authentication**: Admin login has been simplified and hardened to work in both modes (credentials: admin/admin123)
-
-3. **Redeployment**: If you need to redeploy, you can use the same settings - all fallback mechanisms will activate automatically if database credentials are not available.
-
-4. **Database Connection**: If the application seems to lose data after restarts or shows only sample data, check if your database connection variables are configured correctly.
-
-For any persistent issues, check the deployment logs for specific error messages.
+4. **Security Audits**
+   - [ ] Regularly review access logs
+   - [ ] Check for suspicious activities
+   - [ ] Update passwords and access tokens periodically
