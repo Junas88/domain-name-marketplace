@@ -3,7 +3,106 @@ import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
 // Version tracking for domain data to ensure persistence
-export const DB_VERSION = "1.3.0"; // Update this when schema changes
+export const DB_VERSION = "1.4.0"; // Updated with category enhancements
+
+// Category definitions with colors and trend information
+export const DOMAIN_CATEGORIES = {
+  'business': { 
+    color: '#3b82f6', // Blue
+    label: 'Business',
+    isTrending: true
+  },
+  'technology': { 
+    color: '#10b981', // Green
+    label: 'Technology',
+    isTrending: true
+  },
+  'finance': { 
+    color: '#f59e0b', // Amber
+    label: 'Finance',
+    isTrending: true
+  },
+  'health': { 
+    color: '#ef4444', // Red
+    label: 'Health',
+    isTrending: false
+  },
+  'real-estate': { 
+    color: '#8b5cf6', // Purple
+    label: 'Real Estate',
+    isTrending: false
+  },
+  'travel': { 
+    color: '#ec4899', // Pink
+    label: 'Travel',
+    isTrending: false
+  },
+  'education': { 
+    color: '#14b8a6', // Teal
+    label: 'Education',
+    isTrending: false
+  },
+  'entertainment': { 
+    color: '#f97316', // Orange
+    label: 'Entertainment',
+    isTrending: true
+  },
+  'shopping': { 
+    color: '#06b6d4', // Cyan
+    label: 'Shopping',
+    isTrending: true
+  },
+  'sports': { 
+    color: '#84cc16', // Lime
+    label: 'Sports',
+    isTrending: false
+  },
+  'gaming': { 
+    color: '#7c3aed', // Violet
+    label: 'Gaming',
+    isTrending: true
+  },
+  'ai': { 
+    color: '#6366f1', // Indigo
+    label: 'AI',
+    isTrending: true
+  },
+  'crypto': { 
+    color: '#facc15', // Yellow
+    label: 'Crypto',
+    isTrending: true
+  },
+  'food': { 
+    color: '#ea580c', // Orange-dark
+    label: 'Food & Dining',
+    isTrending: false
+  },
+  'fashion': { 
+    color: '#db2777', // Pink-dark
+    label: 'Fashion',
+    isTrending: true
+  },
+  'legal': { 
+    color: '#4338ca', // Indigo-dark
+    label: 'Legal',
+    isTrending: false
+  },
+  'social': { 
+    color: '#2563eb', // Blue-dark
+    label: 'Social Media',
+    isTrending: true
+  },
+  'eco': { 
+    color: '#059669', // Green-dark
+    label: 'Eco-Friendly',
+    isTrending: true
+  },
+  'other': { 
+    color: '#6b7280', // Gray
+    label: 'Other',
+    isTrending: false
+  }
+};
 
 // User table with admin privileges
 export const users = pgTable("users", {
@@ -31,18 +130,25 @@ export const domains = pgTable("domains", {
   price: integer("price").notNull(),
   category: text("category").notNull(),
   length: integer("length").notNull(),
+  extension: text("extension"),
+  isFeatured: boolean("is_featured").default(false),
+  isNew: boolean("is_new").default(false),
   isSold: boolean("is_sold").default(false).notNull(),
   viewCount: integer("view_count").default(0).notNull(),
+  pendingDeletion: boolean("pending_deletion").default(false),
+  lastSynced: timestamp("last_synced"),
+  externalId: text("external_id"),
+  externalSource: text("external_source"),
+  externalData: text("external_data"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 
-export const insertDomainSchema = createInsertSchema(domains).pick({
-  name: true,
-  description: true,
-  price: true,
-  category: true,
-  length: true,
-  isSold: true,
+export const insertDomainSchema = createInsertSchema(domains).omit({
+  id: true,
+  viewCount: true,
+  createdAt: true,
+  updatedAt: true
 });
 
 export type InsertDomain = z.infer<typeof insertDomainSchema>;
