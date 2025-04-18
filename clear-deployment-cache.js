@@ -3,125 +3,120 @@
  * is shown in both development and production environments.
  */
 
-const fs = require('fs');
-const path = require('path');
-const crypto = require('crypto');
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import { execSync } from 'child_process';
 
-// Function to create a unique cache buster
+// Get the directory name in ESM
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 function generateCacheBuster() {
-  const timestamp = Date.now();
-  const random = Math.floor(Math.random() * 1000000);
-  return `${timestamp}${random}`;
+  return Date.now().toString();
 }
 
-// Function to update cache buster file
 function updateCacheBusterFile() {
   const cacheBuster = generateCacheBuster();
-  const filePath = path.join(process.cwd(), `.cache-buster-${cacheBuster}`);
+  const cacheBusterFileName = `.cache-buster-${cacheBuster}`;
+  const cacheBusterPath = path.join(__dirname, cacheBusterFileName);
   
-  // Remove any existing cache buster files
-  const files = fs.readdirSync(process.cwd());
-  files.forEach(file => {
+  // Find and remove old cache buster files
+  const files = fs.readdirSync(__dirname);
+  for (const file of files) {
     if (file.startsWith('.cache-buster-')) {
-      fs.unlinkSync(path.join(process.cwd(), file));
-      console.log(`✓ Removed old cache buster file: ${file}`);
+      const fullPath = path.join(__dirname, file);
+      console.log(`Removing old cache buster: ${file}`);
+      fs.unlinkSync(fullPath);
     }
-  });
+  }
   
   // Create new cache buster file
-  fs.writeFileSync(filePath, cacheBuster.toString());
-  console.log(`✓ Created new cache buster file: ${path.basename(filePath)}`);
+  fs.writeFileSync(cacheBusterPath, cacheBuster);
+  console.log(`Created new cache buster: ${cacheBusterFileName}`);
   
   return cacheBuster;
 }
 
-// Function to update client cache utility
 function updateClientCacheUtility(cacheBuster) {
-  const filePath = path.join(process.cwd(), 'client', 'src', 'cache-buster.ts');
+  const appTsxPath = path.join(__dirname, 'client', 'src', 'App.tsx');
   
-  // Ensure the file exists
-  if (!fs.existsSync(filePath)) {
-    console.log('⚠️ Client cache utility file not found. Skipping update.');
-    return;
-  }
-  
-  let content = fs.readFileSync(filePath, 'utf8');
-  
-  // Update the CACHE_BUSTER_VALUE
-  content = content.replace(
-    /export const CACHE_BUSTER_VALUE = .*;/,
-    `export const CACHE_BUSTER_VALUE = '${cacheBuster}';`
-  );
-  
-  fs.writeFileSync(filePath, content);
-  console.log(`✓ Updated client cache utility with new value: ${cacheBuster}`);
-}
-
-// Main function
-async function main() {
-  console.log('🔄 Starting deployment cache clearing process...');
-  
-  // Update cache buster
-  const cacheBuster = updateCacheBusterFile();
-  updateClientCacheUtility(cacheBuster);
-  
-  // Add HTTP cache headers to .vercel/output/config.json if it exists
-  const vercelConfigPath = path.join(process.cwd(), '.vercel', 'output', 'config.json');
-  if (fs.existsSync(vercelConfigPath)) {
-    try {
-      const configJson = JSON.parse(fs.readFileSync(vercelConfigPath, 'utf8'));
-      
-      // Ensure headers exist
-      if (!configJson.headers) {
-        configJson.headers = [];
-      }
-      
-      // Add/update cache control headers
-      const rootHeaderConfig = configJson.headers.find(h => h.source === '/(.*)?');
-      if (rootHeaderConfig) {
-        // Update existing header config
-        const cacheHeader = rootHeaderConfig.headers.find(h => h.key === 'Cache-Control');
-        if (cacheHeader) {
-          cacheHeader.value = 'public, max-age=0, must-revalidate';
-        } else {
-          rootHeaderConfig.headers.push({
-            key: 'Cache-Control',
-            value: 'public, max-age=0, must-revalidate'
+  if (fs.existsSync(appTsxPath)) {
+    console.log('Updating App.tsx with cache busting code...');
+    
+    let appContent = fs.readFileSync(appTsxPath, 'utf8');
+    
+    // Check if we already have cache busting
+    if (!appContent.includes('Cache invalidation')) {
+      // Add cache busting near the beginning of the App component
+      const cacheCode = `
+  // Cache busting logic
+  React.useEffect(() => {
+    console.log("[App] Initialized with cache buster: ${cacheBuster}");
+    
+    // Clear any cached data
+    const clearCaches = () => {
+      // Attempt to clear any API caches
+      if (window.caches) {
+        try {
+          window.caches.keys().then(keyList => {
+            keyList.forEach(key => {
+              console.log("[App] Clearing cache:", key);
+              window.caches.delete(key);
+            });
           });
+        } catch (e) {
+          console.error("[App] Error clearing caches:", e);
         }
-      } else {
-        // Add new header config
-        configJson.headers.push({
-          source: '/(.*)?',
-          headers: [
-            {
-              key: 'Cache-Control',
-              value: 'public, max-age=0, must-revalidate'
-            }
-          ]
-        });
       }
       
-      fs.writeFileSync(vercelConfigPath, JSON.stringify(configJson, null, 2));
-      console.log(`✓ Updated Vercel config with cache control headers`);
-    } catch (error) {
-      console.error(`⚠️ Error updating Vercel config: ${error.message}`);
+      console.log("[App] Cache invalidation complete");
+    };
+    
+    clearCaches();
+  }, []);`;
+      
+      // Find a suitable insertion point (after imports and before the component logic)
+      const functionStartRegex = /function\s+App\s*\(\s*\)\s*{\s*$/m;
+      const match = appContent.match(functionStartRegex);
+      
+      if (match && match.index !== undefined) {
+        const insertPos = match.index + match[0].length;
+        appContent = appContent.slice(0, insertPos) + cacheCode + appContent.slice(insertPos);
+        fs.writeFileSync(appTsxPath, appContent);
+        console.log('Added cache busting code to App.tsx');
+      } else {
+        console.log('Could not find a suitable place to add cache busting code');
+      }
+    } else {
+      console.log('App.tsx already has cache busting code');
     }
   } else {
-    console.log('ℹ️ Vercel config not found. No cache headers were updated.');
+    console.log('App.tsx not found, skipping client cache updates');
   }
-  
-  console.log('✅ Deployment cache clearing completed successfully!');
-  console.log(`💡 New cache buster value: ${cacheBuster}`);
-  console.log('');
-  console.log('After deployment, verify that:');
-  console.log('1. The API returns fresh data (check timestamps or version numbers)');
-  console.log('2. The frontend shows the latest content and styles');
-  console.log('3. No stale cache warnings appear in the browser console');
 }
 
-// Run the script
+async function main() {
+  console.log('🧹 Clearing Deployment Caches');
+  console.log('===============================');
+  
+  // 1. Create/update cache buster file
+  const cacheBuster = updateCacheBusterFile();
+  
+  // 2. Update client-side cache utility
+  updateClientCacheUtility(cacheBuster);
+  
+  // 3. Display summary
+  console.log('\n✅ Deployment Cache Cleared');
+  console.log('===============================');
+  console.log('Cache buster generated:', cacheBuster);
+  console.log('Next steps:');
+  console.log('1. Commit these changes to your repository');
+  console.log('2. Redeploy your application to Vercel');
+  console.log('3. In the Vercel dashboard, go to your project settings and clear the build cache');
+}
+
 main().catch(error => {
-  console.error('❌ Error clearing deployment cache:', error);
+  console.error('Error clearing caches:', error);
   process.exit(1);
 });
