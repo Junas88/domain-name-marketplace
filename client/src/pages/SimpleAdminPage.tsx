@@ -2,6 +2,28 @@ import { useEffect, useState } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+
+// Helper function to get clear, vibrant colors for different categories
+const getCategoryColor = (category: string): string => {
+  switch (category) {
+    case "Technology":
+      return "bg-blue-500 text-white font-medium";
+    case "Business":
+      return "bg-green-500 text-white font-medium";
+    case "Health":
+      return "bg-red-500 text-white font-medium";
+    case "Education":
+      return "bg-yellow-500 text-white font-medium";
+    case "Entertainment":
+      return "bg-purple-500 text-white font-medium";
+    case "Finance":
+      return "bg-teal-500 text-white font-medium";
+    case "Crypto":
+      return "bg-orange-500 text-white font-medium";
+    default:
+      return "bg-gray-500 text-white font-medium";
+  }
+};
 import { Button } from "@/components/ui/button";
 import { 
   LogOut, Loader2, Plus, Pencil, Trash, Check, Tag, 
@@ -1697,8 +1719,8 @@ export default function SimpleAdminPage() {
                       {domain.name}
                     </TableCell>
                     <TableCell>
-                      <span className="inline-flex items-center rounded-full px-2 py-1 text-xs font-medium bg-gray-100">
-                        <Tag className="h-3 w-3 mr-1 text-gray-500" />
+                      <span className={`inline-flex items-center rounded-full px-2 py-1 text-xs ${getCategoryColor(domain.category)}`}>
+                        <Tag className="h-3 w-3 mr-1" />
                         {domain.category}
                       </span>
                     </TableCell>
@@ -1706,12 +1728,12 @@ export default function SimpleAdminPage() {
                     <TableCell>{domain.length}</TableCell>
                     <TableCell>
                       {domain.isSold ? (
-                        <span className="inline-flex items-center rounded-full bg-green-50 px-2 py-1 text-xs font-medium text-green-700">
+                        <span className="inline-flex items-center rounded-full bg-green-500 px-2 py-1 text-xs font-medium text-white">
                           <CircleCheck className="h-3 w-3 mr-1" />
                           Sold
                         </span>
                       ) : (
-                        <span className="inline-flex items-center rounded-full bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700">
+                        <span className="inline-flex items-center rounded-full bg-blue-500 px-2 py-1 text-xs font-medium text-white">
                           Available
                         </span>
                       )}
