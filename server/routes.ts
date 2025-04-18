@@ -3,6 +3,7 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { setupAuth } from "./auth";
 import { db, backupDataToFile, verifyDataPersistence } from "./db";
+import { setupDownloadRoutes } from "./download-project";
 import * as schema from "@shared/schema";
 import { sql } from "drizzle-orm";
 import { 
