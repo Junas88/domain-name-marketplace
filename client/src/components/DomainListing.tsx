@@ -27,25 +27,25 @@ import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ChevronLeft, ChevronRight, Shield, Check, Search } from "lucide-react";
 
-// Helper function to get colors for different categories
+// Helper function to get clear, vibrant colors for different categories
 const getCategoryColor = (category: string): string => {
   switch (category) {
     case "Technology":
-      return "bg-blue-100 text-blue-800 border border-blue-300";
+      return "bg-blue-500 text-white font-medium";
     case "Business":
-      return "bg-green-100 text-green-800 border border-green-300";
+      return "bg-green-500 text-white font-medium";
     case "Health":
-      return "bg-red-100 text-red-800 border border-red-300";
+      return "bg-red-500 text-white font-medium";
     case "Education":
-      return "bg-yellow-100 text-yellow-800 border border-yellow-300";
+      return "bg-yellow-500 text-white font-medium";
     case "Entertainment":
-      return "bg-purple-100 text-purple-800 border border-purple-300";
+      return "bg-purple-500 text-white font-medium";
     case "Finance":
-      return "bg-teal-100 text-teal-800 border border-teal-300";
+      return "bg-teal-500 text-white font-medium";
     case "Crypto":
-      return "bg-orange-100 text-orange-800 border border-orange-300";
+      return "bg-orange-500 text-white font-medium";
     default:
-      return "bg-gray-100 text-gray-800 border border-gray-300";
+      return "bg-gray-500 text-white font-medium";
   }
 };
 
