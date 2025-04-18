@@ -59,19 +59,32 @@ app.use((req, res, next) => {
     await setupVite(app, server);
   } else {
     // Serve static assets from the 'dist' directory in production
-    const distPath = path.join(__dirname, 'dist'); // Assuming dist is where your built assets are
-    app.use(express.static(distPath)); 
+    const distPath = path.resolve(process.cwd(), 'dist');
+    app.use(express.static(distPath));
+    
+    // Add a catch-all route to serve the index.html for client-side routing
+    app.get('*', (req, res) => {
+      // Skip API routes
+      if (req.path.startsWith('/api/')) {
+        return res.status(404).json({ message: 'API endpoint not found' });
+      }
+      
+      res.sendFile(path.join(distPath, 'index.html'));
+    });
   }
 
-  // ALWAYS serve the app on port 5000
-  // this serves both the API and the client.
-  // It is the only port that is not firewalled.
-  const port = 5000;
-  server.listen({
-    port,
-    host: "0.0.0.0",
-    reusePort: true,
-  }, () => {
-    log(`serving on port ${port}`);
-  });
+  // In development, serve on port 5000
+  // In production (Vercel), this will be handled by the platform
+  if (process.env.NODE_ENV !== 'production') {
+    const port = process.env.PORT || 5000;
+    server.listen({
+      port,
+      host: "0.0.0.0",
+      reusePort: true,
+    }, () => {
+      log(`serving on port ${port}`);
+    });
+  } else {
+    log('Running in production mode - server is handled by the platform');
+  }
 })();

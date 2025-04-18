@@ -11,7 +11,7 @@ import crypto from "crypto";
 neonConfig.webSocketConstructor = ws;
 
 // Helper function to check if we're in a deployment environment
-const isDeployment = process.env.REPL_DEPLOYMENT === 'true';
+const isDeployment = process.env.REPL_DEPLOYMENT === 'true' || process.env.NODE_ENV === 'production';
 
 // Define pool type explicitly to avoid implicit any
 let pool: Pool | null = null;
