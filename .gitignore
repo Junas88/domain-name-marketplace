@@ -1,6 +1,44 @@
+# Dependencies
 node_modules
-dist
+/.pnp
+.pnp.js
+
+# Build output
+/dist
+/build
+
+# Testing
+/coverage
+
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Editor directories and files
+.idea
+.vscode
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
 .DS_Store
-server/public
+
+# Cache and backup files
+.cache
+/backups
+
+# Vite
 vite.config.ts.*
+
+# Misc
 *.tar.gz
+*.log
