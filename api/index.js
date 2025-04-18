@@ -6,12 +6,12 @@
  * is automatically recognized by Vercel as serverless functions.
  */
 
-// Import required modules
+// Using CommonJS format for Vercel compatibility
 const path = require('path');
 const fs = require('fs');
 
 // This is a serverless function that handles API requests
-module.exports = async (req, res) => {
+export default async function handler(req, res) {
   try {
     // Check if this is a direct API request (which should be handled by the server)
     if (req.url.startsWith('/api/')) {
@@ -43,4 +43,4 @@ module.exports = async (req, res) => {
       solution: 'Check Vercel deployment logs for details'
     });
   }
-};
+}

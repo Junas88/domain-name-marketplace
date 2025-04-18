@@ -1,159 +1,162 @@
 /**
- * This script checks if all required environment variables are present for deployment.
- * Run this before deploying to verify your environment is correctly configured.
+ * Deployment Environment Checker
+ * 
+ * This script checks if the environment is properly configured for deployment,
+ * particularly focusing on the issues that cause schema code to be displayed
+ * instead of the actual application on Vercel.
  */
 
-// Define required environment variables for production
-const REQUIRED_ENV_VARS = [
-  'DATABASE_URL',
-  'SESSION_SECRET',
-];
+require('dotenv').config();
+const fs = require('fs');
+const path = require('path');
 
-// Define conditionally required variables (based on features enabled)
-const CONDITIONAL_ENV_VARS = {
-  'AI Features': ['OPENAI_API_KEY'],
-  'Payment Processing': ['STRIPE_SECRET_KEY', 'VITE_STRIPE_PUBLIC_KEY'],
-};
-
-// Define recommended environment variables
-const RECOMMENDED_ENV_VARS = [
-  'NODE_ENV',
-];
-
-// Function to check if an environment variable is set
 function isEnvVarSet(varName) {
-  return process.env[varName] !== undefined && process.env[varName] !== '';
+  return process.env[varName] !== undefined;
 }
 
-// Function to load .env file for testing
 function loadEnvFile() {
+  const envPath = path.join(__dirname, '.env');
+  const envExamplePath = path.join(__dirname, '.env.example');
+  
+  let envContent = null;
+  let exampleContent = null;
+  
   try {
-    const fs = require('fs');
-    const path = require('path');
-    const dotenv = require('dotenv');
-    
-    // Try to load .env file if it exists
-    const envPath = path.resolve(process.cwd(), '.env');
     if (fs.existsSync(envPath)) {
-      const envConfig = dotenv.parse(fs.readFileSync(envPath));
-      
-      // Add env vars to process.env
-      for (const key in envConfig) {
-        if (!process.env[key]) {
-          process.env[key] = envConfig[key];
-        }
-      }
-      
-      console.log('📄 Loaded environment variables from .env file');
+      envContent = fs.readFileSync(envPath, 'utf8');
+      console.log('✅ .env file exists');
     } else {
-      console.log('⚠️ No .env file found. Using process environment only.');
+      console.log('❌ .env file does not exist');
     }
+    
+    if (fs.existsSync(envExamplePath)) {
+      exampleContent = fs.readFileSync(envExamplePath, 'utf8');
+      console.log('✅ .env.example file exists');
+    } else {
+      console.log('❌ .env.example file does not exist');
+    }
+    
+    return { envContent, exampleContent };
   } catch (error) {
-    console.error('⚠️ Error loading .env file:', error.message);
-    console.log('ℹ️ Continuing with existing environment variables...');
+    console.error('Error reading environment files:', error);
+    return { envContent: null, exampleContent: null };
   }
 }
 
-// Main function
 async function main() {
-  console.log('🔍 Checking environment variables for deployment...');
+  console.log('====================================');
+  console.log('🔍 Checking Deployment Environment');
+  console.log('====================================');
   
-  // Try to load .env file
-  try {
-    loadEnvFile();
-  } catch (error) {
-    // If dotenv isn't installed, continue with existing env vars
-    console.warn('⚠️ dotenv package not found. Skipping .env file loading.');
+  // Check critical environment variables
+  const criticalVars = [
+    'DATABASE_URL',
+    'NODE_ENV'
+  ];
+  
+  let allCriticalVarsSet = true;
+  
+  for (const varName of criticalVars) {
+    if (isEnvVarSet(varName)) {
+      console.log(`✅ ${varName} is set`);
+    } else {
+      console.log(`❌ ${varName} is NOT set - this may cause deployment issues`);
+      allCriticalVarsSet = false;
+    }
   }
   
-  let hasErrors = false;
-  let hasWarnings = false;
+  // Check for env files
+  const { envContent, exampleContent } = loadEnvFile();
   
-  // Check required environment variables
-  console.log('\n📋 Checking required environment variables:');
+  // Check Vercel configuration
+  const vercelConfigPath = path.join(__dirname, 'vercel.json');
   
-  REQUIRED_ENV_VARS.forEach(varName => {
-    if (isEnvVarSet(varName)) {
-      console.log(`✓ ${varName}: Found`);
-    } else {
-      console.error(`❌ ${varName}: Missing (REQUIRED)`);
-      hasErrors = true;
-    }
-  });
-  
-  // Check conditional environment variables
-  console.log('\n📋 Checking feature-specific environment variables:');
-  
-  Object.entries(CONDITIONAL_ENV_VARS).forEach(([feature, vars]) => {
-    console.log(`\n🔹 ${feature}:`);
+  if (fs.existsSync(vercelConfigPath)) {
+    console.log('✅ vercel.json exists');
     
-    let allVarsPresent = true;
-    vars.forEach(varName => {
-      if (isEnvVarSet(varName)) {
-        console.log(`  ✓ ${varName}: Found`);
+    // Analyze vercel.json content
+    try {
+      const vercelConfig = JSON.parse(fs.readFileSync(vercelConfigPath, 'utf8'));
+      
+      // Check for common issues
+      if (!vercelConfig.rewrites || vercelConfig.rewrites.length === 0) {
+        console.log('❌ vercel.json is missing rewrites configuration');
       } else {
-        console.log(`  ✗ ${varName}: Missing`);
-        allVarsPresent = false;
+        console.log('✅ vercel.json has rewrites configuration');
       }
-    });
+      
+      if (!vercelConfig.functions) {
+        console.log('⚠️ vercel.json is missing functions configuration');
+      } else {
+        console.log('✅ vercel.json has functions configuration');
+      }
+      
+      // Check for SPA routing
+      const hasSpaCatchAll = vercelConfig.rewrites?.some(
+        rewrite => rewrite.source === '/(.*)'
+      );
+      
+      if (hasSpaCatchAll) {
+        console.log('✅ vercel.json has catch-all route for SPA routing');
+      } else {
+        console.log('❌ vercel.json is missing catch-all route for SPA routing');
+      }
+      
+    } catch (error) {
+      console.error('Error parsing vercel.json:', error);
+    }
+  } else {
+    console.log('❌ vercel.json does not exist - this will cause deployment issues');
+  }
+  
+  // Check for special deployment files
+  const specialFiles = [
+    { name: 'api/index.js', description: 'Vercel API handler' },
+    { name: 'vercel.js', description: 'Vercel helper' },
+    { name: '404.html', description: 'Fallback HTML' },
+    { name: 'vercel-index.html', description: 'Vercel index fallback' }
+  ];
+  
+  for (const file of specialFiles) {
+    const filePath = path.join(__dirname, file.name);
     
-    if (!allVarsPresent) {
-      console.log(`  ⚠️ Some variables missing for ${feature}. This feature may not work correctly.`);
-      hasWarnings = true;
-    }
-  });
-  
-  // Check recommended environment variables
-  console.log('\n📋 Checking recommended environment variables:');
-  
-  RECOMMENDED_ENV_VARS.forEach(varName => {
-    if (isEnvVarSet(varName)) {
-      console.log(`✓ ${varName}: Found (${process.env[varName]})`);
+    if (fs.existsSync(filePath)) {
+      console.log(`✅ ${file.name} (${file.description}) exists`);
     } else {
-      console.log(`⚠️ ${varName}: Missing (recommended)`);
-      hasWarnings = true;
-    }
-  });
-  
-  // Print summary
-  console.log('\n📊 Environment check summary:');
-  
-  if (hasErrors) {
-    console.error('❌ CRITICAL ISSUES FOUND: Missing required environment variables');
-    console.log('   Your application will not function correctly without these variables.');
-    console.log('   Please add them to your deployment environment before continuing.');
-  } else if (hasWarnings) {
-    console.log('⚠️ WARNINGS FOUND: Some recommended or feature-specific variables are missing');
-    console.log('   Your application may have limited functionality.');
-    console.log('   Consider adding these variables for full functionality.');
-  } else {
-    console.log('✅ ALL CHECKS PASSED: Your environment is correctly configured');
-  }
-  
-  // Print instructions
-  console.log('\n📝 Next steps:');
-  
-  if (hasErrors) {
-    console.log('1. Add the missing required environment variables to your deployment');
-    console.log('2. Run this check again to verify all variables are set');
-    console.log('3. Proceed with deployment once all critical issues are resolved');
-  } else {
-    console.log('1. Proceed with deployment');
-    if (hasWarnings) {
-      console.log('2. Consider adding the recommended variables for full functionality');
+      console.log(`❌ ${file.name} (${file.description}) does not exist - this may help with deployment issues`);
     }
   }
   
-  // Return proper exit code
-  if (hasErrors) {
-    process.exit(1);
+  console.log('\n====================================');
+  console.log('📋 Deployment Environment Summary');
+  console.log('====================================');
+  
+  if (allCriticalVarsSet) {
+    console.log('✅ All critical environment variables are set');
   } else {
-    process.exit(0);
+    console.log('❌ Some critical environment variables are missing');
+    console.log('   This may cause the schema to be displayed instead of your app');
   }
+  
+  console.log('\n📝 Next Steps:');
+  if (!allCriticalVarsSet) {
+    console.log('1. Add missing environment variables to Vercel');
+    console.log('2. Go to the Vercel dashboard and ensure all environment variables are set');
+    console.log('3. Clear the build cache and redeploy your application');
+  } else {
+    console.log('Your environment appears to be configured correctly for deployment.');
+    console.log('If you are still seeing schema code instead of your application:');
+    console.log('1. Make sure your build command is correctly set in Vercel (npm run build)');
+    console.log('2. Ensure your output directory is correctly set (dist)');
+    console.log('3. Clear the build cache and redeploy your application');
+  }
+  
+  console.log('\nFor more detailed deployment instructions, refer to:');
+  console.log('- VERCEL_DEPLOYMENT.md');
+  console.log('- SUPABASE_VERCEL_DEPLOYMENT.md');
 }
 
-// Run the script
 main().catch(error => {
-  console.error('❌ Error checking environment variables:', error);
+  console.error('Error running deployment check:', error);
   process.exit(1);
 });
