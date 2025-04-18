@@ -67,6 +67,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Set up authentication
   setupAuth(app);
   
+  // Set up project download route
+  setupDownloadRoutes(app);
+  
   // Serve static files from public/downloads
   app.use('/downloads', express.static(path.join(process.cwd(), 'public/downloads')));
   
