@@ -25,7 +25,7 @@ try {
   
   // Set the remote with token
   console.log('Configuring GitHub remote with token...');
-  const remoteUrl = `https://${githubToken}@github.com/Junas88/domain-name-guide.git`;
+  const remoteUrl = `https://${githubToken}@github.com/Junas88/domain-name-marketplace.git`;
   
   try {
     // Check if remote exists
