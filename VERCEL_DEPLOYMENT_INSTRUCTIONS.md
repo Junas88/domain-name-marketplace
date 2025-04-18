@@ -50,3 +50,23 @@ Follow these steps to deploy your application:
    - Domain browsing and filtering
    - Admin dashboard
    - Content management
+
+## TROUBLESHOOTING SCHEMA DISPLAY ISSUE
+
+If after deployment you see your schema code instead of the actual website:
+
+1. **Environment Variables**: Make sure all environment variables are correctly set in Vercel:
+   - `DATABASE_URL`: Your Supabase connection string
+   - `SESSION_SECRET`: A secure random string
+   - `NODE_ENV`: Must be set to 'production'
+
+2. **Redeploy with Clear Cache**: In your Vercel dashboard:
+   - Go to your project
+   - Click "Settings" > "General"
+   - Find "Build & Development Settings"
+   - Click "Clear Build Cache" 
+   - Trigger a new deployment
+
+3. **Check Deployment Logs**: Look for any errors during the build process
+
+4. **API Routes**: Ensure the API routes are correctly set up in vercel.json
