@@ -1,60 +1,112 @@
-# Vercel Deployment Guide for Domain Name Guide
+# Vercel Deployment Checklist for Domain Name Guide
 
-## Prerequisites
-- A Vercel account (sign up at [vercel.com](https://vercel.com))
-- A PostgreSQL database (Neon, Supabase, or any other PostgreSQL provider)
-- API keys for external services (OpenAI, etc.)
+This document provides a step-by-step checklist for deploying the Domain Name Guide application to Vercel with Supabase as the database.
 
-## Step 1: Database Setup
-1. Set up a PostgreSQL database with a provider like [Neon](https://neon.tech) or [Supabase](https://supabase.com)
-2. Get your database connection string in the format:
-   ```
-   postgres://user:password@hostname:port/database
-   ```
+## Pre-Deployment Checklist
 
-## Step 2: Deploy to Vercel
-1. Go to [Vercel Dashboard](https://vercel.com/dashboard)
-2. Click "New Project" 
-3. Import your GitHub repository (https://github.com/Junas88/domain-name-guide)
-4. Configure the project:
-   - Build Command: Should be auto-detected or set to `npm run build`
-   - Output Directory: `dist`
-   - Install Command: `npm install`
+### 1. Environment Variables
 
-## Step 3: Set Environment Variables
-In the Vercel project settings, add the following environment variables:
+Make sure you have the following environment variables ready:
 
-- `DATABASE_URL` - Your PostgreSQL connection string
-- `SESSION_SECRET` - A random string for session encryption (generate with `openssl rand -base64 32`)
-- `OPENAI_API_KEY` - Your OpenAI API key (if using AI features)
-- `STRIPE_SECRET_KEY` - Your Stripe secret key (if using payment features)
-- `VITE_STRIPE_PUBLIC_KEY` - Your Stripe publishable key (if using payment features)
-- `NODE_ENV` - Set to `production`
+- [ ] `DATABASE_URL` - Your Supabase connection string (format: `postgresql://postgres:[YOUR-PASSWORD]@db.vefjxsavewdrhpjehmdx.supabase.co:5432/postgres`)
+- [ ] `SESSION_SECRET` - A secure random string (generate with `openssl rand -base64 32`)
+- [ ] `NODE_ENV` - Set to `production`
 
-## Step 4: Deploy
-1. Click "Deploy" in the Vercel dashboard
-2. Wait for the build to complete
-3. Your site will be live at a *.vercel.app domain
+### 2. Code Preparation
 
-## Step 5: Check Database Connection
-1. Visit your deployed site
-2. Check that data is loading correctly
-3. Test admin login with your credentials
-4. If database issues occur, check the Vercel logs for connection errors
+- [ ] All changes are committed to GitHub repository
+- [ ] Production build is tested locally with `npm run build`
+- [ ] `vercel.json` file is properly configured
+- [ ] Static assets are optimized for production
+- [ ] Cache busting implementation is working correctly
 
-## Step 6: Custom Domain (Optional)
-1. In Vercel project settings, go to "Domains"
-2. Add your custom domain
-3. Follow Vercel instructions to verify ownership and set up DNS
+### 3. Database Preparation
 
-## Troubleshooting
-- **Build Errors**: Check the build logs in Vercel for specific errors
-- **Database Connection Issues**: Ensure your DATABASE_URL is correct and the database is accessible from Vercel
-- **Missing Environment Variables**: Double-check all required environment variables are set
-- **Runtime Errors**: Check the Function Logs in Vercel dashboard
+- [ ] Supabase database is set up and tables are created
+- [ ] Database connection is tested with test script
+- [ ] Initial data is seeded if necessary
+- [ ] Database backups are configured
 
-## Important Notes
-- The free tier of most PostgreSQL providers should be sufficient for initial deployment
-- Set up database backups to prevent data loss
-- The project uses session-based authentication that requires proper SESSION_SECRET
-- Make sure your database provider allows connections from Vercel's IP ranges
+## Deployment Steps
+
+### 1. Set Up Vercel Project
+
+- [ ] Log in to Vercel Dashboard at [vercel.com/dashboard](https://vercel.com/dashboard)
+- [ ] Click "New Project" or "Import Project"
+- [ ] Connect your GitHub account and select your repository
+- [ ] Configure project settings:
+  - Framework Preset: Vite
+  - Build Command: `npm run build`
+  - Output Directory: `dist`
+
+### 2. Configure Environment Variables
+
+- [ ] Add all required environment variables from the checklist above
+- [ ] Verify all secrets are securely stored
+
+### 3. Deploy
+
+- [ ] Click "Deploy" button
+- [ ] Wait for build and deployment to complete
+
+## Post-Deployment Verification
+
+### 1. Basic Functionality
+
+- [ ] Website loads correctly
+- [ ] Homepage displays domains
+- [ ] No console errors in browser developer tools
+- [ ] Navigation works between all pages
+
+### 2. Admin Functionality
+
+- [ ] Admin login works
+- [ ] Domain management functions work
+- [ ] Content management functions work
+
+### 3. Database Connectivity
+
+- [ ] Database connection is successful
+- [ ] Data is loaded correctly from Supabase
+- [ ] Admin changes persist in the database
+
+## Troubleshooting Common Issues
+
+### Build Failures
+
+- Check build logs for specific errors
+- Verify environment variables are correctly set
+- Make sure all dependencies are properly installed
+
+### Database Connection Issues
+
+- Verify DATABASE_URL is correct
+- Check if Supabase's IP restrictions might be blocking Vercel
+- Ensure SSL settings are properly configured
+
+### Runtime Errors
+
+- Check Vercel function logs for server-side errors
+- Verify client-side connectivity in browser console
+- Test database connection directly from Vercel Functions
+
+## Optimization
+
+Once deployed, consider these optimizations:
+
+- [ ] Add a custom domain in Vercel settings
+- [ ] Configure Supabase connection pooling
+- [ ] Enable Vercel Edge Functions if appropriate
+- [ ] Set up Vercel Analytics
+
+## Monitoring
+
+- [ ] Set up Vercel status alerts
+- [ ] Configure error notifications
+- [ ] Implement uptime monitoring
+
+## Maintenance
+
+- [ ] Document deployment process for future reference
+- [ ] Create scheduled database backup plan
+- [ ] Plan for regular dependency updates

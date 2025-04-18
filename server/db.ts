@@ -17,6 +17,9 @@ const isDeployment = process.env.REPL_DEPLOYMENT === 'true' || process.env.NODE_
 let pool: Pool | null = null;
 let db: any = null;
 
+// For Supabase connection in Vercel
+const isSupabase = process.env.DATABASE_URL?.includes('supabase.co');
+
 // Function to construct DATABASE_URL from individual parts if needed
 function constructDatabaseUrl() {
   // If DATABASE_URL is already set, use it
@@ -158,12 +161,13 @@ try {
     console.log(`Initializing database connection ${isDeployment ? 'in deployment' : 'in development'}`);
     pool = new Pool({ 
       connectionString: databaseUrl,
-      ssl: isDeployment ? { rejectUnauthorized: false } : false,
-      connectionTimeoutMillis: 10000, // Increased timeout
-      max: 20,                        // Increased max connections
-      idleTimeoutMillis: 30000,       // How long a client is allowed to remain idle before being closed
-      retryDelay: 1000,               // Delay between connection retries
-      maxConnAttempts: 5              // Maximum connection attempts
+      ssl: { rejectUnauthorized: false }, // Required for Supabase
+      connectionTimeoutMillis: 10000,    // Increased timeout
+      max: isSupabase ? 10 : 20,         // Fewer connections for Supabase
+      idleTimeoutMillis: 30000,          // How long a client is allowed to remain idle before being closed
+      // Serverless-friendly settings
+      statement_timeout: 10000,          // 10 seconds max query execution time
+      query_timeout: 10000               // 10 seconds max query time
     });
     
     // Test the connection and get version at the same time
