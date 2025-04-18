@@ -10,10 +10,11 @@ import {
   Layout, ListChecks, Quote, Award, BookOpen, Contact,
   HelpCircle, Info, BarChart, LineChart, PieChart, 
   Activity, Clock, Users, ArrowUpRight, ArrowDownRight,
-  Phone, Share2, MessageSquare, RefreshCw, 
+  Phone, Share2, MessageSquare, RefreshCw, TrendingUp,
   DollarSign, PlusCircle, ChevronDown, CheckCircle, XCircle,
   Trash2, FileDown, FileUp, Database, ShieldCheck, User
 } from "lucide-react";
+import { CategoryBadge } from "@/components/CategoryBadge";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -3067,10 +3068,7 @@ Instagram: https://instagram.com/domainnameguide`;
                       <TableRow key={domain.id}>
                         <TableCell className="font-medium">{domain.name}</TableCell>
                         <TableCell>
-                          <span className="inline-flex items-center rounded-full px-2 py-1 text-xs font-medium bg-gray-100">
-                            <Tag className="h-3 w-3 mr-1 text-gray-500" />
-                            {domain.category}
-                          </span>
+                          <CategoryBadge category={domain.category.toLowerCase()} />
                         </TableCell>
                         <TableCell>{domain.viewCount || 0}</TableCell>
                         <TableCell>${domain.price.toLocaleString()}</TableCell>
